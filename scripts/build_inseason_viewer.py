@@ -19,6 +19,7 @@ from season_nav import add_season_nav, apply_common, regroup_attrs  # noqa: E402
 import season_nav as sn  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'reports/impact-epm-2026-27'))
 import epm_live  # noqa: E402
+from build_card_viewer import pres_tips  # noqa: E402
 
 ROOT = er.ROOT
 BASE = ROOT / 'reports/ovr-v58-card-2025-26/roster-viewer.html'
@@ -123,7 +124,8 @@ def main():
     # card 0.2.2 先驗（E-074）：ranking.csv 帶 presDisplay／foulDisc → PRES 欄顯示 presDisplay，tooltip 列逼失誤與犯規紀律（同 build_card_viewer.py）
     has_pd = 'presDisplay' in rows[0]
     if has_pd:
-        cols += ['force', 'foulDisc']
+        cols += ['force', 'foulDisc', 'presTip']
+        ptips = pres_tips()   # 五個分量（2025-26，賽中凍結，同 2025-26 名單頁）
     base = BASE.read_text(encoding='utf-8')
     old = json.loads(re.search(r'const DATA=(\{.*?\});\nconst COLS', base, re.S).group(1))
     ht = {r[old['cols'].index('name')]: r[old['cols'].index('ht')] for r in old['rows']}
@@ -138,6 +140,11 @@ def main():
     if dcen is None:
         print('DIQ 負分：找不到對得上的 D 檔，只顯示正值', file=sys.stderr)
     data_rows = []
+    def pres_tip(r):
+        if r['presDisplay'] == '':
+            return '新秀：沒有 2025-26 的壓迫分量'
+        return '\n'.join([f"壓迫 {float(r['presDisplay'])}＝逼失誤 {float(r['pressure'])} − 0.25×犯規（2025-26）", *ptips.get(r['name'], []),
+                          'PR＝2025-26 上場 ≥ 1000 分鐘 279 人中的百分位，越高越好（犯規是越少越高）；各項為收縮後估計'])
     for r in rows:
         num = lambda k: float(r[k])
         # E-116 新秀先驗列沒有 threeValue／presDisplay／foulDisc（無上季卡）：3PT 退回 long、PRES 退回 pressure、犯規紀律留空
@@ -149,7 +156,7 @@ def main():
                           round(num('MIN26') / int(r['N']), 1) if int(r['N']) else 0.0, int(r['N']), num('predictedPer36'),
                           dcen[r['playerId']] if dcen else (num('defenseBonus') or None),
                           *[opt('presDisplay') if (a == 'pressure' and has_pd) else opt(a) for a in cols[10:25]],
-                          num('lastOVR'), num('dOVR'), *([num('pressure'), opt('foulDisc')] if has_pd else [])])
+                          num('lastOVR'), num('dOVR'), *([num('pressure'), opt('foulDisc'), pres_tip(r)] if has_pd else [])])
     # ΔOVR 五色：≥+4 深綠、+1～+4 淺綠、±1 內灰、−1～−4 橘、≤−4 紅（沿用等第色）
     dcol = ("(v => v >= 4 ? 'var(--g-a)' : v >= 1 ? 'var(--g-b)' : v > -1 ? 'var(--muted)'"
             " : v > -4 ? 'var(--g-d)' : 'var(--g-f)')(p.dovr)")
@@ -193,7 +200,7 @@ def main():
             ('function cell(k, v, first) {', 'function cell(k, v, first, tip) {'),
             ("""return `<td class="${cls.join(' ')}" title="${v}">${g}</td>`;""",
              """return `<td class="${cls.join(' ')}" title="${tip || v}">${g}</td>`;"""),
-            ("cell(k, p[k], j === 0)", "cell(k, p[k], j === 0, k === 'pressure' ? `逼失誤 ${p.force}｜犯規紀律 ${p.foulDisc == null ? '—' : Math.round(p.foulDisc)}（2025-26）` : null)"),
+            ("cell(k, p[k], j === 0)", "cell(k, p[k], j === 0, k === 'pressure' ? p.presTip : null)"),
             # 數值模式的格子（apply_common 改過那行）也帶 PRES tooltip
             ("""cls.push(gcls(grade(v))); return `<td class="${cls.join(' ')}">${v}</td>`; }""",
              """cls.push(gcls(grade(v))); return `<td class="${cls.join(' ')}"${tip ? ` title="${tip}"` : ''}>${v}</td>`; }"""),

@@ -1,6 +1,6 @@
 """2025-26 正式卡名單頁（card 0.2.8）：以正式卡名單頁為版型，換成 card 0.2.8 的 OVR／能力值（OVR 為每場、含上場時間、相對替補水準，R-028；能力值同 0.1.2），3PT 顯示 threeValue（R-024）。
 OVR 能力估計納入教練用人證據（分鐘、出賽率、年齡、練兵隊），DNP 與輪休分開（E-075）；用人回歸的訓練目標是 2025-26 單季 RAPM（E-084）；分鐘權重為飽和曲線 W(m)（E-089）；補籃改歸近距離、能力值錨點對四季合併池、頂端只壓縮（E-101）；OVR 迴歸不用 physique（E-131），網站不顯示 PHYS。
-PRES 顯示 presDisplay（逼失誤 − 0.25·犯規，E-071），tooltip 列逼失誤（卡片 pressure）與犯規紀律（foulDisc）。
+PRES 顯示 presDisplay（逼失誤 − 0.25·犯規，E-071），tooltip 列逼失誤（卡片 pressure）與五個分量（抄截、deflection、對位逼失誤、造進攻犯規、犯規，E-071 收縮後值＋百分位）。
 
 輸入：reports/card-0.2.8/ranking.csv（card 0.2.8）、
       reports/card-0.2.8/three-value.csv（以姓名對 tv_main；E-123 頂端開尾）、data/season-source/player-games.json。
@@ -24,7 +24,31 @@ ROOT = er.ROOT
 BASE = ROOT / 'reports/ovr-v58-card-2025-26/roster-viewer.html'
 CARD = ROOT / 'reports/card-0.2.8/ranking.csv'
 THREE_VALUE = ROOT / 'reports/card-0.2.8/three-value.csv'
+FORCE = ROOT / 'reports/card-0.2.0+E071-pressure/force-2025-26.csv'
 DEFAULT_OUT = ROOT / 'reports/card-0.1.2-2025-26/roster-viewer.html'
+# PRES tooltip 的分量（E-071 force 的收縮後值）；PR 對上場 ≥ 1000 分鐘的人群
+PRES_SUB = [('stl_shr', '抄截', '／36', '{:.2f}'), ('defl_shr', 'Deflection', '／36', '{:.2f}'),
+            ('mtov_shr', '對位逼失誤', '／100 回合（超出預期）', '{:+.2f}'), ('chg_shr', '造進攻犯規', '／36', '{:.2f}'),
+            ('pf_shr', '犯規', '／36', '{:.2f}')]
+PRES_LOW_GOOD = {'pf_shr'}   # PR 反轉：越少犯規 PR 越高
+
+
+def pres_tips():
+    """{name: 多行 tooltip}：逼失誤四分量＋犯規，各附百分位。"""
+    rows = list(csv.DictReader(FORCE.open(encoding='utf-8')))
+    pool = [r for r in rows if float(r['MIN']) >= 1000]
+    tips = {}
+    for r in rows:
+        lines = []
+        for k, label, unit, fmt in PRES_SUB:
+            x = float(r[k])
+            if k in PRES_LOW_GOOD:
+                pr = round(100 * sum(float(q[k]) > x for q in pool) / len(pool))
+            else:
+                pr = round(100 * sum(float(q[k]) < x for q in pool) / len(pool))
+            lines.append(f'{label} {fmt.format(x)}{unit}　PR {pr}')
+        tips[r['name']] = lines
+    return tips
 
 
 def main(out=None):
@@ -43,7 +67,9 @@ def main(out=None):
         last_team[row[h['PLAYER_NAME']]] = row[h['TEAM_ABBREVIATION']]
         gp_src[row[h['PLAYER_NAME']]] = gp_src.get(row[h['PLAYER_NAME']], 0) + 1
     cols = ['rank', 'ovr', 'name', 'pos', 'team', 'ht', 'min', 'gp', 'imp', 'dbon', 'threeValue', 'mid', 'short', 'ft',
-            'drive', 'foulDraw', 'pass', 'tovSkill', 'creation', 'rebound', 'physique', 'stamina', 'onBall', 'help', 'pressure', 'force', 'foulDisc']
+            'drive', 'foulDraw', 'pass', 'tovSkill', 'creation', 'rebound', 'physique', 'stamina', 'onBall', 'help', 'pressure', 'force', 'foulDisc',
+            'presTip']
+    ptips = pres_tips()
     # DIQ 顯示負分：card 0.2.8 的 defenseBonus（同 0.2.7b） 用 def-L-primary，posMeanD 從同一批人算（max(0, ·) 逐人核對）
     dcen = sn.defense_centered(rows, 'name', [(ROOT / 'reports/card-0.2.5+E104-defense-pergame-decay/def-L-primary.csv', None)])
     assert dcen, 'DIQ 負分：def-L-primary 算回來的 defenseBonus 對不上 card 0.2.8'
@@ -63,7 +89,9 @@ def main(out=None):
             three = num('long')
         data_rows.append([int(r['rank']), num('ovr'), r['name'], r['pos'], team, ht, round(num('MIN') / gp, 1) if gp else 0.0, gp,
                           num('predictedPer36'), dcen[r['name']], three, *[num(a) for a in cols[11:24]],
-                          num('presDisplay'), num('pressure'), num('foulDisc')])
+                          num('presDisplay'), num('pressure'), num('foulDisc'),
+                          '\n'.join([f"壓迫 {num('presDisplay')}＝逼失誤 {num('pressure')} − 0.25×犯規", *ptips.get(r['name'], []),
+                                     'PR＝上場 ≥ 1000 分鐘 279 人中的百分位，越高越好（犯規是越少越高）；各項為收縮後估計'])])
     s = base
     s = s.replace('<title>OVR 名單檢視</title>', '<title>2025-26 OVR 名單</title>', 1)
     s = re.sub(r'<div class="src">.*?</div>',
@@ -80,7 +108,7 @@ def main(out=None):
         ('function cell(k, v, first) {', 'function cell(k, v, first, tip) {'),
         ("""return `<td class="${cls.join(' ')}" title="${v}">${g}</td>`;""",
          """return `<td class="${cls.join(' ')}" title="${tip || v}">${g}</td>`;"""),
-        ("cell(k, p[k], j === 0)", "cell(k, p[k], j === 0, k === 'pressure' ? `逼失誤 ${p.force}｜犯規紀律 ${Math.round(p.foulDisc)}` : null)"),
+        ("cell(k, p[k], j === 0)", "cell(k, p[k], j === 0, k === 'pressure' ? p.presTip : null)"),
         # 分鐘改顯示場均（使用者 2026-10-29），篩選門檻改成場均分鐘
         ("th('min', 'MIN', '分鐘', 'gl')", "th('min', 'MPG', '分鐘', 'gl')"),
         ("[[0, '全部'], [500, '≥500'], [1000, '≥1000'], [1500, '≥1500']]",

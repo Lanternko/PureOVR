@@ -213,7 +213,7 @@ def add_season_nav(html_str, current):
     s = s.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n' + FAVICON, 1)
     # 能力值顯示四捨五入成整數（使用者 2026-10-30）；等第仍用原值算，OVR、得分、DIQ 等其他數字保留小數
     for a, b in [('>${v}</td>`; }', '>${Math.round(v)}</td>`; }'), ('${grade(v)} ${v}</i>', '${grade(v)} ${Math.round(v)}</i>'),
-                 ('title="${tip || v}"', 'title="${tip || Math.round(v)}"'), ('逼失誤 ${p.force}', '逼失誤 ${Math.round(p.force)}')]:
+                 ('title="${tip || v}"', 'title="${tip || Math.round(v)}"')]:
         assert s.count(a) == 1, a
         s = s.replace(a, b)
     s = attr_tips(s, current)
