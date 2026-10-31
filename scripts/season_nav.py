@@ -2,6 +2,7 @@
 import html
 import json
 import re
+from pathlib import Path
 
 # 標籤用年份（使用者 2026-10-29）：2027 beta＝2026-27 賽中，2026＝2025-26 正式卡
 PAGES = [('inseason', '2027 beta', 'index.html'), ('card', '2026', '2025-26.html')]
@@ -216,7 +217,7 @@ def add_season_nav(html_str, current):
     s = s.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n' + FAVICON, 1)
     # 能力值顯示四捨五入成整數（使用者 2026-10-30）；等第仍用原值算，OVR、得分、DIQ 等其他數字保留小數
     for a, b in [('>${v}</td>`; }', '>${Math.round(v)}</td>`; }'), ('${grade(v)} ${v}</i>', '${grade(v)} ${Math.round(v)}</i>'),
-                 ('title="${tip || v}"', 'title="${tip || Math.round(v)}"')]:
+                 ('` title="${v}"`', '` title="${Math.round(v)}"`')]:
         assert s.count(a) == 1, a
         s = s.replace(a, b)
     s = attr_tips(s, current)
@@ -248,52 +249,132 @@ ATTR_TIPS = {
     'dbon': ('防守意識', 'DIQ', '輪轉、站位、補防……<b>常規數據以外的防守意識</b>。真實比賽防守 RAPM 和同位置平均的差。',
              [('單位', 'RAPM 分（不是 0–99）'), ('進 OVR', '只有正的部分')], False),
 }
+# 浮動提示卡的規則（使用者 2026-11-01：原生 title 太醜，配色照抄 arammeta docs/assets/site.css 的 .aug-tip／.cf-stage-tip）：
+# - 表頭（能力值說明）和格子（該球員的細項）用同一張卡；有卡的元素不再帶 title，避免兩個提示疊在一起。
+# - 卡：底 #101114、1px rgba(255,255,255,.08) 邊、圓角 10px、雙層陰影；淡入 0.14s 加上移 3px；箭頭 6px 指向元素。
+# - 版面由上到下：名稱（金 #f5d780）＋英文縮寫（灰）＋右側大數字 → 一句說明 → 細線下的細項表 → 更細的線下灰色註腳。
+# - 細項表三欄：名稱（灰 #8b919a）｜數值（白 #e8eaed，數字等寬）｜PR（小灰字）。聯盟前十在數值後加金色「（#名次）」。
+# - 「越少越好」的項目（犯規）數值旁寫（多）／（普通）／（少），PR 一律是越高越好。
+# - 預設放元素下方，放不下改上方；左右夾在視窗內 8px。觸控點一下顯示 3 秒；捲動就收起。
 TIP_CSS = """<style>
-.atip{position:fixed;z-index:60;left:0;top:0;width:min(300px,calc(100vw - 16px));background:#12171d;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:14px 16px;box-shadow:0 18px 50px rgba(0,0,0,.5);color:var(--fg);font:400 .86rem/1.6 var(--f-body);pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s}
+.atip{position:fixed;z-index:60;left:0;top:0;width:min(290px,calc(100vw - 16px));padding:11px 12px 10px;background:#101114;border:1px solid rgba(255,255,255,.08);border-radius:10px;box-shadow:0 12px 28px rgba(0,0,0,.5),0 0 0 1px rgba(0,0,0,.4);color:#c2c7ce;font:400 12px/1.5 var(--f-body);text-align:left;pointer-events:none;opacity:0;transform:translateY(-3px);transition:opacity .14s cubic-bezier(.16,1,.3,1),transform .14s cubic-bezier(.16,1,.3,1)}
 .atip.on{opacity:1;transform:none}
+.atip::before{content:"";position:absolute;left:var(--ax,50%);margin-left:-6px;border:6px solid transparent}
+.atip.below::before{bottom:100%;border-bottom-color:#101114}
+.atip.above::before{top:100%;border-top-color:#101114}
 .atip .h{display:flex;align-items:baseline;gap:8px}
-.atip .n{font:700 1.1rem var(--f-disp);letter-spacing:.04em}
-.atip .s{color:var(--muted);font:600 .78rem var(--f-disp);letter-spacing:.06em}
-.atip .d{color:var(--muted);margin-top:6px}
-.atip .d b{color:var(--gold);font-weight:600}
-.atip .r{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;border-top:1px solid rgba(255,255,255,.09);margin-top:10px;padding-top:9px;font-size:.8rem}
-.atip .r span{color:var(--muted)}
-.atip .r b{font-weight:600;text-align:right}
+.atip .n{font-weight:700;font-size:13px;color:#f5d780}
+.atip .s{color:#7a808a;font-size:10.5px;font-weight:600;letter-spacing:.06em}
+.atip .v{margin-left:auto;font-size:15px;font-weight:700;color:#e8eaed;font-variant-numeric:tabular-nums}
+.atip .d{color:#c5cad3;margin-top:5px}
+.atip .d b{color:#e8eaed;font-weight:600}
+.atip .r{display:grid;grid-template-columns:auto 1fr;align-items:baseline;gap:4px 12px;border-top:1px solid rgba(255,255,255,.06);margin-top:9px;padding-top:8px;font-variant-numeric:tabular-nums}
+.atip .r.r3{grid-template-columns:auto 1fr auto}
+.atip .r span{color:#8b919a}
+.atip .r b{color:#e8eaed;font-weight:600;text-align:right}
+.atip .r em{color:#7a808a;font:normal 10.5px var(--f-body);text-align:right}
+.atip .rk{color:#f5d780;font-style:normal;font-weight:700}
+.atip .f{color:#6b7280;font-size:10.5px;line-height:1.5;border-top:1px solid rgba(255,255,255,.05);margin-top:8px;padding-top:7px}
 @media (prefers-reduced-motion:reduce){.atip{transition:none}}
 </style>
 """
-# 能力值表頭帶 data-tip；一個浮動卡跟著元素定位（下方放不下改放上方）。觸控點一下顯示 3 秒
+# 表頭帶 data-tip（ATIP 說明）、格子帶 data-ck（該列球員 p.tips[k]）；同一個浮動卡跟著元素定位
 TIP_JS = """<script>
 (() => {
   let tip, cur = null, timer;
+  const head = k => { const t = ATIP[k]; if (!t) return null;
+    return { n: t[0], s: t[1], d: t[2], rows: t[3].concat(t[4] && FRZ ? [['賽季中', '凍結（沿用 2026 卡）']] : []) }; };
+  const cell = el => { const tr = el.closest('tr[data-n]'); if (!tr) return null;
+    const n = decodeURIComponent(tr.dataset.n), p = P.find(q => q.name === n);
+    return p && p.tips ? p.tips[el.dataset.ck] : null; };
+  const row = ([a, b, pr, rk]) => `<span>${a}</span><b>${b}${rk ? `<i class="rk">（#${rk}）</i>` : ''}</b>` +
+    (pr === undefined ? '' : `<em>${pr == null ? '' : 'PR ' + pr}</em>`);
   const show = (el, touch) => {
-    const t = ATIP[el.dataset.tip]; if (!t) return;
+    const t = el.dataset.tip ? head(el.dataset.tip) : cell(el); if (!t) return;
     tip = tip || document.body.appendChild(Object.assign(document.createElement('div'), { className: 'atip' }));
     tip.setAttribute('role', 'tooltip');
-    const rows = t[3].concat(t[4] && FRZ ? [['賽季中', '凍結（沿用 2026 卡）']] : []);
-    tip.innerHTML = `<div class="h"><span class="n">${t[0]}</span><span class="s">${t[1]}</span></div><div class="d">${t[2]}</div>` +
-      (rows.length ? `<div class="r">${rows.map(([a, b]) => `<span>${a}</span><b>${b}</b>`).join('')}</div>` : '');
+    tip.innerHTML = `<div class="h"><span class="n">${t.n}</span><span class="s">${t.s}</span>${t.v != null ? `<b class="v">${t.v}</b>` : ''}</div>` +
+      (t.d ? `<div class="d">${t.d}</div>` : '') +
+      (t.rows.length ? `<div class="r${t.rows[0].length > 2 ? ' r3' : ''}">${t.rows.map(row).join('')}</div>` : '') +
+      (t.foot && t.foot.length ? `<div class="f">${t.foot.join('<br>')}</div>` : '');
     cur = el;
     const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
-    let y = r.bottom + 8;
-    if (y + h > innerHeight - 8) y = r.top - h - 8;
-    tip.style.left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), innerWidth - w - 8) + 'px';
+    let y = r.bottom + 9, below = true;
+    if (y + h > innerHeight - 8) { y = r.top - h - 9; below = false; }
+    const x = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), document.documentElement.clientWidth - w - 8);
+    tip.style.left = x + 'px';
     tip.style.top = Math.max(8, y) + 'px';
+    tip.style.setProperty('--ax', Math.min(Math.max(14, r.left + r.width / 2 - x), w - 14) + 'px');
+    tip.classList.toggle('below', below); tip.classList.toggle('above', !below);
     tip.classList.add('on');
     clearTimeout(timer);
     if (touch) timer = setTimeout(hide, 3000);
   };
   const hide = () => { cur = null; if (tip) tip.classList.remove('on'); };
+  const target = e => e.target.closest('[data-tip],[data-ck]');
   document.addEventListener('pointerover', e => {
-    const el = e.target.closest('[data-tip]');
+    const el = target(e);
     if (el !== cur) el ? show(el, e.pointerType === 'touch') : hide();
   });
-  document.addEventListener('focusin', e => { const el = e.target.closest('[data-tip]'); el ? show(el) : hide(); });
+  document.addEventListener('focusin', e => { const el = target(e); el ? show(el) : hide(); });
   document.addEventListener('focusout', hide);
   addEventListener('scroll', hide, true);
 })();
 </script>
 """
+
+
+def pr_rank(x, pool, low_good=False):
+    """(PR, 名次)：PR＝pool 中比 x 差的百分比（越高越好）；名次 1＝最好，只回傳前十，其餘 None。"""
+    worse = sum((q > x) if low_good else (q < x) for q in pool)
+    rank = sum((q < x) if low_good else (q > x) for q in pool) + 1
+    return round(100 * worse / len(pool)), (rank if rank <= 10 else None)
+
+
+def cell_tip(n, s, v, rows, d='', foot=()):
+    """格子提示卡（TIP_JS 讀 p.tips[k]）。rows：[名稱, 數值, PR 或 None, 前十名次或 None]。"""
+    return {'n': n, 's': s, 'v': v, 'd': d, 'rows': [list(r) for r in rows], 'foot': list(foot)}
+
+
+def tov_rows(src, key, pool_min):
+    """{key: TO 提示細項}，pool 人數。失誤率＝TOV ÷ 球權（FGA＋0.44·FTA＋AST＋TOV），和 tovSkill 同一個式子（build_season_league.js）。
+    PR／名次對上場 ≥ pool_min 分鐘的人；不在 pool 的人只標 PR，不標名次。"""
+    rs = json.loads(Path(src).read_text(encoding='utf-8'))['data']['resultSets'][0]
+    h = {k: i for i, k in enumerate(rs['headers'])}
+    tot = {}
+    for r in rs['rowSet']:
+        t = tot.setdefault(r[h[key]], [0, 0, 0, 0, 0, 0])
+        for i, c in enumerate(('MIN', 'FGA', 'FTA', 'AST', 'TOV')):
+            t[i] += r[h[c]] or 0
+        t[5] += 1
+    st = {}
+    for k, (mn, fga, fta, ast, tov, gp) in tot.items():
+        poss = fga + 0.44 * fta + ast + tov
+        if poss > 0:
+            st[k] = (tov / poss, poss / gp, tov / gp, mn >= pool_min)
+    pool = [v for v in st.values() if v[3]]
+    out = {}
+    for k, (rate, pg, tg, inpool) in st.items():
+        pr, rk = pr_rank(rate, [v[0] for v in pool], low_good=True)
+        _, rk_p = pr_rank(pg, [v[1] for v in pool])
+        out[k] = [('失誤', f'{tg:.1f}/場', None, None), ('球權', f'{pg:.1f}/場', None, rk_p if inpool else None),
+                  ('失誤率', f'{100 * rate:.1f}%', pr, rk if inpool else None)]
+    return out, len(pool)
+
+
+def apply_cell_tips(s):
+    """格子改用浮動提示卡：p.tips 有該欄就帶 data-ck、不帶 title（要在 apply_common 之後套）。"""
+    for a, b in [
+        ('function cell(k, v, first) {', 'function cell(k, v, first, tip) {'),
+        ("""return `<td class="${cls.join(' ')}" title="${v}">${g}</td>`;""",
+         """return `<td class="${cls.join(' ')}"${tip ? ` data-ck="${tip}"` : ` title="${v}"`}>${g}</td>`;"""),
+        ("""cls.push(gcls(grade(v))); return `<td class="${cls.join(' ')}">${v}</td>`; }""",
+         """cls.push(gcls(grade(v))); return `<td class="${cls.join(' ')}"${tip ? ` data-ck="${tip}"` : ''}>${v}</td>`; }"""),
+        ("cell(k, p[k], j === 0)", "cell(k, p[k], j === 0, p.tips && p.tips[k] ? k : null)"),
+    ]:
+        assert s.count(a) == 1, a
+        s = s.replace(a, b)
+    return s
 
 
 def attr_tips(s, current):

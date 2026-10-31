@@ -18,7 +18,7 @@
 - 模擬 sim 0.1.1（R-088，2026-10-30 刪體力，和 0.1.0 `fatigue:false` 逐位元相同；已合回主 checkout 並 commit）；防守 `nba-defense-v3`（R-010）；賽中 OVR C4（E-033）；長人偏袒量尺照 E-099／E-102。
 
 ## 進行中／等使用者
-- **PRES hover 分量**（2026-11-01，使用者要求）：2025-26 與 2026-27 名單頁的 PRES 格 tooltip 改列 E-071 五分量（抄截、deflection、對位逼失誤、造進攻犯規、犯規；收縮後值＋≥1000 分鐘 279 人 PR，犯規反向），2026-27 頁沿用 2025-26 凍結值、新秀顯示無資料。改 `scripts/build_card_viewer.py`（`pres_tips()`）、`build_inseason_viewer.py`（import 同函式）、`season_nav.py`（舊 tooltip 替換改無條件）。已發 gh-pages 952d1c3；程式改動已 commit。
+- **細項提示卡**（2026-11-01，使用者要求）：名單頁表頭與 PRES／TO 格子的 hover 改成同一張浮動卡（`season_nav.py` 的 `TIP_CSS`／`TIP_JS`，配色照抄 arammeta `.aug-tip`／`.cf-stage-tip`，規則寫在 `TIP_CSS` 上方註解）；有卡的格子帶 `data-ck`、不帶原生 title。PRES 列 E-071 五分量（收縮後值＋≥1000 分鐘人群 PR，犯規數值旁標（多）／（普通）／（少）），各分量前十加（#名次）；TO 列失誤／場、球權／場、失誤率＋PR（球權＝FGA＋0.44·FTA＋AST＋TOV，同 tovSkill；2026-27 頁用本季至今、門檻 15×最多場數分鐘）。改新提示時用 `sn.cell_tip()` 放進資料列的 `tips` 欄。
 - **rulings／lessons 整併**（2026-10-30，使用者要求）：`memory/rulings.md` 88 條併成 20 條、`memory/lessons.md` 83 條併成 15 條（預註冊、看實際執行路徑、共用 checkout commit 等各併成一條）；舊 ID 查各檔檔尾「舊 ID 對照」表，pre-commit 把表裡的 ID 算保留（README 寫入規則例外）。新條目若同主題，改寫該條並在「合併」欄記新 ID；下一個 ID R-090、L-083。findings／experiments 不整併（開工不讀，是帳本）。
 - **薪水相關分析**（F-072，`reports/salary-corr/`）：已 commit，探索分析不進版本。2K 最貼近薪水（0.71–0.87），card OVR 0.58–0.67，RAPM 單季 0.2–0.3；以前賽季用替代 OVR（bref 進階數據學 0.2.7c，樣本外 ρ 0.80–0.86）。真 OVR 重建以前賽季要約 8 層實驗檔逐季重跑，使用者未要求。
 - **E-132 卡片改讀自製先驗 RAPM（L2）**：完成；階段 A 取消、階段 B 待 **2027-02** 回來算。等使用者：errata、要不要另立「連 defenseBonus 一起換」。

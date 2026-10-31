@@ -1,6 +1,7 @@
 """2025-26 正式卡名單頁（card 0.2.9）：以正式卡名單頁為版型，換成 card 0.2.9 的 OVR／能力值（OVR 為每場、含上場時間、相對替補水準，R-028；能力值同 0.1.2），3PT 顯示 threeValue（R-024）。
 OVR 能力估計納入教練用人證據（分鐘、出賽率、年齡、練兵隊），DNP 與輪休分開（E-075）；用人回歸的訓練目標是 2025-26 單季 RAPM（E-084）；分鐘權重為飽和曲線 W(m)（E-089）；補籃改歸近距離、能力值錨點對四季合併池、頂端只壓縮（E-101）；OVR 迴歸不用 physique（E-131），網站不顯示 PHYS。
-PRES 顯示 presDisplay（逼失誤 − 0.25·犯規，E-071），tooltip 列逼失誤（卡片 pressure）與五個分量（抄截、deflection、對位逼失誤、造進攻犯規、犯規，E-071 收縮後值＋百分位）。
+PRES 顯示 presDisplay（逼失誤 − 0.25·犯規，E-071），提示卡列逼失誤（卡片 pressure）與五個分量（抄截、deflection、對位逼失誤、造進攻犯規、犯規，E-071 收縮後值＋PR＋前十名次）；
+TO 提示卡列失誤、球權、失誤率（player-games.json 整季加總）。
 
 輸入：reports/card-0.2.9/ranking.csv（card 0.2.9）、
       reports/card-0.2.9/three-value.csv（以姓名對 tv_main；E-123 頂端開尾）、data/season-source/player-games.json。
@@ -26,29 +27,42 @@ CARD = ROOT / 'reports/card-0.2.9/ranking.csv'
 THREE_VALUE = ROOT / 'reports/card-0.2.9/three-value.csv'
 FORCE = ROOT / 'reports/card-0.2.0+E071-pressure/force-2025-26.csv'
 DEFAULT_OUT = ROOT / 'reports/card-0.1.2-2025-26/roster-viewer.html'
-# PRES tooltip 的分量（E-071 force 的收縮後值）；PR 對上場 ≥ 1000 分鐘的人群
-PRES_SUB = [('stl_shr', '抄截', '／36', '{:.2f}'), ('defl_shr', 'Deflection', '／36', '{:.2f}'),
-            ('mtov_shr', '對位逼失誤', '／100 回合（超出預期）', '{:+.2f}'), ('chg_shr', '造進攻犯規', '／36', '{:.2f}'),
-            ('pf_shr', '犯規', '／36', '{:.2f}')]
+# PRES 提示卡的分量（E-071 force 的收縮後值）；PR／名次對上場 ≥ 1000 分鐘的人群
+PRES_SUB = [('stl_shr', '抄截', '/36', '{:.2f}'), ('defl_shr', 'Deflection', '/36', '{:.2f}'),
+            ('mtov_shr', '對位逼失誤', '/100 回合', '{:+.2f}'), ('chg_shr', '造進攻犯規', '/36', '{:.2f}'),
+            ('pf_shr', '犯規', '/36', '{:.2f}')]
 PRES_LOW_GOOD = {'pf_shr'}   # PR 反轉：越少犯規 PR 越高
+POOL_MIN = 1000
 
 
 def pres_tips():
-    """{name: 多行 tooltip}：逼失誤四分量＋犯規，各附百分位。"""
+    """({name: 細項列}, pool 人數)：逼失誤四分量＋犯規，各附 PR 與前十名次；犯規數值旁標（多）／（普通）／（少）。"""
     rows = list(csv.DictReader(FORCE.open(encoding='utf-8')))
-    pool = [r for r in rows if float(r['MIN']) >= 1000]
+    pool = [r for r in rows if float(r['MIN']) >= POOL_MIN]
     tips = {}
     for r in rows:
-        lines = []
+        lines, inpool = [], float(r['MIN']) >= POOL_MIN
         for k, label, unit, fmt in PRES_SUB:
             x = float(r[k])
+            pr, rk = sn.pr_rank(x, [float(q[k]) for q in pool], low_good=k in PRES_LOW_GOOD)
+            v = fmt.format(x)
             if k in PRES_LOW_GOOD:
-                pr = round(100 * sum(float(q[k]) > x for q in pool) / len(pool))
-            else:
-                pr = round(100 * sum(float(q[k]) < x for q in pool) / len(pool))
-            lines.append(f'{label} {fmt.format(x)}{unit}　PR {pr}')
+                v += '（多）' if pr <= 33 else '（少）' if pr >= 67 else '（普通）'
+            lines.append((label, v + unit, pr, rk if inpool else None))
         tips[r['name']] = lines
-    return tips
+    return tips, len(pool)
+
+
+def pres_tip(pres, force, sub, n_pool, note=''):
+    return sn.cell_tip('壓迫', 'PRES', round(pres), sub, d=f'逼失誤 {round(force)} − 0.25×犯規{note}',
+                       foot=[f'PR＝上場 ≥ {POOL_MIN} 分鐘 {n_pool} 人中的百分位，越高越好；（#名次）＝這群人前十',
+                             '各項為收縮後估計；對位逼失誤是超出預期的部分'])
+
+
+def tov_tip(v, sub, n_pool, season='2025-26', pool_min=POOL_MIN):
+    return sn.cell_tip('少失誤', 'TO', round(v), sub, d=f'{season} 失誤 ÷ 球權次數，失誤率越低越高',
+                       foot=[f'PR＝上場 ≥ {pool_min} 分鐘 {n_pool} 人中的百分位（失誤率越低越高）；（#名次）＝這群人前十',
+                             '球權＝投籃＋0.44×罰球＋助攻＋失誤'])
 
 
 def main(out=None):
@@ -68,8 +82,9 @@ def main(out=None):
         gp_src[row[h['PLAYER_NAME']]] = gp_src.get(row[h['PLAYER_NAME']], 0) + 1
     cols = ['rank', 'ovr', 'name', 'pos', 'team', 'ht', 'min', 'gp', 'imp', 'dbon', 'threeValue', 'mid', 'short', 'ft',
             'drive', 'foulDraw', 'pass', 'tovSkill', 'creation', 'rebound', 'physique', 'stamina', 'onBall', 'help', 'pressure', 'force', 'foulDisc',
-            'presTip']
-    ptips = pres_tips()
+            'tips']
+    ptips, n_pres = pres_tips()
+    trows, n_tov = sn.tov_rows(er.SRC, 'PLAYER_NAME', POOL_MIN)
     # DIQ 顯示負分：card 0.2.9 的 defenseBonus（同 0.2.7b） 用 def-L-primary，posMeanD 從同一批人算（max(0, ·) 逐人核對）
     dcen = sn.defense_centered(rows, 'name', [(ROOT / 'reports/card-0.2.5+E104-defense-pergame-decay/def-L-primary.csv', None)])
     assert dcen, 'DIQ 負分：def-L-primary 算回來的 defenseBonus 對不上 card 0.2.9'
@@ -90,8 +105,8 @@ def main(out=None):
         data_rows.append([int(r['rank']), num('ovr'), r['name'], r['pos'], team, ht, round(num('MIN') / gp, 1) if gp else 0.0, gp,
                           num('predictedPer36'), dcen[r['name']], three, *[num(a) for a in cols[11:24]],
                           num('presDisplay'), num('pressure'), num('foulDisc'),
-                          '\n'.join([f"壓迫 {num('presDisplay')}＝逼失誤 {num('pressure')} − 0.25×犯規", *ptips.get(r['name'], []),
-                                     'PR＝上場 ≥ 1000 分鐘 279 人中的百分位，越高越好（犯規是越少越高）；各項為收縮後估計'])])
+                          {**({'pressure': pres_tip(num('presDisplay'), num('pressure'), ptips[r['name']], n_pres)} if r['name'] in ptips else {}),
+                           **({'tovSkill': tov_tip(num('tovSkill'), trows[r['name']], n_tov)} if r['name'] in trows else {})}])
     s = base
     s = s.replace('<title>OVR 名單檢視</title>', '<title>2025-26 OVR 名單</title>', 1)
     s = re.sub(r'<div class="src">.*?</div>',
@@ -105,10 +120,6 @@ def main(out=None):
         ('colspan="22"', 'colspan="23"'),
         # PRES 改為壓迫（E-071）：顯示 presDisplay，tooltip 列逼失誤與犯規紀律
         ("['pressure', 'PRES', '壓命中率']", "['pressure', 'PRES', '壓迫']"),
-        ('function cell(k, v, first) {', 'function cell(k, v, first, tip) {'),
-        ("""return `<td class="${cls.join(' ')}" title="${v}">${g}</td>`;""",
-         """return `<td class="${cls.join(' ')}" title="${tip || v}">${g}</td>`;"""),
-        ("cell(k, p[k], j === 0)", "cell(k, p[k], j === 0, k === 'pressure' ? p.presTip : null)"),
         # 分鐘改顯示場均（使用者 2026-10-29），篩選門檻改成場均分鐘
         ("th('min', 'MIN', '分鐘', 'gl')", "th('min', 'MPG', '分鐘', 'gl')"),
         ("[[0, '全部'], [500, '≥500'], [1000, '≥1000'], [1500, '≥1500']]",
@@ -120,11 +131,7 @@ def main(out=None):
     ]:
         assert s.count(a) >= 1, a
         s = s.replace(a, b)
-    s = regroup_attrs(apply_common(s))
-    # 數值模式的格子（apply_common 改過那行）也帶 PRES tooltip
-    a = """cls.push(gcls(grade(v))); return `<td class="${cls.join(' ')}">${v}</td>`; }"""
-    assert s.count(a) == 1, a
-    s = s.replace(a, """cls.push(gcls(grade(v))); return `<td class="${cls.join(' ')}"${tip ? ` title="${tip}"` : ''}>${v}</td>`; }""")
+    s = regroup_attrs(sn.apply_cell_tips(apply_common(s)))   # PRES／TO 格子帶浮動提示卡（兩種顯示模式都有）
     s = add_season_nav(s, 'card')
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(s, encoding='utf-8')
