@@ -2,7 +2,7 @@
 
 資料：data/season-source/player-games.json（stats.nba.com leaguegamelog，每人每場一列）。
 依 PLAYER_NAME 跨隊合計；交易球員列出所有球隊。重跑會先移除舊的注入再寫入。
-頭像直接連 NBA CDN（260x190 約 14 KB，只載入被點選的那位），沒網路或沒照片就不顯示。
+頭像直接連 NBA CDN（1040x760 約 200 KB，只載入被點選的那位；260x190 在高 DPI 螢幕會糊，使用者 2026-11-01），沒網路或沒照片就不顯示。
 
 用法：python -I scripts/enrich_roster_viewer.py reports/ovr-v58-card-2025-26/roster-viewer.html [...]
 """
@@ -324,7 +324,7 @@ function headshot(p) {
   // 眼線對齊（使用者 2026-10-30）：照片眼睛 y（0–190）往下移到 EYE_Y，底部同量裁掉；比 EYE_Y 還低的不動
   const d = r && r.ey ? (Math.max(0, EYE_Y - r.ey) / 190 * 100).toFixed(1) : 0;
   const fit = d > 0 ? ` style="transform:translateY(${d}%);clip-path:inset(0 0 ${d}% 0)"` : '';
-  return logo + (r && r.id ? `<img class="shot" alt="" loading="lazy" src="https://cdn.nba.com/headshots/nba/latest/260x190/${r.id}.png"${fit} onerror="this.remove()">` : '');
+  return logo + (r && r.id ? `<img class="shot" alt="" loading="lazy" src="https://cdn.nba.com/headshots/nba/latest/1040x760/${r.id}.png"${fit} onerror="this.remove()">` : '');
 }
 // 身高旁的年齡、薪水（使用者 2026-11-01）：22y、$12.3M（未滿百萬寫 $850K）
 function bioTag(p) {
