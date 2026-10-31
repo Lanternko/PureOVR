@@ -83,15 +83,17 @@ CSS = """<style>
 # 每條寫成「目標：做了什麼」（冒號前會加粗），用球迷看得懂的話，不寫 E／R 編號；代價一句帶過。
 TRACK = {'card': '正式卡', 'inseason': '新賽季'}
 PATCH_NOTES = [
-    (('card', 'inseason'), '0.2.7', '2026-10-30', [
+    (('card', 'inseason'), '0.2.8', '2026-11-01', [
+        'OVR 的評分標準整個換成 DARKO 加 BPM 的季內平均（不再用 RAPM）：Edwards 38 → 10 名、Banchero 166 → 65 名、Flagg 230 → 195 名。',
+        '代價：防守型角色球員往下，Herb Jones 19 → 156 名；OVR 前 20 名換九人（Edwards、Tatum、Curry、Maxey 等進，Derrick White、Markkanen、Anunoby 等出）。']),
+    (('card',), '0.2.7', '2026-10-30', [
         '防守好的人分數不再被打折：防守越好加越多，Wembanyama 3 → 2 名、Derrick White 8 → 4 名。',
         '防守改看近期：越近的比賽份量越重。',
         '代價：防守普通的進攻型球員往下，Luka 4 → 9 名。',
         '0.2.7a 傳球看量也看率：每 36 分鐘助攻和助攻率各佔一半，Giannis 傳球 97.7 → 96.2、Trae Young 104.4 → 109.5；OVR 前 20 名只換一人。',
         '0.2.7b 3PT、RIM、PRES 頂端不再封在 99：Curry 3PT 105、Stewart RIM 113.5、Thybulle PRES 127；OVR 前 20 名只換一人（Ausar Thompson 進、Anunoby 出），Mobley 22 → 28 名。',
         '0.2.7c OVR 不看身材：身高體重不再直接加分，只看場上做了什麼；Zion 43 → 65 名、Mobley 28 → 23 名、Zubac 98 → 89 名；OVR 前 20 名只換一人（Anunoby 進、Ausar Thompson 出）。',
-        '0.2.7d 年輕人在爛隊的折扣改看球隊有多爛（淨勝分為主、混一點勝負），不再以勝率 35% 一刀切：Flagg 293 → 230 名、Fears 564 → 335 名；代價是 CHI、MIL 這種邊緣隊的年輕人往下，Rollins 15 → 106 名。',
-        '0.2.8 OVR 的評分標準整個換成 DARKO 加 BPM 的季內平均（不再用 RAPM）：Edwards 38 → 10 名、Banchero 166 → 65 名、Flagg 230 → 195 名、Herb Jones 19 → 156 名；OVR 前 20 名換九人（Edwards、Tatum、Curry、Maxey 等進，Derrick White、Markkanen、Anunoby 等出）。']),
+        '0.2.7d 年輕人在爛隊的折扣改看球隊有多爛（淨勝分為主、混一點勝負），不再以勝率 35% 一刀切：Flagg 293 → 230 名、Fears 564 → 335 名；代價是 CHI、MIL 這種邊緣隊的年輕人往下，Rollins 15 → 106 名。']),
     (('card',), '0.2.6', '2026-10-30', [
         '修正中距離被補籃墊高：補籃、補扣改算近距離（Kessler 中距離 99 → 61）。',
         '能力值改和最近四季一起比：偏弱的一季可以沒人到 99。',

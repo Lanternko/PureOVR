@@ -7,6 +7,7 @@
 用法：python -I scripts/enrich_roster_viewer.py reports/ovr-v58-card-2025-26/roster-viewer.html [...]
 """
 import csv
+import html
 import json
 import re
 import sys
@@ -27,6 +28,9 @@ GC = ROOT / 'reports' / 'game-contribution' / 'm2'  # 評分 M2（R-066）：box
 CARD_SUMMARY = ROOT / 'reports' / 'card-0.2.7c' / 'summary.json'  # 正式卡 OVR 錨點（換算 OVR 傾向）
 # 新秀篩選（使用者 2026-10-30）：該季選秀年＝新秀；2027 頁的 2026 新秀沒有先驗卡、不在名單上，按鈕自動隱藏
 BIO = {'g5': (ROOT / 'data/defense-seventh/2026-27/bio.json', '2026'), 'season': (ROOT / 'data/benchmark-source/bio.json', '2025')}
+# 身高旁加年齡、薪水（使用者 2026-11-01）：年齡＝上面 bio.json 的 AGE；薪水＝basketball-reference 合約頁該季 y1
+# （reports/salary-corr/source，2026-10-30 抓、不進 git）；缺檔或對不到名字就不顯示
+SALARY = {'g5': ROOT / 'reports/salary-corr/source/bref.html', 'season': ROOT / 'reports/salary-corr/source/bref2526.html'}
 
 CSS = """
 /* real box score */
@@ -111,6 +115,7 @@ CSS = """
    隊色橫幅左上放位置＋身高，右上角放排名（和位置同款隊色小標），名字（.tnm/.tht 只在手機顯示）和頭像；下面 OVR 圓環下方掛較開季箭頭，右邊影響力 2×2；
    資訊列其餘（球隊、分鐘、場數、防守加分）不顯示；真實數據只留得分／籃板／助攻三大格 */
 .tag .tnm,.tag .tht{display:none}
+.tag .tht i{font-style:normal;margin-left:7px;font-size:.85em;opacity:.85}
 @media (max-width:640px){
   .card{grid-template-columns:auto 1fr;gap:10px 12px}
   .card .tag{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;grid-column:1/-1;grid-row:1;margin:-12px -14px 0;min-width:0;height:128px;clip-path:none;padding:10px 14px}
@@ -161,7 +166,8 @@ CSS = """
   .card .who>.real-h{grid-column:4;grid-row:3;align-self:start;justify-self:center;margin:-4px 18px 14px;white-space:nowrap;letter-spacing:.02em}
   .real-h .rtm{display:none}
   /* 身高在名字旁；較開季掛圓環下 */
-  .who .nm .nht{margin-left:12px;font-size:1.1rem;font-weight:600;color:var(--muted);text-transform:none;white-space:nowrap}
+  .who .nm .nht{margin-left:14px;font-size:1rem;font-weight:600;color:var(--muted);text-transform:none;white-space:nowrap}
+  .who .nm .nht i{font-style:normal;margin-left:10px}
   .card .ring{flex-direction:column;gap:2px}
   .ring .rd{font:700 1.25rem var(--f-disp);font-variant-numeric:tabular-nums}
   .ring .rd.up{color:var(--g-a)}
@@ -314,6 +320,13 @@ function headshot(p) {
   const d = r && r.ey ? (Math.max(0, EYE_Y - r.ey) / 190 * 100).toFixed(1) : 0;
   const fit = d > 0 ? ` style="transform:translateY(${d}%);clip-path:inset(0 0 ${d}% 0)"` : '';
   return logo + (r && r.id ? `<img class="shot" alt="" loading="lazy" src="https://cdn.nba.com/headshots/nba/latest/260x190/${r.id}.png"${fit} onerror="this.remove()">` : '');
+}
+// 身高旁的年齡、薪水（使用者 2026-11-01）：22y、$12.3M（未滿百萬寫 $850K）
+function bioTag(p) {
+  const b = PROF[p.name];
+  if (!b) return '';
+  const sal = b.sal == null ? '' : b.sal >= 1e6 ? `$${(b.sal / 1e6).toFixed(1)}M` : `$${Math.round(b.sal / 1e3)}K`;
+  return (b.age ? `<i>${b.age}y</i>` : '') + (sal ? `<i>${sal}</i>` : '');
 }
 function realBox(p) {
   const r = REAL[p.name];
@@ -587,6 +600,36 @@ def rookies(view):
     return sorted(r[h['PLAYER_NAME']] for r in rs['rowSet'] if str(r[h['DRAFT_YEAR']]) == year)
 
 
+def profiles(view):
+    """{名字: {'age': 年齡, 'sal': 薪水（美元）}}；名字未對到名單，inject 再用 fold 對。"""
+    out = {}
+    # 2027 頁還沒出賽的人不在本季 bio：先用上季 bio 年齡＋1 墊底，本季有的再蓋掉
+    for v, plus in ([('season', 1), ('g5', 0)] if view == 'g5' else [(view, 0)]):
+        path = BIO[v][0]
+        if not path.exists():
+            continue
+        d = json.loads(path.read_text(encoding='utf-8'))['data']['resultSets']
+        rs = d[0] if isinstance(d, list) else d
+        h = {k: i for i, k in enumerate(rs['headers'])}
+        for r in rs['rowSet']:
+            if r[h['AGE']] is not None:
+                out.setdefault(r[h['PLAYER_NAME']], {})['age'] = int(r[h['AGE']]) + plus
+    sp = SALARY[view]
+    if sp.exists():
+        # 被裁球員有兩列（舊隊死錢＋新隊），取第一列（bref 依金額排序）
+        for row in re.findall(r'<tr[^>]*>(.*?)</tr>', sp.read_text(encoding='utf-8'), re.S):
+            m = re.search(r'data-stat="player"[^>]*>(?:<a[^>]*>)*([^<]+)', row)
+            y = re.search(r'data-stat="y1"[^>]*>\$?([\d,]+)', row)
+            if m and y:
+                out.setdefault(html.unescape(m.group(1)), {}).setdefault('sal', int(y.group(1).replace(',', '')))
+    return out
+
+
+def pkey(name):
+    """比對 NBA／bref／名單名字：去重音、標點、Jr./III 等字尾。"""
+    return re.sub(r'\b(jr|sr|ii|iii|iv)\b|[^a-z ]', '', fold(name).replace('.', '').replace("'", '')).replace(' ', '')
+
+
 def fold(name):
     return unicodedata.normalize('NFKD', name).encode('ascii', 'ignore').decode().casefold()
 
@@ -612,11 +655,16 @@ def inject(path, real, view='g5'):
     eye = headshot_eyeline.ensure(ids)
     sub = {n: {**v, 'ey': eye.get(str(v['id']))} for n, v in sub.items()}
     imp = {pid: v for pid, v in impact().items() if pid in ids}
+    by_key = {}
+    for n, v in profiles(view).items():
+        by_key.setdefault(pkey(n), {}).update(v)
+    prof = {n: by_key[pkey(n)] for n in roster if pkey(n) in by_key}
     js_json = lambda o: json.dumps(o, ensure_ascii=False, separators=(',', ':'))
     a = json.loads(CARD_SUMMARY.read_text(encoding='utf-8'))['anchors']
     block = (f'{BEGIN}\n<style>{CSS}</style>\n<script>const REAL={js_json(sub)};\nconst REAL_VIEW={js_json(view)};\n'
              f'const ROOKIES=new Set({js_json([by_roster[fold(n)] for n in rookies(view) if fold(n) in by_roster])});\nconst IMPACT={js_json(imp)};\n'
              f'const GC_ANC={js_json([a["PR1"], a["PR50"], a["PR99"]])};\nconst GC_CUT={js_json([M6C["cut1"], M6C["cut5"]])};\n'
+             f'const PROF={js_json(prof)};\n'
              f'const TEAM_COLORS={js_json(TEAM_COLORS)};\nconst TEAM_IDS={js_json(team_ids())};\nconst EYE_Y={headshot_eyeline.TARGET};{JS}</script>\n{END}\n')
     assert s.count('<script>const DATA=') == 1
     s = s.replace('<script>const DATA=', block + '<script>const DATA=', 1)
@@ -636,9 +684,15 @@ def inject(path, real, view='g5'):
         if new not in s:
             assert s.count(old) == 1, old
             s = s.replace(old, new, 1)
+    # 桌機整組搬到名（SHAI）右邊（使用者 2026-11-01：接在姓後面不好看，長名字還會換行）
+    s = s.replace('<span class="tht">${ht(p.ht)}</span>', '<span class="tht">${ht(p.ht)}${bioTag(p)}</span>')
+    s = s.replace('<span class="first">${esc(first)}</span>${esc(last)}<span class="nht">${ht(p.ht)}</span>',
+                  '<span class="first">${esc(first)}<span class="nht">${ht(p.ht)}${bioTag(p)}</span></span>${esc(last)}')
     path.write_text(s, encoding='utf-8')
     missing = [n for n in roster if n not in sub]
     print(f'{path}: {len(sub)}/{len(roster)} 人有真實數據；缺 {len(missing)}: {missing[:10]}')
+    print(f'  年齡 {sum("age" in v for v in prof.values())}、薪水 {sum("sal" in v for v in prof.values())} 人；'
+          f'缺薪水: {[n for n in roster if "sal" not in prof.get(n, {})][:10]}')
 
 
 if __name__ == '__main__':
