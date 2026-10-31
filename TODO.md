@@ -69,3 +69,8 @@
 - 背景：2025-26 頁已改用 card 0.2.7c（OVR 不看 physique），表格拿掉 PHYS、分成 投籃／進攻／球權（REB TO PRES）／防守（PER D RIM DIQ）。新賽季頁仍是 0.2.7 公式、舊分組。
 - 待做：OVR 公式要另寫 inseason 預註冊（R-050）；分組只是顯示，使用者點頭就能在 `season_nav.apply_common` 或 `build_inseason_viewer.py` 照 `build_card_viewer.py` 的改法跟上。
 - 另案：模擬端 physEdge、reboundContest 還在用 physique；stamina 在 OVR 裡（+0.146／10 分）但網站不顯示，要不要顯示沒裁定。
+
+## 不急：T6 內 DARKO 與 BPM 的權重（方案 C）
+- 背景（2026-11-01，card 0.2.8）：T6 是 DARKO、BPM 攻守季內 z 各半平均。權重是可調參數，最容易過擬合。
+- 待做：E-157（評估口徑 v2）、E-158（T6 下的年輕修正）之後再考慮。要做就先預註冊，用三季輪流挑權重（候選格點先固定，例如 0.25／0.5／0.75），加更嚴的下界檢查。
+- 使用者 2026-11-01：「C 列為 TODO」。
