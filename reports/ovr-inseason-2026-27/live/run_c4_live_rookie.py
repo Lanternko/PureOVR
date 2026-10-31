@@ -30,7 +30,14 @@ OLD_LINE = "    C.write_csv(out_dir / 'ranking.csv', [{k: r[k] for k in head} fo
 NEW_LINE = "    _E116.write_outputs(globals(), locals(), out_dir, rows, head, nopr)\n"
 # 2026-10-30 使用者：老將防守解凍，「用 TUL 類似的做法」→ onBall／help 改四季窗口逐場線性遞減（rookie_defense.veteran）
 OLD_DEF = "    attrs = live_predict(delta2, rel_, undefined, frozen, diag=diag)\n"
-NEW_DEF = OLD_DEF + "    _E116.vet_defense(sd26, attrs, prior_cards, pw)\n"
+NEW_DEF = OLD_DEF + "    _E116.vet_defense(sd26, attrs, prior_cards, pw, attrs0)\n"
+# 2026-11-01 lastOVR／dOVR 基準改 window_ref（REF_W）；檢查 (a) 與 _lastCmp（對正式卡）仍用 ref
+OLD_REF = "    ref = e064_convert(ref, mpg0, anc064, r_repl064)\n"
+NEW_REF = OLD_REF + "    refw = e064_convert(apply_usage(dict(_E116.REF_W), usage, ucoef), mpg0, anc064, r_repl064)\n"
+OLD_LAST = "                    'lastOVR': r1(ref[pid]['ovr']), 'dOVR': round(p['ovr'] - ref[pid]['ovr'], 2),\n"
+NEW_LAST = "                    'lastOVR': r1(refw[pid]['ovr']), 'dOVR': round(p['ovr'] - refw[pid]['ovr'], 2),\n"
+OLD_D = "                    '_ovr': p['ovr'], '_d': p['ovr'] - ref[pid]['ovr'],\n"
+NEW_D = "                    '_ovr': p['ovr'], '_d': p['ovr'] - refw[pid]['ovr'],\n"
 # 檢查 (a)（f=0 → 先驗卡 OVR）比的是屬性更新機制，用凍結的防守加成；live 加成只進正式輸出
 OLD_A = "    o1 = pw.predict(a1)\n"
 NEW_A = "    _E116.swap_bonus(pw, 'frozen')\n" + OLD_A + "    _E116.swap_bonus(pw, 'live')\n"
@@ -55,7 +62,9 @@ def load_ns():
     assert src.count(OLD_LINE) == 1, 'run_c4_live.py 的 ranking.csv 寫入行對不上'
     assert src.count(OLD_DEF) == 1, 'run_c4_live.py 的 live_predict 呼叫行對不上'
     assert src.count(OLD_A) == 1, 'run_c4_live.py 的檢查 (a) 預測行對不上'
+    assert all(src.count(o) == 1 for o in (OLD_REF, OLD_LAST, OLD_D)), 'run_c4_live.py 的 ref／lastOVR 行對不上'
     src = src.replace(OLD_LINE, NEW_LINE).replace(OLD_DEF, NEW_DEF).replace(OLD_A, NEW_A)
+    src = src.replace(OLD_REF, NEW_REF).replace(OLD_LAST, NEW_LAST).replace(OLD_D, NEW_D)
     if PD.ON:
         assert src.count(OLD_PRES) == 1 and src.count(OLD_META) == 1, 'run_c4_live.py 的 presDisplay／frozenAttrs 行對不上'
         src = src.replace(OLD_PRES, NEW_PRES).replace(OLD_META, NEW_META)
@@ -188,15 +197,35 @@ PD_VET = {}             # 老將窗口值 {pid: {...}}
 PD_ROOK = {}            # 新秀本季值
 NS = {}
 BONUS = {}
+REF_W = {}              # 2026-11-01 使用者「Fix ΔOVR baseline」：老將 lastOVR 基準＝先驗卡＋c=0 四季窗口（F-110）
 DEF_L_LIVE = DB.ROOT / 'data/_inseason_build/def-L-live.csv'
 
 
-def vet_defense(sd26, attrs, prior_cards, pw):
+def window_ref(attrs0, posmap, pw):
+    """lastOVR 基準：先驗卡的 onBall／help（＋UNFREEZE_PD 時 pressure／drive）換成 c=0（本季 0 場）的四季窗口值，其餘照先驗卡。
+    防守加成用凍結版（defense_bonus 在 c=0 時等於 def-L-primary），所以要在 live_bonus 換加成之前呼叫。
+    這樣 dOVR 只剩本季比賽造成的變化，不含「單季卡 → 四季窗口」的換算差。"""
+    base = copy.deepcopy(attrs0)
+    vd, _ = RD.veteran(0.0, '2026-27', posmap)
+    pv = PD.veteran(0.0)[0] if PD.ON else {}
+    for pid, x in base.items():
+        for src, ks in ((vd, DEF_ATTRS), (pv, PD_ATTRS)):
+            v = src.get(pid) or {}
+            for a in ks:
+                if v.get(a) is not None:
+                    x[a] = v[a]
+    REF_W.clear()
+    REF_W.update(pw.predict(base))
+
+
+def vet_defense(sd26, attrs, prior_cards, pw, attrs0):
     """老將 onBall／help：四季窗口逐場線性遞減（rookie_defense.veteran）。c＝聯盟已賽場數／1230·82 格；算不出的人維持先驗卡。
-    只改 attrs（之後 pw.predict 用）；lastOVR／檢查 (a) 仍用先驗卡，所以 dOVR 含「單季卡 → 四季窗口」的換算差。"""
+    只改 attrs（之後 pw.predict 用）。檢查 (a) 仍用先驗卡；lastOVR／dOVR 改用 window_ref（c=0 的四季窗口版先驗）。"""
     games = {r['GAME_ID'] for b in sd26['box'].values() for r in b['rows']}
     c = len(games) / GAMES_PER_SEASON * G_GAMES
-    vd, ww = RD.veteran(c, '2026-27', {p: {'PG': 'G', 'SG': 'G', 'SF': 'F', 'PF': 'F', 'C': 'C'}.get(pc.get('pos')) for p, pc in prior_cards.items()})
+    posmap = {p: {'PG': 'G', 'SG': 'G', 'SF': 'F', 'PF': 'F', 'C': 'C'}.get(pc.get('pos')) for p, pc in prior_cards.items()}
+    window_ref(attrs0, posmap, pw)
+    vd, ww = RD.veteran(c, '2026-27', posmap)
     n = 0
     for pid, x in attrs.items():
         v = vd.get(pid)
