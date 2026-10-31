@@ -158,6 +158,21 @@ def r_of_acc(acc, st, pos_fallback=None):
     return out
 
 
+def comps_of_acc(acc, st, pos_fallback=None):
+    """累計量 → E-060 三個收縮後分量與位置組 {pid: (C3, B, T, 組)}（名單頁 PER D 提示卡用；算式同 r_of_acc）。"""
+    pos_fallback = pos_fallback or {}
+    gm, lmb = st['groupMeanC3'], st['leagueMeanB']
+    out = {}
+    for pid, m in acc.items():
+        g = m['pos'] or pos_fallback.get(pid)
+        if not m['adv'] or g not in gm or m['min'] <= 0 or m['ppu'] <= 0 or m['pp'] <= 0 or not m.get('tx'):
+            continue
+        out[pid] = ((m['min'] * (36 * m['c3'] / m['min']) + K_C3 * gm[g]) / (m['min'] + K_C3),
+                    (m['ppu'] * (m['load'] / m['ppu']) + K_B * lmb) / (m['ppu'] + K_B),
+                    (m['pp'] / (m['pp'] + K_T)) * (100 * (m['tx0'] - m['tx1']) / m['pp']), g)
+    return out
+
+
 def onball_r(tabs, st, pos_fallback=None):
     return r_of_acc(onball_acc(tabs), st, pos_fallback)
 
@@ -186,6 +201,14 @@ class OnBallScale:
         if xs[i] == r:
             return ys[i]
         return ys[i - 1] + (r - xs[i - 1]) / (xs[i] - xs[i - 1]) * (ys[i] - ys[i - 1])
+
+
+def inseason_comps(season='2026-27', pos_fallback=None):
+    """新秀本季的 E-060 分量 {pid: (C3, B, T, 組)}（同 inseason 的 onBall 來源）；沒抓到表回傳 {}。"""
+    d = ROOT / 'data/defense-seventh' / season / 'tracking'
+    if not all((d / f'{k}.json').exists() for k in KINDS):
+        return {}
+    return comps_of_acc(onball_acc({k: table(d / f'{k}.json') for k in KINDS}), frozen_stats(), pos_fallback)
 
 
 def inseason(season='2026-27', pos_fallback=None):
@@ -231,8 +254,9 @@ def window_weights(c):
     return {s: v / 2.0 for s, v in w.items()}
 
 
-def veteran(c, season='2026-27', pos_fallback=None):
-    """老將四季窗口加權的 onBall／help：{pid: {'onBall', 'help'}}（缺分量的不給）；另回傳權重。本季表沒抓到就只用往年四季。"""
+def veteran(c, season='2026-27', pos_fallback=None, comps=False):
+    """老將四季窗口加權的 onBall／help：{pid: {'onBall', 'help'}}（缺分量的不給）；另回傳權重。本季表沒抓到就只用往年四季。
+    comps=True 時改回傳 ({pid: (C3, B, T, 組)}, 權重)：同一個窗口累計量的 E-060 分量（名單頁提示卡用）。"""
     parts = []
     for s in PAST:
         parts.append((s, {k: table(PAST_RAW / s / f'0-{k}.json') for k in KINDS}))
@@ -268,6 +292,8 @@ def veteran(c, season='2026-27', pos_fallback=None):
     for pid, m in acc.items():
         for k in ('c3', 'min', 'ppu', 'load', 'pp', 'tx0', 'tx1'):
             m[k] /= max(ob_f[pid])
+    if comps:
+        return comps_of_acc(acc, frozen_stats(), pos_fallback), ww
     scale = OnBallScale()
     for pid, r in r_of_acc(acc, frozen_stats(), pos_fallback).items():
         out.setdefault(pid, {})['onBall'] = scale(r)

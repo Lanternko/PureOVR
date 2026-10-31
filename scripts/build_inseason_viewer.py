@@ -19,7 +19,7 @@ from season_nav import add_season_nav, apply_common, regroup_attrs  # noqa: E402
 import season_nav as sn  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'reports/impact-epm-2026-27'))
 import epm_live  # noqa: E402
-from build_card_viewer import pres_tip, pres_tips, tov_tip  # noqa: E402
+from build_card_viewer import onball_rows, onball_tip, pres_tip, pres_tips, tov_tip  # noqa: E402
 
 ROOT = er.ROOT
 BASE = ROOT / 'reports/ovr-v58-card-2025-26/roster-viewer.html'
@@ -111,6 +111,37 @@ def add_ovr_chart(live):
     er.CSS += OVR_CSS
 
 
+def onball_live(rows, pool_min):
+    """PER D 提示卡（E-060 三分量）：和頁面 onBall 同一份累計量——老將＝四季窗口加權含本季（rookie_defense.veteran），
+    新秀＝本季（rookie_defense.inseason）。分量換回 onBall 和頁面差 ≥ 0.05 的人不給卡。PR 人群同 TO（本季上場 ≥ pool_min 分鐘）。"""
+    sys.path.insert(0, str(ROOT / 'reports/ovr-inseason-2026-27/live'))
+    import rookie_defense as RD
+    rs = json.loads(SRC26.read_text(encoding='utf-8'))['data']['resultSets'][0]
+    c = len({r[rs['headers'].index('GAME_ID')] for r in rs['rowSet']}) / 1230 * 82   # 同 run_c4_live_rookie.vet_defense
+    prior = {p['playerId']: p for p in json.load(open(RD.PRIOR_CARD, encoding='utf-8'))['players']}
+    pf = {p: {'PG': 'G', 'SG': 'G', 'SF': 'F', 'PF': 'F', 'C': 'C'}.get(q.get('pos')) for p, q in prior.items()}
+    vet, _ = RD.veteran(c, '2026-27', pf, comps=True)
+    new = RD.inseason_comps('2026-27', pf)
+    st, scale = RD.frozen_stats(), RD.OnBallScale()
+    comps, note, off = {}, {}, 0
+    for r in rows:
+        pid = int(r['playerId'])
+        x = vet.get(pid) if pid in prior else new.get(pid)
+        if not x or r['onBall'] == '':
+            continue
+        g = x[3]
+        z = (x[0] - st['zC3'][g][0]) / st['zC3'][g][1] + (x[1] - st['zB'][0]) / st['zB'][1] - (x[2] - st['zT'][0]) / st['zT'][1]
+        if abs(scale(z) - float(r['onBall'])) >= 0.05:
+            off += 1
+            continue
+        comps[pid] = x[:3]
+        note[pid] = '（四季加權，含本季）' if pid in prior else '（新秀：只看本季）'
+    pool = {int(r['playerId']) for r in rows if float(r['MIN26'] or 0) >= pool_min}
+    if off:
+        print(f'PER D 提示卡：{off} 人分量換回 onBall 對不上頁面，不給卡', file=sys.stderr)
+    return onball_rows(comps, pool), note
+
+
 def main():
     sys.stdout.reconfigure(encoding='utf-8')    # -I 不吃 PYTHONIOENCODING；名字有 ņ 等字時 cp950 印不出來
     day = sys.argv[1] if len(sys.argv) > 1 else '2026-10-27'
@@ -129,6 +160,7 @@ def main():
     # TO 提示卡：2026-27 至今的失誤、球權、失誤率；PR 人群＝上場 ≥ 15 × 目前最多場數 分鐘（開季樣本少，門檻跟著場數長）
     pool_min = 15 * max(int(r['N']) for r in rows)
     trows, n_tov = sn.tov_rows(SRC26, 'PLAYER_ID', pool_min)
+    orows, ob_note = onball_live(rows, pool_min)
     base = BASE.read_text(encoding='utf-8')
     old = json.loads(re.search(r'const DATA=(\{.*?\});\nconst COLS', base, re.S).group(1))
     ht = {r[old['cols'].index('name')]: r[old['cols'].index('ht')] for r in old['rows']}
@@ -152,6 +184,9 @@ def main():
         tr = trows.get(int(r['playerId']))
         if tr:
             t['tovSkill'] = tov_tip(float(r['tovSkill']), tr, n_tov, '2026-27 至今', pool_min)
+        ob = orows.get(int(r['playerId']))
+        if ob:
+            t['onBall'] = onball_tip(float(r['onBall']), ob, ob_note[int(r['playerId'])])
         return t
     for r in rows:
         num = lambda k: float(r[k])

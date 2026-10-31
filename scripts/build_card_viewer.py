@@ -1,7 +1,7 @@
 """2025-26 正式卡名單頁（card 0.2.9）：以正式卡名單頁為版型，換成 card 0.2.9 的 OVR／能力值（OVR 為每場、含上場時間、相對替補水準，R-028；能力值同 0.1.2），3PT 顯示 threeValue（R-024）。
 OVR 能力估計納入教練用人證據（分鐘、出賽率、年齡、練兵隊），DNP 與輪休分開（E-075）；用人回歸的訓練目標是 2025-26 單季 RAPM（E-084）；分鐘權重為飽和曲線 W(m)（E-089）；補籃改歸近距離、能力值錨點對四季合併池、頂端只壓縮（E-101）；OVR 迴歸不用 physique（E-131），網站不顯示 PHYS。
 PRES 顯示 presDisplay（逼失誤 − 0.25·犯規，E-071），提示卡列逼失誤（卡片 pressure）與五個分量（抄截、deflection、對位逼失誤、造進攻犯規、犯規，E-071 收縮後值＋PR＋前十名次）；
-TO 提示卡列失誤、球權、失誤率（player-games.json 整季加總）。
+TO 提示卡列失誤、球權、失誤率（player-games.json 整季加總）；PER D 提示卡列 E-060 三分量（三分干擾、對位負擔、威懾力）。
 
 輸入：reports/card-0.2.9/ranking.csv（card 0.2.9）、
       reports/card-0.2.9/three-value.csv（以姓名對 tv_main；E-123 頂端開尾）、data/season-source/player-games.json。
@@ -63,6 +63,28 @@ def tov_tip(v, sub, n_pool, season='2025-26', pool_min=POOL_MIN):
                        foot=['球權＝投籃＋0.44×罰球＋助攻＋失誤'])
 
 
+ONBALL = ROOT / 'reports/card-0.1.1+E060-onball-targeting/components-2025-26.csv'
+
+
+def onball_rows(comps, pool):
+    """E-060 三個收縮後分量 → PER D 細項列 {key: rows}。comps：{key: (C3, B, T)}；pool：算 PR／名次的人（key 集合）。
+    威懾力列 T（對手在他面前比平常多出手幾次／100 回合），越少 PR 越高。"""
+    P = [comps[k] for k in pool if k in comps]
+    out = {}
+    for k, (c3, b, t) in comps.items():
+        inpool = k in pool
+        q = [sn.pr_rank(x, [p[i] for p in P], low_good=i == 2) for i, x in enumerate((c3, b, t))]
+        out[k] = [('三分干擾', f'{c3:.2f}/36', q[0][0], q[0][1] if inpool else None),
+                  ('對位負擔', f'對手使用率 {b:.1f}%', q[1][0], q[1][1] if inpool else None),
+                  ('威懾力', f'對手出手比平常 {t:+.1f}/100 回合', q[2][0], q[2][1] if inpool else None)]
+    return out
+
+
+def onball_tip(v, sub, note=''):
+    return sn.cell_tip('單防', 'PER D', round(v), sub, d=f'三分干擾＋對位負擔＋威懾力，各一份{note}',
+                       foot=['各項為收縮後估計；三分干擾和同位置比；對位負擔＝他守的人平均使用率'])
+
+
 def main(out=None):
     out = Path(out) if out else DEFAULT_OUT
     rows = list(csv.DictReader(CARD.open(encoding='utf-8')))
@@ -83,6 +105,9 @@ def main(out=None):
             'tips']
     ptips, n_pres = pres_tips()
     trows, n_tov = sn.tov_rows(er.SRC, 'PLAYER_NAME', POOL_MIN)
+    oc_ = list(csv.DictReader(ONBALL.open(encoding='utf-8')))
+    orows = onball_rows({r['name']: (float(r['C3']), float(r['B']), float(r['T'])) for r in oc_ if '' not in (r['C3'], r['B'], r['T'])},
+                        {r['name'] for r in oc_ if float(r['min']) >= POOL_MIN})
     # DIQ 顯示負分：card 0.2.9 的 defenseBonus（同 0.2.7b） 用 def-L-primary，posMeanD 從同一批人算（max(0, ·) 逐人核對）
     dcen = sn.defense_centered(rows, 'name', [(ROOT / 'reports/card-0.2.5+E104-defense-pergame-decay/def-L-primary.csv', None)])
     assert dcen, 'DIQ 負分：def-L-primary 算回來的 defenseBonus 對不上 card 0.2.9'
@@ -104,7 +129,8 @@ def main(out=None):
                           num('predictedPer36'), dcen[r['name']], three, *[num(a) for a in cols[11:24]],
                           num('presDisplay'), num('pressure'), num('foulDisc'),
                           {**({'pressure': pres_tip(num('presDisplay'), num('pressure'), ptips[r['name']], n_pres)} if r['name'] in ptips else {}),
-                           **({'tovSkill': tov_tip(num('tovSkill'), trows[r['name']], n_tov)} if r['name'] in trows else {})}])
+                           **({'tovSkill': tov_tip(num('tovSkill'), trows[r['name']], n_tov)} if r['name'] in trows else {}),
+                           **({'onBall': onball_tip(num('onBall'), orows[r['name']])} if r['name'] in orows else {})}])
     s = base
     s = s.replace('<title>OVR 名單檢視</title>', '<title>2025-26 OVR 名單</title>', 1)
     s = re.sub(r'<div class="src">.*?</div>',
