@@ -1,8 +1,9 @@
 """Claude Code PostToolUse hook（matcher mcp__ccd_turn__wrap_up）：本回合碰過實驗結果時，在寫收尾訊息之前提醒回報格式。
 
 wrap_up 之後才寫給使用者的收尾訊息，所以在這裡注入提醒，第一版回報就照格式，不用事後擋下重寫。
-「碰過實驗結果」＝本回合（最後一個使用者訊息之後）的工具呼叫或結果出現 E-xxx、dispatch_result、
-預註冊、evaluation.json、status_snapshot 等字樣。格式本身寫在專案 CLAUDE.md「回報實驗結果」。
+「碰過實驗結果」＝本回合（最後一個使用者訊息之後）有：呼叫 dispatch_result、寫入 experiments.md／findings.md、
+或指令讀 results.json／evaluation.json。只看工具呼叫本身，不看結果文字：這個專案的 git log、handoff、檔名到處是 E-xxx，
+看結果文字會幾乎每回合誤觸發。格式本身寫在專案 CLAUDE.md「回報實驗結果」。
 派工子 session（CLAUDE_DISPATCH_CHILD=1）不提醒。任何錯誤都放行。
 """
 import json
@@ -10,7 +11,9 @@ import os
 import re
 import sys
 
-SIGNAL = re.compile(r'\bE-\d{3}\b|dispatch_result|preregistration|evaluation\.json|status_snapshot|預註冊', re.I)
+RESULT_FILES = re.compile(r'\b(results|evaluation)\.json\b', re.I)
+LEDGERS = re.compile(r'memory[\\/](experiments|findings)\.md$')
+WRITE_TOOLS = ('Edit', 'Write', 'MultiEdit', 'NotebookEdit')
 
 REMINDER = (
     "本回合碰過實驗結果。接下來的收尾訊息是固定模板，不是參考（L-051）："
@@ -23,16 +26,6 @@ REMINDER = (
     "一則回覆只寫一份六段；稽核也用這六段（進步＝核對成立，退步＝對不上或有疑慮）。"
     "查證過程、Δρ、區間、閘門代號只寫進報告檔，回覆在第 6 段結束，不加「細節」段（R-081）。這回合不是在回報實驗結果就忽略這段。"
 )
-
-
-def text_of(x):
-    if isinstance(x, str):
-        return x
-    if isinstance(x, list):
-        return ' '.join(text_of(b) for b in x)
-    if isinstance(x, dict):
-        return ' '.join(text_of(v) for v in x.values())
-    return ''
 
 
 def current_turn(entries):
@@ -52,9 +45,15 @@ def touched_experiment(entries):
         if not isinstance(content, list):
             continue
         for b in content:
-            if isinstance(b, dict) and b.get('type') in ('tool_use', 'tool_result'):
-                if SIGNAL.search(text_of(b.get('input') if b.get('type') == 'tool_use' else b.get('content'))):
-                    return True
+            if not (isinstance(b, dict) and b.get('type') == 'tool_use'):
+                continue
+            name, inp = b.get('name') or '', b.get('input') or {}
+            if 'dispatch_result' in name:
+                return True
+            if name in WRITE_TOOLS and LEDGERS.search(str(inp.get('file_path', ''))):
+                return True
+            if name in ('Bash', 'PowerShell') and RESULT_FILES.search(str(inp.get('command', ''))):
+                return True
     return False
 
 

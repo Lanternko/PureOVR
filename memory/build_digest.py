@@ -67,13 +67,20 @@ def parse_entries(text, prefix):
     return entries
 
 
-MAX_CHARS = 220  # 摘要超過就截斷，細節查原檔
+MAX_CHARS = 90  # 摘要只留第一句、超過就截斷，細節查原檔
+
+
+def first_sentence(s):
+    m = re.search(r"。", s)
+    return s[: m.start() + 1] if m else s
 
 
 def cell(s, limit=None):
     s = re.sub(r"\s+", " ", s or "").strip().replace("|", "｜")
-    if limit and len(s) > limit:
-        s = s[: limit - 1].rstrip() + "…（續見原檔）"
+    if limit:
+        s = first_sentence(s)
+        if len(s) > limit:
+            s = s[: limit - 1].rstrip() + "…"
     return s
 
 
@@ -98,6 +105,10 @@ def build():
     for src in SOURCES:
         text = read(os.path.join(HERE, src["file"]))
         entries = parse_entries(text, src["prefix"])
+        # 狀態不是「有效」的（暫緩、被取代、廢止）只列 ID，不佔表格列
+        inactive = [id_ for id_, f in entries
+                    if src["status_key"] and short_status(f.get(src["status_key"], "")) != "有效"]
+        entries = [e for e in entries if e[0] not in inactive]
         out.append(f"\n## {src['title']}：{len(entries)} 條\n")
         out.append("| " + " | ".join(src["columns"]) + " |")
         out.append("|" + "---|" * len(src["columns"]))
@@ -109,11 +120,13 @@ def build():
                     if k != src["summary_keys"][0]:
                         summary = f"（{k}）{summary}"
                     break
-            row = [id_, cell(f.get("日期", "")) or "—"]
+            row = [id_, cell(f.get("日期", ""))[:10] or "—"]
             if src["status_key"]:
                 row.append(short_status(f.get(src["status_key"], "")))
             row.append(cell(summary, MAX_CHARS) or "（無摘要欄，查原檔）")
             out.append("| " + " | ".join(row) + " |")
+        if inactive:
+            out.append(f"\n非有效（暫緩／被取代／廢止，查原檔）：{'、'.join(inactive)}")
     return "\n".join(out) + "\n"
 
 
