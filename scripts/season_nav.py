@@ -220,26 +220,25 @@ def add_season_nav(html_str, current):
 
 # 能力值滑鼠提示（使用者 2026-11-01，版型仿 arammeta 增幅卡：名稱＋副標、說明、細線下列組成）。
 # 公式照 card 0.2.7d／inseason 0.2.7d：threeValue、foulDraw 見 run_c4_live.py meta；pass E-125；pressure E-071；onBall E-060；short E-056。
-# frz＝賽中凍結（沿用 2026 卡），只在新賽季頁顯示。
+# frz＝賽季中凍結（沿用 2026 卡），只在新賽季頁顯示。寫給一般球迷看：不放收縮常數、z 分數這類細節（使用者 2026-11-01）。
 ATTR_TIPS = {
-    'threeValue': ('三分', '3PT', '出手<b>量</b> × 命中率<b>高於替補水準</b>的部分。量大又準才高，投很準但很少投不會高。',
-                   [('量', '每 36 分鐘三分出手'), ('準', '命中率 − (聯盟平均 − 3%)'), ('OVR', '只顯示；OVR 用純命中率')], False),
-    'mid': ('中距離', 'MID', '8 呎外到三分線內的<b>命中率</b>。出手少的人往聯盟平均拉。',
-            [('收縮', '先加 100 次聯盟平均出手')], False),
+    'threeValue': ('三分', '3PT', '三分<b>投得多</b>又<b>投得準</b>才高。很準但很少投、或投很多但不準，都不會太高。',
+                   [('投得多', '三分出手（per36）'), ('投得準', '命中率和聯盟水準比')], False),
+    'mid': ('中距離', 'MID', '8 呎外到三分線內的<b>命中率</b>。投得少的人會往聯盟平均靠，不會投 3 中 3 就滿分。', [], False),
     'short': ('近框', 'INS', '8 呎內的<b>命中率</b>。被隊友餵球的籃下得分打折，<b>自己創造</b>的不打折。',
-              [('被餵球的部分', '高於平均的量只算 4 成'), ('免打折', '會自己創造的長人')], False),
-    'ft': ('罰球', 'FT', '<b>罰球命中率</b>。罰得少的人往聯盟平均拉。', [('收縮', '先加 100 次聯盟平均罰球')], False),
+              [('被餵球的得分', '只算一部分'), ('不打折', '自己會創造的長人')], False),
+    'ft': ('罰球', 'FT', '<b>罰球命中率</b>。罰得少的人會往聯盟平均靠。', [], False),
     'drive': ('切入', 'DRV', '<b>非助攻</b>的突破進攻量（逐球紀錄近似）。', [], True),
-    'foulDraw': ('製造犯規', 'FD', '<b>75%</b> 罰球量 ＋ <b>25%</b> 罰球率。', [('量 75%', '每 36 分鐘罰球數'), ('率 25%', '罰球數 ÷ 投籃出手')], False),
-    'pass': ('傳球', 'PASS', '<b>50%</b> 助攻量 ＋ <b>50%</b> 助攻率。', [('量 50%', '每 36 分鐘助攻'), ('率 50%', '在場時隊友進球被他助攻的比例')], False),
-    'creation': ('自主創造', 'CRT', '每 36 分鐘<b>自己創造</b>的出手數，扣掉被餵球、接球就投的部分。', [], False),
+    'foulDraw': ('製造犯規', 'FD', '<b>75%</b> 罰球量 ＋ <b>25%</b> 罰球率。', [('量 75%', '罰球數（per36）'), ('率 25%', '罰球數 ÷ 投籃出手')], False),
+    'pass': ('傳球', 'PASS', '<b>50%</b> 助攻量 ＋ <b>50%</b> 助攻率。', [('量 50%', '助攻（per36）'), ('率 50%', '在場時隊友進球被他助攻的比例')], False),
+    'creation': ('自主創造', 'CRT', '<b>自己創造</b>的出手數（per36），扣掉被餵球、接球就投的部分。', [], False),
     'rebound': ('籃板', 'REB', '進攻＋防守<b>籃板率</b>：在場時搶下可搶籃板的比例。', [], False),
-    'tovSkill': ('少失誤', 'TO', '<b>每回合失誤</b>越少越高。持球越多，分母越大，不會因為球權多就吃虧。',
-                 [('回合', '出手 ＋ 0.44×罰球 ＋ 助攻 ＋ 失誤')], False),
+    'tovSkill': ('少失誤', 'TO', '<b>失誤 ÷ 球權次數</b>，越少越高。球權多的人分母也大，不會因為常拿球就吃虧。',
+                 [('球權次數', '他投籃、罰球、助攻或失誤結束的進攻')], False),
     'pressure': ('壓迫', 'PRES', '<b>抄截</b>、<b>干擾傳球</b>、對位<b>逼出失誤</b>、造進攻犯規，再扣犯規。',
                  [('抄截／干擾／逼失誤', '各 1 份'), ('造進攻犯規', '0.5 份'), ('犯規', '扣 0.25（只影響顯示）')], True),
-    'onBall': ('單防', 'PER D', '外線<b>干擾出手</b>量 ＋ <b>對位負擔</b> − <b>被針對</b>程度。',
-               [('對位負擔', '守的人球權多大'), ('被針對', '對手打他時比平常多出手多少')], True),
+    'onBall': ('單防', 'PER D', '外線<b>干擾出手</b> ＋ <b>對位負擔</b> ＋ <b>威懾力</b>。',
+               [('對位負擔', '守的人球權多大'), ('威懾力', '被他守時，對手出手意願降低多少')], True),
     'help': ('護框', 'RIM', '對手在<b>籃下 6 呎內</b>的命中率比預期低多少。', [], True),
     'dbon': ('防守意識', 'DIQ', '輪轉、站位、補防……<b>常規數據以外的防守意識</b>。真實比賽防守 RAPM 和同位置平均的差。',
              [('單位', 'RAPM 分（不是 0–99）'), ('進 OVR', '只有正的部分')], False),
@@ -255,7 +254,6 @@ TIP_CSS = """<style>
 .atip .r{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;border-top:1px solid rgba(255,255,255,.09);margin-top:10px;padding-top:9px;font-size:.8rem}
 .atip .r span{color:var(--muted)}
 .atip .r b{font-weight:600;text-align:right}
-.atip .f{color:var(--muted);font-size:.72rem;margin-top:8px;opacity:.7}
 @media (prefers-reduced-motion:reduce){.atip{transition:none}}
 </style>
 """
@@ -267,10 +265,9 @@ TIP_JS = """<script>
     const t = ATIP[el.dataset.tip]; if (!t) return;
     tip = tip || document.body.appendChild(Object.assign(document.createElement('div'), { className: 'atip' }));
     tip.setAttribute('role', 'tooltip');
-    const rows = t[3].concat(t[4] && FRZ ? [['賽中', '凍結（沿用 2026 卡）']] : []);
+    const rows = t[3].concat(t[4] && FRZ ? [['賽季中', '凍結（沿用 2026 卡）']] : []);
     tip.innerHTML = `<div class="h"><span class="n">${t[0]}</span><span class="s">${t[1]}</span></div><div class="d">${t[2]}</div>` +
-      (rows.length ? `<div class="r">${rows.map(([a, b]) => `<span>${a}</span><b>${b}</b>`).join('')}</div>` : '') +
-      (el.tagName === 'TH' ? '<div class="f">點擊排序</div>' : '');
+      (rows.length ? `<div class="r">${rows.map(([a, b]) => `<span>${a}</span><b>${b}</b>`).join('')}</div>` : '');
     cur = el;
     const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
     let y = r.bottom + 8;
