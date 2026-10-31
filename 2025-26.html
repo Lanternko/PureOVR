@@ -145,6 +145,51 @@ th.noh{cursor:default}
     <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect x="1" y="1" width="62" height="62" rx="14" fill="var(--panel)" stroke="var(--line)" stroke-width="2"/><circle cx="32" cy="32" r="22" fill="#f2c230"/><g fill="none" stroke="#1a1405" stroke-width="3.5"><path d="M10 32h44M32 10v44M17 16c8 8 8 24 0 32M47 16c-8 8-8 24 0 32"/></g></svg><h1>2025-26 <span>OVR</span> 名單</h1></div>
     
 <style>
+.atip{position:fixed;z-index:60;left:0;top:0;width:min(300px,calc(100vw - 16px));background:#12171d;border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:14px 16px;box-shadow:0 18px 50px rgba(0,0,0,.5);color:var(--fg);font:400 .86rem/1.6 var(--f-body);pointer-events:none;opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s}
+.atip.on{opacity:1;transform:none}
+.atip .h{display:flex;align-items:baseline;gap:8px}
+.atip .n{font:700 1.1rem var(--f-disp);letter-spacing:.04em}
+.atip .s{color:var(--muted);font:600 .78rem var(--f-disp);letter-spacing:.06em}
+.atip .d{color:var(--muted);margin-top:6px}
+.atip .d b{color:var(--gold);font-weight:600}
+.atip .r{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;border-top:1px solid rgba(255,255,255,.09);margin-top:10px;padding-top:9px;font-size:.8rem}
+.atip .r span{color:var(--muted)}
+.atip .r b{font-weight:600;text-align:right}
+.atip .f{color:var(--muted);font-size:.72rem;margin-top:8px;opacity:.7}
+@media (prefers-reduced-motion:reduce){.atip{transition:none}}
+</style>
+<script>
+(() => {
+  let tip, cur = null, timer;
+  const show = (el, touch) => {
+    const t = ATIP[el.dataset.tip]; if (!t) return;
+    tip = tip || document.body.appendChild(Object.assign(document.createElement('div'), { className: 'atip' }));
+    tip.setAttribute('role', 'tooltip');
+    const rows = t[3].concat(t[4] && FRZ ? [['賽中', '凍結（沿用 2026 卡）']] : []);
+    tip.innerHTML = `<div class="h"><span class="n">${t[0]}</span><span class="s">${t[1]}</span></div><div class="d">${t[2]}</div>` +
+      (rows.length ? `<div class="r">${rows.map(([a, b]) => `<span>${a}</span><b>${b}</b>`).join('')}</div>` : '') +
+      (el.tagName === 'TH' ? '<div class="f">點擊排序</div>' : '');
+    cur = el;
+    const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+    let y = r.bottom + 8;
+    if (y + h > innerHeight - 8) y = r.top - h - 8;
+    tip.style.left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), innerWidth - w - 8) + 'px';
+    tip.style.top = Math.max(8, y) + 'px';
+    tip.classList.add('on');
+    clearTimeout(timer);
+    if (touch) timer = setTimeout(hide, 3000);
+  };
+  const hide = () => { cur = null; if (tip) tip.classList.remove('on'); };
+  document.addEventListener('pointerover', e => {
+    const el = e.target.closest('[data-tip]');
+    if (el !== cur) el ? show(el, e.pointerType === 'touch') : hide();
+  });
+  document.addEventListener('focusin', e => { const el = e.target.closest('[data-tip]'); el ? show(el) : hide(); });
+  document.addEventListener('focusout', hide);
+  addEventListener('scroll', hide, true);
+})();
+</script>
+<style>
 .top{position:relative;z-index:5}
 .top{align-items:center}
 .brand{display:flex;align-items:center;gap:10px}
@@ -724,9 +769,11 @@ function list() {
   return a;
 }
 
+const ATIP = {"threeValue":["三分","3PT","出手<b>量</b> × 命中率<b>高於替補水準</b>的部分。量大又準才高，投很準但很少投不會高。",[["量","每 36 分鐘三分出手"],["準","命中率 − (聯盟平均 − 3%)"],["OVR","只顯示；OVR 用純命中率"]],false],"mid":["中距離","MID","8 呎外到三分線內的<b>命中率</b>。出手少的人往聯盟平均拉。",[["收縮","先加 100 次聯盟平均出手"]],false],"short":["近框","INS","8 呎內的<b>命中率</b>。被隊友餵球的籃下得分打折，<b>自己創造</b>的不打折。",[["被餵球的部分","高於平均的量只算 4 成"],["免打折","會自己創造的長人"]],false],"ft":["罰球","FT","<b>罰球命中率</b>。罰得少的人往聯盟平均拉。",[["收縮","先加 100 次聯盟平均罰球"]],false],"drive":["切入","DRV","<b>非助攻</b>的突破進攻量（逐球紀錄近似）。",[],true],"foulDraw":["製造犯規","FD","<b>75%</b> 罰球量 ＋ <b>25%</b> 罰球率。",[["量 75%","每 36 分鐘罰球數"],["率 25%","罰球數 ÷ 投籃出手"]],false],"pass":["傳球","PASS","<b>50%</b> 助攻量 ＋ <b>50%</b> 助攻率。",[["量 50%","每 36 分鐘助攻"],["率 50%","在場時隊友進球被他助攻的比例"]],false],"creation":["自主創造","CRT","每 36 分鐘<b>自己創造</b>的出手數，扣掉被餵球、接球就投的部分。",[],false],"rebound":["籃板","REB","進攻＋防守<b>籃板率</b>：在場時搶下可搶籃板的比例。",[],false],"tovSkill":["少失誤","TO","<b>每回合失誤</b>越少越高。持球越多，分母越大，不會因為球權多就吃虧。",[["回合","出手 ＋ 0.44×罰球 ＋ 助攻 ＋ 失誤"]],false],"pressure":["壓迫","PRES","<b>抄截</b>、<b>干擾傳球</b>、對位<b>逼出失誤</b>、造進攻犯規，再扣犯規。",[["抄截／干擾／逼失誤","各 1 份"],["造進攻犯規","0.5 份"],["犯規","扣 0.25（只影響顯示）"]],true],"onBall":["單防","PER D","外線<b>干擾出手</b>量 ＋ <b>對位負擔</b> − <b>被針對</b>程度。",[["對位負擔","守的人球權多大"],["被針對","對手打他時比平常多出手多少"]],true],"help":["護框","RIM","對手在<b>籃下 6 呎內</b>的命中率比預期低多少。",[],true],"dbon":["防守意識","DIQ","輪轉、站位、補防……<b>常規數據以外的防守意識</b>。真實比賽防守 RAPM 和同位置平均的差。",[["單位","RAPM 分（不是 0–99）"],["進 OVR","只有正的部分"]],false]};
+const FRZ = false;
 function head() {
   const th = (k, en, zh, cls = '') =>
-    `<th tabindex="0" data-k="${k}" class="${cls}${st.sort === k ? ' sorted' + (st.asc ? ' asc' : '') : ''}" title="依${zh}排序">${en}<span class="zh">${zh}</span></th>`;
+    `<th tabindex="0" data-k="${k}" class="${cls}${st.sort === k ? ' sorted' + (st.asc ? ' asc' : '') : ''}" ${ATIP[k] ? ` data-tip="${k}"` : ` title="依${zh}排序"`}>${en}<span class="zh">${zh}</span></th>`;
   let g = '<tr class="grp"><th colspan="3"></th><th class="gx" colspan="3"></th>' +
     GROUPS.map(x => `<th class="g" colspan="${x[1].length + (x[0] === '防守' ? 1 : 0)}">${x[0]}</th>`).join('') +
     '<th class="g" colspan="2">出場</th></tr>';
