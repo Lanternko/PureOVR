@@ -32,3 +32,6 @@ E-142 的 2025-26 實際只換 fitA／fitB 的 RAPM 半；歷史原點 alpha=1�
 - (b) 還是把 B12 重標度後與 T6 各半（需定義轉換與標準誤）？
 - (c) primary RAPM 參照、align／封頂、usage 層 rapm1 是否也換成 T6？
 未建 K0h 以外任何換目標的卡；K6 未建。
+
+## errata-1 補記（2026-11-01）
+K6 的 primary／fitA／fitB 三個 --rapm 輸入在 2025-26 與三個歷史原點換法相同；清單與 sha 見 `report.md`「核對」一節。

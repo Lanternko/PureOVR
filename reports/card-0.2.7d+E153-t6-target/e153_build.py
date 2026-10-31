@@ -25,6 +25,45 @@ def team_badness(M, tg_path):
     return out
 
 
+def c6_2526(BC, cand):
+    """errata-1：2025-26 目標 100% T6（alpha=1、B12 不用，目標表換成與歷史原點同型的占位表），
+    primary／fitA／fitB 的 --rapm 全換 T6；usage 層 rapm1 不換。"""
+    import shutil
+    RT, SW, ROOT_ = BC.RT, BC.SW, BC.ROOT
+    t0 = time.time(); name = 'c0'
+    O = BC.W / name; O.mkdir(parents=True, exist_ok=True)
+    for p in RT.PARITY:
+        shutil.copy(SW / 'c0' / f'def-L-{p}.csv', O / f'def-L-{p}.csv')
+    c0p = SW / 'c0p'
+    (O / 'split').mkdir(exist_ok=True)
+    sw = {'primary': BC.swap_rapm(ROOT_ / 'reports/impact-rapm/rapm.csv', O / 'rapm-R.csv', cand)}
+    for p in ('A', 'B'):
+        sw['fit' + p] = BC.swap_rapm(c0p / f'split/rapm-{p}.csv', O / f'split/rapm-{p}.csv', cand)
+    b12 = ROOT_ / 'reports/ovr-v55-finisher-fix-2025-26/card/calibration-target-B12.csv'
+    with open(O / 'target-dummy.csv', 'w', encoding='utf-8', newline='') as fh:   # 與歷史原點 target-*.csv 同型：y=0、se=1、1000 分鐘
+        w = csv.writer(fh); w.writerow(['name', 'position', 'healthy_minutes', 'centered_contribution', 'standard_error'])
+        for r in csv.DictReader(open(b12, encoding='utf-8')):
+            w.writerow([r['name'], r['position'], 1000, 0, 1])
+    cfgs = {}
+    for p in ('primary', 'fitA', 'fitB'):
+        cfgs[p] = O / f'calib-{p}.json'
+        RT.jw(cfgs[p], {'target': str(O / 'target-dummy.csv'), 'alpha': 1})
+    pa = {'primary': ['--rapm', str(O / 'rapm-R.csv')],
+          'fitA': ['--rapm', str(O / 'split/rapm-A.csv'), '--possScale', '0.5', '--mpgSource', str(c0p / 'mpg/mpg-A.csv')],
+          'fitB': ['--rapm', str(O / 'split/rapm-B.csv'), '--possScale', '0.5', '--mpgSource', str(c0p / 'mpg/mpg-B.csv')]}
+    parts = {p: (cfgs[p], pa[p], O / f'def-L-{p}.csv') for p in pa}
+    cards_sha, _ = RT.run_calib(name, O / 'cards/K0', parts)
+    cfg = {'dnp': str(c0p / 'dnp-2025-26.json'), 'mpgDir': str(c0p / 'mpg'), 'splitDir': str(O / 'split'), 'rapm1Dir': str(c0p / 'rapm1')}
+    got, sec = BC.run_pipe(name, O, O / 'cards/K0', cfg, pool_cards=ROOT_ / RT.RB / 'cards/c0')
+    res = {'origin': '2025-26', 'swap': 'T6-errata1', 'swapRows': sw, 'part_card_sha256': cards_sha, 'ranking_sha256': got,
+           'rapm_inputs_sha256': {'primary': RT.sha(O / 'rapm-R.csv'), 'fitA': RT.sha(O / 'split/rapm-A.csv'), 'fitB': RT.sha(O / 'split/rapm-B.csv'),
+                                  'cand_pkl_rows': len(cand)},
+           'seconds': round(time.time() - t0, 1)}
+    RT.jw(BC.BJ / f'build-{name}.json', res)
+    print(json.dumps(res, ensure_ascii=False))
+    return 0
+
+
 def main():
     mode = sys.argv[1]
     if mode == 'pipe':
@@ -75,6 +114,8 @@ def main():
             raise SystemExit(f'{tag} pipe failed: {err}')
         return BC.RT.sha(out / 'ranking.csv'), sec
     BC.run_pipe = run_pipe
+    if origin == '2025-26' and cand is not None:
+        return c6_2526(BC, cand)
     return BC.c0(cand, 'c0') if origin == '2025-26' else BC.hist(origin, cand)
 
 
