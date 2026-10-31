@@ -2,6 +2,7 @@
 # memory/ 規則檢查（memory/README.md、L-027）：
 # 1. 改到程式、腳本或 memory 條目時，handoff.md 要一起 commit。
 # 2. memory 條目 ID 只追加：不能刪掉 HEAD 已有的 ID，也不能重複。
+# 3. handoff.md 超過 8KB 不能 commit。
 # 確定不需要更新 handoff 時：HANDOFF_OK=1 git commit ...
 staged=$(git diff --cached --name-only --diff-filter=ACMRD)
 fail=0
@@ -11,6 +12,17 @@ if [ "$HANDOFF_OK" != "1" ]; then
      ! echo "$staged" | grep -qx 'memory/handoff.md'; then
     echo "pre-commit: 改到 src/scripts/test 或 memory 條目，但 memory/handoff.md 沒有一起更新。" >&2
     echo "  收工要整份覆寫 handoff.md；確定不需要時用 HANDOFF_OK=1 git commit ..." >&2
+    fail=1
+  fi
+fi
+
+# 3. handoff.md 超過 8KB 就擋（README：每條兩行、8KB 內），沒有放行開關
+if echo "$staged" | grep -qx 'memory/handoff.md' && git cat-file -e ':memory/handoff.md' 2>/dev/null; then
+  size=$(git cat-file -s ':memory/handoff.md')
+  if [ "$size" -gt 8192 ]; then
+    echo "pre-commit: memory/handoff.md ${size} bytes，超過 8192。先瘦身再 commit：" >&2
+    echo "  結案或已上線的條目刪掉（結論本來就在 findings／experiments／rulings），UI 小改刪掉，每條縮成兩行。" >&2
+    echo "  別人的過時條目也可以刪；原文要留就貼進 memory/archive/。" >&2
     fail=1
   fi
 fi
