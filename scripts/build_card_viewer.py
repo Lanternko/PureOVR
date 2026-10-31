@@ -102,7 +102,9 @@ def main(out=None):
         gp_src[row[h['PLAYER_NAME']]] = gp_src.get(row[h['PLAYER_NAME']], 0) + 1
     cols = ['rank', 'ovr', 'name', 'pos', 'team', 'ht', 'min', 'gp', 'imp', 'dbon', 'threeValue', 'mid', 'short', 'ft',
             'drive', 'foulDraw', 'pass', 'tovSkill', 'creation', 'rebound', 'physique', 'stamina', 'onBall', 'help', 'pressure', 'force', 'foulDisc',
-            'tips']
+            'tips', 'off', 'def']
+    od, od_bad = sn.off_def(rows, 'name')
+    assert od_bad == 0, f'進攻／防守分：{od_bad} 人 pred0 算不回來'
     ptips, n_pres = pres_tips()
     trows, n_tov = sn.tov_rows(er.SRC, 'PLAYER_NAME', POOL_MIN)
     oc_ = list(csv.DictReader(ONBALL.open(encoding='utf-8')))
@@ -130,7 +132,8 @@ def main(out=None):
                           num('presDisplay'), num('pressure'), num('foulDisc'),
                           {**({'pressure': pres_tip(num('presDisplay'), num('pressure'), ptips[r['name']], n_pres)} if r['name'] in ptips else {}),
                            **({'tovSkill': tov_tip(num('tovSkill'), trows[r['name']], n_tov)} if r['name'] in trows else {}),
-                           **({'onBall': onball_tip(num('onBall'), orows[r['name']])} if r['name'] in orows else {})}])
+                           **({'onBall': onball_tip(num('onBall'), orows[r['name']])} if r['name'] in orows else {})},
+                          *od[r['name']]])
     s = base
     s = s.replace('<title>OVR 名單檢視</title>', '<title>2025-26 OVR 名單</title>', 1)
     s = re.sub(r'<div class="src">.*?</div>',
@@ -151,7 +154,6 @@ def main(out=None):
         ('<td class="sub gl${sc(\'min\')}">${p.min.toLocaleString()}</td>',
          '<td class="sub gl${sc(\'min\')}">${p.min.toFixed(1)}</td>'),
         ('<span>上場 <b>${p.min.toLocaleString()}</b> 分鐘</span>', '<span>場均 <b>${p.min.toFixed(1)}</b> 分鐘</span>'),
-        ('OVR 同分多半是 2K27 名次封頂造成的', 'OVR 為每場（含上場時間，相對替補水準）；同分多半是 2K27 名次封頂造成的'),
     ]:
         assert s.count(a) >= 1, a
         s = s.replace(a, b)

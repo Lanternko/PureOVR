@@ -74,6 +74,16 @@ CSS = """<style>
 .pn-item .kw-etc{color:#c39bff}
 .pn-item .kw-num{color:var(--fg);font-weight:700;font-variant-numeric:tabular-nums}
 .pn-foot{margin:12px 0 0;color:var(--muted);font-size:.72rem;line-height:1.5}
+.legend{align-items:baseline}
+.ovr-t{display:inline-flex;align-items:center;gap:5px;background:none;border:0;padding:0;color:var(--muted);font:inherit;cursor:pointer;text-align:left}
+.ovr-t b{color:var(--fg);font-weight:600}
+.ovr-t:hover,.ovr-t[aria-expanded="true"]{color:var(--fg)}
+.ovr-t i{display:inline-block;font-style:normal;font-size:.72em;transition:transform .15s}
+.ovr-t[aria-expanded="true"] i{transform:rotate(180deg);color:var(--gold)}
+.ovr-how{flex-basis:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px 16px;margin-top:4px;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-radius:4px;color:var(--muted);font-size:.78rem;line-height:1.55}
+.ovr-how[hidden]{display:none}
+.ovr-how b{color:var(--fg);font-weight:600}
+.ovr-how .oh-t{display:block;color:var(--gold);font:700 .78rem var(--f-disp);letter-spacing:.04em;margin-bottom:2px}
 </style>
 """
 
@@ -229,6 +239,10 @@ def add_season_nav(html_str, current):
 # 公式照 card 0.2.7d／inseason 0.2.7d：threeValue、foulDraw 見 run_c4_live.py meta；pass E-125；pressure E-071；onBall E-060；short E-056。
 # frz＝賽季中凍結（沿用 2026 卡），只在新賽季頁顯示。寫給一般球迷看：不放收縮常數、z 分數這類細節（使用者 2026-11-01）。
 ATTR_TIPS = {
+    'ovr': ('總評', 'OVR', '由<b>傳統數據 ＋ 防守影響力 ＋ 上場時間</b>算出每場比賽影響力。',
+            [('傳統與對位數據', '13 項場上能力值'), ('防守影響力', 'DIQ（防守 RAPM）'),
+             ('上場時間', '場均分鐘＋出賽率'), ('權重校準', '對齊 DARKO＋BPM')],
+            '以 2026 卡為底（新秀看順位），隨本季每場更新'),
     'threeValue': ('三分', '3PT', '三分<b>投得多</b>又<b>投得準</b>才高。很準但很少投、或投很多但不準，都不會太高。',
                    [('投得多', '三分出手（per36）'), ('投得準', '命中率和聯盟水準比')], False),
     'mid': ('中距離', 'MID', '8 呎外到三分線內的<b>命中率</b>。投得少的人會往聯盟平均靠，不會投 3 中 3 就滿分。', [], False),
@@ -249,6 +263,10 @@ ATTR_TIPS = {
     'help': ('護框', 'RIM', '對手在<b>籃下 6 呎內</b>的命中率比預期低多少。', [], '老將四季加權含本季；新秀只看本季'),
     'dbon': ('防守意識', 'DIQ', '輪轉、站位、補防……<b>常規數據以外的防守意識</b>。真實比賽防守 RAPM 和同位置平均的差。',
              [('單位', 'RAPM 分（不是 0–99）'), ('進 OVR', '只有正的部分')], False),
+    'off': ('進攻', 'OFF', 'OVR 裡<b>進攻能力值</b>貢獻的部分：投籃、切入、製造犯規、傳球、少失誤、自主創造，每 36 分鐘比聯盟平均多幾分。',
+            [('單位', '每 36 分鐘淨分（0＝平均）'), ('不含', '籃板、身高、上場時間')], False),
+    'def': ('防守', 'DEF', 'OVR 裡<b>防守</b>貢獻的部分：單防、護框、壓迫，加上防守意識加分，每 36 分鐘比聯盟平均多幾分。',
+            [('單位', '每 36 分鐘淨分（0＝平均）'), ('不含', '籃板、身高、上場時間')], False),
 }
 # 浮動提示卡的規則（使用者 2026-11-01：原生 title 太醜，配色照抄 arammeta docs/assets/site.css 的 .aug-tip／.cf-stage-tip）：
 # - 表頭（能力值說明）和格子（該球員的細項）用同一張卡；有卡的元素不再帶 title，避免兩個提示疊在一起。
@@ -452,6 +470,17 @@ COMMON_REPLACEMENTS = [
     ('thead th{background:#0b1119;', 'thead th{background:#0a0d10;'),
     ('td.sortcol{background:rgba(242,194,48,.07)}', 'td.sortcol{background:rgba(255,255,255,.035)}'),
     ('fill="#0b1119" stroke="#2c3a4c"', 'fill="#0a0d10" stroke="#29313b"'),
+    # 頁尾只留等第與 OVR 簡述，點 ▼ 展開詳細算法（使用者 2026-11-01）
+    ('    <span>點欄位標題排序，再點一次反向</span>\n    <span>點任一列看球員卡</span>\n', ''),
+    ('    <span>OVR 同分多半是 2K27 名次封頂造成的</span>',
+     '    <button type="button" class="ovr-t" aria-expanded="false" onclick="const b=this.nextElementSibling,o=b.hidden;b.hidden=!o;this.setAttribute(\'aria-expanded\',o)">'
+     'OVR：由<b>傳統數據 ＋ 防守影響力 ＋ 上場時間</b>算出每場比賽影響力 <i>▼</i></button>\n'
+     '    <div class="ovr-how" hidden>'
+     '<div><span class="oh-t">1. 傳統與對位數據（13 項能力）</span>結合傳統 Box Score（得分、籃板、助攻、抄阻、失誤）、逐球紀錄（<b>自己創造</b> vs 被餵球、切入）與官方對位追蹤（外線干擾三分、對位主將球權、籃下護框降命中率、干擾傳球），換算成 0–99 的單項能力。</div>'
+     '<div><span class="oh-t">2. 防守影響力（DIQ 防守意識）</span>用多年加權的<b>防守 RAPM</b>（在場正負值扣除隊友與對手強弱）比同位置平均高多少，補上傳統數據抓不到的無球輪轉、站位與協防。</div>'
+     '<div><span class="oh-t">3. 上場時間與教練用人</span>結合<b>場均分鐘</b>與<b>出賽率</b>（區分輪休與被冷凍 DNP）。同效率下，能扛越多上場時間的人單場價值越高（邊際遞減）。</div>'
+     '<div><span class="oh-t">4. 怎麼合成 OVR（與 EPM 的關係）</span>不直接拿單一進階數據當 OVR，而是把上述三塊合成、權重對齊進階指標 <b>DARKO＋BPM</b>，衡量「每場能幫球隊多贏幾分」。球員卡右側的 <b>RAPM／EPM</b> 是獨立列出來對照的實際場上影響力；2027 頁以 2026 卡為底（新秀看順位），隨本季表現逐場更新。</div>'
+     '</div>'),
 ] + [
     # 上場篩選拿掉（手機太擠，門檻也還是整季總分鐘），換成球隊篩選：仿 arammeta 的彈出格子（使用者 2026-10-29）
     ('''    <span class="lbl">上場</span>
@@ -586,7 +615,71 @@ def apply_common(s):
     for a, b in COMMON_REPLACEMENTS:
         assert s.count(a) == 1, a
         s = s.replace(a, b)
-    return _defense_iq_column(_compact_facts(s))
+    return _off_def_columns(_defense_iq_column(_compact_facts(s)))
+
+
+# 進攻／防守分（使用者 2026-11-01）：把 OVR 迴歸第一層 pred0 拆開。pred0 在同位置內對能力值是線性的，
+# 係數從正式卡 ranking.csv 照位置重擬合（R²＝1）；新秀 G／F 用 SG／SF 的係數（同 defense_centered 的 DPOS）。
+# 分數＝每 36 分鐘比聯盟平均（正式卡 MIN ≥ 500）多幾分；防守另加 defenseBonus（扣同一群人的平均）。
+# 籃板、身高、align 兩邊都不算（約佔 OVR 差異一成三）。OVR 還有用人層（分鐘、出賽率），所以兩分相加不等於 OVR。
+OD_CARD = Path(__file__).resolve().parents[1] / 'reports/card-0.2.9a/ranking.csv'
+OD_OFF = ['long', 'mid', 'short', 'ft', 'drive', 'foulDraw', 'tovSkill', 'pass', 'creation']
+OD_DEF = ['onBall', 'help', 'pressure']
+OD_ALL = OD_OFF + OD_DEF + ['rebound', 'heightInches']
+
+
+def off_def(rows, key):
+    """{rows[key]: (進攻分, 防守分)}；pred0 用卡片係數算回來差超過 0.02 的人給 (None, None)，回 (dict, 對不上人數)。"""
+    import csv
+    import numpy as np
+    card = list(csv.DictReader(OD_CARD.open(encoding='utf-8')))
+    coef = {}
+    for ps in {r['pos'] for r in card}:
+        g = [r for r in card if r['pos'] == ps]
+        X = np.c_[np.ones(len(g)), [[float(r[a]) for a in OD_ALL] for r in g]]
+        coef[ps] = np.linalg.lstsq(X, np.array([float(r['pred0']) for r in g]), rcond=None)[0]
+    q = [r for r in card if float(r['MIN']) >= 500]
+    mu = np.array([sum(float(r[a]) for r in q) / len(q) for a in OD_ALL])
+    dbm = sum(float(r['defenseBonus']) for r in q) / len(q)
+    n_off, n_def = len(OD_OFF), len(OD_DEF)
+    out, bad = {}, 0
+    for r in rows:
+        b = coef.get({'G': 'SG', 'F': 'SF'}.get(r['pos'], r['pos']))
+        if b is None or any(r[a] == '' for a in OD_ALL + ['pred0', 'defenseBonus']):
+            out[r[key]] = (None, None)
+            bad += 1
+            continue
+        x = np.array([float(r[a]) for a in OD_ALL])
+        if abs(b[0] + b[1:] @ x - float(r['pred0'])) > 0.02:
+            out[r[key]] = (None, None)
+            bad += 1
+            continue
+        c = b[1:] * (x - mu)
+        out[r[key]] = (round(float(c[:n_off].sum()), 2),
+                       round(float(c[n_off:n_off + n_def].sum()) + float(r['defenseBonus']) - dbm, 2))
+    return out, bad
+
+
+# 表格 OVR 右邊加 OFF／DEF 兩欄（單位是每 36 分鐘淨分，不換等第，直接顯示 +x.x）
+OD_TD = ("const odc = (p, k) => { const v = p[k]; return `<td class=\"${v == null ? '' : v >= 2 ? 'gA' : v >= 1 ? 'gB' : v >= 0 ? 'gC' : ''}"
+         "${st.sort === k ? ' sortcol' : ''}\"${v != null && v >= 0 ? '' : ' style=\"color:var(--muted)\"'}>"
+         "${v == null ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(1)}</td>`; };\n")
+
+
+def _off_def_columns(s):
+    # 原本的表頭空格與 OVR 格子字串要保留（enrich_roster_viewer.inject 之後還要找它們），新欄接在後面
+    for a, b in [
+        ('<tr class="grp"><th colspan="6"></th>', '<tr class="grp"><th colspan="6"></th><th colspan="2"></th>'),
+        ("th('ovr', 'OVR', '總評');", "th('ovr', 'OVR', '總評') + th('off', 'OFF', '進攻') + th('def', 'DEF', '防守');"),
+        ('function cell(k, v, first', OD_TD + 'function cell(k, v, first'),
+        ("<td class=\"ovr${sc('ovr')}\">${p.ovr.toFixed(1)}</td>",
+         "<td class=\"ovr${sc('ovr')}\">${p.ovr.toFixed(1)}</td>${odc(p, 'off')}${odc(p, 'def')}"),
+    ]:
+        assert s.count(a) == 1, a
+        s = s.replace(a, b)
+    s, n = re.subn(r'colspan="(\d+)" class="empty"', lambda m: f'colspan="{int(m.group(1)) + 2}" class="empty"', s)
+    assert n == 1
+    return s
 
 
 # 重分組（使用者 2026-10-30「採用並重分組」，R-084）：PHYS 不顯示（E-131 後 OVR 也不用）；REB、TO、PRES 併成「球權」

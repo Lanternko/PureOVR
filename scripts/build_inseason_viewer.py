@@ -197,6 +197,9 @@ def main():
                                + [(live_d, None)], taper)
     if dcen is None:
         print('DIQ 負分：找不到對得上的 D 檔，只顯示正值', file=sys.stderr)
+    od, od_bad = sn.off_def(rows, 'playerId')
+    if od_bad:
+        print(f'進攻／防守分：{od_bad} 人 pred0 用卡片係數算不回來，顯示「—」', file=sys.stderr)
     data_rows = []
     def tips(r):
         t = {}
@@ -228,7 +231,9 @@ def main():
                           round(num('MIN26') / int(r['N']), 1) if int(r['N']) else 0.0, int(r['N']), num('predictedPer36'),
                           dcen[r['playerId']] if dcen else (num('defenseBonus') or None),
                           *[opt('presDisplay') if (a == 'pressure' and has_pd) else opt(a) for a in cols[10:25]],
-                          num('lastOVR'), num('dOVR'), tips(r), *([num('pressure'), opt('foulDisc')] if has_pd else [])])
+                          num('lastOVR'), num('dOVR'), tips(r), *([num('pressure'), opt('foulDisc')] if has_pd else []),
+                          *od[r['playerId']]])
+    cols += ['off', 'def']
     # ΔOVR 五色：≥+4 深綠、+1～+4 淺綠、±1 內灰、−1～−4 橘、≤−4 紅（沿用等第色）
     dcol = ("(v => v >= 4 ? 'var(--g-a)' : v >= 1 ? 'var(--g-b)' : v > -1 ? 'var(--muted)'"
             " : v > -4 ? 'var(--g-d)' : 'var(--g-f)')(p.dovr)")
@@ -259,9 +264,6 @@ def main():
          '<span>場均 <b>${p.min.toFixed(1)}</b> 分鐘</span><span>已打 N=<b>${p.gp}</b> 場</span>'
          "<span>開季卡 OVR <b>${p.last.toFixed(1)}</b>（<b>${(p.dovr > 0 ? '+' : '') + p.dovr.toFixed(2)}</b>）</span>"),
         ('模擬每 36 分鐘淨值', '新賽季預測每 36 分鐘淨值'),
-        ('OVR 同分多半是 2K27 名次封頂造成的',
-         'OVR 為每場（含上場時間，相對替補水準）；ΔOVR 深綠≥+4、淺綠+1～+4、灰±1 內、橘−1～−4、紅≤−4；'
-         'OVR 同分多半是 2K27 名次封頂造成的 · 本頁 MPG 是 2026-27 場均分鐘'),
     ]:
         assert s.count(a) >= 1, a
         s = s.replace(a, b)
