@@ -75,14 +75,14 @@ def onball_rows(comps, pool):
         inpool = k in pool
         q = [sn.pr_rank(x, [p[i] for p in P], low_good=i == 2) for i, x in enumerate((c3, b, t))]
         out[k] = [('三分干擾', f'{c3:.2f}/36', q[0][0], q[0][1] if inpool else None),
-                  ('對位負擔', f'對手使用率 {b:.1f}%', q[1][0], q[1][1] if inpool else None),
+                  ('對位負擔', f'對手USG {b:.1f}%', q[1][0], q[1][1] if inpool else None),
                   ('威懾力', f'對手出手比平常 {t:+.1f}/100 回合', q[2][0], q[2][1] if inpool else None)]
     return out
 
 
 def onball_tip(v, sub, note=''):
     return sn.cell_tip('單防', 'PER D', round(v), sub, d=f'三分干擾＋對位負擔＋威懾力，各一份{note}',
-                       foot=['各項為收縮後估計；三分干擾和同位置比；對位負擔＝他守的人平均使用率'])
+                       foot=['USG＝球權使用率：在場時全隊回合由他出手、罰球或失誤結束的比例'])
 
 
 def main(out=None):
