@@ -452,3 +452,9 @@
 - 證據：`reports/E140-foul-on-recal/judgement.json`、`bias.json`、`winimp-on.csv`、`winimp-off.csv`、`calibration.json`（sha256 0dacad63…bdb0a，寫於判定開跑前）；lead 從 rr-on／rr-off 逐場重算 k1、從兩份 csv 重算名次，一致
 - 狀態：有效（判定 seed 與校正 seed 分開；WinImp 只報告）
 - 相關：E-140、R-094、E-120、E-122、F-079、F-093
+
+### F-097
+- 日期：2026-11-01
+- 發現：沒有對位資料（M0 退回）時，單場評分和有資料時差距中位約 0.65 分、3 成超過 1 分；差距 78% 來自防守對位（PTS_SAVED／TOV_FORCED）、hustle 8%、box 權重不同 14%。探索（2025-26 A 半，n 11425，只是探索、不是驗收）：用早出來的資料暫估，能解釋的差距都很少，評分誤差中位最多只從 0.65 降到 0.62。在場防守效率（stints）R² 0.06、同位置對手實際−預期 0.004（只有 35% 場次有位置）、本人平均防守 0.03、三者合併 0.09。結論：單場對位幾乎只能等資料，改成加 22:30 排程補抓。
+- 證據：`reports/rating-m6/explore_fallback_proxy.py`
+- 相關：E-110、E-150、R-101
