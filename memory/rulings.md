@@ -655,12 +655,13 @@
 
 ### R-112
 - 日期：2026-11-01
-- 裁決：新賽季頁老將的 lastOVR／ΔOVR 基準改成「先驗卡＋本季 0 場時的四季窗口值」（onBall、help，UNFREEZE_PD 時加 pressure、drive），防守加成用凍結版；ΔOVR 只反映本季比賽，不含「單季卡 → 四季窗口」的換算差。OVR 本身不變。
+- 裁決：新賽季頁老將的 lastOVR／ΔOVR 基準＝「今天的模型、但他本季 0 場」：ΔOVR 只反映他本季自己的比賽，不含「單季卡 → 四季窗口」的換算差，也不含窗口滑動、別人比賽帶動的防守重擬合。OVR 本身不變。
 - 細節：
   - 實作 `run_c4_live_rookie.window_ref`（REF_W）＋取代 lastOVR／dOVR／_d 三行；檢查 (a) 與 `_lastCmp` 仍對照舊先驗卡。新秀不受影響。
   - 2026-10-31 資料實測：OVR 最大差 0；|ΔOVR| 中位數 1.11→0.95；Jalen Williams +2.34→+0.36、Wembanyama +1.28→+0.30、Butler（0 場）+1.29→−0.02。
-  - 0 場老將仍有最多 1.9 的 ΔOVR（Barlow −1.9、LeVert −1.6、DiVincenzo −1.3），來自賽中防守加成重擬合、窗口權重隨聯盟進度（c）移動、用人依現隊（R-098）——屬於模型隨賽季推進的變化，這次不併入基準。
-- 來源：使用者 2026-11-01「Fix ΔOVR baseline」（看完 F-110：JW 開季 +2.3 是四季窗口換算差）
+  - 2026-11-01 使用者「也併進基準」改版：基準＝「今天的模型、但本季 0 場」。窗口值用同一個 c 的權重但不讀本季資料（`RD.veteran(..., cur=False)`、`PD.veteran(c, cur=False)`）；防守 D 用 `defense_bonus.fit_loo`（每人只拿掉自己本季 stints 重擬合，Woodbury，和逐人硬算一致，約 23 秒）；位置平均 posMeanD 用賽中版（`base_bonus`）。用人 d：0 場的人本來就照卡，沒動。
+  - 結果：67 位 0 場老將 ΔOVR 全部 0（原本最多 1.9：Barlow −1.9、LeVert −1.6、DiVincenzo −1.3，來源是別人比賽帶動的聯合重擬合與 posMeanD、窗口權重隨 c 移動）。有上場的人 |ΔOVR| 中位數 1.26→1.20；JW +0.35、Mitchell −2.24→−1.63、McCollum −4.99→−3.23。
+- 來源：使用者 2026-11-01「Fix ΔOVR baseline」（看完 F-110：JW 開季 +2.3 是四季窗口換算差）→「也併進基準」
 - 狀態：有效
 - 相關：F-110、R-110、R-111
 

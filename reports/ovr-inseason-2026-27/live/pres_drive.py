@@ -402,10 +402,11 @@ def d_window(parts, pos=None, use_hist=True):
 
 
 # ------------------------------------------------------------------ 對外
-def veteran(c):
-    """老將四季窗口：{pid: {'pressure', 'presDisplay', 'drive', 'force', 'shr', 'minW'}}、權重。本季資料沒有就只用往年四季。"""
+def veteran(c, cur=True):
+    """老將四季窗口：{pid: {'pressure', 'presDisplay', 'drive', 'force', 'shr', 'minW'}}、權重。本季資料沒有就只用往年四季。
+    cur=False：同一個 c 的權重但不讀本季（＝本季 0 場時的值；ΔOVR 基準用，R-112）。"""
     ww = RD.window_weights(c)
-    seasons = list(PAST) + ([SEASON] if c > 0 and (CUR / 'tracking/hustle.json').exists() else [])
+    seasons = list(PAST) + ([SEASON] if cur and c > 0 and (CUR / 'tracking/hustle.json').exists() else [])
     ww = {s: ww[s] for s in seasons if s in ww}
     units = {s: ww[s] * (c / RD.SLOTS if s == SEASON else 1.0) for s in ww}
     pp = p_window([(s, ww[s], units[s], p_comps(s)) for s in ww])

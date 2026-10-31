@@ -254,14 +254,15 @@ def window_weights(c):
     return {s: v / 2.0 for s, v in w.items()}
 
 
-def veteran(c, season='2026-27', pos_fallback=None, comps=False):
+def veteran(c, season='2026-27', pos_fallback=None, comps=False, cur=True):
     """老將四季窗口加權的 onBall／help：{pid: {'onBall', 'help'}}（缺分量的不給）；另回傳權重。本季表沒抓到就只用往年四季。
-    comps=True 時改回傳 ({pid: (C3, B, T, 組)}, 權重)：同一個窗口累計量的 E-060 分量（名單頁提示卡用）。"""
+    comps=True 時改回傳 ({pid: (C3, B, T, 組)}, 權重)：同一個窗口累計量的 E-060 分量（名單頁提示卡用）。
+    cur=False：同一個 c 的權重但不讀本季表（＝每人本季 0 場時的值；ΔOVR 基準用，R-112）。"""
     parts = []
     for s in PAST:
         parts.append((s, {k: table(PAST_RAW / s / f'0-{k}.json') for k in KINDS}))
     d = ROOT / 'data/defense-seventh' / season / 'tracking'
-    if c > 0 and all((d / f'{k}.json').exists() for k in KINDS):
+    if cur and c > 0 and all((d / f'{k}.json').exists() for k in KINDS):
         parts.append((season, {k: table(d / f'{k}.json') for k in KINDS}))
     ww = window_weights(c)
     ww = {s: ww[s] for s, _ in parts if s in ww}

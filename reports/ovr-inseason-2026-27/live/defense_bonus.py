@@ -74,6 +74,50 @@ def fit(D, c, lam=F.LAM):
                            'possW': float(diagW[j] + diagW[D.P + j])} for k, j in enumerate(pl)}
 
 
+def fit_loo(D, c, lam=F.LAM):
+    """ΔOVR 基準（R-112）：同 fit，但每個本季有 stint 的人的 D／poss／possW 改成「只拿掉他自己本季 stints」重擬合的值
+    （＝他本季 0 場時今天的擬合；別人本季的比賽照算）。本季沒出賽的人＝fit 原值。
+    拿掉一人的列＝對 A 做低秩減法，用 Woodbury：先算一次 G＝(A＋λI)⁻¹，每人只解 r×r（r＝他的 stint 數）。"""
+    out = fit(D, c, lam)
+    if SEASON not in D.s:
+        return out
+    t = positions(D)
+    wu = {s: np.maximum((t[s] - c) / WIN, 0.0) for s in t}
+    used = set()
+    for s in t:
+        used.update(np.unique(D.s[s]['X'][wu[s] > 0].indices).tolist())
+    used.discard(D.K)
+    pl = np.array(sorted({j % D.P for j in used}))
+    cols = np.concatenate([pl, D.P + pl, [D.K]])
+    n = len(pl)
+    A = np.zeros((len(cols), len(cols))); b = np.zeros(len(cols))
+    for s in t:
+        M, bs = F.weighted_normal(D, s, wu[s])
+        A += M[cols][:, cols].toarray(); b += bs[cols]
+    pen = lam * np.eye(len(cols)); pen[2 * n, 2 * n] = 0
+    G = np.linalg.inv(A + pen)
+    x0 = G @ b
+    d = D.s[SEASON]
+    w = d['w'] * wu[SEASON]
+    Xc = d['X'].tocsr()[:, cols]
+    Xcsc = Xc.tocsc()
+    for k, j in enumerate(pl):
+        rows = np.union1d(Xcsc[:, k].indices, Xcsc[:, n + k].indices)
+        rows = rows[w[rows] > 0]
+        if not len(rows):
+            continue
+        Xr, wr = Xc[rows], w[rows]
+        XG = np.asarray((Xr @ G))                          # r×m
+        gb = x0 - XG.T @ (wr * d['y'][rows])               # G·(b − 自己那幾列的 Xᵀwy)
+        S = np.diag(1.0 / wr) - np.asarray(Xr @ XG.T)      # W⁻¹ − X G Xᵀ
+        tt = np.linalg.solve(S, Xr @ gb)
+        e = out[D.players[j]]
+        sq = np.asarray(Xr.multiply(Xr)[:, [k, n + k]].sum(axis=1)).ravel()
+        e.update(D=float(gb[n + k] + XG[:, n + k] @ tt), poss=e['poss'] - float((d['w'][rows] * sq).sum()),
+                 possW=e['possW'] - float((wr * sq).sum()))
+    return out
+
+
 def write_csv(out, path):
     with open(path, 'w', encoding='utf-8', newline='') as fh:
         wr = csv.writer(fh)

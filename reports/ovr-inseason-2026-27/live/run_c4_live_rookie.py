@@ -197,34 +197,37 @@ PD_VET = {}             # 老將窗口值 {pid: {...}}
 PD_ROOK = {}            # 新秀本季值
 NS = {}
 BONUS = {}
-REF_W = {}              # 2026-11-01 使用者「Fix ΔOVR baseline」：老將 lastOVR 基準＝先驗卡＋c=0 四季窗口（F-110）
+REF_W = {}              # 2026-11-01 使用者「Fix ΔOVR baseline」→「也併進基準」：老將 lastOVR 基準＝今天的模型、但本季 0 場（R-112）
 DEF_L_LIVE = DB.ROOT / 'data/_inseason_build/def-L-live.csv'
+DEF_L_BASE = DB.ROOT / 'data/_inseason_build/def-L-base.csv'   # 同一個 c、每人拿掉自己本季 stints（基準用）
 
 
-def window_ref(attrs0, posmap, pw):
-    """lastOVR 基準：先驗卡的 onBall／help（＋UNFREEZE_PD 時 pressure／drive）換成 c=0（本季 0 場）的四季窗口值，其餘照先驗卡。
-    防守加成用凍結版（defense_bonus 在 c=0 時等於 def-L-primary），所以要在 live_bonus 換加成之前呼叫。
-    這樣 dOVR 只剩本季比賽造成的變化，不含「單季卡 → 四季窗口」的換算差。"""
+def window_ref(attrs0, posmap, pw, c):
+    """lastOVR 基準＝「今天的模型、但本季 0 場」：先驗卡的 onBall／help（＋UNFREEZE_PD 時 pressure／drive）換成
+    同一個 c 的四季窗口值但不讀本季資料（窗口權重隨聯盟進度移動的部分算進基準），防守加成用同一個 c、每人只拿掉自己本季 stints 的重擬合（defense_bonus.fit_loo）。
+    這樣 dOVR 只剩本季比賽造成的變化：不含「單季卡 → 四季窗口」的換算差，也不含 0 場的人被窗口滑動帶動的漂移。
+    要在 live_bonus 之後呼叫（BONUS['base'] 由它算）。"""
     base = copy.deepcopy(attrs0)
-    vd, _ = RD.veteran(0.0, '2026-27', posmap)
-    pv = PD.veteran(0.0)[0] if PD.ON else {}
+    vd, _ = RD.veteran(c, '2026-27', posmap, cur=False)
+    pv = PD.veteran(c, cur=False)[0] if PD.ON else {}
     for pid, x in base.items():
         for src, ks in ((vd, DEF_ATTRS), (pv, PD_ATTRS)):
             v = src.get(pid) or {}
             for a in ks:
                 if v.get(a) is not None:
                     x[a] = v[a]
+    swap_bonus(pw, 'base')
     REF_W.clear()
     REF_W.update(pw.predict(base))
+    swap_bonus(pw, 'live')
 
 
 def vet_defense(sd26, attrs, prior_cards, pw, attrs0):
     """老將 onBall／help：四季窗口逐場線性遞減（rookie_defense.veteran）。c＝聯盟已賽場數／1230·82 格；算不出的人維持先驗卡。
-    只改 attrs（之後 pw.predict 用）。檢查 (a) 仍用先驗卡；lastOVR／dOVR 改用 window_ref（c=0 的四季窗口版先驗）。"""
+    只改 attrs（之後 pw.predict 用）。檢查 (a) 仍用先驗卡；lastOVR／dOVR 改用 window_ref（同一個 c、本季 0 場的版本）。"""
     games = {r['GAME_ID'] for b in sd26['box'].values() for r in b['rows']}
     c = len(games) / GAMES_PER_SEASON * G_GAMES
     posmap = {p: {'PG': 'G', 'SG': 'G', 'SF': 'F', 'PF': 'F', 'C': 'C'}.get(pc.get('pos')) for p, pc in prior_cards.items()}
-    window_ref(attrs0, posmap, pw)
     vd, ww = RD.veteran(c, '2026-27', posmap)
     n = 0
     for pid, x in attrs.items():
@@ -240,6 +243,7 @@ def vet_defense(sd26, attrs, prior_cards, pw, attrs0):
     if PD.ON:
         vet_pres_drive(c, attrs)
     live_bonus(pw, c)
+    window_ref(attrs0, posmap, pw, c)
 
 
 def vet_pres_drive(c, attrs):
@@ -271,7 +275,8 @@ def live_bonus(pw, c):
     換掉 M27_DEF 對應的 def-L 檔後重算 pw.pipe 的 UL 加成；posMeanD、門檻（possW≥500／2500）、0.75 照 card 0.2.7。"""
     g = NS['ns']
     DEF_L_LIVE.parent.mkdir(exist_ok=True)
-    DB.write_csv(DB.fit(DB.load_data(), c), DEF_L_LIVE)
+    data = DB.load_data()
+    DB.write_csv(DB.fit(data, c), DEF_L_LIVE)
     key = str(g['RAPM_STAR'].resolve())
     assert key in g['M27_DEF'], key
     P = pw.pipe
@@ -281,11 +286,25 @@ def live_bonus(pw, c):
     if hasattr(P, '_m27_bonus'):
         del P._m27_bonus
     new = g['m27_bonus_of'](P)
-    BONUS.update(frozen=(old, P._m27_posMeanD_frozen), live=(new, P._m27_posMeanD))
+    live_pm = P._m27_posMeanD
+    DB.write_csv(DB.fit_loo(data, c), DEF_L_BASE)   # 基準：同一個 c，每人只拿掉自己本季的 stints
+    BONUS.update(frozen=(old, P._m27_posMeanD_frozen), live=(new, live_pm), base=(base_bonus(P, live_pm), live_pm))
     moved = sum(abs(a - b) > 1e-12 for a, b in zip(old, new))
     VET_DEF_INFO.update(defL=str(DEF_L_LIVE.relative_to(DB.ROOT)), bonusChanged=moved,
                         posMeanD={k: float(v) for k, v in P._m27_posMeanD.items()})
     print(f'防守加成重擬合：c={c:.2f}，{moved} 人加成改變，posMeanD {VET_DEF_INFO["posMeanD"]}', file=sys.stderr)
+
+
+def base_bonus(P, mean):
+    """基準加成：同 run_c4_live.m27_ul_bonus，但 Dw／possW 讀 DEF_L_BASE（每人拿掉自己本季 stints），
+    位置平均 posMeanD 用賽中版（全聯盟的量，不是他自己的比賽）。"""
+    src = {int(r['playerId']): r for r in csv.DictReader(open(DEF_L_BASE, encoding='utf-8'))}
+    out = []
+    for p, pos in zip(P.pids, P.pos):
+        r = src.get(p)
+        pw_ = float(r['poss']) if r else 0.0
+        out.append(max(0.0, 0.75 * float(r['D']) - mean[pos]) if r and pw_ >= 5000 * 0.5 else 0.0)
+    return out
 
 
 def swap_bonus(pw, which):
