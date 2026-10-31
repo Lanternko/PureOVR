@@ -16,7 +16,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import rating_m2  # noqa: E402
-import rating_m6  # noqa: E402
+import rating_m10  # noqa: E402
 import headshot_eyeline  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -402,8 +402,8 @@ const [GC_CUT1, GC_CUT5] = GC_CUT;
 const sg1 = v => (v > 0 ? '+' : '') + v.toFixed(1);
 // 顯示成 0 起跳的「評分」（使用者 2026-10-30：正負號配紅字看不清；名稱改評分，避免和影響力、正負值混在一起，像賽事的 0–10 評分）：分數＝0.75×(貢獻值＋7.5)，低於 0 記 0。
 // M2（R-066）2025-26 單場（≥10 分鐘）約 2% 到 0、約 6% 超過 10；聯盟平均 ≈ 5.8。顏色仍用原單位的差值切
-const gcS = v => Math.max(0, v).toFixed(1); // M6（E-150）：資料端已是 0–10 評分
-const GC_DEF = '評分 0–10（M6）：整場貢獻：box score＋防守對位＋在場正負值＋扛出手量加分（比平均多投又維持效率會加分，扛越多及格線越低）；上場越久影響越大；上場很短時往聯盟平均拉回。5.8＝聯盟平均單場，10 約是單場前 6%。正負值會沾到隊友與對手的運氣';
+const gcS = v => Math.max(0, v).toFixed(1); // Z1（E-169，M6 加分改 S 形）：資料端已是 0–10 評分
+const GC_DEF = '評分 0–10（M6 S 形）：整場貢獻：box score＋防守對位＋在場正負值＋扛出手量加分（比平均多投又維持效率會加分，扛越多及格線越低，效率越接近及格線加分越平滑地變多）；上場越久影響越大；上場很短時往聯盟平均拉回。5.8＝聯盟平均單場，10 約是單場前 6%。正負值會沾到隊友與對手的運氣';
 const gcCls = (d, [a, b]) => d >= b ? 'c5a' : d >= a ? 'c5b' : d > -a ? 'c5c' : d > -b ? 'c5d' : 'c5f';
 function gcCell(v, b, cut, fb) {
   if (v == null) return '<td>—</td>';
@@ -552,8 +552,8 @@ def aggregate():
         for k in a:
             if k.isupper():
                 a[k] += row[h[k]] or 0
-    # 「上季」＝2025-26 各球員單場評分簡單平均（M6，上線參數）
-    s25 = rating_m6.Scorer('2025-26')
+    # 「上季」＝2025-26 各球員單場評分簡單平均（Z1，上線參數；E-169，使用者 2026-11-01 採用）
+    s25 = rating_m10.Scorer('2025-26', 'Z1')
     acc25 = {}
     for pid_, mn_, sc_ in zip(s25.tab.pid, s25.tab.mn, s25.S):
         if mn_ > 0:
@@ -561,9 +561,9 @@ def aggregate():
     base = {k: {'m6': round(sum(v) / len(v), 3)} for k, v in acc25.items()}
     # SRC 指哪季（build_inseason_viewer 會換成 season-source-2026-27），對位資料就讀哪季；某場沒對位資料 → 該場用 M0
     season_ = '2025-26' if SRC.parent.name == 'season-source' else SRC.parent.name.removeprefix('season-source-')
-    m6 = rating_m6.Scorer(season_)
+    m6 = rating_m10.Scorer(season_, 'Z1')
     rater = rating_m2.Rater('2025-26' if SRC.parent.name == 'season-source' else SRC.parent.name.removeprefix('season-source-'))
-    box = lambda r: m6.score(r[h['GAME_ID']], r[h['PLAYER_ID']])  # M6 單場評分（0–10 尺度）
+    box = lambda r: m6.score(r[h['GAME_ID']], r[h['PLAYER_ID']])  # Z1 單場評分（0–10 尺度）
     out = {}
     for name, a in acc.items():
         n = a['gp']
