@@ -254,7 +254,7 @@ ATTR_TIPS = {
 # - 卡：底 #101114、1px rgba(255,255,255,.08) 邊、圓角 10px、雙層陰影；淡入 0.14s 加上移 3px；箭頭 6px 指向元素。
 # - 版面由上到下：名稱（金 #f5d780）＋英文縮寫（灰）＋右側大數字 → 一句說明 → 細線下的細項表 → 更細的線下灰色註腳。
 # - 細項表三欄：名稱（灰 #8b919a）｜數值（白 #e8eaed，數字等寬）｜PR（小灰字）。聯盟前十在數值後加金色「（#名次）」。
-# - 「越少越好」的項目（犯規）數值旁寫（多）／（普通）／（少），PR 一律是越高越好。
+# - 「越少越好」的項目（犯規）數值旁寫（多）／（普通）／（少），PR 一律是越高越好。卡上不解釋 PR 與名次（使用者 2026-11-01）。
 # - 預設放元素下方，放不下改上方；左右夾在視窗內 8px。觸控點一下顯示 3 秒；捲動就收起。
 TIP_CSS = """<style>
 .atip{position:fixed;z-index:60;left:0;top:0;width:min(290px,calc(100vw - 16px));padding:11px 12px 10px;background:#101114;border:1px solid rgba(255,255,255,.08);border-radius:10px;box-shadow:0 12px 28px rgba(0,0,0,.5),0 0 0 1px rgba(0,0,0,.4);color:#c2c7ce;font:400 12px/1.5 var(--f-body);text-align:left;pointer-events:none;opacity:0;transform:translateY(-3px);transition:opacity .14s cubic-bezier(.16,1,.3,1),transform .14s cubic-bezier(.16,1,.3,1)}

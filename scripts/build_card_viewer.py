@@ -55,14 +55,12 @@ def pres_tips():
 
 def pres_tip(pres, force, sub, n_pool, note=''):
     return sn.cell_tip('壓迫', 'PRES', round(pres), sub, d=f'逼失誤 {round(force)} − 0.25×犯規{note}',
-                       foot=[f'PR＝上場 ≥ {POOL_MIN} 分鐘 {n_pool} 人中的百分位，越高越好；（#名次）＝這群人前十',
-                             '各項為收縮後估計；對位逼失誤是超出預期的部分'])
+                       foot=['各項為收縮後估計；對位逼失誤是超出預期的部分'])
 
 
 def tov_tip(v, sub, n_pool, season='2025-26', pool_min=POOL_MIN):
     return sn.cell_tip('少失誤', 'TO', round(v), sub, d=f'{season} 失誤 ÷ 球權次數，失誤率越低越高',
-                       foot=[f'PR＝上場 ≥ {pool_min} 分鐘 {n_pool} 人中的百分位（失誤率越低越高）；（#名次）＝這群人前十',
-                             '球權＝投籃＋0.44×罰球＋助攻＋失誤'])
+                       foot=['球權＝投籃＋0.44×罰球＋助攻＋失誤'])
 
 
 def main(out=None):
