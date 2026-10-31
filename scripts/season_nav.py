@@ -129,10 +129,10 @@ def _now_facts(now_text, current):
                  ('球員', pick(r'(\d+) 人'))]
     else:
         cutoff = pick(r'數據截至 (\d{4}-\d{2}-\d{2})')
-        facts = [('版本', pick(r'inseason (\d+\.\d+\.\d+\w*)')), ('先驗', pick(r'先驗 card (\d+\.\d+\.\d+\w*)')),
+        facts = [('版本', pick(r'inseason (\d+\.\d+\.\d+\w*)')), ('開季起點', pick(r'開季起點 card (\d+\.\d+\.\d+\w*)')),
                  ('數據截至', cutoff and cutoff[5:].replace('-', '/')), ('球員', pick(r'· (\d+) 人'))]
         if facts[1][1]:
-            facts[1] = ('先驗', '正式卡 ' + facts[1][1])
+            facts[1] = ('開季起點', '正式卡 ' + facts[1][1])
     facts = [(k, v + ' 人' if k == '球員' else v) for k, v in facts if v]
     if not facts:
         return html.escape(now_text)
@@ -283,7 +283,7 @@ TIP_JS = """<script>
 (() => {
   let tip, cur = null, timer, pinned = false;
   const head = k => { const t = ATIP[k]; if (!t) return null;
-    return { n: t[0], s: t[1], d: t[2], rows: t[3].concat(t[4] && FRZ ? [['賽季中', t[4] === true ? '凍結（沿用 2026 卡）' : t[4]]] : []) }; };
+    return { n: t[0], s: t[1], d: t[2], rows: t[3].concat(t[4] && FRZ ? [['賽季中', t[4] === true ? '沿用 2026 卡' : t[4]]] : []) }; };
   const cell = el => { const tr = el.closest('tr[data-n]'); if (!tr) return null;
     const n = decodeURIComponent(tr.dataset.n), p = P.find(q => q.name === n);
     return p && p.tips ? p.tips[el.dataset.ck] : null; };

@@ -68,7 +68,7 @@ function ovrChart(p) {
   const path = pts.map((q, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(q[1]).toFixed(1)).join('');
   const area = path + `L${x(pts.length - 1).toFixed(1)} ${H - B}L${x(0).toFixed(1)} ${H - B}Z`;
   const last = vs[vs.length - 1], d = last - h.start;
-  const tip = (q, i) => `${i ? q[0] : '開季先驗'}　OVR ${q[1].toFixed(1)}`;
+  const tip = (q, i) => `${i ? q[0] : '開季起點'}　OVR ${q[1].toFixed(1)}`;
   return `<div class="ovc"><div class="ovh"><span>OVR 走勢 · 每場重算</span><span>開季 <b>${h.start.toFixed(1)}</b> → 現在 <b>${last.toFixed(1)}</b>` +
     ` <b class="${d >= 0.05 ? 'up' : d <= -0.05 ? 'dn' : ''}">${d > 0 ? '+' : ''}${d.toFixed(1)}</b></span></div>` +
     `<svg viewBox="0 0 ${W} ${H}" onmouseleave="ovTip(this)">` +
@@ -207,8 +207,8 @@ def main():
     s = s.replace('<title>OVR 名單檢視</title>', '<title>新賽季 OVR 名單</title>', 1)
     s = s.replace('<h1>2025-26 <span>OVR</span> 名單</h1>', '<h1>2026-27 <span>OVR</span> 名單</h1>', 1)
     s = re.sub(r'<div class="src">.*?</div>',
-               f'<div class="src">OVR：賽中 C4（{meta["version"]}），先驗 {meta["priorCard"]}{"（用人回歸＋當季 RAPM 目標）" if "predNew" in rows[0] else ""}；數據截至 {meta["dataCutoff"]}；'
-               f'{"PRES＝逼失誤扣犯規（2025-26，賽中凍結）· " if has_pd else ""}N=已打場數 · {len(rows)} 人（另 {nopr} 人無先驗卡，未列入）· 樣本很小，只看趨勢</div>', s, count=1, flags=re.S)
+               f'<div class="src">OVR：賽中 C4（{meta["version"]}），開季起點 {meta["priorCard"]}{"（用人回歸＋當季 RAPM 目標）" if "predNew" in rows[0] else ""}；數據截至 {meta["dataCutoff"]}；'
+               f'{"PRES＝逼失誤扣犯規（沿用 2025-26 數據）· " if has_pd else ""}N=已打場數 · {len(rows)} 人（另 {nopr} 人沒有上季卡，未列入）· 樣本很小，只看趨勢</div>', s, count=1, flags=re.S)
     new_data = json.dumps({'cols': cols, 'rows': data_rows}, ensure_ascii=False, separators=(',', ':'))
     s = re.sub(r'const DATA=\{.*?\};\nconst COLS', lambda m: f'const DATA={new_data};\nconst COLS', s, count=1, flags=re.S)
     for a, b in [
@@ -259,9 +259,9 @@ def main():
     add_ovr_chart(live)
     for a, b in [
         ('title="無 2025-26 RAPM"', 'title="本季未上場"'),
-        ('2025-26 RAPM 進攻：', '2026-27 自製 EPM 式（當季 box 先驗＋生涯 RAPM 先驗＋當季 RAPM）進攻：'),
-        ('2025-26 RAPM 防守：', '2026-27 自製 EPM 式（當季 box 先驗＋生涯 RAPM 先驗＋當季 RAPM）防守：'),
-        ('2025-26 RAPM 淨值＝進攻＋防守', '2026-27 自製 EPM 式淨值＝進攻＋防守（當季 box 先驗＋生涯 RAPM 先驗＋當季 RAPM）'),
+        ('2025-26 RAPM 進攻：', '2026-27 自製 EPM 式（本季數據表＋生涯 RAPM 打底＋本季 RAPM）進攻：'),
+        ('2025-26 RAPM 防守：', '2026-27 自製 EPM 式（本季數據表＋生涯 RAPM 打底＋本季 RAPM）防守：'),
+        ('2025-26 RAPM 淨值＝進攻＋防守', '2026-27 自製 EPM 式淨值＝進攻＋防守（本季數據表＋生涯 RAPM 打底＋本季 RAPM）'),
         ('2025-26 他在場減不在場的球隊每 100 回合淨效率（扣掉球隊本身強弱；會受替補好壞影響）',
          '2026-27 只看本季數據表（得分、出手、助攻、籃板、抄阻、失誤等）估的每 100 回合淨影響，不看比分；打得越少越被拉向同上場時間的平均'),
         ("'在場增益'", "'本季數據估計'"),
