@@ -1,6 +1,6 @@
 """2025-26 正式卡名單頁（card 0.2.9）：以正式卡名單頁為版型，換成 card 0.2.9 的 OVR／能力值（OVR 為每場、含上場時間、相對替補水準，R-028；能力值同 0.1.2），3PT 顯示 threeValue（R-024）。
 OVR 能力估計納入教練用人證據（分鐘、出賽率、年齡、練兵隊），DNP 與輪休分開（E-075）；用人回歸的訓練目標是 2025-26 單季 RAPM（E-084）；分鐘權重為飽和曲線 W(m)（E-089）；補籃改歸近距離、能力值錨點對四季合併池、頂端只壓縮（E-101）；OVR 迴歸不用 physique（E-131），網站不顯示 PHYS。
-PRES 顯示 presDisplay（逼失誤 − 0.25·犯規，E-071），提示卡列逼失誤（卡片 pressure）與五個分量（抄截、deflection、對位逼失誤、造進攻犯規、犯規，E-071 收縮後值＋PR＋前十名次）；
+PRES 顯示 presDisplay（逼失誤 − 0.25·犯規，E-071），提示卡列逼失誤（卡片 pressure）與五個分量（抄截、干擾球、對位逼失誤、造進攻犯規、犯規，E-071 收縮後值＋PR＋前十名次）；
 TO 提示卡列失誤、球權、失誤率（player-games.json 整季加總）；PER D 提示卡列 E-060 三分量（三分干擾、對位負擔、威懾力）。
 
 輸入：reports/card-0.2.9/ranking.csv（card 0.2.9）、
@@ -28,7 +28,7 @@ THREE_VALUE = ROOT / 'reports/card-0.2.9/three-value.csv'
 FORCE = ROOT / 'reports/card-0.2.0+E071-pressure/force-2025-26.csv'
 DEFAULT_OUT = ROOT / 'reports/card-0.1.2-2025-26/roster-viewer.html'
 # PRES 提示卡的分量（E-071 force 的收縮後值）；PR／名次對上場 ≥ 1000 分鐘的人群
-PRES_SUB = [('stl_shr', '抄截', '/36', '{:.2f}'), ('defl_shr', 'Deflection', '/36', '{:.2f}'),
+PRES_SUB = [('stl_shr', '抄截', '/36', '{:.2f}'), ('defl_shr', '干擾球', '/36', '{:.2f}'),
             ('mtov_shr', '對位逼失誤', '/100 回合', '{:+.2f}'), ('chg_shr', '造進攻犯規', '/36', '{:.2f}'),
             ('pf_shr', '犯規', '/36', '{:.2f}')]
 PRES_LOW_GOOD = {'pf_shr'}   # PR 反轉：越少犯規 PR 越高
