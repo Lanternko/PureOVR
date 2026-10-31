@@ -33,6 +33,19 @@ BIO = {'g5': (ROOT / 'data/defense-seventh/2026-27/bio.json', '2026'), 'season':
 SALARY = {'g5': ROOT / 'reports/salary-corr/source/bref.html', 'season': ROOT / 'reports/salary-corr/source/bref2526.html'}
 
 CSS = """
+/* 表格 OVR 分級：金屬稀有度字色＋漸層細框（OP 珍珠／T1 紫／T2 金／T3 銀／T4 銅；70 以下灰字無框；使用者 2026-11-01）。
+   避開紅綠，免得和屬性等第的好壞色（A 綠…F 紅）撞語意。框用 mask 挖空中間，選取列、排序欄的底色照常透出來 */
+td.ovr .ob{position:relative;display:inline-block;min-width:2.4em;padding:1px 5px;border-radius:5px;text-align:center;color:var(--oc)}
+td.ovr .ob::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:var(--of);pointer-events:none;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.ob.t6{--of:linear-gradient(135deg,#fff 0%,#e7d5ff 18%,#bcd6ff 36%,#ffd5ec 58%,#fff1c8 78%,#fff 100%);box-shadow:0 0 8px rgba(220,180,255,.45);
+  background:linear-gradient(135deg,#fff,#e7d5ff 25%,#bcd6ff 50%,#ffd5ec 75%,#fff1c8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.ob.t5{--oc:#c9a2ff;--of:linear-gradient(135deg,#e6d2ff 0%,#a970ff 38%,#6a2fc4 70%,#c49bff 100%);box-shadow:0 0 6px rgba(160,100,255,.35)}
+.ob.t4{--oc:#f2c94c;--of:linear-gradient(135deg,#fff0b0 0%,#e8b923 38%,#8a6400 70%,#f5d469 100%)}
+.ob.t3{--oc:#d4dae3;--of:linear-gradient(135deg,#ffffff 0%,#b8c0cc 38%,#6b7380 70%,#dfe4ea 100%)}
+.ob.t2{--oc:#c98a5a;--of:linear-gradient(135deg,#f0c49c 0%,#b8743f 38%,#6b3a17 70%,#d9a070 100%)}
+.ob.t1{--oc:#8f96a3}
+.ob.t1::before{display:none}
 /* real box score */
 .real{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:4px;margin-top:2px}
 .real .st{background:var(--panel-2);border:1px solid var(--line);border-radius:3px;padding:3px 6px;text-align:center}
@@ -310,6 +323,8 @@ TEAM_COLORS = {
 JS = r"""
 // 手機表格用的縮寫名：名縮成首字母，姓（含 Jr. 等）照留
 const shortName = n => { const i = n.indexOf(' '); return i > 0 ? n[0] + '. ' + n.slice(i + 1) : n; };
+// OVR 分級：110 珍珠／100 紫／90 金／80 銀／70 銅／其他灰字無框（門檻同 Baseball_algo getRarityClass，配色見 CSS）
+const ovrBadge = v => { const r = Math.round(v); return `<span class="ob t${r >= 110 ? 6 : r >= 100 ? 5 : r >= 90 ? 4 : r >= 80 ? 3 : r >= 70 ? 2 : 1}">${r}</span>`; };
 // E-116：2027 頁（近 5 場）的新秀都是新秀先驗，起點由選秀順位估，打越多場越靠自己的數據
 const rookieTag = p => REAL_VIEW === 'g5' && ROOKIES.has(p.name)
   ? `<span class="rkp" title="新秀：沒有上季卡，開季起點由選秀順位與位置估，已打 ${p.gp} 場，打越多場越看自己的數據" role="img" aria-label="新秀"></span>` : '';
@@ -707,6 +722,7 @@ def inject(path, real, view='g5'):
     for old, new in [
         (hook, '${impactChips(p)}\n      ${realBox(p)}'),
         ('<div class="tag"><span class="pos">', '<div class="tag" style="${teamVars(p.team)}">${headshot(p)}<div class="tnm"><span>${esc(first)}</span>${esc(last)}</div><span class="tht">${ht(p.ht)}</span><span class="pos">'),
+        ("<td class=\"ovr${sc('ovr')}\">${p.ovr.toFixed(1)}</td>", "<td class=\"ovr${sc('ovr')}\" title=\"${p.ovr.toFixed(1)}\">${ovrBadge(p.ovr)}</td>"),  # 表格只顯示整數並分級上色（使用者 2026-11-01），滑過看小數
         ("<td class=\"sub${sc('team')}\">${p.team}</td>", "<td class=\"sub${sc('team')}\">${teamCell(p.team)}</td>"),
         ('<tr class="grp"><th colspan="6"></th>', '<tr class="grp"><th colspan="3"></th><th class="gx" colspan="3"></th>'),
         ('<td class="nm" title="${esc(p.name)}">${esc(p.name)}</td>',
