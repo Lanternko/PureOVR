@@ -170,7 +170,7 @@ th.noh{cursor:default}
 (() => {
   let tip, cur = null, timer, pinned = false;
   const head = k => { const t = ATIP[k]; if (!t) return null;
-    return { n: t[0], s: t[1], d: t[2], rows: t[3].concat(t[4] && FRZ ? [['賽季中', t[4] === true ? '凍結（沿用 2026 卡）' : t[4]]] : []) }; };
+    return { n: t[0], s: t[1], d: t[2], rows: t[3].concat(t[4] && FRZ ? [['賽季中', t[4] === true ? '沿用 2026 卡' : t[4]]] : []) }; };
   const cell = el => { const tr = el.closest('tr[data-n]'); if (!tr) return null;
     const n = decodeURIComponent(tr.dataset.n), p = P.find(q => q.name === n);
     return p && p.tips ? p.tips[el.dataset.ck] : null; };
@@ -381,7 +381,10 @@ th.noh{cursor:default}
 #tbl td.nm .ns{display:none}
 @media (max-width:640px){#tbl td.nm .nf{display:none}#tbl td.nm .ns{display:inline}}
 /* E-116：2027 頁的 2026 新秀沒有先驗卡，起點由順位估 */
-#tbl td.nm .rkp{margin-left:6px;padding:0 5px;border:1px solid currentColor;border-radius:8px;font-size:10px;opacity:.7;white-space:nowrap}
+/* 使用者 2026-11-01：不寫「新秀先驗」字樣，改成名字變色＋嫩芽小圖示 */
+#tbl td.nm.rk .nf,#tbl td.nm.rk .ns{color:#8ee6a8}
+#tbl tbody tr.sel td.nm.rk .nf,#tbl tbody tr.sel td.nm.rk .ns{color:inherit}
+#tbl td.nm .rkp{margin-left:5px;font-size:12px;cursor:help}
 /* 手機表格（使用者 2026-10-29：很難用）：名字欄變窄可換行、列變矮；OVR 往右滑時釘在名字旁邊，長按不選字 */
 @media (max-width:640px){
   #tbl td{padding:5px 3px;font-size:.92rem}
@@ -593,7 +596,7 @@ const EYE_Y=76;
 const shortName = n => { const i = n.indexOf(' '); return i > 0 ? n[0] + '. ' + n.slice(i + 1) : n; };
 // E-116：2027 頁（近 5 場）的新秀都是新秀先驗，起點由選秀順位估，打越多場越靠自己的數據
 const rookieTag = p => REAL_VIEW === 'g5' && ROOKIES.has(p.name)
-  ? `<span class="rkp" title="新秀先驗：沒有上季卡，起點由選秀順位與位置估，已打 ${p.gp} 場，打越多場越看自己的數據">新秀先驗</span>` : '';
+  ? `<span class="rkp" title="新秀：沒有上季卡，開季起點由選秀順位與位置估，已打 ${p.gp} 場，打越多場越看自己的數據" aria-label="新秀">🌱</span>` : '';
 // 交易球員的 team 是「舊/新」，最後一段是現在的球隊
 const teamOf = t => TEAM_COLORS[t.split('/').pop()];
 function teamVars(t) {
@@ -861,7 +864,7 @@ function list() {
   return a;
 }
 
-const ATIP = {"threeValue":["三分","3PT","三分<b>投得多</b>又<b>投得準</b>才高。很準但很少投、或投很多但不準，都不會太高。",[["投得多","三分出手（per36）"],["投得準","命中率和聯盟水準比"]],false],"mid":["中距離","MID","8 呎外到三分線內的<b>命中率</b>。投得少的人會往聯盟平均靠，不會投 3 中 3 就滿分。",[],false],"short":["近框","INS","8 呎內的<b>命中率</b>。被隊友餵球的籃下得分打折，<b>自己創造</b>的不打折。",[["被餵球的得分","只算一部分"],["不打折","自己會創造的長人"]],false],"ft":["罰球","FT","<b>罰球命中率</b>。罰得少的人會往聯盟平均靠。",[],false],"drive":["切入","DRV","<b>非助攻</b>的突破進攻量（逐球紀錄近似）。",[],true],"foulDraw":["製造犯規","FD","<b>75%</b> 罰球量 ＋ <b>25%</b> 罰球率。",[["量 75%","罰球數（per36）"],["率 25%","罰球數 ÷ 投籃出手"]],false],"pass":["傳球","PASS","<b>50%</b> 助攻量 ＋ <b>50%</b> 助攻率。",[["量 50%","助攻（per36）"],["率 50%","在場時隊友進球被他助攻的比例"]],false],"creation":["自主創造","CRT","<b>自己創造</b>的出手數（per36），扣掉被餵球、接球就投的部分。",[],false],"rebound":["籃板","REB","進攻＋防守<b>籃板率</b>：在場時搶下可搶籃板的比例。",[],false],"tovSkill":["少失誤","TO","<b>失誤 ÷ 球權次數</b>，越少越高。球權多的人分母也大，不會因為常拿球就吃虧。",[["球權次數","他投籃、罰球、助攻或失誤結束的進攻"]],false],"pressure":["壓迫","PRES","<b>抄截</b>、<b>干擾傳球</b>、對位<b>逼出失誤</b>、造進攻犯規，再扣犯規。",[["抄截／干擾／逼失誤","各 1 份"],["造進攻犯規","0.5 份"],["犯規","扣 0.25（只影響顯示）"]],"只看 2025-26 賽季數據"],"onBall":["單防","PER D","外線<b>干擾出手</b> ＋ <b>對位負擔</b> ＋ <b>威懾力</b>。",[["對位負擔","守的人球權多大"],["威懾力","被他守時，對手出手意願降低多少"]],"老將四季加權含本季；新秀只看本季"],"help":["護框","RIM","對手在<b>籃下 6 呎內</b>的命中率比預期低多少。",[],true],"dbon":["防守意識","DIQ","輪轉、站位、補防……<b>常規數據以外的防守意識</b>。真實比賽防守 RAPM 和同位置平均的差。",[["單位","RAPM 分（不是 0–99）"],["進 OVR","只有正的部分"]],false]};
+const ATIP = {"threeValue":["三分","3PT","三分<b>投得多</b>又<b>投得準</b>才高。很準但很少投、或投很多但不準，都不會太高。",[["投得多","三分出手（per36）"],["投得準","命中率和聯盟水準比"]],false],"mid":["中距離","MID","8 呎外到三分線內的<b>命中率</b>。投得少的人會往聯盟平均靠，不會投 3 中 3 就滿分。",[],false],"short":["近框","INS","8 呎內的<b>命中率</b>。被隊友餵球的籃下得分打折，<b>自己創造</b>的不打折。",[["被餵球的得分","只算一部分"],["不打折","自己會創造的長人"]],false],"ft":["罰球","FT","<b>罰球命中率</b>。罰得少的人會往聯盟平均靠。",[],false],"drive":["切入","DRV","<b>非助攻</b>的突破進攻量（逐球紀錄近似）。",[],true],"foulDraw":["製造犯規","FD","<b>75%</b> 罰球量 ＋ <b>25%</b> 罰球率。",[["量 75%","罰球數（per36）"],["率 25%","罰球數 ÷ 投籃出手"]],false],"pass":["傳球","PASS","<b>50%</b> 助攻量 ＋ <b>50%</b> 助攻率。",[["量 50%","助攻（per36）"],["率 50%","在場時隊友進球被他助攻的比例"]],false],"creation":["自主創造","CRT","<b>自己創造</b>的出手數（per36），扣掉被餵球、接球就投的部分。",[],false],"rebound":["籃板","REB","進攻＋防守<b>籃板率</b>：在場時搶下可搶籃板的比例。",[],false],"tovSkill":["少失誤","TO","<b>失誤 ÷ 球權次數</b>，越少越高。球權多的人分母也大，不會因為常拿球就吃虧。",[["球權次數","他投籃、罰球、助攻或失誤結束的進攻"]],false],"pressure":["壓迫","PRES","<b>抄截</b>、<b>干擾傳球</b>、對位<b>逼出失誤</b>、造進攻犯規，再扣犯規。",[["抄截／干擾／逼失誤","各 1 份"],["造進攻犯規","0.5 份"],["犯規","扣 0.25（只影響顯示）"]],"只看 2025-26 賽季數據"],"onBall":["單防","PER D","外線<b>干擾出手</b> ＋ <b>對位負擔</b> ＋ <b>威懾力</b>。",[["對位負擔","守的人球權多大"],["威懾力","被他守時，對手出手意願降低多少"]],"老將四季加權含本季；新秀只看本季"],"help":["護框","RIM","對手在<b>籃下 6 呎內</b>的命中率比預期低多少。",[],"老將四季加權含本季；新秀只看本季"],"dbon":["防守意識","DIQ","輪轉、站位、補防……<b>常規數據以外的防守意識</b>。真實比賽防守 RAPM 和同位置平均的差。",[["單位","RAPM 分（不是 0–99）"],["進 OVR","只有正的部分"]],false]};
 const FRZ = false;
 function head() {
   const th = (k, en, zh, cls = '') =>
@@ -991,7 +994,7 @@ function render() {
   document.querySelector('#tbl tbody').innerHTML = rows.map((p, i) => `
     <tr data-n="${encodeURIComponent(p.name)}" class="${p.name === st.sel ? 'sel' : ''}">
       <td class="no">${start + i + 1}</td>
-      <td class="nm" title="${esc(p.name)}"><span class="nf">${esc(p.name)}</span><span class="ns">${esc(shortName(p.name))}</span>${rookieTag(p)}</td>
+      <td class="nm${rookieTag(p) ? ' rk' : ''}" title="${esc(p.name)}"><span class="nf">${esc(p.name)}</span><span class="ns">${esc(shortName(p.name))}</span>${rookieTag(p)}</td>
       <td class="sub${sc('pos')}">${p.pos}</td>
       <td class="sub${sc('team')}">${teamCell(p.team)}</td>
       <td class="sub${sc('ht')}">${ht(p.ht)}</td>
