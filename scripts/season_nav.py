@@ -242,7 +242,7 @@ ATTR_TIPS = {
     'tovSkill': ('少失誤', 'TO', '<b>失誤 ÷ 球權次數</b>，越少越高。球權多的人分母也大，不會因為常拿球就吃虧。',
                  [('球權次數', '他投籃、罰球、助攻或失誤結束的進攻')], False),
     'pressure': ('壓迫', 'PRES', '<b>抄截</b>、<b>干擾傳球</b>、對位<b>逼出失誤</b>、造進攻犯規，再扣犯規。',
-                 [('抄截／干擾／逼失誤', '各 1 份'), ('造進攻犯規', '0.5 份'), ('犯規', '扣 0.25（只影響顯示）')], True),
+                 [('抄截／干擾／逼失誤', '各 1 份'), ('造進攻犯規', '0.5 份'), ('犯規', '扣 0.25（只影響顯示）')], '只看 2025-26 賽季數據'),
     'onBall': ('單防', 'PER D', '外線<b>干擾出手</b> ＋ <b>對位負擔</b> ＋ <b>威懾力</b>。',
                [('對位負擔', '守的人球權多大'), ('威懾力', '被他守時，對手出手意願降低多少')], True),
     'help': ('護框', 'RIM', '對手在<b>籃下 6 呎內</b>的命中率比預期低多少。', [], True),
@@ -255,7 +255,8 @@ ATTR_TIPS = {
 # - 版面由上到下：名稱（金 #f5d780）＋英文縮寫（灰）＋右側大數字 → 一句說明 → 細線下的細項表 → 更細的線下灰色註腳。
 # - 細項表三欄：名稱（灰 #8b919a）｜數值（白 #e8eaed，數字等寬）｜PR（小灰字）。聯盟前十在數值後加金色「（#名次）」。
 # - 「越少越好」的項目（犯規）數值旁寫（多）／（普通）／（少），PR 一律是越高越好。卡上不解釋 PR 與名次（使用者 2026-11-01）。
-# - 預設放元素下方，放不下改上方；左右夾在視窗內 8px。觸控點一下顯示 3 秒；捲動就收起。
+# - 預設放元素下方，放不下改上方；左右夾在視窗內 8px。捲動就收起。
+# - 觸控（使用者 2026-11-01）：表頭點一下只排序，長按（450ms）才顯示說明；格子點一下顯示 1.5 秒；長按一直顯示，點別處才收，捲動時跟著元素。
 TIP_CSS = """<style>
 .atip{position:fixed;z-index:60;left:0;top:0;width:min(290px,calc(100vw - 16px));padding:11px 12px 10px;background:#101114;border:1px solid rgba(255,255,255,.08);border-radius:10px;box-shadow:0 12px 28px rgba(0,0,0,.5),0 0 0 1px rgba(0,0,0,.4);color:#c2c7ce;font:400 12px/1.5 var(--f-body);text-align:left;pointer-events:none;opacity:0;transform:translateY(-3px);transition:opacity .14s cubic-bezier(.16,1,.3,1),transform .14s cubic-bezier(.16,1,.3,1)}
 .atip.on{opacity:1;transform:none}
@@ -275,29 +276,22 @@ TIP_CSS = """<style>
 .atip .r em{color:#7a808a;font:normal 10.5px var(--f-body);text-align:right}
 .atip .rk{color:#f5d780;font-style:normal;font-weight:700}
 .atip .f{color:#6b7280;font-size:10.5px;line-height:1.5;border-top:1px solid rgba(255,255,255,.05);margin-top:8px;padding-top:7px}
+@media (hover:none){[data-tip],[data-ck]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}}
 @media (prefers-reduced-motion:reduce){.atip{transition:none}}
 </style>
 """
 # 表頭帶 data-tip（ATIP 說明）、格子帶 data-ck（該列球員 p.tips[k]）；同一個浮動卡跟著元素定位
 TIP_JS = """<script>
 (() => {
-  let tip, cur = null, timer;
+  let tip, cur = null, timer, pinned = false;
   const head = k => { const t = ATIP[k]; if (!t) return null;
-    return { n: t[0], s: t[1], d: t[2], rows: t[3].concat(t[4] && FRZ ? [['賽季中', '凍結（沿用 2026 卡）']] : []) }; };
+    return { n: t[0], s: t[1], d: t[2], rows: t[3].concat(t[4] && FRZ ? [['賽季中', t[4] === true ? '凍結（沿用 2026 卡）' : t[4]]] : []) }; };
   const cell = el => { const tr = el.closest('tr[data-n]'); if (!tr) return null;
     const n = decodeURIComponent(tr.dataset.n), p = P.find(q => q.name === n);
     return p && p.tips ? p.tips[el.dataset.ck] : null; };
   const row = ([a, b, pr, rk]) => `<span>${a}</span><b>${b}${rk ? `<i class="rk">（#${rk}）</i>` : ''}</b>` +
     (pr === undefined ? '' : `<em>${pr == null ? '' : 'PR ' + pr}</em>`);
-  const show = (el, touch) => {
-    const t = el.dataset.tip ? head(el.dataset.tip) : cell(el); if (!t) return;
-    tip = tip || document.body.appendChild(Object.assign(document.createElement('div'), { className: 'atip' }));
-    tip.setAttribute('role', 'tooltip');
-    tip.innerHTML = `<div class="h"><span class="n">${t.n}</span><span class="s">${t.s}</span>${t.v != null ? `<b class="v">${t.v}</b>` : ''}</div>` +
-      (t.d ? `<div class="d">${t.d}</div>` : '') +
-      (t.rows.length ? `<div class="r${t.rows[0].length > 2 ? ' r3' : ''}">${t.rows.map(row).join('')}</div>` : '') +
-      (t.foot && t.foot.length ? `<div class="f">${t.foot.join('<br>')}</div>` : '');
-    cur = el;
+  const place = el => {
     const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
     let y = r.bottom + 9, below = true;
     if (y + h > innerHeight - 8) { y = r.top - h - 9; below = false; }
@@ -306,19 +300,56 @@ TIP_JS = """<script>
     tip.style.top = Math.max(8, y) + 'px';
     tip.style.setProperty('--ax', Math.min(Math.max(14, r.left + r.width / 2 - x), w - 14) + 'px');
     tip.classList.toggle('below', below); tip.classList.toggle('above', !below);
+  };
+  // ms：觸控點一下顯示多久後收起；0＝不自動收（長按）
+  const show = (el, ms) => {
+    const t = el.dataset.tip ? head(el.dataset.tip) : cell(el); if (!t) return;
+    tip = tip || document.body.appendChild(Object.assign(document.createElement('div'), { className: 'atip' }));
+    tip.setAttribute('role', 'tooltip');
+    tip.innerHTML = `<div class="h"><span class="n">${t.n}</span><span class="s">${t.s}</span>${t.v != null ? `<b class="v">${t.v}</b>` : ''}</div>` +
+      (t.d ? `<div class="d">${t.d}</div>` : '') +
+      (t.rows.length ? `<div class="r${t.rows[0].length > 2 ? ' r3' : ''}">${t.rows.map(row).join('')}</div>` : '') +
+      (t.foot && t.foot.length ? `<div class="f">${t.foot.join('<br>')}</div>` : '');
+    cur = el; pinned = ms === 0;
+    place(el);
     tip.classList.add('on');
     clearTimeout(timer);
-    if (touch) timer = setTimeout(hide, 3000);
+    if (ms) timer = setTimeout(hide, ms);
   };
-  const hide = () => { cur = null; if (tip) tip.classList.remove('on'); };
+  const hide = () => { cur = null; pinned = false; clearTimeout(timer); if (tip) tip.classList.remove('on'); };
   const target = e => e.target.closest('[data-tip],[data-ck]');
+  // 滑鼠：移上去就顯示
   document.addEventListener('pointerover', e => {
+    if (e.pointerType === 'touch') return;
     const el = target(e);
-    if (el !== cur) el ? show(el, e.pointerType === 'touch') : hide();
+    if (el !== cur) el ? show(el) : hide();
   });
-  document.addEventListener('focusin', e => { const el = target(e); el ? show(el) : hide(); });
-  document.addEventListener('focusout', hide);
-  addEventListener('scroll', hide, true);
+  // 觸控：表頭點一下只排序、長按才顯示說明；格子點一下顯示 1.5 秒，長按一直顯示到點別處或捲動
+  let press = null, eat = false, lastTouch = 0;
+  document.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'touch') return;
+    lastTouch = Date.now();
+    const el = target(e);
+    if (pinned && el !== cur) hide();
+    if (!el) return;
+    press = { el, x: e.clientX, y: e.clientY, t: setTimeout(() => { press = null; eat = true; show(el, 0); }, 450) };
+  });
+  const cancel = () => { if (press) { clearTimeout(press.t); press = null; } };
+  document.addEventListener('pointermove', e => {
+    if (press && Math.hypot(e.clientX - press.x, e.clientY - press.y) > 10) cancel();
+  });
+  document.addEventListener('pointercancel', cancel);
+  document.addEventListener('pointerup', e => {
+    if (!press) return;
+    const el = press.el; cancel();
+    if (el.dataset.ck) show(el, 1500);
+  });
+  // 長按之後的 click 不算點擊（表頭不排序）；長按不叫出系統選單
+  document.addEventListener('click', e => { if (eat) { eat = false; e.preventDefault(); e.stopPropagation(); } }, true);
+  document.addEventListener('contextmenu', e => { if (target(e) && Date.now() - lastTouch < 1500) e.preventDefault(); });
+  document.addEventListener('focusin', e => { if (Date.now() - lastTouch < 800) return; const el = target(e); el ? show(el) : hide(); });
+  document.addEventListener('focusout', () => { if (!pinned) hide(); });
+  addEventListener('scroll', () => { if (pinned && cur) place(cur); else hide(); }, true);
 })();
 </script>
 """

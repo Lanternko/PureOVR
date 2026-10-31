@@ -148,7 +148,7 @@ def main():
         if has_pd:
             t['pressure'] = (sn.cell_tip('壓迫', 'PRES', round(float(r['pressure'])), [], d='新秀：沒有 2025-26 的壓迫分量')
                              if r['presDisplay'] == '' or r['name'] not in ptips else
-                             pres_tip(float(r['presDisplay']), float(r['pressure']), ptips[r['name']], n_pres, '（2025-26，賽中凍結）'))
+                             pres_tip(float(r['presDisplay']), float(r['pressure']), ptips[r['name']], n_pres, '（只看 2025-26 賽季數據）'))
         tr = trows.get(int(r['playerId']))
         if tr:
             t['tovSkill'] = tov_tip(float(r['tovSkill']), tr, n_tov, '2026-27 至今', pool_min)
