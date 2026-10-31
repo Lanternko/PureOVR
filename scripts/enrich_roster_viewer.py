@@ -166,8 +166,13 @@ CSS = """
   .card .who>.real-h{grid-column:4;grid-row:3;align-self:start;justify-self:center;margin:-4px 18px 14px;white-space:nowrap;letter-spacing:.02em}
   .real-h .rtm{display:none}
   /* 身高在名字旁；較開季掛圓環下 */
-  .who .nm .nht{margin-left:14px;font-size:1rem;font-weight:600;color:var(--muted);text-transform:none;white-space:nowrap}
+  .who .nm .nht{margin-left:10px;vertical-align:middle;font-size:1rem;font-weight:600;color:var(--muted);text-transform:none;white-space:nowrap}
   .who .nm .nht i{font-style:normal;margin-left:10px}
+  .who .nm .nbio{display:inline-block;vertical-align:baseline;margin-left:14px;font-size:1rem;font-weight:600;color:var(--muted);text-transform:none;white-space:nowrap}
+  .who .nm .nbio i{font-style:normal}
+  .who .nm .nbio i+i{margin-left:10px}
+  .who .nm .b1,.who .nm.tight .nbio{display:none}
+  .who .nm.tight .b1{display:inline}
   .card .ring{flex-direction:column;gap:2px}
   .ring .rd{font:700 1.25rem var(--f-disp);font-variant-numeric:tabular-nums}
   .ring .rd.up{color:var(--g-a)}
@@ -179,8 +184,8 @@ CSS = """
   .rx .rsub{flex-basis:100%}
   .card .who>.g5{grid-column:1/-1;grid-row:4;margin:0 18px 14px}
 }
-.who .nm .nht,.ring .rd{display:none}
-@media (min-width:641px){.who .nm .nht,.ring .rd{display:inline}}
+.who .nm .nht,.who .nm .nbio,.ring .rd{display:none}
+@media (min-width:641px){.who .nm .nht,.ring .rd{display:inline}.who .nm .nbio{display:inline-block}.who .nm.tight .nbio{display:none}}
 @media (min-width:641px) and (max-width:1099px){
   .card{grid-template-columns:auto minmax(0,1fr) auto}
   .card .ring{grid-column:3;grid-row:1;padding:14px 18px 0}
@@ -328,6 +333,28 @@ function bioTag(p) {
   const sal = b.sal == null ? '' : b.sal >= 1e6 ? `$${(b.sal / 1e6).toFixed(1)}M` : `$${Math.round(b.sal / 1e3)}K`;
   return (b.age ? `<i>${b.age}y</i>` : '') + (sal ? `<i>${sal}</i>` : '');
 }
+// 姓後面的年齡薪水換到下一行、姓本身被切開、或起點超過數據框 → 改成三個都放名右邊（.nm.tight）
+function fitBio() {
+  document.querySelectorAll('.who .nm').forEach(nm => {
+    const b = nm.querySelector('.nbio'), l = nm.querySelector('.last'), h = nm.querySelector('.nht');
+    if (!b || !l || !h) return;
+    nm.classList.remove('tight');
+    if (!b.offsetParent || !b.textContent) return;
+    const lr = l.getClientRects(), br = b.getBoundingClientRect();
+    // 起點超過下方數據框（得分…正負值）右緣也算放不下（使用者 2026-11-01）
+    const box = nm.parentElement.querySelector('.rmain');
+    if (lr.length > 1 || br.top >= lr[lr.length - 1].bottom - 4 || (box && box.offsetParent && br.left > box.getBoundingClientRect().right))
+      nm.classList.add('tight');
+  });
+}
+let fitBioQ = 0;
+const fitBioSoon = () => { if (!fitBioQ) fitBioQ = requestAnimationFrame(() => { fitBioQ = 0; fitBio(); }); };
+document.addEventListener('DOMContentLoaded', () => {
+  new MutationObserver(fitBioSoon).observe(document.body, {childList: true, subtree: true});
+  addEventListener('resize', fitBioSoon);
+  document.fonts && document.fonts.ready.then(fitBioSoon);
+  fitBioSoon();
+});
 function realBox(p) {
   const r = REAL[p.name];
   if (!r) return '<div class="real-h">真實數據：找不到這位球員的 2025-26 例行賽紀錄</div>';
@@ -684,10 +711,11 @@ def inject(path, real, view='g5'):
         if new not in s:
             assert s.count(old) == 1, old
             s = s.replace(old, new, 1)
-    # 桌機整組搬到名（SHAI）右邊（使用者 2026-11-01：接在姓後面不好看，長名字還會換行）
+    # 桌機（使用者 2026-11-01）：身高放名（SHAI）右邊、年齡薪水放姓後面；姓後面放不下時 fitBio() 把三個都搬到名右邊（.b1）
     s = s.replace('<span class="tht">${ht(p.ht)}</span>', '<span class="tht">${ht(p.ht)}${bioTag(p)}</span>')
     s = s.replace('<span class="first">${esc(first)}</span>${esc(last)}<span class="nht">${ht(p.ht)}</span>',
-                  '<span class="first">${esc(first)}<span class="nht">${ht(p.ht)}${bioTag(p)}</span></span>${esc(last)}')
+                  '<span class="first">${esc(first)}<span class="nht">${ht(p.ht)}<span class="b1">${bioTag(p)}</span></span></span>'
+                  '<span class="last">${esc(last)}</span><span class="nbio">${bioTag(p)}</span>')
     path.write_text(s, encoding='utf-8')
     missing = [n for n in roster if n not in sub]
     print(f'{path}: {len(sub)}/{len(roster)} 人有真實數據；缺 {len(missing)}: {missing[:10]}')
