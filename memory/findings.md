@@ -940,3 +940,10 @@
 - 證據：`reports/E176-jw-offense/{jw_off.txt,off_vs_ext.txt}`
 - 狀態：待驗（同季樣本內；外部指標與 T6 同源。樣本外要用下季 RAPM 另寫預註冊，L-026）。
 - 相關：F-110、F-109、E-176、E-173
+
+### F-114
+- 日期：2026-11-01
+- 說法：Jalen Williams 進攻偏高不是位置標籤造成的。卡片位置改成 BBRef 上場比例（JW SG 18／SF 51／PF 31%）後，JW OVR 88.2→88.0、OFF +2.30→+2.19；SF／PF 的 pass 與 OFF 殘差 Spearman −0.39／−0.58 → −0.37／−0.41，仍為負。位置比例本身對下季 RAPM 略差（Δρ −0.013，下界 −0.025），E-177 不採用。
+- 證據：`reports/card-0.2.9a+E177-bbref-position-shares/results.json`（examples、e176_resid、judge）
+- 狀態：成立（JW 部分）；「前鋒傳球、自主進攻被高估」仍待樣本外驗證（F-113）。
+- 相關：E-177、E-176、F-113、F-033、E-082
