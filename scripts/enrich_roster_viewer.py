@@ -83,9 +83,9 @@ CSS = """
 #tbl td.nm .ns{display:none}
 @media (max-width:640px){#tbl td.nm .nf{display:none}#tbl td.nm .ns{display:inline}}
 /* E-116：2027 頁的 2026 新秀沒有先驗卡，起點由順位估 */
-/* 使用者 2026-11-01：不寫「新秀先驗」字樣、不用 emoji；名字用玉綠漸層（穩重清新、帶點質地）＋自製嫩芽圖示（mask，同一道漸層） */
-#tbl td.nm.rk .nf,#tbl td.nm.rk .ns{background:repeating-linear-gradient(118deg,rgba(18,48,36,.28) 0 1px,transparent 1px 2.6px),linear-gradient(176deg,#dcefe3 0%,#9ccbb0 45%,#5f9d80 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
-#tbl td.nm .rkp{display:inline-block;width:13px;height:13px;margin-left:5px;vertical-align:-2px;cursor:help;background:linear-gradient(160deg,#dcefe3 0%,#9ccbb0 45%,#5f9d80 100%);-webkit-mask:var(--sprout) center/contain no-repeat;mask:var(--sprout) center/contain no-repeat;--sprout:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M7.1 8h1.8v7.2H7.1z'/%3E%3Cpath d='M7.9 10.2C7.9 5.8 5.2 3.2.6 3.2c0 4.4 2.8 7 7.3 7z'/%3E%3Cpath d='M8.1 8.6C8.1 3.6 11 .8 15.4.8c0 4.9-2.9 7.8-7.3 7.8z'/%3E%3C/svg%3E")}
+/* 使用者 2026-11-01：不寫「新秀先驗」字樣、不用 emoji；名字用淺藍漸層＋一道斜向冰面反光（使用者 2026-11-01 從六種紋路選 E）＋自製嫩芽圖示（mask，同一道漸層） */
+#tbl td.nm.rk .nf,#tbl td.nm.rk .ns{background:linear-gradient(105deg,transparent 0 38%,rgba(255,255,255,.55) 46%,transparent 54%),linear-gradient(176deg,#e6f3fc 0%,#a8d0ec 45%,#6a9fc6 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+#tbl td.nm .rkp{display:inline-block;width:13px;height:13px;margin-left:5px;vertical-align:-2px;cursor:help;background:linear-gradient(160deg,#e6f3fc 0%,#a8d0ec 45%,#6a9fc6 100%);-webkit-mask:var(--sprout) center/contain no-repeat;mask:var(--sprout) center/contain no-repeat;--sprout:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M7.1 8h1.8v7.2H7.1z'/%3E%3Cpath d='M7.9 10.2C7.9 5.8 5.2 3.2.6 3.2c0 4.4 2.8 7 7.3 7z'/%3E%3Cpath d='M8.1 8.6C8.1 3.6 11 .8 15.4.8c0 4.9-2.9 7.8-7.3 7.8z'/%3E%3C/svg%3E")}
 #tbl tbody tr.sel td.nm.rk .nf,#tbl tbody tr.sel td.nm.rk .ns{background:none;color:inherit;-webkit-text-fill-color:currentColor}
 #tbl tbody tr.sel td.nm .rkp{background:currentColor}
 /* 手機表格（使用者 2026-10-29：很難用）：名字欄變窄可換行、列變矮；OVR 往右滑時釘在名字旁邊，長按不選字 */
