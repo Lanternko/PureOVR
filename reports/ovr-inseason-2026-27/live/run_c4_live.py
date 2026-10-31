@@ -45,14 +45,14 @@ if 'foulDraw' not in ATTRS:
     ATTRS.insert(ATTRS.index('drive') + 1, 'foulDraw')
 import e062_switch as _E062  # noqa: E402
 # E-074：賽中先驗換成 card 0.2.2（022）；E-091：OVR 層再換成 card 0.2.4（024，預設）；020＝inseason 0.2.0c 行為（先驗屬性 card 0.1.2、係數／錨點 card 0.1.2／0.2.0 階段）。
-CARD_MODE = os.environ.get('CARD_MODE', '028')  # 028（預設，card 0.2.8，R-102，OVR 迴歸目標換 T6）| 027d（card 0.2.7d，使用者 2026-10-31「一」，R-098 後續）| 027b（E-128，R-085）| 027（inseason 0.2.7，E-111）| 025（inseason 0.2.5a，E-095）| 026 | 024 | 022 | 020
-if CARD_MODE not in ('025', '024', '022', '020', '026', '027', '027b', '027d', '028'):
-    raise SystemExit('CARD_MODE 只接受 025、024、022、020、026、027、027b、027d 或 028')
-M27B_MODE = CARD_MODE in ('027b', '027d', '028')                 # E-128（2026-10-30 使用者破例採用，預設，R-085）：card 0.2.7b 先驗＋pass 量×率＋help／threeValue 尾巴；OVR 層沿用 027 的 UL 機制
-M27_MODE = CARD_MODE in ('027', '027b', '027d', '028')                    # E-111（2026-10-30 採用；027b 沿用）：card 0.2.7 先驗＋UL6 OVR 層＋合併池映射（026 機制＋errata）
-M26_MODE = CARD_MODE in ('026', '027', '027b', '027d', '028')           # E-107（實驗中，預設不開）：card 0.2.6 先驗＋E-101 OVR 層＋0.2.6 量尺的賽中映射；027 沿用其合併池機制
-USAGE_MODE = CARD_MODE in ('024', '025', '026', '027', '027b', '027d', '028')         # 用人回歸層（E-091）
-NEW_PRIOR = CARD_MODE in ('022', '024', '025', '026', '027', '027b', '027d', '028')          # card 0.2.2 能力值先驗（foulDraw E-070 公式、presDisplay／foulDisc 顯示）
+CARD_MODE = os.environ.get('CARD_MODE', '029')  # 029（預設，card 0.2.9，R-104，用人層拿掉 y·d·L）| 028（card 0.2.8，R-102，OVR 迴歸目標換 T6）| 027d（card 0.2.7d，使用者 2026-10-31「一」，R-098 後續）| 027b（E-128，R-085）| 027（inseason 0.2.7，E-111）| 025（inseason 0.2.5a，E-095）| 026 | 024 | 022 | 020
+if CARD_MODE not in ('025', '024', '022', '020', '026', '027', '027b', '027d', '028', '029'):
+    raise SystemExit('CARD_MODE 只接受 025、024、022、020、026、027、027b、027d、028 或 029')
+M27B_MODE = CARD_MODE in ('027b', '027d', '028', '029')                 # E-128（2026-10-30 使用者破例採用，預設，R-085）：card 0.2.7b 先驗＋pass 量×率＋help／threeValue 尾巴；OVR 層沿用 027 的 UL 機制
+M27_MODE = CARD_MODE in ('027', '027b', '027d', '028', '029')                    # E-111（2026-10-30 採用；027b 沿用）：card 0.2.7 先驗＋UL6 OVR 層＋合併池映射（026 機制＋errata）
+M26_MODE = CARD_MODE in ('026', '027', '027b', '027d', '028', '029')           # E-107（實驗中，預設不開）：card 0.2.6 先驗＋E-101 OVR 層＋0.2.6 量尺的賽中映射；027 沿用其合併池機制
+USAGE_MODE = CARD_MODE in ('024', '025', '026', '027', '027b', '027d', '028', '029')         # 用人回歸層（E-091）
+NEW_PRIOR = CARD_MODE in ('022', '024', '025', '026', '027', '027b', '027d', '028', '029')          # card 0.2.2 能力值先驗（foulDraw E-070 公式、presDisplay／foulDisc 顯示）
 E062_MODE = os.environ.get('E062_MODE', 'off')   # off | C4s | C4r（E-062，預設關）
 _E062.install(E062_MODE)
 
@@ -66,9 +66,9 @@ if E064_MODE == 'G1':
     SA.SEASON_MIN_SAMPLE['stamina'] = 1
 if NEW_PRIOR and E064_MODE != 'G1':
     raise SystemExit('CARD_MODE=022／024 只支援 E064_MODE=G1（錨點是每場副版）')
-VERSION = 'inseason 0.2.8'  # R-050／R-102：跟先驗 card 0.2.8 同號； 第一個字面值會被 daily_inseason_update.probe_base_version 以正規式讀取，勿改成括號／條件式開頭
-if CARD_MODE != '028':
-    VERSION = 'inseason 0.2.7b' if CARD_MODE == '027b' else 'inseason 0.2.7d' if CARD_MODE == '027d' else VERSION   # 舊模式只供比對；其他模式本來就不是 0.2.7 系列，標籤僅供參考
+VERSION = 'inseason 0.2.9'  # R-050／R-104：跟先驗 card 0.2.9 同號； 第一個字面值會被 daily_inseason_update.probe_base_version 以正規式讀取，勿改成括號／條件式開頭
+if CARD_MODE != '029':
+    VERSION = 'inseason 0.2.7b' if CARD_MODE == '027b' else 'inseason 0.2.7d' if CARD_MODE == '027d' else 'inseason 0.2.8' if CARD_MODE == '028' else VERSION   # 舊模式只供比對；其他模式本來就不是 0.2.7 系列，標籤僅供參考
 if CARD_MODE == '027':
     VERSION = 'inseason 0.2.7'  # E-111 行為（逐位元重現 inseason 0.2.7）
 if CARD_MODE == '026':
@@ -82,8 +82,8 @@ if CARD_MODE == '022':
 if CARD_MODE == '020':
     VERSION = 'inseason 0.2.0' if E064_MODE == 'G1' else 'inseason 0.1.2'  # 020：重現 0.2.0c；off／G0：重現舊頁用
 VERSION += ('' if E062_MODE == 'off' else '+E062-' + E062_MODE) + ('+E064-G0' if E064_MODE == 'G0' else '')
-CARD_VERSION = ({'025': 'card 0.2.5', '024': 'card 0.2.4', '026': 'card 0.2.6', '027': 'card 0.2.7', '027b': 'card 0.2.7b', '027d': 'card 0.2.7d', '028': 'card 0.2.8'}.get(CARD_MODE, 'card 0.2.2')) if NEW_PRIOR else ('card 0.2.0' if E064_MODE == 'G1' else 'card 0.1.2')
-SAT = CARD_MODE in ('025', '026', '027', '027b', '027d', '028')      # 026／027 沿用 W（scale 15）
+CARD_VERSION = ({'025': 'card 0.2.5', '024': 'card 0.2.4', '026': 'card 0.2.6', '027': 'card 0.2.7', '027b': 'card 0.2.7b', '027d': 'card 0.2.7d', '028': 'card 0.2.8', '029': 'card 0.2.9'}.get(CARD_MODE, 'card 0.2.2')) if NEW_PRIOR else ('card 0.2.0' if E064_MODE == 'G1' else 'card 0.1.2')
+SAT = CARD_MODE in ('025', '026', '027', '027b', '027d', '028', '029')      # 026／027 沿用 W（scale 15）
 PRIOR = '2025-26'
 TARGET = '2026-27'
 G_GAMES = 82
@@ -101,7 +101,7 @@ else:
     PRIOR_CARD = HERE / 'prior-2025-26-card012.json'  # build_prior_012.py 產出（x0＝card 0.1.2）
     CARD_DIR = ROOT / 'reports/card-0.1.1+E060-onball-targeting/primary'
 CARD_SUMMARY = CARD_DIR / 'summary.json'                # 凍結迴歸係數／錨點（022：card 0.2.2 P1 primary）
-RAPM_STAR = (ROOT / 'reports/card-0.2.8/rapm-T6.csv') if CARD_MODE == '028' else ROOT / 'reports/impact-rapm/rapm.csv'   # 028：align／封頂讀 E-153 K6 的 T6 換進去的 RAPM（與 card 0.2.8 同口徑）
+RAPM_STAR = (ROOT / 'reports/card-0.2.8/rapm-T6.csv') if CARD_MODE in ('028', '029') else ROOT / 'reports/impact-rapm/rapm.csv'   # 028：align／封頂讀 E-153 K6 的 T6 換進去的 RAPM（與 card 0.2.8 同口徑）
 BIO25 = ROOT / 'data/benchmark-source/bio.json'
 FORMAL_RANKING = (ROOT / 'reports/card-0.2.6/ranking.csv') if M26_MODE else (ROOT / 'reports/card-0.2.5/ranking.csv') if CARD_MODE == '025' else (ROOT / 'reports/card-0.2.4/ranking.csv') if CARD_MODE == '024' else (
     (ROOT / 'reports/card-0.2.2/ranking.csv') if CARD_MODE == '022' else (
@@ -151,7 +151,7 @@ if M27B_MODE:
     POOL026 = HERE / 'pool-027b.json'                  # e128-card027b/build_pool_027b.py 產出
 # card 0.2.7d（CARD_MODE=027d，預設）＝027b 機制，只換 OVR 層：屬性迴歸＝E-131 K1（無 physique，0.2.7c）、用人層＝E-147 連續 d（0.2.7d）。
 # 能力值欄 0.2.7b／c／d 逐位元相同，所以先驗 x0、pool-027b、三分 acc 先驗照用。
-M27D_MODE = CARD_MODE in ('027d', '028')   # 028 沿用 027d 的先驗／池／usage 檢查路徑，只換卡目錄與 usage 檔
+M27D_MODE = CARD_MODE in ('027d', '028', '029')   # 028／029 沿用 027d 的先驗／池／usage 檢查路徑，只換卡目錄與 usage 檔
 E131_DIR = ROOT / 'reports/card-0.2.7b+E131-no-physique'
 if M27D_MODE:
     CARD_DIR = E131_DIR / 'cards/K1/primary'
@@ -167,6 +167,14 @@ if CARD_MODE == '028':   # card 0.2.8（R-102）：OVR 迴歸目標 T6（E-153 K
     FORMAL_RANKING = ROOT / 'reports/card-0.2.8/ranking.csv'
     CARD024_SUMMARY = ROOT / 'reports/card-0.2.8/summary.json'
     USAGE_FILE = HERE / 'usage-2025-26-card028.json'
+    E084_RESULTS = USAGE_FILE
+    E064_ANCHORS_FILE = USAGE_FILE
+if CARD_MODE == '029':   # card 0.2.9（R-104）：0.2.8 的用人層拿掉 y·d·L（E-158 Y0）；部件卡同 0.2.8；用人層 usage-2025-26-card029.json（build_usage_029.py，b8_ydL＝0）
+    CARD_DIR = ROOT / 'reports/card-0.2.9/cards/K6/primary'
+    CARD_SUMMARY = CARD_DIR / 'summary.json'
+    FORMAL_RANKING = ROOT / 'reports/card-0.2.9/ranking.csv'
+    CARD024_SUMMARY = ROOT / 'reports/card-0.2.9/summary.json'
+    USAGE_FILE = HERE / 'usage-2025-26-card029.json'
     E084_RESULTS = USAGE_FILE
     E064_ANCHORS_FILE = USAGE_FILE
 # E-064（預註冊 §2、§4、§5）：每場 g = pred × MPG_hat / 36，兩段式映射錨點＝V2.FROZEN_SUMMARY（此處＝card 0.1.2 摘要）

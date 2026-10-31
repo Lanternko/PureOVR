@@ -83,6 +83,9 @@ CSS = """<style>
 # 每條寫成「目標：做了什麼」（冒號前會加粗），用球迷看得懂的話，不寫 E／R 編號；代價一句帶過。
 TRACK = {'card': '正式卡', 'inseason': '新賽季'}
 PATCH_NOTES = [
+    (('card', 'inseason'), '0.2.9', '2026-11-01', [
+        '拿掉「年輕人在爛隊打折」：換成 DARKO 加 BPM 當標準後，這個折扣反而讓年輕人排得更不準。Flagg 195 → 79 名、Kyshawn George 475 → 162 名。',
+        '代價：在不算爛的球隊、靠球權撐分數的年輕人往下，Knueppel 33 → 87 名、Banchero 65 → 158 名、Castle 69 → 157 名；OVR 前 20 名只換一人（Ty Jerome 進、Amen Thompson 出）。']),
     (('card', 'inseason'), '0.2.8', '2026-11-01', [
         'OVR 的評分標準整個換成 DARKO 加 BPM 的季內平均（不再用 RAPM）：Edwards 38 → 10 名、Banchero 166 → 65 名、Flagg 230 → 195 名。',
         '代價：防守型角色球員往下，Herb Jones 19 → 156 名；OVR 前 20 名換九人（Edwards、Tatum、Curry、Maxey 等進，Derrick White、Markkanen、Anunoby 等出）。']),
