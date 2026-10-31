@@ -9,7 +9,7 @@
 
 | 檔案 | 用途 | ID |
 | --- | --- | --- |
-| [handoff.md](handoff.md) | 交接說明：**只有「目前狀態」一份**（不是日誌）。進行中的工作、誰在做、未 commit 的改動、下一步、開放問題。每次收工覆寫。 | 無 |
+| [handoff.md](handoff.md) | 交接說明：**只有「目前狀態」一份**（不是日誌）。進行中的工作、誰在做、未 commit 的改動、下一步、開放問題。每次收工覆寫；每條最多兩行、目標 8KB 內，UI 小改不寫。 | 無 |
 | digest.md | **開工讀這份**：lessons／rulings 一行一條摘要表。不進 git，開工跑 `python memory/build_digest.py` 重產，不手改。 | 無 |
 | [lessons.md](lessons.md) | 經驗教訓全文：發生什麼、以後一律怎麼做、對應的測試或關卡。只用 grep 查。 | `L-001`… |
 | [rulings.md](rulings.md) | 裁決全文：使用者對球員評價與驗收方式的裁定、籃球規則、硬規則。只用 grep 查。 | `R-001`… |
