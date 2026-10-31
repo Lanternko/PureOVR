@@ -933,3 +933,10 @@
 - 證據：reports/card-0.2.9a/cards/K6/primary/summary.json 的 formula 逐屬性分解；rookie_defense.veteran(c=0) 給 JW help 77.9；scripts/season_nav.off_def 的位置別係數。
 - 狀態：已驗（拆解可重算，pred0 算回差 <0.01）。PF×傳球係數是否在樣本外成立未驗。2026-11-01 ΔOVR 基準已依 R-112 修正（JW +2.34→+0.36）。
 - 相關：E-172、F-108、R-110、R-112
+
+### F-113
+- 日期：2026-11-01
+- 說法：卡片 OFF 對 SF／PF 系統性高估「傳球、自主進攻高」的人。2025-26（MIN≥900，290 人）OFF 名次對同季外部進攻平均名次的殘差，和 pass 的 Spearman：PF −0.51、SF −0.40（PG +0.04、SG +0.20）；creation PF −0.46、SF −0.28。JW OFF 第 15、外部第 89（DARKO O 27、OBPM 87、EPM O 191）；Jalen Johnson 第 24／79 同型。JW OFF +2.28 中傳球 +1.31（PF 係數）、creation +0.64、tovSkill +0.54，投籃合計 −0.34。
+- 證據：`reports/E176-jw-offense/{jw_off.txt,off_vs_ext.txt}`
+- 狀態：待驗（同季樣本內；外部指標與 T6 同源。樣本外要用下季 RAPM 另寫預註冊，L-026）。
+- 相關：F-110、F-109、E-176、E-173
