@@ -16,6 +16,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import rookie_defense as RD  # noqa: E402
 import defense_bonus as DB  # noqa: E402
+import pres_drive as PD  # noqa: E402（2026-11-01 壓迫／切入賽中解凍；UNFREEZE_PD=0 時完全不呼叫）
 
 HERE = Path(__file__).resolve().parent
 ORIG = HERE / 'run_c4_live.py'
@@ -33,6 +34,16 @@ NEW_DEF = OLD_DEF + "    _E116.vet_defense(sd26, attrs, prior_cards, pw)\n"
 # 檢查 (a)（f=0 → 先驗卡 OVR）比的是屬性更新機制，用凍結的防守加成；live 加成只進正式輸出
 OLD_A = "    o1 = pw.predict(a1)\n"
 NEW_A = "    _E116.swap_bonus(pw, 'frozen')\n" + OLD_A + "    _E116.swap_bonus(pw, 'live')\n"
+# 2026-11-01 壓迫、切入解凍（只在 UNFREEZE_PD=1 時替換）：presDisplay 欄改讀窗口值、meta 的 frozenAttrs 拿掉這兩項
+OLD_PRES = "            row.update({'presDisplay': pc.get('presDisplay', ''), 'foulDisc': pc.get('foulDisc', '')})\n"
+NEW_PRES = "            row.update({'presDisplay': _E116.pres_display(pid, pc), 'foulDisc': pc.get('foulDisc', '')})\n"
+OLD_META = "        'frozenAttrs': frozen + list(IC.FROZEN_ATTRS), "
+NEW_META = ("        'frozenAttrs': [a for a in frozen if a not in _E116.PD_ATTRS] + list(IC.FROZEN_ATTRS), "
+            "'presDriveUnfreeze': _E116.PD_INFO, ")
+OLD_NOTE = "help 照 E-123 D1 尾巴（不夾 99）；drive、onBall、pressure、presDisplay、physique、heightInches 凍結；"
+NEW_NOTE = ("help 照 E-123 D1 尾巴（不夾 99）；pressure、presDisplay、drive 改四季窗口（老將，live/pres_drive.py）／本季值（新秀）；"
+            "physique、heightInches 凍結；")
+PD_ATTRS = ('pressure', 'drive')
 GAMES_PER_SEASON = 1230
 # v2（formula-gap，2026-10-31 使用者「先上線」）：新秀補卡鏈，三段都漸進放入，避免門檻一過就跳
 BONUS_POSS = 2500      # 防守加成 × min(1, possW/2500)
@@ -45,6 +56,11 @@ def load_ns():
     assert src.count(OLD_DEF) == 1, 'run_c4_live.py 的 live_predict 呼叫行對不上'
     assert src.count(OLD_A) == 1, 'run_c4_live.py 的檢查 (a) 預測行對不上'
     src = src.replace(OLD_LINE, NEW_LINE).replace(OLD_DEF, NEW_DEF).replace(OLD_A, NEW_A)
+    if PD.ON:
+        assert src.count(OLD_PRES) == 1 and src.count(OLD_META) == 1, 'run_c4_live.py 的 presDisplay／frozenAttrs 行對不上'
+        src = src.replace(OLD_PRES, NEW_PRES).replace(OLD_META, NEW_META)
+        if src.count(OLD_NOTE) == 1:      # README 說明文字（對不上只是說明舊，不擋）
+            src = src.replace(OLD_NOTE, NEW_NOTE)
     ns = {'__name__': 'run_c4_live_exec', '__file__': str(ORIG), '_E116': sys.modules[__name__]}
     exec(compile(src, str(ORIG), 'exec'), ns)
     NS.update(ns=ns)
@@ -61,6 +77,10 @@ def xhat_of(ns, x0, k, rec, arm, rel, dfn=None):
         if dfn and dfn.get(a) is not None:
             out[a] = C.clip(dfn[a])
             ws[a], ns_[a] = 1.0, dfn.get('n3' if a == 'onBall' else 'nRim')
+    for a in PD_ATTRS:                                  # UNFREEZE_PD=1：dfn 帶 pres_drive.inseason() 的本季值（w=1）
+        if dfn and dfn.get(a) is not None:
+            out[a] = C.clip(dfn[a])
+            ws[a], ns_[a] = 1.0, dfn.get('minW')
     if rec is None:
         return out, ws, ns_
     f = min(rec['GP'] / G_GAMES, 1.0)
@@ -163,6 +183,9 @@ def rookie_windows(ns, sd, mapping, rookies, n):
 
 # ------------------------------------------------------------------ main() 內呼叫
 VET_DEF_INFO = {}
+PD_INFO = None          # UNFREEZE_PD=1 時：{'c', 'weights', 'updated'}
+PD_VET = {}             # 老將窗口值 {pid: {...}}
+PD_ROOK = {}            # 新秀本季值
 NS = {}
 BONUS = {}
 DEF_L_LIVE = DB.ROOT / 'data/_inseason_build/def-L-live.csv'
@@ -185,7 +208,33 @@ def vet_defense(sd26, attrs, prior_cards, pw):
         n += 1
     VET_DEF_INFO.update(games=len(games), c=c, weights=ww, players=n)
     print(f'老將防守四季窗口：聯盟 {len(games)} 場（c={c:.2f} 格），權重 {ww}，更新 {n} 人', file=sys.stderr)
+    if PD.ON:
+        vet_pres_drive(c, attrs)
     live_bonus(pw, c)
+
+
+def vet_pres_drive(c, attrs):
+    """老將 pressure／drive：四季窗口（pres_drive.veteran）。算不出的人維持先驗卡。presDisplay 走 pres_display()。"""
+    global PD_INFO
+    vd, ww = PD.veteran(c)
+    PD_VET.clear()
+    cnt = {a: 0 for a in PD_ATTRS}
+    for pid, x in attrs.items():
+        v = vd.get(pid)
+        if not v:
+            continue
+        PD_VET[pid] = v
+        for a in PD_ATTRS:
+            if v.get(a) is not None:
+                x[a] = v[a]
+                cnt[a] += 1
+    PD_INFO = {'c': c, 'weights': ww, 'updated': cnt, 'module': 'live/pres_drive.py'}
+    print(f'老將壓迫／切入四季窗口：權重 {ww}，更新 {cnt}', file=sys.stderr)
+
+
+def pres_display(pid, pc):
+    v = PD_VET.get(pid)
+    return round(v['presDisplay'], 1) if v and v.get('presDisplay') is not None else pc.get('presDisplay', '')
 
 
 def live_bonus(pw, c):
@@ -225,6 +274,11 @@ def write_outputs(g, loc, out_dir, rows, head, nopr):
     rookies = [r for r in rookies if r['playerId'] not in prior_pids]       # 保險：有卡的不當新秀
     wins = rookie_windows(g, sd26, C.mapping_for(g['PRIOR']), rookies, g['ALL_N'])
     dfns = RD.inseason('2026-27', {r['playerId']: r['pos'] for r in rookies})
+    if PD.ON:
+        PD_ROOK.clear()
+        PD_ROOK.update(PD.inseason({r['playerId']: r['pos'] for r in rookies}))
+        for pid, v in PD_ROOK.items():
+            dfns.setdefault(pid, {}).update({a: v.get(a) for a in PD_ATTRS}, minW=v.get('minW'))
     _, coef, _ = g['load_usage']()
     dl = {int(r['playerId']): r for r in csv.DictReader(open(DEF_L_LIVE, encoding='utf-8'))}
     bad = team_badness(sd26)
@@ -254,6 +308,8 @@ def write_outputs(g, loc, out_dir, rows, head, nopr):
                 row['wMPG'] = round(cur['w']['stamina'], 4)
         for a in ATTRS:
             row[a] = g['r1'](cur['x'][a] if a != 'heightInches' else rk['heightInches'])
+        if PD.ON and gp > 0 and 'presDisplay' in row and PD_ROOK.get(pid, {}).get('presDisplay') is not None:
+            row['presDisplay'] = round(PD_ROOK[pid]['presDisplay'], 1)
         row['_ovr'] = cur['ovr']
         row['_cur'], row['_base'], row['_pick'], row['_chain'] = cur, base, rk['pick'], dict(ch, d=tb['d'] if tb else None)
         rk_rows.append(row)
@@ -274,6 +330,15 @@ def write_outputs(g, loc, out_dir, rows, head, nopr):
                      'x0': r['_base']['x'], 'xhat': r['_cur']['x'], 'w': r['_cur']['w'],
                      'chain': {k: r['_chain'][k] for k in ('possW', 'bonus', 'pred', 'predNew', 'd')}})
     json.dump(slim, open(out_dir / 'rookies-detail.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    if PD.ON:       # 檢視器 PRES tooltip 用：窗口後的收縮分量（老將）／本季分量（有上場的新秀）
+        played = {r['playerId'] for r in rk_rows if r['N'] > 0}
+        side = {'meta': PD_INFO, 'players': {}}
+        for src, d in (('veteran', PD_VET), ('rookie', {p: v for p, v in PD_ROOK.items() if p in played})):
+            for pid, v in d.items():
+                if 'shr' in v:
+                    side['players'][str(pid)] = {'src': src, 'pressure': v['pressure'], 'presDisplay': v['presDisplay'],
+                                                 'drive': v.get('drive'), 'force': v['force'], 'minW': v['minW'], 'shr': v['shr']}
+        json.dump(side, open(out_dir / 'pres-drive.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 
 
 if __name__ == '__main__':

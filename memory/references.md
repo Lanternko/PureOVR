@@ -42,3 +42,25 @@
 - 狀態：採用
 - 相關：無
 - 來源：2026-10-28 建立 memory/ 時引入；本條於 2026-10-28 對話補記。
+
+### S-002
+- 日期：2026-10-30
+- 標題：The effect of playing X consecutive/total minutes（APBR metrics 論壇討論串）
+- 作者：J.E.（RAPM 作者）與論壇回覆者
+- 連結：https://apbr.org/metrics/viewtopic.php?p=24747
+- 借用：17 季逐球、在 RAPM 裡加「場上有幾人已連續打到第幾分鐘」的做法，和 E-093 同構。結果也一樣：連續上場 < 2 分鐘最差（進攻 −1.2、防守 −0.9），6–10 分鐘最好；回覆者指出上場時間是教練依賽況決定，因果方向不明。是 F-041「s 是內生的」的外部獨立重現。
+- 用在：E-093、F-041、L-056
+- 狀態：參考
+- 相關：S-003
+- 來源：2026-10-30 使用者要求搜尋外部體力量測方法
+
+### S-003
+- 日期：2026-10-30
+- 標題：Basketball GM（ZenGM）比賽模擬的體力機制；Automatically Generating NBA Rosters for BasketballGM
+- 作者：ZenGM（開源）；nicidob
+- 連結：https://github.com/zengm-games/zengm（`src/worker/core/GameSim.basketball/index.ts`、`src/common/constants.basketball.ts`，2026-10-30 讀 master）；https://nicidob.github.io/automatic_bbgm
+- 借用：遊戲設計的參考值。能量 1＝滿；在場每分鐘扣 0.055 ×（1 − 耐力綜合值），綜合值＝(50 + endu) 平均；板凳每分鐘回 0.094；能量直接乘到所有能力值，比賽最後幾分鐘衰退打折。真實球員的 endu 是用年齡²、上場分鐘回歸出來的（年輕、打得多＝耐力高），不是量衰退。
+- 用在：E-092 §7 D2「遊戲設計規則」的選項參考
+- 狀態：參考
+- 相關：S-002
+- 來源：2026-10-30 使用者要求搜尋外部體力評分方法

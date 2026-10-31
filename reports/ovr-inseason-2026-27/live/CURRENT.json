@@ -1,0 +1,15 @@
+{
+  "inseason": "inseason 0.2.9a",
+  "card": "card 0.2.9a",
+  "cardMode": "029a",
+  "entry": "run_c4_live_rookie.py",
+  "base": "run_c4_live.py",
+  "files": [
+    "build_usage_029a.py",
+    "usage-2025-26-card029a.json",
+    "build_prior_027b.py",
+    "prior-2025-26-card027b.json",
+    "pool-027b.json"
+  ],
+  "note": "換版時：更新本檔、舊版建構腳本與凍結檔 git mv 到 _retired/（test/live_current_gate.py 會擋）。新賽季反事實與版本比較只用 run_c4_live_rookie.py。"
+}

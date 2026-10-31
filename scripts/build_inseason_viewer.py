@@ -19,9 +19,31 @@ from season_nav import add_season_nav, apply_common, regroup_attrs  # noqa: E402
 import season_nav as sn  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'reports/impact-epm-2026-27'))
 import epm_live  # noqa: E402
-from build_card_viewer import onball_rows, onball_tip, pres_tip, pres_tips, tov_tip  # noqa: E402
+from build_card_viewer import (onball_rows, onball_tip, pres_tip, pres_tips, tov_tip,  # noqa: E402
+                               PRES_SUB, PRES_LOW_GOOD, POOL_MIN)
 
 ROOT = er.ROOT
+PD_NOTE = '（老將四季加權含本季；新秀只看本季）'
+
+
+def pres_tips_live(path):
+    """壓迫／切入賽中解凍（2026-11-01）：live/<日>/pres-drive.json 的窗口分量 → ({playerId: 細項列}, pool 人數)。
+    格式同 build_card_viewer.pres_tips；PR／名次人群＝窗口有效分鐘 ≥ 1000 的老將（窗口量已除以權重和，約一季份量）。"""
+    side = json.loads(path.read_text(encoding='utf-8'))['players']
+    pool = [v for v in side.values() if v['src'] == 'veteran' and v['minW'] >= POOL_MIN]
+    tips = {}
+    for pid, v in side.items():
+        lines, inpool = [], v['src'] == 'veteran' and v['minW'] >= POOL_MIN
+        for k, label, unit, fmt in PRES_SUB:
+            c = k.replace('_shr', '')
+            x = float(v['shr'][c])
+            pr, rk = sn.pr_rank(x, [float(q['shr'][c]) for q in pool], low_good=k in PRES_LOW_GOOD)
+            s = fmt.format(x)
+            if k in PRES_LOW_GOOD:
+                s += '（多）' if pr <= 33 else '（少）' if pr >= 67 else '（普通）'
+            lines.append((label, s + unit, pr, rk if inpool else None))
+        tips[pid] = (lines, v['force'])
+    return tips, len(pool)
 BASE = ROOT / 'reports/ovr-v58-card-2025-26/roster-viewer.html'
 SRC26 = ROOT / 'data/season-source-2026-27/player-games.json'
 
@@ -156,7 +178,8 @@ def main():
     has_pd = 'presDisplay' in rows[0]
     if has_pd:
         cols += ['force', 'foulDisc']
-        ptips, n_pres = pres_tips()   # 五個分量（2025-26，賽中凍結，同 2025-26 名單頁）
+        pd_live = (live / 'pres-drive.json').exists()     # 2026-11-01 壓迫／切入解凍：有側檔就用窗口分量
+        ptips, n_pres = pres_tips_live(live / 'pres-drive.json') if pd_live else pres_tips()   # 否則：2025-26 五分量（凍結）
     # TO 提示卡：2026-27 至今的失誤、球權、失誤率；PR 人群＝上場 ≥ 15 × 目前最多場數 分鐘（開季樣本少，門檻跟著場數長）
     pool_min = 15 * max(int(r['N']) for r in rows)
     trows, n_tov = sn.tov_rows(SRC26, 'PLAYER_ID', pool_min)
@@ -178,9 +201,15 @@ def main():
     def tips(r):
         t = {}
         if has_pd:
-            t['pressure'] = (sn.cell_tip('壓迫', 'PRES', round(float(r['pressure'])), [], d='新秀：沒有 2025-26 的壓迫分量')
-                             if r['presDisplay'] == '' or r['name'] not in ptips else
-                             pres_tip(float(r['presDisplay']), float(r['pressure']), ptips[r['name']], n_pres, '（只看 2025-26 賽季數據）'))
+            if pd_live:
+                sub = ptips.get(r['playerId'])
+                t['pressure'] = (sn.cell_tip('壓迫', 'PRES', round(float(r['pressure'])), [], d='新秀：本季還沒有壓迫分量')
+                                 if r['presDisplay'] == '' or sub is None else
+                                 pres_tip(float(r['presDisplay']), float(r['pressure']), sub[0], n_pres, PD_NOTE))
+            else:
+                t['pressure'] = (sn.cell_tip('壓迫', 'PRES', round(float(r['pressure'])), [], d='新秀：沒有 2025-26 的壓迫分量')
+                                 if r['presDisplay'] == '' or r['name'] not in ptips else
+                                 pres_tip(float(r['presDisplay']), float(r['pressure']), ptips[r['name']], n_pres, '（只看 2025-26 賽季數據）'))
         tr = trows.get(int(r['playerId']))
         if tr:
             t['tovSkill'] = tov_tip(float(r['tovSkill']), tr, n_tov, '2026-27 至今', pool_min)
@@ -208,7 +237,7 @@ def main():
     s = s.replace('<h1>2025-26 <span>OVR</span> 名單</h1>', '<h1>2026-27 <span>OVR</span> 名單</h1>', 1)
     s = re.sub(r'<div class="src">.*?</div>',
                f'<div class="src">OVR：賽中 C4（{meta["version"]}），開季起點 {meta["priorCard"]}{"（用人回歸＋當季 RAPM 目標）" if "predNew" in rows[0] else ""}；數據截至 {meta["dataCutoff"]}；'
-               f'{"PRES＝逼失誤扣犯規（沿用 2025-26 數據）· " if has_pd else ""}N=已打場數 · {len(rows)} 人（另 {nopr} 人沒有上季卡，未列入）· 樣本很小，只看趨勢</div>', s, count=1, flags=re.S)
+               f'{("PRES＝逼失誤扣犯規（老將四季加權含本季、新秀只看本季）· " if pd_live else "PRES＝逼失誤扣犯規（沿用 2025-26 數據）· ") if has_pd else ""}N=已打場數 · {len(rows)} 人（另 {nopr} 人沒有上季卡，未列入）· 樣本很小，只看趨勢</div>', s, count=1, flags=re.S)
     new_data = json.dumps({'cols': cols, 'rows': data_rows}, ensure_ascii=False, separators=(',', ':'))
     s = re.sub(r'const DATA=\{.*?\};\nconst COLS', lambda m: f'const DATA={new_data};\nconst COLS', s, count=1, flags=re.S)
     for a, b in [

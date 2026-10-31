@@ -29,3 +29,4 @@ python reports/status/status_snapshot.py
 - 回報依 R-004：中位誤差、差 >10 分人數、80% 區間命中、球員抽查表；ρ／MAE 放附錄。
 - 卡片或模擬板有變：照 L-021 重跑 `status_snapshot.py`。
 - 對應 E 條目填「結果」；新事實追加 F；handoff 寫明產出路徑。
+- 新賽季反事實與版本差異只用 `live/run_c4_live_rookie.py`（`run_c4_live.py` 不能直接跑）；換版時更新 `live/CURRENT.json`、舊版建構腳本與凍結檔 `git mv` 到 `live/_retired/`，`npm test` 的 `test/live_current_gate.py` 會擋漏改（R-107）。

@@ -1,3 +1,5 @@
+> **現行版本：inseason 0.2.9a（card 0.2.9a，R-107）**。唯一入口 `run_c4_live_rookie.py`；`run_c4_live.py` 不能直接執行。版本與檔案清單見 `CURRENT.json`；0.2.9 以前的建構腳本與凍結檔在 `_retired/`（重現請 checkout 當時 commit）。以下是歷史說明。
+
 # inseason 0.1.0 即時版（2026-27）
 
 賽中 C4（E-033，c=1 凍結）用 2026-27 已打場次逐球員更新能力值與 OVR。先驗＝v5 先驗卡 2025-26（card 0.1.0）。
@@ -55,3 +57,15 @@
 - `ovr_history.py <今日輸出夾>`：用現行模型把 2026-27 資料截到每個比賽日（GAME_DATE ≤ d）逐日重算，寫 `ovr-history.json`（每人 start＝lastOVR、pts＝自己出賽日的 OVR），名單頁畫在近 5 場右邊。最後一天直接用當天 ranking.csv。
 - 不串每日快照：各天版號不同、新秀起點改過，串起來會有假跳動。防守追蹤表只有季累計，過去的點沿用最新那份（只影響防守兩項）。
 - 快取 `ovr-history-cache.json`（gitignore）：鍵＝版號＋本資料夾 *.py／*-2026.json 雜湊＋截斷資料 sha；全重算約 3–4 分（每日 10 天），命中約 3 秒。每日更新失敗只記警告、不擋發布。
+
+## 壓迫、切入賽中解凍（2026-11-01）
+- 模組 `live/pres_drive.py`，開關 `UNFREEZE_PD`（預設 1；設 0 時 `run_c4_live_rookie.py` 不呼叫它、不做任何替換，ranking.csv 逐位元同解凍前；`run_c4_live.py` 單跑本來就不受影響）。
+- 老將：同 onBall／help 的四季窗口（`rookie_defense.window_weights(c)`、units 同一套、每人除以他有資料那幾季的權重和，下限＝他各季權重最大值）。窗口加的是**原始累計量**，再套卡片公式；常數全部凍結在 2025-26 或更早，沒有用 2026-27 結果調任何東西（L-026）。算不出的人維持先驗卡。
+- 新秀（沒有先驗卡、本季有上場）：本季值 w=1（R-075），經 `xhat_of` 取代 pressure／drive；presDisplay 欄也換本季值。
+- pressure／presDisplay（card 0.2.7b 實際路徑）：E-071 `build_force.py` 的 `season_raw`／`comps_of` 逐季算分量（stl、defl、chg：count 與 MIN/36；pf 同；mtov：每季用該季進攻方失誤率算期望值，(tov−exp, poss/100)），各季乘窗口權重相加。收縮 k＝E-071 `shrink.json`；收縮目標 m、池平均／標準差＝2025-26 卡片池（252 人，GP≥30 且 MPG≥20）；force＝(z_stl＋z_defl＋z_mtov＋0.5·z_chg)/3.5，disp＝force−0.25·z_pf；兩者對 E-123 四季合併池（`work/season-values.json`）取百分位，尾巴照 E-123 h1。本季原始表：base 由 `data/defense-seventh/2026-27/player-games.json` 加總、hustle／matchups 讀同資料夾 `tracking/`。
+- drive（card 0.2.7b＝v61 方法 c＋E-101 合併池＋E-090 h1 尾巴）：每季量＝(nv 未助攻突破加權次數、MIN、pts、nW)，權重：被助攻進球 0、未助攻進球 1、失手＝該季該類別未助攻比例。往年讀 `ovr-v61-shrink-history-2025-26/history/`，本季用同一份 `extract_pbp.parse_game` 解析 `pbp/`，分鐘只算有 PBP 的場。窗口用各季**全季**量（卡片只用前 41 場是 v60 的包袱）。vol＝36·(nv＋k·Tv)/(MIN＋k)、eff＝(pts＋k·Te)/(nW＋k)，k＝90.51；Tv／Te＝卡片的每人歷史目標（2022-23～2024-25、λ＝0.5、kh＝32、同位置平均凍結在 2025-26 前 41 場），新秀用 G／F／C 合併位置平均；score＝0.5·z(vol)＋0.5·z(eff)，z 凍結在 2025-26 卡片池，對 E-101 合併池（913 值）取百分位。
+- 檢視器：`run_c4_live_rookie.py` 多寫 `pres-drive.json`（窗口後的五個收縮分量），`scripts/build_inseason_viewer.py` 有這個檔就用它做 PRES 提示卡（PR 人群＝窗口有效分鐘 ≥1000 的老將），註記「老將四季加權含本季；新秀只看本季」；沒有就照舊用 2025-26 分量。`season_nav.ATTR_TIPS` 的 pressure、drive 第五欄同步改。
+- 對照（`python -I -X utf8 pres_drive.py --check`：全部權重給 2025-26，drive 用前 41 場＝卡片定義）：pressure N=582 最大差 0.000、>0.1 的 0 人；presDisplay N=582 最大差 0.050（卡片存到 0.1 位）；drive N=509 最大差 0.034、>0.1 的 0 人（另 73 人 2025-26 前 41 場沒上場＝卡片預設 70，賽中維持先驗卡或由其他季補）。drive 中間 score 對 E-090 `a0-raw.json` 最大差 4e-15；0.034 是浮點同分在 913 人池裡差半個名次（30/49·50/913）。
+- 往年各季套 2025-26 凍結常數後，和 E-123 各季自己常數的值會差幾分（例：Tatum 2022-23 45.2 vs 54.1），這是「常數凍結在 2025-26」的設計結果，沒有修。
+- 2026-10-31 資料（81 場，c=5.40）的影響：老將 pressure／drive 582 人全部改窗口值，新秀 42 人全部有本季值；OVR 中位數 |Δ| 0.3、112／484 人變動 ≥1；變動最大的是上季樣本很少的人（Jalen Green 70.1→64.3、Tatum 96.5→92.9、Kessler 80.5→77.6、Jokić 90.2→92.7）；前 20 名 Jalen Johnson 進（22→19）、Curry 出（18→21）。
+- 其他用 `RW.load_ns()` 的模組（e139、formula-gap、e136 live_demo）在預設開啟時結果也會跟著變。
