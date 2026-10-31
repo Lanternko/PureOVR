@@ -163,27 +163,20 @@ th.noh{cursor:default}
 .atip .r em{color:#7a808a;font:normal 10.5px var(--f-body);text-align:right}
 .atip .rk{color:#f5d780;font-style:normal;font-weight:700}
 .atip .f{color:#6b7280;font-size:10.5px;line-height:1.5;border-top:1px solid rgba(255,255,255,.05);margin-top:8px;padding-top:7px}
+@media (hover:none){[data-tip],[data-ck]{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}}
 @media (prefers-reduced-motion:reduce){.atip{transition:none}}
 </style>
 <script>
 (() => {
-  let tip, cur = null, timer;
+  let tip, cur = null, timer, pinned = false;
   const head = k => { const t = ATIP[k]; if (!t) return null;
-    return { n: t[0], s: t[1], d: t[2], rows: t[3].concat(t[4] && FRZ ? [['賽季中', '凍結（沿用 2026 卡）']] : []) }; };
+    return { n: t[0], s: t[1], d: t[2], rows: t[3].concat(t[4] && FRZ ? [['賽季中', t[4] === true ? '凍結（沿用 2026 卡）' : t[4]]] : []) }; };
   const cell = el => { const tr = el.closest('tr[data-n]'); if (!tr) return null;
     const n = decodeURIComponent(tr.dataset.n), p = P.find(q => q.name === n);
     return p && p.tips ? p.tips[el.dataset.ck] : null; };
   const row = ([a, b, pr, rk]) => `<span>${a}</span><b>${b}${rk ? `<i class="rk">（#${rk}）</i>` : ''}</b>` +
     (pr === undefined ? '' : `<em>${pr == null ? '' : 'PR ' + pr}</em>`);
-  const show = (el, touch) => {
-    const t = el.dataset.tip ? head(el.dataset.tip) : cell(el); if (!t) return;
-    tip = tip || document.body.appendChild(Object.assign(document.createElement('div'), { className: 'atip' }));
-    tip.setAttribute('role', 'tooltip');
-    tip.innerHTML = `<div class="h"><span class="n">${t.n}</span><span class="s">${t.s}</span>${t.v != null ? `<b class="v">${t.v}</b>` : ''}</div>` +
-      (t.d ? `<div class="d">${t.d}</div>` : '') +
-      (t.rows.length ? `<div class="r${t.rows[0].length > 2 ? ' r3' : ''}">${t.rows.map(row).join('')}</div>` : '') +
-      (t.foot && t.foot.length ? `<div class="f">${t.foot.join('<br>')}</div>` : '');
-    cur = el;
+  const place = el => {
     const r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
     let y = r.bottom + 9, below = true;
     if (y + h > innerHeight - 8) { y = r.top - h - 9; below = false; }
@@ -192,19 +185,56 @@ th.noh{cursor:default}
     tip.style.top = Math.max(8, y) + 'px';
     tip.style.setProperty('--ax', Math.min(Math.max(14, r.left + r.width / 2 - x), w - 14) + 'px');
     tip.classList.toggle('below', below); tip.classList.toggle('above', !below);
+  };
+  // ms：觸控點一下顯示多久後收起；0＝不自動收（長按）
+  const show = (el, ms) => {
+    const t = el.dataset.tip ? head(el.dataset.tip) : cell(el); if (!t) return;
+    tip = tip || document.body.appendChild(Object.assign(document.createElement('div'), { className: 'atip' }));
+    tip.setAttribute('role', 'tooltip');
+    tip.innerHTML = `<div class="h"><span class="n">${t.n}</span><span class="s">${t.s}</span>${t.v != null ? `<b class="v">${t.v}</b>` : ''}</div>` +
+      (t.d ? `<div class="d">${t.d}</div>` : '') +
+      (t.rows.length ? `<div class="r${t.rows[0].length > 2 ? ' r3' : ''}">${t.rows.map(row).join('')}</div>` : '') +
+      (t.foot && t.foot.length ? `<div class="f">${t.foot.join('<br>')}</div>` : '');
+    cur = el; pinned = ms === 0;
+    place(el);
     tip.classList.add('on');
     clearTimeout(timer);
-    if (touch) timer = setTimeout(hide, 3000);
+    if (ms) timer = setTimeout(hide, ms);
   };
-  const hide = () => { cur = null; if (tip) tip.classList.remove('on'); };
+  const hide = () => { cur = null; pinned = false; clearTimeout(timer); if (tip) tip.classList.remove('on'); };
   const target = e => e.target.closest('[data-tip],[data-ck]');
+  // 滑鼠：移上去就顯示
   document.addEventListener('pointerover', e => {
+    if (e.pointerType === 'touch') return;
     const el = target(e);
-    if (el !== cur) el ? show(el, e.pointerType === 'touch') : hide();
+    if (el !== cur) el ? show(el) : hide();
   });
-  document.addEventListener('focusin', e => { const el = target(e); el ? show(el) : hide(); });
-  document.addEventListener('focusout', hide);
-  addEventListener('scroll', hide, true);
+  // 觸控：表頭點一下只排序、長按才顯示說明；格子點一下顯示 1.5 秒，長按一直顯示到點別處或捲動
+  let press = null, eat = false, lastTouch = 0;
+  document.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'touch') return;
+    lastTouch = Date.now();
+    const el = target(e);
+    if (pinned && el !== cur) hide();
+    if (!el) return;
+    press = { el, x: e.clientX, y: e.clientY, t: setTimeout(() => { press = null; eat = true; show(el, 0); }, 450) };
+  });
+  const cancel = () => { if (press) { clearTimeout(press.t); press = null; } };
+  document.addEventListener('pointermove', e => {
+    if (press && Math.hypot(e.clientX - press.x, e.clientY - press.y) > 10) cancel();
+  });
+  document.addEventListener('pointercancel', cancel);
+  document.addEventListener('pointerup', e => {
+    if (!press) return;
+    const el = press.el; cancel();
+    if (el.dataset.ck) show(el, 1500);
+  });
+  // 長按之後的 click 不算點擊（表頭不排序）；長按不叫出系統選單
+  document.addEventListener('click', e => { if (eat) { eat = false; e.preventDefault(); e.stopPropagation(); } }, true);
+  document.addEventListener('contextmenu', e => { if (target(e) && Date.now() - lastTouch < 1500) e.preventDefault(); });
+  document.addEventListener('focusin', e => { if (Date.now() - lastTouch < 800) return; const el = target(e); el ? show(el) : hide(); });
+  document.addEventListener('focusout', () => { if (!pinned) hide(); });
+  addEventListener('scroll', () => { if (pinned && cur) place(cur); else hide(); }, true);
 })();
 </script>
 <style>
@@ -831,7 +861,7 @@ function list() {
   return a;
 }
 
-const ATIP = {"threeValue":["三分","3PT","三分<b>投得多</b>又<b>投得準</b>才高。很準但很少投、或投很多但不準，都不會太高。",[["投得多","三分出手（per36）"],["投得準","命中率和聯盟水準比"]],false],"mid":["中距離","MID","8 呎外到三分線內的<b>命中率</b>。投得少的人會往聯盟平均靠，不會投 3 中 3 就滿分。",[],false],"short":["近框","INS","8 呎內的<b>命中率</b>。被隊友餵球的籃下得分打折，<b>自己創造</b>的不打折。",[["被餵球的得分","只算一部分"],["不打折","自己會創造的長人"]],false],"ft":["罰球","FT","<b>罰球命中率</b>。罰得少的人會往聯盟平均靠。",[],false],"drive":["切入","DRV","<b>非助攻</b>的突破進攻量（逐球紀錄近似）。",[],true],"foulDraw":["製造犯規","FD","<b>75%</b> 罰球量 ＋ <b>25%</b> 罰球率。",[["量 75%","罰球數（per36）"],["率 25%","罰球數 ÷ 投籃出手"]],false],"pass":["傳球","PASS","<b>50%</b> 助攻量 ＋ <b>50%</b> 助攻率。",[["量 50%","助攻（per36）"],["率 50%","在場時隊友進球被他助攻的比例"]],false],"creation":["自主創造","CRT","<b>自己創造</b>的出手數（per36），扣掉被餵球、接球就投的部分。",[],false],"rebound":["籃板","REB","進攻＋防守<b>籃板率</b>：在場時搶下可搶籃板的比例。",[],false],"tovSkill":["少失誤","TO","<b>失誤 ÷ 球權次數</b>，越少越高。球權多的人分母也大，不會因為常拿球就吃虧。",[["球權次數","他投籃、罰球、助攻或失誤結束的進攻"]],false],"pressure":["壓迫","PRES","<b>抄截</b>、<b>干擾傳球</b>、對位<b>逼出失誤</b>、造進攻犯規，再扣犯規。",[["抄截／干擾／逼失誤","各 1 份"],["造進攻犯規","0.5 份"],["犯規","扣 0.25（只影響顯示）"]],true],"onBall":["單防","PER D","外線<b>干擾出手</b> ＋ <b>對位負擔</b> ＋ <b>威懾力</b>。",[["對位負擔","守的人球權多大"],["威懾力","被他守時，對手出手意願降低多少"]],true],"help":["護框","RIM","對手在<b>籃下 6 呎內</b>的命中率比預期低多少。",[],true],"dbon":["防守意識","DIQ","輪轉、站位、補防……<b>常規數據以外的防守意識</b>。真實比賽防守 RAPM 和同位置平均的差。",[["單位","RAPM 分（不是 0–99）"],["進 OVR","只有正的部分"]],false]};
+const ATIP = {"threeValue":["三分","3PT","三分<b>投得多</b>又<b>投得準</b>才高。很準但很少投、或投很多但不準，都不會太高。",[["投得多","三分出手（per36）"],["投得準","命中率和聯盟水準比"]],false],"mid":["中距離","MID","8 呎外到三分線內的<b>命中率</b>。投得少的人會往聯盟平均靠，不會投 3 中 3 就滿分。",[],false],"short":["近框","INS","8 呎內的<b>命中率</b>。被隊友餵球的籃下得分打折，<b>自己創造</b>的不打折。",[["被餵球的得分","只算一部分"],["不打折","自己會創造的長人"]],false],"ft":["罰球","FT","<b>罰球命中率</b>。罰得少的人會往聯盟平均靠。",[],false],"drive":["切入","DRV","<b>非助攻</b>的突破進攻量（逐球紀錄近似）。",[],true],"foulDraw":["製造犯規","FD","<b>75%</b> 罰球量 ＋ <b>25%</b> 罰球率。",[["量 75%","罰球數（per36）"],["率 25%","罰球數 ÷ 投籃出手"]],false],"pass":["傳球","PASS","<b>50%</b> 助攻量 ＋ <b>50%</b> 助攻率。",[["量 50%","助攻（per36）"],["率 50%","在場時隊友進球被他助攻的比例"]],false],"creation":["自主創造","CRT","<b>自己創造</b>的出手數（per36），扣掉被餵球、接球就投的部分。",[],false],"rebound":["籃板","REB","進攻＋防守<b>籃板率</b>：在場時搶下可搶籃板的比例。",[],false],"tovSkill":["少失誤","TO","<b>失誤 ÷ 球權次數</b>，越少越高。球權多的人分母也大，不會因為常拿球就吃虧。",[["球權次數","他投籃、罰球、助攻或失誤結束的進攻"]],false],"pressure":["壓迫","PRES","<b>抄截</b>、<b>干擾傳球</b>、對位<b>逼出失誤</b>、造進攻犯規，再扣犯規。",[["抄截／干擾／逼失誤","各 1 份"],["造進攻犯規","0.5 份"],["犯規","扣 0.25（只影響顯示）"]],"只看 2025-26 賽季數據"],"onBall":["單防","PER D","外線<b>干擾出手</b> ＋ <b>對位負擔</b> ＋ <b>威懾力</b>。",[["對位負擔","守的人球權多大"],["威懾力","被他守時，對手出手意願降低多少"]],true],"help":["護框","RIM","對手在<b>籃下 6 呎內</b>的命中率比預期低多少。",[],true],"dbon":["防守意識","DIQ","輪轉、站位、補防……<b>常規數據以外的防守意識</b>。真實比賽防守 RAPM 和同位置平均的差。",[["單位","RAPM 分（不是 0–99）"],["進 OVR","只有正的部分"]],false]};
 const FRZ = false;
 function head() {
   const th = (k, en, zh, cls = '') =>
