@@ -13,7 +13,7 @@
 - 新賽季頁版本由 `reports/ovr-inseason-2026-27/live/CURRENT.json` 決定，`test/live_current_gate.py` 掛在 npm test（L-090）；舊建構腳本放 `live/_retired/`。
 
 ## 進行中
-- **card／inseason 0.2.9a 拿掉 stamina 已發布**（2026-11-01，R-107／R-109，commit 162c139、gh-pages fb59ab0；連同壓迫／切入解凍）。舊路徑守門：`live/CURRENT.json`＋`test/live_current_gate.py`（L-090）。待辦：另開 session 做 role-audit 重算 → 使用者 G5。
+- **card／inseason 0.2.9a 拿掉 stamina 已發布**（2026-11-01，R-107／R-109，commit 162c139、gh-pages fb59ab0；連同壓迫／切入解凍，R-110）。舊路徑守門：`live/CURRENT.json`＋`test/live_current_gate.py`（L-090）。待辦：另開 session 做 role-audit 重算 → 使用者 G5。
 - **E-166 罰球防守 β×k**（側翼低估線，F-103～F-105）：已凍結，5090 `~/e166` 執行中。報告 `reports/sim-0.1.1-wing-diag/poss-report.md`（實為 sim 0.1.2，L-089）。
 - **E-151 年輕側年齡連續**：已預註冊（6820474），每日排程在 2026-27 stints 達 450 場時自動跑 `e151_eval.py` 一次（daily.log 會出現 WARNING「E-151 評估完成」）。不得提前拿卡片去比。
 
