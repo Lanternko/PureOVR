@@ -10,7 +10,9 @@ export async function impactEngine(version, options = {}) {
     // benchmark.mjs options() already carries sim 0.1.3 (beta x2, c=-0.05625, pace x0.998125). c overrides foulBaseShift; pace multiplies the options pace (1 = unchanged).
     if (c !== undefined) add.foulBaseShift = c;
     if (pace !== undefined && pace !== 1) add.pace = o.pace * pace;
-    if (nsExp) { add.nsFoulExp = nsExp; add.nsFoulBase = nsBase; } else if (nsBase !== 1) throw Error('nsBase only with nsAttr');
+    // sim 0.1.4: benchmark options() now carries nsFoulExp by default; this harness keeps its own semantics (nsAttr null = flag off), so always override.
+    add.nsFoulExp = nsExp;
+    if (nsExp) add.nsFoulBase = nsBase; else if (nsBase !== 1) throw Error('nsBase only with nsAttr');
     a[a.length - 1] = {...o, ...add};
     return inner(...a);
   };

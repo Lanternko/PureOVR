@@ -22,8 +22,14 @@ export function opponentTeam(x, opponent, cap, phase=0){
 // (non-center de-noised ratio 0.54 -> 1.04); foul base and pace re-solved (E-166 cal-cp-k2).
 let foulBeta=null;
 const defenderFoulBeta=()=>foulBeta??=(f=>Object.fromEntries(f.playerIds.map((id,i)=>[id,2*f.defenderEffects[i]])))(read('reports/E116-fouls-matchup/fullfit-f-2025-26.json'));
+// sim 0.1.4 (R-131, E-189): non-shooting-foul attribute on by default. gamma = 2025-26 full-season, shrunk non-shooting
+// personal fouls per 100 defensive possessions (reports/sim-0.1.4/build_ns_gamma.py, k frozen at the E-189 value); options carry exp(gamma).
+// Gate x mean exp(gamma) of the 5 defenders, fouler drawn by exp(gamma). Calibration unchanged (E-189: m=1, c=-0.05625, pace 0.998125).
+// Honoured only by the v53 engine chain (reports/player-impact-v53/engine.mjs); older engines ignore the option.
+let nsFoulExp=null;
+const nsFoulExpTable=()=>nsFoulExp??=(f=>Object.fromEntries(Object.entries(f.gamma).map(([id,g])=>[id,Math.exp(g)])))(read('reports/sim-0.1.4/ns-foul-gamma-2025-26.json'));
 export function options(x, seed, schedules){
- return {...x.options,pace:(x.options?.pace??1)*0.998125,defenderFoulBeta:defenderFoulBeta(),foulBaseShift:-0.05625,
+ return {...x.options,pace:(x.options?.pace??1)*0.998125,defenderFoulBeta:defenderFoulBeta(),foulBaseShift:-0.05625,nsFoulExp:nsFoulExpTable(),
   quarterSeconds:720,sourcePeriods:4,maxOvertimes:0,substitutions:true,
   minuteMode:'budget',foulOut:99,sourceRotations:schedules,seed,creationPolicy:'rotation-space',contextLongScale:1,
   spaceCenter:read('reports/player-impact-v20/2025-26-synthetic-center.json').fullCenter};
