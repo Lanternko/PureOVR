@@ -18,10 +18,12 @@ export function opponentTeam(x, opponent, cap, phase=0){
 }
 // sim 0.1.2 (R-094, E-140/F-096): defender shooting-foul beta (E-116 2025-26 fit, as in E-120) is on by default,
 // with the league foul base and pace recalibrated so league fouls, possessions and points match the beta-off engine.
+// sim 0.1.3 (R-115, E-166/F-111, E-184/F-127): beta table x2 so the defender FTA-allowed spread matches real
+// (non-center de-noised ratio 0.54 -> 1.04); foul base and pace re-solved (E-166 cal-cp-k2).
 let foulBeta=null;
-const defenderFoulBeta=()=>foulBeta??=(f=>Object.fromEntries(f.playerIds.map((id,i)=>[id,f.defenderEffects[i]])))(read('reports/E116-fouls-matchup/fullfit-f-2025-26.json'));
+const defenderFoulBeta=()=>foulBeta??=(f=>Object.fromEntries(f.playerIds.map((id,i)=>[id,2*f.defenderEffects[i]])))(read('reports/E116-fouls-matchup/fullfit-f-2025-26.json'));
 export function options(x, seed, schedules){
- return {...x.options,pace:(x.options?.pace??1)*0.99875,defenderFoulBeta:defenderFoulBeta(),foulBaseShift:-0.03125,
+ return {...x.options,pace:(x.options?.pace??1)*0.998125,defenderFoulBeta:defenderFoulBeta(),foulBaseShift:-0.05625,
   quarterSeconds:720,sourcePeriods:4,maxOvertimes:0,substitutions:true,
   minuteMode:'budget',foulOut:99,sourceRotations:schedules,seed,creationPolicy:'rotation-space',contextLongScale:1,
   spaceCenter:read('reports/player-impact-v20/2025-26-synthetic-center.json').fullCenter};
