@@ -863,7 +863,7 @@ const P = DATA.rows.map(r => Object.fromEntries(COLS.map((c, i) => [c, r[i]])));
 const OVR_TOP = Math.max(...P.map(p => p.ovr));
 const GROUPS = [
   ['投籃', [['threeValue', '3PT', '三分'], ['mid', 'MID', '中距離'], ['short', 'INS', '近框'], ['ft', 'FT', '罰球']]],
-  ['進攻', [['drive', 'DRV', '切入'], ['foulDraw', 'FD', '製造犯規'], ['pass', 'PASS', '傳球'], ['creation', 'CRT', '自主創造']]],
+  ['進攻', [['foulDraw', 'FD', '製造犯規'], ['pass', 'PASS', '傳球'], ['creation', 'CRT', '自主創造']]],
   ['球權', [['rebound', 'REB', '籃板'], ['tovSkill', 'TO', '少失誤'], ['pressure', 'PRES', '壓迫']]],
   ['防守', [['onBall', 'PER D', '單防'], ['help', 'RIM', '護框']]],
 ];
@@ -1054,7 +1054,7 @@ function render() {
       ${GROUPS.map(g => g[1].map(([k], j) => cell(k, p[k], j === 0, p.tips && p.tips[k] ? k : null)).join('')).join('')}${diq(p)}
       <td class="sub gl${sc('min')}">${p.min.toFixed(1)}</td>
       <td class="sub${sc('gp')}">${p.gp}</td>
-    </tr>`).join('') || '<tr><td colspan="26" class="empty">沒有符合條件的球員。放寬位置或球隊試試。</td></tr>';
+    </tr>`).join('') || '<tr><td colspan="25" class="empty">沒有符合條件的球員。放寬位置或球隊試試。</td></tr>';
   document.querySelectorAll('#tbl tbody tr[data-n]').forEach(tr => {
     tr.onclick = () => { st.sel = decodeURIComponent(tr.dataset.n); render(); };
   });
