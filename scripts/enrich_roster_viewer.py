@@ -392,7 +392,7 @@ function realBox(p) {
   // 在名單上但還沒出賽（傷兵等，gp 0）：照常排出各格、數字寫「—」，卡片高度才和別人一樣（使用者 2026-10-31）
   if (!r.gp) {
     const cell = l => `<span>${l}<b>—</b></span>`;
-    return `<div class="real-h">本季尚未出賽（傷停或未獲上場）</div>
+    return `<div class="real-h">本季尚未出賽</div>
       <div class="real rx"><div class="rmain">${['得分', '籃板', '助攻', '正負值'].map(l => `<div class="st"><b>—</b><span>${l}</span></div>`).join('')}</div>
       <div class="rsub"><div>${['命中率', '三分', '罰球', '真實命中'].map(cell).join('')}</div><div>${['抄截', '阻攻', '失誤'].map(cell).join('')}</div></div>
       <button type="button" class="g5t" style="visibility:hidden" tabindex="-1" aria-hidden="true"><i>▼</i>近 0 場比賽</button></div>`;
