@@ -1,4 +1,4 @@
-"""card 0.2.11 第一層：同 0.2.10（凍結係數 calibrate_frozen.py 建三張部件卡），--rapm 改讀 work/t6/<t6tag>（make_t6_fixed.py）。
+"""card 0.2.10a 第一層：同 0.2.10（凍結係數 calibrate_frozen.py 建三張部件卡），--rapm 改讀 work/t6/<t6tag>（make_t6_fixed.py）。
 用法：python -I -X utf8 run_parts.py <tag> <tail.csv> <t6tag>     輸出 work/<tag>/cards/<part>
 t6tag=repro（舊 T6，須重現 0.2.10）／fixed（L-102 修正後 T6）"""
 import json, os, subprocess, sys

@@ -1,8 +1,8 @@
-"""card 0.2.11 = card 0.2.10 只換 2025-26 T6 目標檔（L-102／F-128：BBRef 聯盟第一的格子包在 <strong> 裡，BPM 讀成空值，Jokić、Wembanyama 從 T6 消失、align＝0）。
+"""card 0.2.10a = card 0.2.10 只換 2025-26 T6 目標檔（L-102／F-128：BBRef 聯盟第一的格子包在 <strong> 裡，BPM 讀成空值，Jokić、Wembanyama 從 T6 消失、align＝0）。
 修 reports/E142-card-target/c0d_collect.py 的解析後重產 bpm_*.csv 與 phase1 候選檔（舊檔在 pre-L102/），make_t6_fixed.py 用同一個 swap_rapm 換進三份 --rapm。
 屬性（tail-U.csv）、係數、OVR 錨、用人層全部和 0.2.10 相同（frozen.json 同檔）。
 自我檢查：t6tag=repro（舊候選檔）須與 0.2.10 ranking.csv 逐位元相同。
-用法：python -I -X utf8 reports/card-0.2.11/build_card_0211.py [--rebuild]"""
+用法：python -I -X utf8 reports/card-0.2.10a/build_card_0210a.py [--rebuild]"""
 import csv, hashlib, json, shutil, subprocess, sys
 from pathlib import Path
 OUT = Path(__file__).resolve().parent
@@ -62,24 +62,24 @@ def main():
             ROOT / 'reports/E142-card-target/phase1-work/cands/T6-2025-26.pkl', ROOT / 'reports/E142-card-target/phase1-work/cands/pre-L102/T6-2025-26.pkl',
             ROOT / 'data/external-impact/bpm/bpm_2025-26.csv', ROOT / 'data/external-impact/bpm/adv2026.html']
     out = {
-        'version': 'card 0.2.11', 'baseVersion': 'card 0.2.10', 'players': 582,
+        'version': 'card 0.2.10a', 'baseVersion': 'card 0.2.10', 'players': 582,
         'change': 'L-102／F-128：修 BPM 解析（<strong> 包的聯盟第一讀成空值），2025-26 T6 補回 Jokić、Wembanyama（504→506 人，其他人 T6 重標準化最多動 0.10）；'
                   '屬性、係數、OVR 錨、用人層全同 0.2.10（frozen.json）。',
         'prereg_verdict': '資料錯修正，不是新假設（不走預註冊）；repro 臂逐位元重現 0.2.10。',
         'version_rule': 'PATCH（R-114）：前 300 名移動 ≥10 名 %d 人。' % moved,
         'moved10_top300': moved, 'moved10_top100': moved100,
-        'frozen': {'r_repl': fz['use_layer']['r_repl'], 'anchors': fz['use_layer']['anchors'], 'wls_card': fz['use_layer']['wls_card'], 'file': 'reports/card-0.2.11/frozen.json'},
+        'frozen': {'r_repl': fz['use_layer']['r_repl'], 'anchors': fz['use_layer']['anchors'], 'wls_card': fz['use_layer']['wls_card'], 'file': 'reports/card-0.2.10a/frozen.json'},
         'self_check': 'work/repro（舊 T6 候選檔）ranking.csv 與 0.2.10 逐位元相同',
         't6': t6,
-        'key_players_2025_26': {n: {'0.2.10': [oa[n], ra[n]], '0.2.11': [ob[n], rb[n]]} for n in keys if n in rb and n in ra},
+        'key_players_2025_26': {n: {'0.2.10': [oa[n], ra[n]], '0.2.10a': [ob[n], rb[n]]} for n in keys if n in rb and n in ra},
         'top20': {'out': sorted(n for n in ra if ra[n] <= 20 and rb[n] > 20), 'in': sorted(n for n in rb if rb[n] <= 20 and ra[n] > 20)},
         'part_card_sha256': {p: sha(OUT / 'cards/K6' / p / 'summary.json') for p in ('primary', 'fitA', 'fitB')},
         'part_card_pred_csv_sha256': {p: sha(OUT / 'cards/K6' / p / 'pred.csv') for p in ('primary', 'fitA', 'fitB')},
         'rapm_inputs_sha256': {k.split('/')[1]: v['sha256'] for k, v in t6['files'].items() if k.startswith('fixed/')},
         'sources_sha256': {p.relative_to(ROOT).as_posix(): sha(p) for p in srcs},
         'frozen_sources_sha256': fz['source_sha256'],
-        'build_command': 'python -I -X utf8 reports/card-0.2.11/build_card_0211.py --rebuild',
-        'generator': 'reports/card-0.2.11/build_card_0211.py', 'ranking_csv_sha256': sha(OUT / 'ranking.csv'),
+        'build_command': 'python -I -X utf8 reports/card-0.2.10a/build_card_0210a.py --rebuild',
+        'generator': 'reports/card-0.2.10a/build_card_0210a.py', 'ranking_csv_sha256': sha(OUT / 'ranking.csv'),
     }
     (OUT / 'summary.json').write_text(json.dumps(out, ensure_ascii=False, indent=1, default=float) + '\n', encoding='utf-8')
     print(out['ranking_csv_sha256'], moved, moved100, out['top20'], json.dumps(out['key_players_2025_26'], ensure_ascii=False))

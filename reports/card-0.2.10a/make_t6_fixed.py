@@ -1,6 +1,6 @@
-"""card 0.2.11 步驟 0：L-102 修正 BPM 解析後重產 2025-26 T6 目標檔（primary／split A／B），換進部件卡的 --rapm。
+"""card 0.2.10a 步驟 0：L-102 修正 BPM 解析後重產 2025-26 T6 目標檔（primary／split A／B），換進部件卡的 --rapm。
 做法與 E-153 c6_2526 相同（swap_rapm(來源, 輸出, T6 候選)）；先用 pre-L102 舊候選檔重現 0.2.10 實際用的三份檔（sha 必須相同），再用新候選檔產出。
-用法：python -I -X utf8 reports/card-0.2.11/make_t6_fixed.py"""
+用法：python -I -X utf8 reports/card-0.2.10a/make_t6_fixed.py"""
 import hashlib, json, pickle, sys
 from pathlib import Path
 H = Path(__file__).resolve().parent

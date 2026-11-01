@@ -1120,6 +1120,6 @@
 - 日期：2026-11-01
 - 發現：Jokić 被低估的主因是資料錯（L-102），不是模型。T6 目標檔四季都沒有 Jokić（2025-26 也沒有 Wembanyama），卡片對他沒有往目標拉（align 0）。修正 BPM 後 2025-26 Jokić T6 12.74＝聯盟第 1（SGA 11.13），Wembanyama 9.90 第 4；其他人 T6 最多動 0.10。一階估算 align 由 0 變 +2.3／36，Jokić 預估 OVR 約 105、第 2～3 名（未重建卡，不算數）。E-153 換 T6 時 Jokić 2025-26 101.7/#3→94.8/#7、2024-25 110.9/#1→98.9/#5，就是這個錯。E-142／E-153 的目標回測、F-125 的 T6 前 25 名對照、進行中的 E-186 都用了缺 Jokić 的 T6。
 - 證據：`data/external-impact/bpm/adv2026.html` jokicni01 列 `<strong>14.2</strong>`；`bpm_2025-26.csv` 該列 bpm／obpm 空；`reports/E142-card-target/phase1-work/cands/T6-*.pkl` 無 203999
-- 2026-11-01 追加：修好重建成 card 0.2.11（未上線）：Jokić 7→3（100.6），但 H1 封頂讓 SGA／Wembanyama／Jokić／Giannis 的 pred 同為 5.386，SGA 118.8→103.8、Kawhi 3→6；對四季 RAPM ρ 0.6975→0.6957。`reports/card-0.2.11/report.md`
+- 2026-11-01 追加：修好重建成 card 0.2.10a（2026-11-01 正式卡上線，R-121）：Jokić 7→3（100.6），但 H1 封頂讓 SGA／Wembanyama／Jokić／Giannis 的 pred 同為 5.386，SGA 118.8→103.8、Kawhi 3→6；對四季 RAPM ρ 0.6975→0.6957。`reports/card-0.2.10a/report.md`
 - 狀態：有效
 - 相關：L-102、E-142、E-153、E-186、F-125、R-102
