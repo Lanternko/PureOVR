@@ -1,14 +1,14 @@
-"""card 0.2.12c 用人層（R-144，E-207；328 窗口底 card-0.2.12c-w328）：同 build_usage_0210j.py（已退到 _retired/），只換卡：tovSkill 改觸球分母重擬合後，
+"""card 0.2.12c 用人層（R-144，E-207；328 窗口底 card-0.2.12c-w246）：同 build_usage_0210j.py（已退到 _retired/），只換卡：tovSkill 改觸球分母重擬合後，
 係數、r_repl、錨點（含 PR90／PR95）全部取 reports/card-0.2.10j 的建卡輸出（usage-features.json、summary.json）；用人特徵 L、a 仍是 card-0.2.10g/usage-window-c82.csv（與屬性無關）。
-逐人核對：card-0.2.12c-w328/ranking.csv 的 ovr＝ovr_map(gRepl)（差 ≤0.06）、名單與 0.2.10j 相同、L／a 與 usage-window-c82.csv 逐位相同。
+逐人核對：card-0.2.12c-w246/ranking.csv 的 ovr＝ovr_map(gRepl)（差 ≤0.06）、名單與 0.2.10j 相同、L／a 與 usage-window-c82-246.csv 逐位相同。
 用法：python -I -B -X utf8 reports/ovr-inseason-2026-27/live/build_usage_0212c.py → live/usage-2025-26-card0212c.json"""
 import csv, hashlib, importlib.util, json, sys
 from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
-G, F = ROOT / 'reports/card-0.2.12c-w328', ROOT / 'reports/card-0.2.10j'
+G, F = ROOT / 'reports/card-0.2.12c-w246', ROOT / 'reports/card-0.2.10j'
 FEAT = G / 'usage-features.json'
-WIN_CSV = ROOT / 'reports/card-0.2.10g' / 'usage-window-c82.csv'
+WIN_CSV = ROOT / 'reports/card-0.2.12c-fit246/usage-window-c82-246.csv'   # W246 窗口的 L、a（2026-11-02 重擬合；328 版＝card-0.2.10g/usage-window-c82.csv）
 OUT = HERE / 'usage-2025-26-card0212c.json'
 OM_PY = ROOT / 'reports/card-0.2.10a+E188-ovr-top-scale/ovr_map.py'
 sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
@@ -19,7 +19,7 @@ def main():
     OM = importlib.util.module_from_spec(s); s.loader.exec_module(OM)
     f = json.loads(FEAT.read_text(encoding='utf-8'))
     summ = json.loads((G / 'summary.json').read_text(encoding='utf-8'))
-    assert sha(G / 'ranking.csv') == summ['ranking_csv_sha256'], 'card-0.2.12c-w328 ranking.csv sha256 與 summary 不符'
+    assert sha(G / 'ranking.csv') == summ['ranking_csv_sha256'], 'card-0.2.12c-w246 ranking.csv sha256 與 summary 不符'
     card = {r['name']: r for r in csv.DictReader((G / 'ranking.csv').open(encoding='utf-8'))}
     old = {r['name'] for r in csv.DictReader((F / 'ranking.csv').open(encoding='utf-8'))}
     players = f['players']
@@ -42,8 +42,8 @@ def main():
         'features': 'predNew = b0 + b1·p + b2·L + b3·a + b4·y + b5·v + b6·y·L + b7·v·L（b8_ydL＝0；has=True）；has=False → predNew = p',
         'check': {'n': len(players), 'ovrMapMismatch': 0, 'predNewVsPipeline': f['predNewVsPipeline'], 'hasFalse': sum(not p['has'] for p in players.values())},
         'payloadSha256': hashlib.sha256(body.encode('utf-8')).hexdigest(),
-        'sourceSha256': {'card-0.2.12c-w328 ranking.csv': sha(G / 'ranking.csv'), 'card-0.2.12c-w328 usage-features.json': sha(FEAT),
-                         'card-0.2.10g usage-window-c82.csv': sha(WIN_CSV), 'ovr_map.py': sha(OM_PY)},
+        'sourceSha256': {'card-0.2.12c-w246 ranking.csv': sha(G / 'ranking.csv'), 'card-0.2.12c-w246 usage-features.json': sha(FEAT),
+                         'card-0.2.12c-fit246 usage-window-c82-246.csv': sha(WIN_CSV), 'ovr_map.py': sha(OM_PY)},
         **payload,
     }
     OUT.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding='utf-8')

@@ -26,7 +26,7 @@ import e175_lib as L  # noqa: E402
 
 TOUCH = os.environ.get('TOV_TOUCH', '1') != '0'     # 0.2.12c（R-144，E-207）：r 的分母改觸球次數；TOV_TOUCH=0 重現 0.2.12b（凍結檔、先驗、usage 讀 _retired/）
 FROZEN = HERE / ('tov-pool-card0212c.json' if TOUCH else '_retired/tov-pool-card0212.json')
-CARD = ROOT / ('reports/card-0.2.12c-w328' if TOUCH else 'reports/card-0.2.12-tov')
+CARD = ROOT / ('reports/card-0.2.12c-w246' if TOUCH else 'reports/card-0.2.12-tov')
 RAW = ROOT / 'reports/handle-E069/raw'
 CUR_FILE = ROOT / 'data/defense-seventh/2026-27/possessions.json'
 K, KH, LAM = 64, 256, 0.2
@@ -68,8 +68,9 @@ def top_arr(season, D, col='TIME_OF_POSS'):
 
 # ------------------------------------------------------------------ 凍結
 def freeze_touch():
-    """0.2.12c：凍結 E-206 KC 臂（觸球分母，328 窗口建構；池／映射／t 與 0.2.12b 同法，窗口 246 由賽中管線套用凍結值）。
-    先把 KC 的 tov-raw-KC.csv／info 複製成 CARD/tov-raw.csv／tov-raw-info.json，再重算 t、ρ、窗口觸球，逐位核對 tovSkill。"""
+    """0.2.12c（W246 重擬合，2026-11-02）：凍結觸球分母臂；card_chain 以 328 建池／映射器後 L.WIN 改 246，
+    窗口觸球、z 平均與標準差、池 raw 分布、v_p10 皆 W246（reports/card-0.2.12c-fit246/tov_raw246.py）。
+    CARD/tov-raw.csv／info 由 card-0.2.12c-w246/build_0212c.py 放入；這裡重算 t、ρ、W246 窗口觸球，逐位核對 tovSkill。"""
     import shutil
     sys.path.insert(0, str(ROOT / 'reports/ovr-v61-shrink-history-2025-26'))
     import e175_card as C
@@ -80,6 +81,7 @@ def freeze_touch():
     D = L.Data(); inp = C.load_inputs()
     out = C.card_chain(D, inp, 'U')
     pids = inp['pids']; ix = np.array([D.pidx[p] for p in pids]); pos_card = [inp['cards'][p]['pos'] for p in pids]
+    L.WIN = 246     # card_chain 之後才改（同 tov_raw246.py）
     cur = L.TEST; G = D.G[cur]
     top_cur = top_arr(cur, D); tch_cur = top_arr(cur, D, 'TOUCHES')
     rho = float(tch_cur[ix].sum() / top_cur[ix].sum())
@@ -90,7 +92,7 @@ def freeze_touch():
         hs = L.SEASONS[L.SEASONS.index(cur) - 1 - j]
         hn[j] = D.tab[hs]['tovSkill'].agg()[0]; hd[j] = top_arr(hs, D, 'TOUCHES')
     t = L.hist_target(hn[:, ix], hd[:, ix], m, LAM, KH * rho)
-    # 328 窗口（c＝SLOTS）的觸球：同 E-206 tov_raw.py
+    # W246 窗口（c＝SLOTS）的觸球：同 E-206 tov_raw.py
     w = L.window_w(L.SLOTS * G / G)
     tc_w = np.zeros(D.NP)
     for s in [cur] + [L.SEASONS[L.SEASONS.index(cur) - k] for k in (1, 2, 3)]:
@@ -118,14 +120,14 @@ def freeze_touch():
            'top': bool(info['h1_tov']['top']), 'bot': bool(info['h1_tov']['bot']),
            'mu_r': mu_r, 'sd_r': sd_r, 'mu_v': mu_v, 'sd_v': sd_v, 'v_p10': float(info['v_p10']),
            't': {str(int(p)): float(t[i]) for i, p in enumerate(pids)}, 'pos_m': pos_m,
-           'source': {'tov_raw_csv_sha256': hashlib.sha256((CARD / 'tov-raw.csv').read_bytes()).hexdigest(), 'pool_n': len(pool), 'window': 328}}
+           'source': {'tov_raw_csv_sha256': hashlib.sha256((CARD / 'tov-raw.csv').read_bytes()).hexdigest(), 'pool_n': len(pool), 'window': 246}}
     FROZEN.write_text(json.dumps(doc, ensure_ascii=False, indent=1), encoding='utf-8')
     F = frozen(reload=True)
     n = np.array([float(r['n_w']) for r in rows]); d = np.array([float(r['possMin_w']) for r in rows]); Tm = np.array([float(r['min_w']) for r in rows])
     got = map_values(F, [str(int(p)) for p in pids], n, d, Tm, tc=tc_w[ix])
     want = np.array([float(r['tovSkill']) for r in rows])
     diff = float(np.abs(got - want).max())
-    assert diff < 1e-6, f'凍結池無法重現 KC tovSkill：max|diff|={diff}'
+    assert diff < 1e-6, f'凍結池無法重現 W246 tovSkill：max|diff|={diff}'
     print('freeze_touch OK pool', len(pool), 'players', len(pids), 'rho', rho, 'max|diff|', diff)
 
 

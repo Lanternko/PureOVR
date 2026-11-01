@@ -98,7 +98,7 @@ if not USAGE_WIN:   # USAGE_WIN=0：整組回 0.2.10f（先驗卡、usage 檔、
     VERSION = 'inseason 0.2.10f'
 if not WIN10:
     CARD_VERSION = 'card 0.2.10c'
-_CV = (('card-0.2.12c-w328' if TOV_TOUCH else 'card-0.2.12-tov') if TOV_POSS else (('card-0.2.10j' if GRAVITY else 'card-0.2.10i') if SPLIT_DC else 'card-0.2.10d') if WIN10 else 'card-0.2.10c')   # 係數管線／RAPM 所在的卡（0.2.10e 只換 OVR 映射、0.2.10f 只換 3PT 欄對照池，沒有 cards/、rapm-T6 以外的新檔）
+_CV = (('card-0.2.12c-w246' if TOV_TOUCH else 'card-0.2.12-tov') if TOV_POSS else (('card-0.2.10j' if GRAVITY else 'card-0.2.10i') if SPLIT_DC else 'card-0.2.10d') if WIN10 else 'card-0.2.10c')   # 係數管線／RAPM 所在的卡（0.2.10e 只換 OVR 映射、0.2.10f 只換 3PT 欄對照池，沒有 cards/、rapm-T6 以外的新檔）
 _OV = 'card-0.2.12-tov' if CARD_VERSION == 'card 0.2.12' else 'card-0.2.10j' if CARD_VERSION == 'card 0.2.11' else CARD_VERSION.replace('card ', 'card-')   # 0.2.11＝原標 0.2.10j（R-137），資料夾沿用 card-0.2.10j； OVR 欄與 summary 所在的卡：'card-0.2.10g'（USAGE_WIN=0 時 'card-0.2.10f'、WIN10=0 時 'card-0.2.10c'）
 _SC = ROOT / 'reports/card-0.2.10d/work-selfcheck'   # card 0.2.10c 的逐位元重建（WIN10=0 的卡端檔）
 _RET = HERE / '_retired'
@@ -886,9 +886,9 @@ def load_usage():
     # 0.2.7d 起沒另存錨點：build_usage 已逐人核對 582 人 OVR；這裡核對它用的是同一張卡
     # 0.2.12b（R-140，E-204）：窗口縮短不重取係數、r_repl、錨點，usage 檔仍是用 card 0.2.12（card-0.2.12-tov）建的
     usrc, usumm = _OV, summ
-    if CARD_VERSION == 'card 0.2.12c':      # 0.2.12c：同上，usage 檔是用 328 底（card-0.2.12c-w328）建的
-        usrc = 'card-0.2.12c-w328'
-        usumm = load_json(ROOT / 'reports/card-0.2.12c-w328/summary.json')
+    if CARD_VERSION == 'card 0.2.12c':      # 0.2.12c：同上，usage 檔是用 W246 底（card-0.2.12c-w246）建的
+        usrc = 'card-0.2.12c-w246'
+        usumm = load_json(ROOT / 'reports/card-0.2.12c-w246/summary.json')
     if CARD_VERSION == 'card 0.2.12b':
         usrc = 'card-0.2.12-tov'
         usumm = load_json(ROOT / 'reports/card-0.2.12-tov/summary.json')

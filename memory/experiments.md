@@ -2068,7 +2068,7 @@
 - 日期：2026-11-02
 - 問題：E-206 觸球分母上線到兩頁（card 0.2.12a／inseason 0.2.12b）。
 - 做法：`reports/card-0.2.12b-touch/spec.md`。`TOV_TOUCH=0` 重現線上 0.2.12／0.2.12a。不是新假設檢定，只是上線。
-- 狀態：完成（2026-11-02）。card／inseason 0.2.12c 上線（commit e92fae6，gh-pages 0540dcd）；疊在 W246 的 0.2.12b，池與係數在 328 窗口建（＝E-206 KC final 988b741f）再套到 W246 卡片路徑；TOV_TOUCH=0 兩端逐位元組重現 0.2.12b。產物 `reports/card-0.2.12c/`、`reports/card-0.2.12c-w328/`，自檢 `live/check_inseason_0212c.py`
+- 狀態：完成（2026-11-02）。card／inseason 0.2.12c 上線（commit e92fae6，gh-pages 0540dcd）；疊在 W246 的 0.2.12b，池與係數在 328 窗口建（＝E-206 KC final 988b741f）再套到 W246 卡片路徑；TOV_TOUCH=0 兩端逐位元組重現 0.2.12b。**11-02 後續：池與係數已在 W246 重擬合**（使用者裁定原擬合在 328 窗口、套到 W246 不一致）：z 平均／標準差、收縮先驗、0–99 映射、全部 OVR 係數改 W246 擬合（底 `reports/card-0.2.12c-w246/`），版號維持 0.2.12c；卡片頁前100名移動≥10名 3 人（對舊 328 擬合），TOV_TOUCH=0 仍逐位元組同 0.2.12b；其他七項池仍 328 建。工作夾 `reports/card-0.2.12c-fit246/`。產物 `reports/card-0.2.12c/`、`reports/card-0.2.12c-w328/`，自檢 `live/check_inseason_0212c.py`
 - 相關：R-144、E-206
 
 ### E-209

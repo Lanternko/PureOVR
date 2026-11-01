@@ -1,6 +1,6 @@
 """inseason／card 0.2.12c（R-144，E-207）自檢：tovSkill 失誤率分母由持球分鐘改觸球次數（疊在 0.2.12b／W246 上）。
 (1) c0：TOV_TOUCH=0 的輸出夾 ranking.csv 與 0.2.12b 參考夾（git HEAD 版程式同資料跑出）逐位元組相同、meta 版號回 0.2.12b、三份資料截止日相同；
-(2) 卡片：card-0.2.12c-w328/ranking.csv sha＝E-206 KC 定版 988b741f…；card-0.2.12c（W246）summary 版號、先驗卡 prior-2025-26-card0212c.json 的 tovSkill＝卡片 ranking.csv 的 tovSkill；
+(2) 卡片：card-0.2.12c-w246/ranking.csv sha＝W246 重擬合定版 224db781…；card-0.2.12c（W246）summary 版號、先驗卡 prior-2025-26-card0212c.json 的 tovSkill＝卡片 ranking.csv 的 tovSkill；
 (3) 0.2.12c 輸出 meta 版號、ranking 人數與 0.2.12b 相同、檢查 (a)（f=0、k→∞ 的 OVR 對卡片）< 1e-6；
 (4) R-109 版號統計（前 20 名進出、前 100 名移動 ≥10 名），卡片頁與新賽季頁各一份，＋前 10 名與指定球員的 TO、TO 名次、OVR 名次；卡片頁 TO 榜前 30 持球/36 低於池中位數的人數（E-206 B 項）。
 用法（repo root）：python -I -B -X utf8 reports/ovr-inseason-2026-27/live/check_inseason_0212c.py <0.2.12b 參考夾> <TOV_TOUCH=0 夾> <0.2.12c 夾>
@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
-KC_SHA = '988b741f9ca280ae64d1779dd65c8101020144e38ee8f01cd5268b392f694c4d'
+W246_SHA = '224db7812a36fcd4855c157b81c81acb0f312b7fbe80d14642e777d4d5b5a90d'   # reports/card-0.2.12c-fit246/work/W246/final（W246 重擬合，2026-11-02）
 SHOW = ['Shai Gilgeous-Alexander', 'Jalen Brunson', 'Cade Cunningham', 'James Harden', 'Luka Dončić', 'Nikola Jokić', 'Sam Hauser',
         'Tim Hardaway Jr.', 'Luke Kornet', 'Jarrett Allen', 'Austin Reaves', 'Kevin Porter Jr.', 'Tyrese Maxey']
 
@@ -59,7 +59,7 @@ def table(old, new, ro, rn, nm):
 def f143(card_dir):
     """E-206 B 項：卡片頁 TO 榜前 30 的持球/36 低於池中位數（MIN>=500）人數。"""
     import statistics
-    pid = {r['name']: int(r['playerId']) for r in csv.DictReader(open(ROOT / 'reports/card-0.2.12c-w328/tov-raw.csv', encoding='utf-8'))}
+    pid = {r['name']: int(r['playerId']) for r in csv.DictReader(open(ROOT / 'reports/card-0.2.12c-w246/tov-raw.csv', encoding='utf-8'))}
     h = {int(r['playerId']): float(r['TIME_OF_POSS']) for r in csv.DictReader(open(ROOT / 'reports/handle-E069/handle.csv', encoding='utf-8')) if r['season'] == '2025-26'}
     rows = [r for r in csv.DictReader(open(Path(card_dir) / 'ranking.csv', encoding='utf-8')) if float(r['MIN']) >= 500]
     v = {r['name']: h[pid[r['name']]] / float(r['MIN']) * 36 for r in rows if r['name'] in pid and pid[r['name']] in h}
@@ -81,8 +81,8 @@ def main(ref_dir, c0_dir, new_dir):
     chk(meta(c0_dir)['version'] == meta(ref_dir)['version'] == 'inseason 0.2.12b', f"(1) c0 版號 {meta(c0_dir)['version']}")
     chk(meta(c0_dir).get('dataCutoff') == meta(ref_dir).get('dataCutoff') == meta(new_dir).get('dataCutoff'), f"(1) 三份資料截止日相同 {meta(new_dir).get('dataCutoff')}")
 
-    w328 = ROOT / 'reports/card-0.2.12c-w328'
-    chk(sha(w328 / 'ranking.csv') == KC_SHA, f"(2) 328 底 ranking.csv＝E-206 KC 定版 {sha(w328 / 'ranking.csv')[:12]}")
+    w328 = ROOT / 'reports/card-0.2.12c-w246'
+    chk(sha(w328 / 'ranking.csv') == W246_SHA, f"(2) W246 底 ranking.csv＝W246 重擬合定版 {sha(w328 / 'ranking.csv')[:12]}")
     card = ROOT / 'reports/card-0.2.12c'
     cs = json.loads((card / 'summary.json').read_text(encoding='utf-8'))
     chk(cs.get('version') == 'card 0.2.12c' and cs.get('ranking_csv_sha256') == sha(card / 'ranking.csv'), f"(2) card-0.2.12c summary 版號與 sha {cs.get('version')}")
@@ -90,7 +90,7 @@ def main(ref_dir, c0_dir, new_dir):
     cr = {r['name']: float(r['tovSkill']) for r in csv.DictReader(open(w328 / 'ranking.csv', encoding='utf-8'))}
     common = set(pn) & set(cr)
     dmax = max(abs(pn[p]['tovSkill'] - cr[p]) for p in common)
-    chk(len(common) > 500 and dmax < 0.06, f'(2) 先驗 tovSkill 對 328 底卡片 ranking.csv（先驗沿用 328 底，同 0.2.12b 慣例；賽中 vet 的 tovSkill 由窗口重算）：{len(common)} 人 max|diff| {dmax:.3f}')
+    chk(len(common) > 500 and dmax < 0.06, f'(2) 先驗 tovSkill 對 W246 底卡片 ranking.csv（先驗沿用 W246 底；賽中 vet 的 tovSkill 由窗口重算）：{len(common)} 人 max|diff| {dmax:.3f}')
 
     mn = meta(new_dir)
     chk(mn['version'] == 'inseason 0.2.12c' and mn.get('priorCard') == 'card 0.2.12c', f"(3) 新版號 {mn['version']}／{mn.get('priorCard')}")

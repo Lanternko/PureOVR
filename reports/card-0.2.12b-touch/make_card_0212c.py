@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / 'reports/card-0.2.12b'          # 欄位順序、同分排序、summary 範本（0.2.12b，W246）
-W328 = ROOT / 'reports/card-0.2.12c-w328'     # 係數／RAPM／三值／引力檔所在（觸球版 328 底，＝E-206 KC final）
+W328 = ROOT / 'reports/card-0.2.12c-w246'     # 係數／RAPM／三值／引力檔所在（觸球版 W246 底，2026-11-02 重擬合）
 src_dir, out = Path(sys.argv[1]), Path(sys.argv[2])
 ver = sys.argv[3] if len(sys.argv) > 3 else 'check'
 hdr = list(csv.DictReader(open(SRC / 'ranking.csv', encoding='utf-8')).fieldnames)
@@ -65,9 +65,9 @@ with open(out / 'def-L-primary.csv', 'w', encoding='utf-8', newline='') as fh:
 summ = json.loads((SRC / 'summary.json').read_text(encoding='utf-8'))
 sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
 summ.update({'version': f'card {ver}', 'base': 'reports/card-0.2.12b（card 0.2.12b，W246）', 'players': len(rows),
-             'change': 'E-207／R-144：tovSkill 的失誤率 r 分母由持球分鐘改觸球次數（k、kh 乘 ρ＝15.593；v 仍用持球分鐘）；全部係數依觸球版重擬合（328 底 card-0.2.12c-w328），套在 246 窗口；OVR 映射錨點用 328 底重取的（R-115）。',
+             'change': 'E-207／R-144：tovSkill 的失誤率 r 分母由持球分鐘改觸球次數（k、kh 乘 ρ＝15.593；v 仍用持球分鐘）；池 mu/sd／先驗／0-99 映射／全部係數與 OVR 錨點皆在 W246 窗口重擬合（card-0.2.12c-w246，2026-11-02；其餘 7 項屬性池仍照 win_len 慣例以 328 建）。',
              'win_len': 246, 'ranking_csv_sha256': sha(out / 'ranking.csv'), 'three_value_csv_sha256': sha(out / 'three-value.csv'),
-             'build_command': 'WIN_LEN=246 reports/card-0.2.12b-touch/card_route_0212c.py <work> → make_card_0212c.py <work> reports/card-0.2.12c "0.2.12c"（TOV_TOUCH=0 逐位元重現 card 0.2.12b；WIN_LEN=328 重現 card-0.2.12c-w328）'})
+             'build_command': 'WIN_LEN=246 reports/card-0.2.12b-touch/card_route_0212c.py <work> → make_card_0212c.py <work> reports/card-0.2.12c "0.2.12c"（TOV_TOUCH=0 逐位元重現 card 0.2.12b；WIN_LEN=328 的重現見 card-0.2.12c-fit246 V328 臂＝E-206 KC final）'})
 w3 = json.loads((W328 / 'summary.json').read_text(encoding='utf-8'))
 for k in ('anchors', 'anchor_source', 'ovr_map', 'pool_90_99', 'pool_ge99'):   # 錨點＝觸球版 328 底重取的（與賽中端讀的 summary 一致）
     if k in w3:
