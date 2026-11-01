@@ -1,4 +1,5 @@
-"""E-190 c0：自 reports/card-0.2.10a+E187-rebase/build.py 原樣複本（只為讓 work/ 寫進本目錄；HERE 自動指向本目錄）。
+"""E-190 errata-1：臂 KPU／KP、KJU／KJ（目標 T6、pass 共用斜率同 KAU；tail＝work/tails/tail-{KP,KJ}-{U,A}.csv，U＝2025-26 以 tail-U 為底、A＝歷史以 tail-e123a 為底）。
+E-190 c0：自 reports/card-0.2.10a+E187-rebase/build.py 原樣複本（只為讓 work/ 寫進本目錄；HERE 自動指向本目錄）。
 E-187 改疊 0.2.10a（L-102 修好的 T6）：自 E-187 e187_build.py 複本，差別只有 pkl() 換成修正後 T6／T6R、pass 共用斜率只在 KA／KJ 臂帶；臂 K6U（只重擬合）、KAU、KRU、KJU。
 原說明：E-187 建卡驅動（自 E-186 e186_build.py 複本）：E-164 e164_build.py 的複本（S 臂流程：--dropAttr stamina、Y0 用人層、連續 d），差別只有三點：
   1. 工作目錄在本資料夾 work/（不寫 E-164 目錄）；
@@ -23,7 +24,7 @@ TAIL_U = ROOT / 'reports/card-0.2.10/tail-U.csv'
 
 
 def pkl(arm, t):
-    return HERE / f'work/cands/T6R-{t}.pkl' if arm[:2] in ('KJ', 'KR') else E142 / f'phase1-work/cands/T6-{t}.pkl'   # 修正後（L-102）T6；T6R 由 cands.py 從同一份 T6 重產
+    return HERE / f'work/cands/T6R-{t}.pkl' if arm[:2] == 'KR' else E142 / f'phase1-work/cands/T6-{t}.pkl'   # 修正後（L-102）T6；T6R 由 cands.py 從同一份 T6 重產
 
 
 def run_calib_factory(RT, extra_drop):
@@ -38,7 +39,7 @@ def run_calib_factory(RT, extra_drop):
                 ['--bonusShape', 'none', '--defWindow', 'season', '--defRapm', str(defr), '--defPossFactor', '0.5', '--dropAttr', 'physique']
             for d in extra_drop:
                 a += ['--dropAttr', d]
-            if ARM[:2] in ('KJ', 'KA'):
+            if ARM[:2] in ('KJ', 'KA', 'KP'):
                 a += ['--dropInteract', 'pass']   # E-180 臂 A：傳球全位置共用斜率
             a += ['--out', str(out)]
             env = {'E134_CFG': str(cfgp)} if cfgp else {}
@@ -61,6 +62,8 @@ def cards(arm, t):
     if arm.endswith('U'):
         assert t == '2025-26'
         os.environ['E187_TAIL'] = str(TAIL_U)
+    if arm[:2] in ('KP', 'KJ'):   # E-190 errata-1
+        os.environ['E187_TAIL'] = str(W / 'tails' / f"tail-{arm[:2]}-{'U' if arm.endswith('U') else 'A'}.csv")
     spec = importlib.util.spec_from_file_location('e153b', E153 / 'e153_build.py')
     e153 = importlib.util.module_from_spec(spec); spec.loader.exec_module(e153)
     os.environ['E142_WORK'] = str(wd)
