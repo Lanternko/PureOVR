@@ -74,6 +74,7 @@ CSS = """<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=R
   border-radius:6px;font:500 .88rem var(--f-body);transition:width .2s,border-color .12s}
 .msearch #q:focus{outline:0;border-color:var(--gold);width:240px}
 .wrap>.top,.wrap>.ctrl{display:none}
+@media (min-width:641px){.wrap{padding-top:10px}}
 @media (max-width:640px){
   .mast-in{flex-wrap:wrap;height:auto;padding-top:8px;padding-bottom:0;gap:0 10px}
   .mbrand b{font-size:1.4rem}

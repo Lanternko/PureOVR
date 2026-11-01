@@ -639,8 +639,10 @@ COMMON_REPLACEMENTS = [
   card(P.find(p => p.name === st.sel) || P[0]);'''),
     ("document.getElementById('q').oninput", '''let listKey = '';
 function fitTable() {
-  // 以「卡片頂端貼齊視窗頂」為準：卡片＋篩選列以下的空間都給表格
-  const t = document.querySelector('.tbox'), above = t.getBoundingClientRect().top - document.getElementById('card').getBoundingClientRect().top;
+  // 手機以「卡片頂端貼齊視窗頂」為準：卡片＋篩選列以下的空間都給表格。
+  // 桌機有固定眉頭（2026-11-02），改以頁面頂端為準：不捲頁面就看得到表格底，20 人在表格裡捲完（使用者 2026-11-02）
+  const t = document.querySelector('.tbox'), tt = t.getBoundingClientRect().top;
+  const above = innerWidth <= 640 ? tt - document.getElementById('card').getBoundingClientRect().top : tt + scrollY;
   const h = Math.max(innerWidth <= 640 ? 240 : 300, innerHeight - above - 12);
   t.style.maxHeight = Math.round(h) + 'px';
   tboxEdges();
