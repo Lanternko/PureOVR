@@ -6,6 +6,7 @@
 - **更新**：2026-11-01，Claude Code App（lead；分支 claude/project-thread-63h2fz；handoff 瘦身 29KB→約 7KB）
 
 ## 目前基準（線上）
+- **card／inseason 0.2.12**（R-139，E-203，11-02 上線，gh-pages 7fc64c4）：tovSkill 改看持球時間（0.5·z(−每持球分鐘失誤)＋0.5·z(持球分鐘/36)），其餘不動；每日抓 `possessions.json`；`TOV_POSS=0` 重現 0.2.11。正式卡 `reports/card-0.2.12-tov/`。
 - **card／inseason 0.2.11**（原 0.2.10j，R-137；R-134／R-135，E-200）：加能力值引力 gravity（主畫面 GRV 取代切入位置，每日抓本季引力），`GRAVITY=0` 重現 0.2.10i。`reports/card-0.2.10j/`、`live/gravity_live.py`
 - **card／inseason 0.2.10i**（R-132，E-197，11-01 上線）：drive_D＋creationJ，`SPLIT_DC=0` 重現 0.2.10h。`reports/card-0.2.10i/`
 - **正式卡 card 0.2.10c**（R-122）：`reports/card-0.2.10c/`＝card 0.2.10a（R-121：8 項四季滑動窗口＋L-102 修好的 T6）重擬合＋傳球全位置共用斜率（E-187 KAU，修 JW 偏高）；OFFICIAL_CARD 指它。
@@ -19,7 +20,6 @@
 ## 進行中
 - **0.2.10 待辦**（R-114）：獨立 role-audit 沒做（F-116：組合值評 foulDraw／pass 不過，使用者知情上線）；換季跳動對 0.2.9a 沒量；Porter Jr. 20→40；G5。
 - **E-166 β×2 → sim 0.1.3 已上線**（R-120）：非中鋒罰球防守散布 0.54→1.04、中鋒 0.23→0.56；防守型非中鋒少低估 12 名，S 偏袒長人 +79→+107、30 隊 MAE +0.154。未解：名次和 S 方向相反、F-112 剩 +54 名低估。`reports/sim-0.1.2+E166-ft-defense/`
-- **E-202 TO 改用持球時間**（R-136、F-143，11-02 完成，未上線，待裁定）：2K Ball Handle ρ 0.08→0.79、TO 前 30 不持球 19→0、RAPM ρ −0.015；代價 TO 與 creation／pass 相關 0.7+、EPM ρ −0.024。採用後要做賽中每日抓 Possessions、網站 TO 說明、新秀起點重解、role-audit。`reports/card-0.2.10j+E202-to-possession/report.md`
 - **E-151 年輕側年齡連續**：已預註冊（6820474），每日排程在 2026-27 stints 達 450 場時自動跑 `e151_eval.py` 一次（daily.log 會出現 WARNING「E-151 評估完成」）。不得提前拿卡片去比。
 
 ## 等使用者裁定
