@@ -1,4 +1,4 @@
-"""2025-26 正式卡名單頁（card 0.2.10j）：以正式卡名單頁為版型，換成 card 0.2.10j 的 OVR／能力值（OVR 為每場、含上場時間、相對替補水準，R-028；能力值同 0.1.2），3PT 顯示 threeValue（R-024）。
+"""2025-26 正式卡名單頁（card 0.2.11，原標 0.2.10j、R-137 升 PATCH；檔案沿用 card-0.2.10j/）：以正式卡名單頁為版型，換成 card 0.2.11 的 OVR／能力值（OVR 為每場、含上場時間、相對替補水準，R-028；能力值同 0.1.2），3PT 顯示 threeValue（R-024）。
 OVR 能力估計納入教練用人證據（分鐘、出賽率、年齡、練兵隊），DNP 與輪休分開（E-075）；用人回歸的訓練目標是 2025-26 單季 RAPM（E-084）；分鐘權重為飽和曲線 W(m)（E-089）；補籃改歸近距離、能力值錨點對四季合併池、頂端只壓縮（E-101）；OVR 迴歸不用 physique（E-131），網站不顯示 PHYS。
 PRES 顯示 presDisplay（逼失誤 − 0.25·犯規，E-071），提示卡列逼失誤（卡片 pressure）與五個分量（抄截、干擾球、對位逼失誤、造進攻犯規、犯規，E-071 收縮後值＋PR＋前十名次）；
 提示卡 PR／名次人群＝場均 ≥ sn.POOL_MPG 分鐘的人，其餘註腳改標「*上場時間不足」；
@@ -122,6 +122,7 @@ def main(out=None):
     # DIQ 顯示負分：card 0.2.10i 的 defenseBonus（同 0.2.7b） 用 def-L-primary，posMeanD 從同一批人算（max(0, ·) 逐人核對）
     dcen = sn.defense_centered(rows, 'name', [(ROOT / 'reports/card-0.2.5+E104-defense-pergame-decay/def-L-primary.csv', None)])
     assert dcen, 'DIQ 負分：def-L-primary 算回來的 defenseBonus 對不上 card 0.2.10i'
+    rows = sn.display_rows(rows)   # 能力值顯示尺（2026-11-02 方案 B）：off/def、名次人群已用原值算完
     data_rows, missing, no_tv = [], [], []
     for r in rows:
         num = lambda k: float(r[k])
@@ -132,7 +133,7 @@ def main(out=None):
             missing.append(r['name'])
             team, ht, gp = last_team.get(r['name'], ''), 0, gp_src.get(r['name'], 0)
         if r['name'] in tv:
-            three = round(tv[r['name']], 1)
+            three = round(sn.display_scale(tv[r['name']]), 1)
         else:
             no_tv.append(r['name'])
             three = num('long')
@@ -147,7 +148,7 @@ def main(out=None):
     s = base
     s = s.replace('<title>OVR 名單檢視</title>', '<title>2025-26 OVR 名單</title>', 1)
     s = re.sub(r'<div class="src">.*?</div>',
-               f'<div class="src">OVR：正式卡 card 0.2.10j（2025-26 整季；OVR 為每場，含上場時間，相對替補水準；FD 以量為主；PRES＝逼失誤扣犯規；OVR 能力估計納入教練用人證據，DNP 與輪休分開，用人回歸（上場強度、出賽率看近四季窗口）對齊當季 RAPM；分鐘權重遞減；能力值對 2022-23～2025-26 四季比較；切入只算帶球切入的自主兩分、自主創造看自主跳投與低位；GRV＝引力：沒拿球時防守人也不敢離開他的程度（NBA.com 無球外線引力，沒有資料的人用三分出手、命中率、用球率與位置推估）；防守加成不打折、近期加權；OVR 評分標準為 DARKO 加 BPM；年輕人沒有爛隊折扣；傳球看量也看率；3PT、RIM、PRES 頂端不封在 99；OVR 不看身高體重；OVR 尺頂端另以 PR90、PR95 定位）；3PT 顯示 threeValue；{len(rows)} 人</div>',
+               f'<div class="src">OVR：正式卡 card 0.2.11（2025-26 整季；OVR 為每場，含上場時間，相對替補水準；FD 以量為主；PRES＝逼失誤扣犯規；OVR 能力估計納入教練用人證據，DNP 與輪休分開，用人回歸（上場強度、出賽率看近四季窗口）對齊當季 RAPM；分鐘權重遞減；能力值對 2022-23～2025-26 四季比較；切入只算帶球切入的自主兩分、自主創造看自主跳投與低位；GRV＝引力：沒拿球時防守人也不敢離開他的程度（NBA.com 無球外線引力，沒有資料的人用三分出手、命中率、用球率與位置推估）；防守加成不打折、近期加權；OVR 評分標準為 DARKO 加 BPM；年輕人沒有爛隊折扣；傳球看量也看率；3PT、RIM、PRES 頂端不封在 99；OVR 不看身高體重；OVR 尺頂端另以 PR90、PR95 定位）；3PT 顯示 threeValue；{len(rows)} 人</div>',
                s, count=1, flags=re.S)
     new_data = json.dumps({'cols': cols, 'rows': data_rows}, ensure_ascii=False, separators=(',', ':'))
     s = re.sub(r'const DATA=\{.*?\};\nconst COLS', lambda m: f'const DATA={new_data};\nconst COLS', s, count=1, flags=re.S)

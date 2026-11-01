@@ -103,7 +103,11 @@ CSS = """<style>
 # - 被後續版本取代或撤銷的條目，前後加 `~...~` 顯示刪除線（`<s>`）。
 PATCH_NOTES = [
     # 版號 0.2.10：前 20 名進出 1 人（Embiid 進、Porter Jr. 出）、前 100 名移動 >=10 名 18 人，照 R-109 屬 PATCH（係數全凍結、只換 8 項屬性來源）
-    (('card', 'inseason'), '0.2.10', '2026-11-01', [
+    # 版號 0.2.11：照 R-109 前 20 名進出 1 人、前 100 名移動 >=10 名 11 人原屬字母版（0.2.10j），使用者 2026-11-02「引進了一個有趣的新能力值。把它升級為patch」（R-137）
+    (('card', 'inseason'), '0.2.11', '2026-11-02', [
+        '加引力能力值：沒拿球時防守人也不敢離開的射手加分（Klay 419 → 357 名），空間長人略降（Turner 108 → 123 名）。｜Klay/419 → 357/55.9 → 57.9；Hield/259 → 240/65.7 → 66.7；Kennard/135 → 120/75.6 → 76.4；Duncan Robinson/208 → 199/69.6 → 70.4；Hauser/175 → 160/72.9 → 73.6；Turner/108 → 123/77.8 → 76.3；Fox/24 → 20/91.2 → 92.1；Bane/20 → 21/92.0 → 92.0',
+        '能力值頂端改尺：前 10%＝88、前 5%＝92、前 1%＝97，再往上看領先多少；3PT 98 以上從 15 人變 5 人（Curry 128 → 126），OVR 與名次不變。']),
+    (('card',), '0.2.10', '2026-11-01', [
         '8 項能力值改看近四季滑動窗口：中距離、近框、罰球、造犯規、傳球、籃板、少失誤、切入隨比賽更新，換季不再陡跳。｜Flagg/82 → 68/76.1 → 77.0；Embiid/23 → 18/84.0 → 85.2；Porter Jr./20 → 40/84.7 → 81.3',
         '修 BPM 漏讀榜首：補回聯盟第一（Jokić 7 → 3 名）。｜Jokić/7 → 3/93.5 → 100.6；Kawhi/3 → 6/102.2 → 94.1',
         '傳球加分不分位置：持球前鋒不再多加分（Jalen Williams 9 → 12 名）。｜Jalen Williams/9 → 12/93.3 → 87.0；Barnes/18 → 27/92.2 → 83.5；Reaves/26 → 21/89.5 → 84.7',
@@ -112,8 +116,7 @@ PATCH_NOTES = [
         '3PT 欄改用窗口比較基準：主力射手差距拉開（Curry 120.7 → 125.2），OVR 不變。',
         '教練用人與出賽率也改看近四季窗口：不再只看單季。｜Sengun/101 → 96/78.3 → 78.9；Mamukelashvili/88 → 117/79.2 → 77.0',
         '賽中年齡固定看開季當天：不再因季中過生日跳分。｜Landale/278 → 257/61.6 → 63.8；Porziņģis/23 → 37/91.0 → 88.2',
-        '切入、自主創造拆開算：切入只算帶球切入的自主兩分，自主創造改看自己創造的跳投與低位（Zion 自主創造 87 → 63）。｜Cameron Johnson/58 → 43/83.8 → 86.6；Bridges/53 → 41/84.7 → 87.1；Paul Reed/93 → 79/78.7 → 79.9；Sengun/91 → 81/78.9 → 79.9；Tre Jones/39 → 49/88.0 → 85.9；Dosunmu/69 → 94/81.4 → 78.6；Avdija/97 → 107/78.5 → 77.6',
-        '加引力能力值：沒拿球時防守人也不敢離開的射手加分（Klay 419 → 357 名），空間長人略降（Turner 108 → 123 名）。｜Klay/419 → 357/55.9 → 57.9；Hield/259 → 240/65.7 → 66.7；Kennard/135 → 120/75.6 → 76.4；Duncan Robinson/208 → 199/69.6 → 70.4；Hauser/175 → 160/72.9 → 73.6；Turner/108 → 123/77.8 → 76.3；Fox/24 → 20/91.2 → 92.1；Bane/20 → 21/92.0 → 92.0']),
+        '切入、自主創造拆開算：切入只算帶球切入的自主兩分，自主創造改看自己創造的跳投與低位（Zion 自主創造 87 → 63）。｜Cameron Johnson/58 → 43/83.8 → 86.6；Bridges/53 → 41/84.7 → 87.1；Paul Reed/93 → 79/78.7 → 79.9；Sengun/91 → 81/78.9 → 79.9；Tre Jones/39 → 49/88.0 → 85.9；Dosunmu/69 → 94/81.4 → 78.6；Avdija/97 → 107/78.5 → 77.6']),
     (('card',), '0.2.9', '2026-11-01', [
         '拿掉「年輕人在爛隊打折」：換新標準後這個折扣反而失準（Flagg 195 → 79 名）。｜Flagg/195 → 79/70.6 → 77.6；Banchero/65 → 158/79.8 → 72.7',
         '拿掉耐力對 OVR 的重複加分：上場時間只算一次（Jalen Williams 17 → 10 名）。｜Jalen Williams/17 → 10/86.9 → 88.2；Porziņģis/60 → 32/79.0 → 81.9；Edgecombe/101 → 150/75.2 → 72.3']),
@@ -261,6 +264,33 @@ def add_season_nav(html_str, current):
         s = s.replace(a, b)
     s = attr_tips(s, current)
     return s.replace('<nav class="snav', CSS + '<nav class="snav', 1) if CSS not in s else s
+
+
+# 能力值顯示尺（使用者 2026-11-02「三分球 98 以上的人太多了」→「所有能力值一起改」→「用方案 B」）：百分位型能力值原本
+# PR50～99 線性對到 70～99（attr()），PR97.3 就有 98。頁面顯示改成 PR50→70、PR90→88、PR95→92、PR99→97，
+# 99 以上的尾巴整段 −2（接在 97），PR<50 不動。只改顯示：ranking.csv、OVR、模擬用值不變；off/def 要在換尺前算。
+# mid／short／ft／help／long 不是百分位尺（≥90 只有 1～4%），不換。
+RESCALE_ATTRS = ('threeValue', 'drive', 'foulDraw', 'gravity', 'pass', 'tovSkill', 'creation', 'rebound',
+                 'physique', 'stamina', 'onBall', 'pressure', 'presDisplay')
+_SCALE_KNOTS = ((50, 70), (90, 88), (95, 92), (99, 97))
+
+
+def display_scale(v):
+    """attr() 值 → 顯示尺：70～99 段反推 PR 再分段線性；>99（尾巴）−2；<70、None 原樣。"""
+    if v is None or v < 70:
+        return v
+    if v > 99:
+        return v - 2
+    p = (v - 70) * 49 / 29 + 50
+    for (a, b), (c, d) in zip(_SCALE_KNOTS, _SCALE_KNOTS[1:]):
+        if p <= c:
+            return b + (p - a) * (d - b) / (c - a)
+    return 97.0
+
+
+def display_rows(rows):
+    """ranking.csv 的列（dict，值為字串）換成顯示尺；空字串照舊。"""
+    return [{**r, **{k: repr(display_scale(float(r[k]))) for k in RESCALE_ATTRS if r.get(k, '') != ''}} for r in rows]
 
 
 # 能力值滑鼠提示（使用者 2026-11-01，版型仿 arammeta 增幅卡：名稱＋副標、說明、細線下列組成）。

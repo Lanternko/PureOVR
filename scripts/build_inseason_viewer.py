@@ -231,6 +231,7 @@ def main():
         if gv and r.get('gravity', '') != '':
             t['gravity'] = sn.gravity_tip(float(r['gravity']), gv['raw'], gv['src'], g_pool, r['playerId'] in pool, GRAV_NOTE.get(gv['src'], ''))
         return t
+    rows = sn.display_rows(rows)   # 能力值顯示尺（2026-11-02 方案 B）：off/def、名次人群已用原值算完
     for r in rows:
         num = lambda k: float(r[k])
         # E-116 新秀先驗列沒有 threeValue／presDisplay／foulDisc（無上季卡）：3PT 退回 long、PRES 退回 pressure、犯規紀律留空
