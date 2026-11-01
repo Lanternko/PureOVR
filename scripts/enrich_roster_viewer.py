@@ -141,34 +141,37 @@ td.ovr .ob::before{content:"";position:absolute;inset:0;border-radius:inherit;pa
 .tag .tnm,.tag .tht{display:none}
 .tag .tht i{font-style:normal;margin-left:7px;font-size:.85em;opacity:.85}
 @media (max-width:640px){
-  .card{grid-template-columns:auto 1fr;gap:10px 12px}
-  .card .tag{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;grid-column:1/-1;grid-row:1;margin:-12px -14px 0;min-width:0;height:128px;clip-path:none;padding:10px 14px}
+  .card{grid-template-columns:auto 1fr;gap:8px 12px}
+  .card .tag{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;grid-column:1/-1;grid-row:1;margin:-12px -14px 0;min-width:0;height:100px;clip-path:none;padding:8px 14px}
   .tag .pos{align-self:flex-start;line-height:19px}
   .tag .tht{display:block;order:1;align-self:flex-start;font:700 1.05rem/21px var(--f-disp);color:var(--ink,#fff);position:relative;z-index:1}
   .tag .rk{position:absolute;top:10px;right:14px;z-index:3;font:700 1rem/19px var(--f-disp);text-shadow:none;background:var(--tc,#fff);color:#fff;padding:1px 8px;border-radius:3px}
   .tag .rk small{font-size:1em;opacity:1;margin:0}
-  .tag .logo{right:14px;height:110px;width:110px;opacity:.9}
-  .tag .shot{right:6px;height:121px}
-  .tag .tnm{display:block;position:absolute;left:14px;right:136px;bottom:15px;z-index:1;font:800 1.55rem/.95 var(--f-disp);text-transform:uppercase;color:var(--ink,#fff);text-shadow:0 0 8px var(--card,#000);overflow-wrap:anywhere}
-  .tag .tnm span{display:block;font-size:.9rem;font-weight:600;opacity:.85;margin-bottom:3px}
+  .tag .logo{right:14px;height:88px;width:88px;opacity:.9}
+  .tag .shot{right:6px;height:94px}
+  .tag .tnm{display:block;position:absolute;left:14px;right:136px;bottom:10px;z-index:1;font:800 1.35rem/.95 var(--f-disp);text-transform:uppercase;color:var(--ink,#fff);text-shadow:0 0 8px var(--card,#000);overflow-wrap:anywhere}
+  .tag .tnm span{display:block;font-size:.8rem;font-weight:600;opacity:.85;margin-bottom:2px}
   .card .who>.nm{display:none}
-  .card .ring{grid-column:1;grid-row:2;align-self:end}
-  .card .ring svg{width:76px;height:76px}
+  .card .ring{grid-column:1;grid-row:2;align-self:center}
+  .card .ring svg{width:66px;height:66px}
   .card .who>.facts{grid-column:1;grid-row:3;align-self:start;justify-content:center;display:flex;margin-top:-4px}
   .facts>span:not(.f-d){display:none}
   .facts .f-d b{font:700 1.15rem var(--f-disp)}
-  .card .who>.strong{grid-column:2;grid-row:2/5;align-self:center;display:grid;grid-template-columns:repeat(2,1fr);gap:4px}
-  .strong .chip{display:flex;flex-direction:column;align-items:center;padding:4px 2px;font-size:.72rem;color:var(--muted);letter-spacing:0}
-  .strong .chip i{margin:0;font:700 1.1rem var(--f-disp)}
+  /* 卡片壓矮（使用者 2026-11-01：資訊不多可以更 compact）：影響力 2×2 一格一行（標籤左、數字右），
+     得分／籃板／助攻／正負值移到影響力下面、和圓環同一側；框拿掉邊線改淡底 */
+  .card .who>.strong{grid-column:2;grid-row:2;align-self:center;display:grid;grid-template-columns:repeat(2,1fr);gap:4px}
+  .strong .chip{display:flex;flex-direction:row;justify-content:space-between;align-items:baseline;gap:4px;padding:5px 8px;border:0;border-radius:5px;background:rgba(255,255,255,.05);font-size:.7rem;color:var(--muted);letter-spacing:0;white-space:nowrap}
+  .strong .chip i{margin:0;font:700 1rem var(--f-disp)}
   .strong .chip.dim{grid-column:1/-1}
-  .rx .rmain{flex:1}
+  .card .who>.real{grid-column:2;grid-row:3/5;align-self:start;margin:0}
+  .rx .rmain{flex:1;gap:4px}
   .rx .rmain .st{flex:1}
   /* 場數／分鐘併到 OVR 圓環下方，三大項縮小並補正負值（使用者 2026-10-29：省空間）；交易隊名手機不顯示 */
-  .card .who>.real-h{grid-column:1;grid-row:4;justify-self:center;margin-top:-6px;white-space:nowrap;font-size:.7rem;letter-spacing:.02em}
+  .card .who>.real-h{grid-column:1;grid-row:4;justify-self:center;margin-top:-4px;white-space:nowrap;font-size:.7rem;letter-spacing:.02em}
   .real-h .rtm{display:none}
-  .rx .rmain .st{min-width:0;padding:3px 4px}
-  .rx .rmain .st b{font-size:1.2rem}
-  .rx .rmain .st span{font-size:.64rem}
+  .rx .rmain .st{min-width:0;padding:3px 2px;border:0;border-radius:5px;background:rgba(255,255,255,.05)}
+  .rx .rmain .st b{font-size:1.05rem;line-height:1.15}
+  .rx .rmain .st span{font-size:.62rem}
   .rx .rsub{display:none}
 }
 /* 桌機卡片：影響力四格改 2×2，和 OVR 圓環放同一側（使用者 2026-10-29：省空間）
@@ -265,11 +268,10 @@ td.ovr .ob::before{content:"";position:absolute;inset:0;border-radius:inherit;pa
   .g5 td{font-size:.84rem}
   .g5 th,.g5 td{padding:5px 6px}
   /* 手機 ▼ 放正負值格右上角（使用者 2026-10-30）：右上切一個斜角變五角形，▼ 放在切掉的位置，不另佔一列
-     ▼ 用正三角形（60°），缺角也切 60°（橫 16px、直 27.7px），▼ 左斜邊和缺角平行、留 3px 不碰框；展開時不翻轉，改變金色 */
+     ▼ 用正三角形（60°），缺角也切 60°（橫 16px、直 27.7px），▼ 左斜邊和缺角平行、留 3px 不碰框；展開時不翻轉，改變金色。
+     格子改成無邊線淡底後（2026-11-01）缺角不用再補斜邊線 */
   .real.rx{position:relative}
   .rx .rmain .st:last-child{position:relative;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 27.7px,100% 100%,0 100%)}
-  .rx .rmain .st:last-child::after{content:'';position:absolute;top:-1px;right:-1px;width:16px;height:27.7px;pointer-events:none;
-    background:linear-gradient(to bottom left,transparent calc(50% - 1px),var(--line) calc(50% - 1px),var(--line) calc(50% + 1px),transparent calc(50% + 1px))}
   .rx .g5t{position:absolute;top:-8.6px;right:-11.4px;width:30px;height:30px;padding:0;border:0;font-size:0;justify-content:center}
   .rx .g5t i,.rx .g5t[aria-expanded="true"] i{display:block;width:9px;height:7.8px;background:var(--muted);clip-path:polygon(0 0,100% 0,50% 100%);transform:none;transition:background .15s}
   .rx .g5t[aria-expanded="true"] i{background:var(--gold)}
@@ -734,6 +736,14 @@ def inject(path, real, view='g5'):
         ('<tr class="grp"><th colspan="6"></th>', '<tr class="grp"><th colspan="3"></th><th class="gx" colspan="3"></th>'),
         ('<td class="nm" title="${esc(p.name)}">${esc(p.name)}</td>',
          '<td class="nm${rookieTag(p) ? \' rk\' : \'\'}" title="${esc(p.name)}"><span class="nf">${esc(p.name)}</span><span class="ns">${esc(shortName(p.name))}</span>${rookieTag(p)}</td>'),
+        # 「往下展開 20 人」每按一次多 20 人、越拉越長（使用者 2026-11-01）：改成每頁 20／50 人切換，再按一次收回；
+        # 切換時保留目前看到的第一位所在的頁
+        ('const SIZE = 20;', 'let SIZE = 20;'),
+        ('<button class="more" id="more" type="button">往下展開 20 人</button>', '<button class="more" id="more" type="button">展開至 50 人</button>'),
+        ('  m.hidden = end >= a.length;\n  m.onclick = () => { st.extra++; render(); };',
+         "  m.hidden = SIZE === 20 && a.length <= 20;\n"
+         "  m.textContent = SIZE === 20 ? '展開至 50 人' : '收回 20 人';\n"
+         "  m.onclick = () => { const top = st.page * SIZE; SIZE = SIZE === 20 ? 50 : 20; st.page = Math.floor(top / SIZE); st.extra = 0; document.querySelector('.tbox').scrollTop = 0; render(); };"),
     ]:
         if new not in s:
             assert s.count(old) == 1, old
