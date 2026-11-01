@@ -2,7 +2,7 @@
 
 每天的 ranking.csv 版本不一（0.2.1b → 0.2.7b）、新秀起點又改過（R-096），直接串會有版本跳動，所以改成同一把尺重算。
 截斷：player-games／team-games 只留 GAME_DATE ≤ d，pbp 只留那些場，本季 stints 只留那些場；防守追蹤表是季累計抓不到逐日，
-沿用最新那份（新秀／老將 onBall、help 的過去點會用到之後的資料，只影響防守兩項）。
+沿用最新那份（新秀／老將 onBall、help 的過去點會用到之後的資料，只影響防守兩項）；0.2.10j 的引力（gravity.json，季累計）同樣沿用最新那份。
 快取：<out>.json 記 version 與每日 {playerId: ovr}；同版號、同日期、該日截斷資料 sha 相同就不重算。最後一天不重算，直接用當天正式 ranking.csv。
 
 用法：python -I scripts/... ovr_history.py <今日輸出夾（有 ranking.csv、meta.json）>   → 寫 <今日輸出夾>/ovr-history.json，並更新快取 live/ovr-history-cache.json

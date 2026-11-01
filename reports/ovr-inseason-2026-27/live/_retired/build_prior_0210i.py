@@ -1,3 +1,4 @@
+raise SystemExit('已淘汰：本檔只供對照。重現請 checkout 當時 commit（見 live/CURRENT.json、_retired/README.md）')  # R-124 retired guard（0.2.10j 換 build_prior_0210j.py；加 gravity）
 """inseason 0.2.10i 先驗卡：prior-2025-26-card0210d.json（已退到 _retired/）的 drive、creation 換成 card 0.2.10i 的值
 （reports/card-0.2.10i/tail-U.csv：drive_D、creationJ 的 2025-26 季末四季窗口值，以 playerId 配對）；其餘欄位原樣。
 用法：python -I -B -X utf8 reports/ovr-inseason-2026-27/live/build_prior_0210i.py"""

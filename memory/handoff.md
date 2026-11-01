@@ -6,8 +6,8 @@
 - **更新**：2026-11-01，Claude Code App（lead；分支 claude/project-thread-63h2fz；handoff 瘦身 29KB→約 7KB）
 
 ## 目前基準（線上）
+- **card／inseason 0.2.10j**（R-134／R-135，E-200，11-02 上線）：加能力值引力 gravity（主畫面 GRV 取代切入位置，每日抓本季引力），`GRAVITY=0` 重現 0.2.10i。`reports/card-0.2.10j/`、`live/gravity_live.py`
 - **card／inseason 0.2.10i**（R-132，E-197，11-01 上線）：drive_D＋creationJ，`SPLIT_DC=0` 重現 0.2.10h。`reports/card-0.2.10i/`
-- **card／inseason 0.2.10e**（R-124，E-188，2026-11-01 本機 commit、未 push／未部署）：0.2.10d 只換 OVR 映射 PR50→70、PR90→88、PR95→92、PR99→99（名次不變，[90,99) 23 人）；OFFICIAL_CARD、build_card_viewer、season_nav、live/CURRENT.json 都指 0.2.10e。副作用：新賽季 ΔOVR 在 70–88 段 ×1.66、92–99 段 ×0.49。`reports/card-0.2.10e/`
 - **正式卡 card 0.2.10c**（R-122）：`reports/card-0.2.10c/`＝card 0.2.10a（R-121：8 項四季滑動窗口＋L-102 修好的 T6）重擬合＋傳球全位置共用斜率（E-187 KAU，修 JW 偏高）；OFFICIAL_CARD 指它。
 - **新賽季頁 inseason 0.2.10** 已發布（2026-11-01）：8 項每日由窗口算（`live/window8.py`），其他屬性同前；單場評分 **Z1**（R-108，E-169，`scripts/rating_m10.py`）。
   - 2026-11-01：2026-27 pbp 沒有 area 欄位，mid／short 整季停在 day0；改用距離＋座標推導區域（佔位座標不計），2024-25 核對 mid 97.4%／short 100% 後上線（F-124、L-098，d8eaf90）；同時修歷史折線 8 項偷看全季資料。
@@ -23,7 +23,6 @@
 
 ## 等使用者裁定
 - **E-196／R-133 得分產量**（11-01 完成，未上線）：產量取代 creation 樣本外無球組低估 5.2→4.5，但係數全靠下限撐；待選。`reports/card-0.2.10g+E196-production/report.md`
-- **E-198／R-134 無球引力進 OVR**（11-02 完成，未上線）：A 不過，射手組低估沒縮小（引力≈持球得分，F-141）；待裁定結案／試無球幀數佔比。`reports/card-0.2.10j+E198-gravity/`
 - **網站品牌名**（11-01）：傾向 Pure.OVR（pureovr.com 可註冊），備選 hoopgrade、ovihoops；未買、社群帳號未查。`reports/site-naming/domains.md`
 - **E-189 → sim 0.1.4 已裁定採用**（R-131，2026-11-01）：γ 已進預設，多 seed 重驗聯盟量差 <1%；中鋒差距假設排除（F-137，F-129 額度 1/3）。F-130 使用者裁定先不動。流程同日改：機制／假設分兩線判（README 問題卡第 3 條）。
 - **0.2.10a 後續**（R-121）：新賽季頁仍是舊 T6，等 0.2.12（以 0.2.10a 為底）一起修；H1 封頂壓前段（SGA 118.8→103.8）另議；E-142／E-153／E-186 用舊 T6 要重核。

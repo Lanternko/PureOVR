@@ -163,6 +163,9 @@ def onball_live(rows, pool):
     return onball_rows(comps, pool), note
 
 
+GRAV_NOTE = {'2025-26': '（本季還沒有資料，看 2025-26）', '2026-27': '（只看本季）', '2025-26+2026-27': '（2025-26 與本季依出場畫面加權）'}
+
+
 def main():
     sys.stdout.reconfigure(encoding='utf-8')    # -I 不吃 PYTHONIOENCODING；名字有 ņ 等字時 cp950 印不出來
     day = sys.argv[1] if len(sys.argv) > 1 else '2026-10-27'
@@ -198,6 +201,10 @@ def main():
                                + [(live_d, None)], taper)
     if dcen is None:
         print('DIQ 負分：找不到對得上的 D 檔，只顯示正值', file=sys.stderr)
+    # 0.2.10j：GRV 提示卡讀 live/<日>/gravity.json（run_c4_live_rookie 寫：原始引力、來源）；PR／名次對有 NBA.com 資料、場均夠的人
+    gj = live / 'gravity.json'
+    grav = json.loads(gj.read_text(encoding='utf-8'))['players'] if gj.exists() else {}
+    g_pool = [v['raw'] for p, v in grav.items() if p in pool and v['raw'] is not None and v['src'] not in sn.GRAVITY_IMPUTED]
     od, od_bad = sn.off_def(rows, 'playerId')
     if od_bad:
         print(f'進攻／防守分：{od_bad} 人 pred0 用卡片係數算不回來，顯示「—」', file=sys.stderr)
@@ -220,6 +227,9 @@ def main():
         ob = orows.get(int(r['playerId']))
         if ob:
             t['onBall'] = onball_tip(float(r['onBall']), ob, ob_note[int(r['playerId'])], r['playerId'] in pool)
+        gv = grav.get(r['playerId'])
+        if gv and r.get('gravity', '') != '':
+            t['gravity'] = sn.gravity_tip(float(r['gravity']), gv['raw'], gv['src'], g_pool, r['playerId'] in pool, GRAV_NOTE.get(gv['src'], ''))
         return t
     for r in rows:
         num = lambda k: float(r[k])
@@ -233,8 +243,8 @@ def main():
                           dcen[r['playerId']] if dcen else (num('defenseBonus') or None),
                           *[opt('presDisplay') if (a == 'pressure' and has_pd) else opt(a) for a in cols[10:25]],
                           num('lastOVR'), num('dOVR'), tips(r), *([num('pressure'), opt('foulDisc')] if has_pd else []),
-                          *od[r['playerId']]])
-    cols += ['off', 'def']
+                          *od[r['playerId']], opt('gravity') if r.get('gravity', '') != '' else None])
+    cols += ['off', 'def', 'gravity']   # 0.2.10j：引力（舊版夾沒有 gravity 欄 → null）
     # ΔOVR 五色：≥+4 深綠、+1～+4 淺綠、±1 內灰、−1～−4 橘、≤−4 紅（沿用等第色）
     dcol = ("(v => v >= 4 ? 'var(--g-a)' : v >= 1 ? 'var(--g-b)' : v > -1 ? 'var(--muted)'"
             " : v > -4 ? 'var(--g-d)' : 'var(--g-f)')(p.dovr)")
@@ -243,7 +253,7 @@ def main():
     s = s.replace('<h1>2025-26 <span>OVR</span> 名單</h1>', '<h1>2026-27 <span>OVR</span> 名單</h1>', 1)
     s = re.sub(r'<div class="src">.*?</div>',
                f'<div class="src">OVR：賽中 C4（{meta["version"]}），開季起點 {meta["priorCard"]}{"（用人回歸＋當季 RAPM 目標）" if "predNew" in rows[0] else ""}；數據截至 {meta["dataCutoff"]}；'
-               f'{("PRES＝逼失誤扣犯規（老將四季加權含本季、新秀只看本季）· " if pd_live else "PRES＝逼失誤扣犯規（沿用 2025-26 數據）· ") if has_pd else ""}N=已打場數 · {len(rows)} 人（另 {nopr} 人沒有上季卡，未列入）· 樣本很小，只看趨勢</div>', s, count=1, flags=re.S)
+               f'{("PRES＝逼失誤扣犯規（老將四季加權含本季、新秀只看本季）· " if pd_live else "PRES＝逼失誤扣犯規（沿用 2025-26 數據）· ") if has_pd else ""}{"GRV＝引力：沒拿球時防守人也不敢離開他的程度（NBA.com 無球外線引力，2025-26 與本季加權；沒有資料的人用三分出手、命中率、用球率與位置推估）· " if 'gravity' in rows[0] else ""}N=已打場數 · {len(rows)} 人（另 {nopr} 人沒有上季卡，未列入）· 樣本很小，只看趨勢</div>', s, count=1, flags=re.S)
     new_data = json.dumps({'cols': cols, 'rows': data_rows}, ensure_ascii=False, separators=(',', ':'))
     s = re.sub(r'const DATA=\{.*?\};\nconst COLS', lambda m: f'const DATA={new_data};\nconst COLS', s, count=1, flags=re.S)
     for a, b in [

@@ -47,7 +47,7 @@ E151_EVAL = ROOT / 'reports/card-0.2.7d+E151-young-curve/e151_eval.py'   # 預�
 E151_RESULT = E151_EVAL.parent / 'results.json'
 CREATE_NO_WINDOW = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
 
-TIMEOUTS = {'games': 900, 'matchups': 1800, 'inseason': 3600, 'tracking': 600, 'stints': 1800, 'c4': 3600, 'viewer': 600, 'history': 3600, 'prereg': 900, 'git': 180}
+TIMEOUTS = {'games': 900, 'matchups': 1800, 'inseason': 3600, 'tracking': 600, 'gravity': 300, 'stints': 1800, 'c4': 3600, 'viewer': 600, 'history': 3600, 'prereg': 900, 'git': 180}
 CO_AUTHOR = 'Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>'
 
 log = logging.getLogger('daily_inseason')
@@ -185,6 +185,20 @@ def step_fetch_matchups() -> None:
         log.warning('fetch_matchups exit=%s：%s', r.returncode, (r.stderr or r.stdout).strip()[-300:])
     else:
         log.info('fetch_matchups：%s', tail[0])
+
+
+def step_fetch_gravity() -> None:
+    """inseason 0.2.10j（R-134）：本季無球外線引力（NBA.com gravityleaders，季累計）→ data/defense-seventh/2026-27/gravity.json。
+    失敗不擋發布：fetch_gravity.mjs 失敗不覆寫，沿用上次抓到的檔（檔不存在時 gravity_live 只用 2025-26＋OLS 補值）。"""
+    try:
+        r = run([node_exe(), 'scripts/fetch_gravity.mjs', SEASON], ROOT, TIMEOUTS['gravity'])
+    except subprocess.TimeoutExpired:
+        log.warning('fetch_gravity 逾時；引力沿用上次的檔')
+        return
+    if r.returncode != 0:
+        log.warning('fetch_gravity exit=%s：%s', r.returncode, (r.stderr or r.stdout).strip()[-300:])
+    else:
+        log.info('fetch_gravity：%s', ((r.stdout or '').strip().splitlines()[-1:] or [''])[0])
 
 
 def step_fetch_tracking() -> None:
@@ -415,6 +429,7 @@ def _run(args) -> int:
     step_build_stints()
     step_prereg_e151()
     step_fetch_tracking()
+    step_fetch_gravity()
     data_sha = sha256_file(PLAYER_GAMES)
     pbp_count = len(list(PBP_DIR.glob('*.json'))) if PBP_DIR.exists() else 0
     log.info('player-games sha256=%s…  pbp=%d', data_sha[:12], pbp_count)

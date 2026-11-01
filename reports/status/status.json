@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-01T11:58:51+00:00",
+ "generatedAt": "2026-11-01T18:05:23+00:00",
  "simVersion": "v54",
  "evalPoss": 5000,
  "rapmPool": 415,
@@ -63,14 +63,14 @@
    "note": "已收束；球隊層 2025-26 勝場 MAE 變差，未切換對局資料，卡片板仍為 v53 校準；不讀 RAPM，樣本內即樣本外：同一份分數直接對 A 半、B 半 RAPM 各算一次 ρ 再平均（reports/ovr-metrics-backfill-2025-26）"
   },
   {
-   "layer": "卡片 OVR（正式卡片板，card 0.2.10f）",
-   "description": "0.2.10f：3PT 欄對照池改近三季窗口值＋本季（E-191b P1m；OVR 與名次同 0.2.10e）；0.2.10e：OVR 映射頂端加 PR90→88、PR95→92 兩錨（名次不變，E-188）；0.2.10d：long／creation／threeValue／MPG 四季窗口；0.2.10c：傳球共用斜率；0.2.10a：2025-26 T6 補回 L-102 BPM 解析漏掉的聯盟第一（Jokić 7→3 名）；其餘同 0.2.10：card 0.2.9a 係數與錨全凍結，8 項屬性（drive、foulDraw、ft、mid、pass、rebound、short、tovSkill）改 E-175 四季滑動窗口（R-111／R-114，2026-11-01）；0.2.9 起拿掉年輕×爛隊×時間（y·d·L）折扣（E-158 Y0，R-104）（遊戲本體不讀取任何 OVR）",
+   "layer": "卡片 OVR（正式卡片板，card 0.2.10g）",
+   "description": "0.2.10g：用人層（L 上場強度、a 出賽率）改四季滑動窗口（E-192；前 20 名不變）；0.2.10f：3PT 欄對照池改近三季窗口值＋本季（E-191b P1m；OVR 與名次同 0.2.10e）；0.2.10e：OVR 映射頂端加 PR90→88、PR95→92 兩錨（名次不變，E-188）；0.2.10d：long／creation／threeValue／MPG 四季窗口；0.2.10c：傳球共用斜率；0.2.10a：2025-26 T6 補回 L-102 BPM 解析漏掉的聯盟第一（Jokić 7→3 名）；其餘同 0.2.10：card 0.2.9a 係數與錨全凍結，8 項屬性（drive、foulDraw、ft、mid、pass、rebound、short、tovSkill）改 E-175 四季滑動窗口（R-111／R-114，2026-11-01）；0.2.9 起拿掉年輕×爛隊×時間（y·d·L）折扣（E-158 Y0，R-104）（遊戲本體不讀取任何 OVR）",
    "players": 414,
-   "rhoNet": 0.722,
-   "rhoDefense": 0.437,
+   "rhoNet": 0.728,
+   "rhoDefense": 0.441,
    "holdoutRho": "未量測",
    "rho2k": "未量測",
-   "note": "ρRAPM 樣本內（align/封頂用 RAPM）；每場 OVR；card 0.2.10f = 0.2.10e + 3PT 欄新對照池（E-191b P1m，OVR 不變）；card 0.2.10e = 0.2.10d + OVR 頂端加 PR90／PR95 錨（E-188 S3，名次不變）；card 0.2.10d = 0.2.10c + long／creation／threeValue／MPG 四季窗口（E-185）；card 0.2.10c = E-175 滑動窗口屬性 + 修正後 T6（L-102）重擬合 + 傳球共用斜率（E-187）；0.2.9 的 E-158 預註冊判定通過（年輕子群 C +0.106、下界 +0.035；全體 +0.001）；此列 ρ vs RAPM 照舊用 RAPM 算；對 2K27 ρ 尚無 0.2.10 的 evaluation.json，不填；來源 card-0.2.10f（ranking.csv 同 card-0.2.10e）"
+   "note": "ρRAPM 樣本內（align/封頂用 RAPM）；每場 OVR；card 0.2.10g = 0.2.10f + 用人層 L、a 四季窗口（E-192，係數同 0.2.10d，r_repl、錨點重取）；card 0.2.10f = 0.2.10e + 3PT 欄新對照池（E-191b P1m，OVR 不變）；card 0.2.10e = 0.2.10d + OVR 頂端加 PR90／PR95 錨（E-188 S3，名次不變）；card 0.2.10d = 0.2.10c + long／creation／threeValue／MPG 四季窗口（E-185）；card 0.2.10c = E-175 滑動窗口屬性 + 修正後 T6（L-102）重擬合 + 傳球共用斜率（E-187）；0.2.9 的 E-158 預註冊判定通過（年輕子群 C +0.106、下界 +0.035；全體 +0.001）；此列 ρ vs RAPM 照舊用 RAPM 算；對 2K27 ρ 尚無 0.2.10 的 evaluation.json，不填；來源 card-0.2.10g（0.2.10f 的 ranking.csv 同 card-0.2.10e）"
   },
   {
    "layer": "卡片 OVRcard 0.2.8（前正式版）",
@@ -96,8 +96,8 @@
    "layer": "卡片 OVR（前正式版，card 0.2.7c）",
    "description": "card 0.2.7b + E-131：OVR 迴歸拿掉 physique（身高＋體重），身高 heightInches 保留，能力值不動（2026-10-30 使用者裁定 R-084）（遊戲本體不讀取任何 OVR）",
    "players": 414,
-   "rhoNet": 0.722,
-   "rhoDefense": 0.437,
+   "rhoNet": 0.728,
+   "rhoDefense": 0.441,
    "holdoutRho": "未量測",
    "rho2k": 0.733,
    "note": "ρRAPM 樣本內（align/封頂用 RAPM）；每場 OVR；card 0.2.7c = card 0.2.7b + E-131；對 card 0.2.7b 的 Δρ_{N_W} +0.0015 [-0.0014, +0.0044]、Δρ_{Q_W} -0.0014 [-0.0040, +0.0011]、線性量尺 +0.0013 [-0.0016, +0.0042]（預註冊 E-131，看過係數才選，不算盲測，只證明不變差；前 300 名 36 人移動 ≥ 10 名，使用者裁定字母小版本）；evaluate 18/19；對 2K27 ρ 取 card-0.2.7b+E131-no-physique/evaluation.json 的 K1 每場值；2026-10-30 起正式，由 card 0.2.7d 取代；來源 card-0.2.7c"
@@ -555,7 +555,7 @@
    "rank": 1,
    "name": "Shai Gilgeous-Alexander",
    "pos": "PG",
-   "ovr": 109.9,
+   "ovr": 110.4,
    "minutes": 2259,
    "threeValue": 86.7,
    "simRank": 1,
@@ -566,7 +566,7 @@
    "rank": 2,
    "name": "Nikola Jokić",
    "pos": "C",
-   "ovr": 107.0,
+   "ovr": 107.4,
    "minutes": 2265,
    "threeValue": 79.5,
    "simRank": 6,
@@ -577,7 +577,7 @@
    "rank": 3,
    "name": "Victor Wembanyama",
    "pos": "C",
-   "ovr": 102.0,
+   "ovr": 102.4,
    "minutes": 1866,
    "threeValue": 75.0,
    "simRank": 5,
@@ -588,7 +588,7 @@
    "rank": 4,
    "name": "Luka Dončić",
    "pos": "PG",
-   "ovr": 101.5,
+   "ovr": 102.0,
    "minutes": 2289,
    "threeValue": 97.9,
    "simRank": 7,
@@ -610,7 +610,7 @@
    "rank": 6,
    "name": "Kawhi Leonard",
    "pos": "SF",
-   "ovr": 98.2,
+   "ovr": 98.4,
    "minutes": 2085,
    "threeValue": 95.1,
    "simRank": 2,
@@ -621,7 +621,7 @@
    "rank": 7,
    "name": "Donovan Mitchell",
    "pos": "SG",
-   "ovr": 96.0,
+   "ovr": 96.2,
    "minutes": 2342,
    "threeValue": 94.3,
    "simRank": 70,
@@ -663,20 +663,9 @@
   },
   {
    "rank": 11,
-   "name": "Ty Jerome",
-   "pos": "PG",
-   "ovr": 93.7,
-   "minutes": 339,
-   "threeValue": 96.6,
-   "simRank": 4,
-   "rapmRank": 136,
-   "flags": "低分鐘、RAPM 差距大"
-  },
-  {
-   "rank": 12,
    "name": "Jimmy Butler III",
    "pos": "SF",
-   "ovr": 93.6,
+   "ovr": 93.5,
    "minutes": 1182,
    "threeValue": 64.8,
    "simRank": 23,
@@ -684,10 +673,10 @@
    "flags": "—"
   },
   {
-   "rank": 13,
+   "rank": 12,
    "name": "Cade Cunningham",
    "pos": "PG",
-   "ovr": 93.4,
+   "ovr": 93.5,
    "minutes": 2172,
    "threeValue": 75.4,
    "simRank": 78,
@@ -695,10 +684,21 @@
    "flags": "—"
   },
   {
+   "rank": 13,
+   "name": "Ty Jerome",
+   "pos": "PG",
+   "ovr": 93.4,
+   "minutes": 339,
+   "threeValue": 96.6,
+   "simRank": 4,
+   "rapmRank": 136,
+   "flags": "低分鐘、RAPM 差距大"
+  },
+  {
    "rank": 14,
    "name": "Stephen Curry",
    "pos": "PG",
-   "ovr": 93.3,
+   "ovr": 93.2,
    "minutes": 1329,
    "threeValue": 105.0,
    "simRank": 115,
@@ -718,17 +718,6 @@
   },
   {
    "rank": 16,
-   "name": "Joel Embiid",
-   "pos": "C",
-   "ovr": 93.0,
-   "minutes": 1201,
-   "threeValue": 63.5,
-   "simRank": 254,
-   "rapmRank": 10,
-   "flags": "長人"
-  },
-  {
-   "rank": 17,
    "name": "Kevin Durant",
    "pos": "SF",
    "ovr": 93.0,
@@ -737,6 +726,17 @@
    "simRank": 56,
    "rapmRank": 35,
    "flags": "—"
+  },
+  {
+   "rank": 17,
+   "name": "Joel Embiid",
+   "pos": "C",
+   "ovr": 93.0,
+   "minutes": 1201,
+   "threeValue": 63.5,
+   "simRank": 254,
+   "rapmRank": 10,
+   "flags": "長人"
   },
   {
    "rank": 18,
@@ -1060,7 +1060,7 @@
    "version": "card 0.2.7c",
    "order": 19,
    "adopted": true,
-   "rhoNetIn": 0.722,
+   "rhoNetIn": 0.728,
    "rhoNetOut": null,
    "rhoDefOut": null,
    "rho2k": 0.733

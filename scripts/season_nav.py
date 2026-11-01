@@ -112,7 +112,8 @@ PATCH_NOTES = [
         '3PT 欄改用窗口比較基準：主力射手差距拉開（Curry 120.7 → 125.2），OVR 不變。',
         '教練用人與出賽率也改看近四季窗口：不再只看單季。｜Sengun/101 → 96/78.3 → 78.9；Mamukelashvili/88 → 117/79.2 → 77.0',
         '賽中年齡固定看開季當天：不再因季中過生日跳分。｜Landale/278 → 257/61.6 → 63.8；Porziņģis/23 → 37/91.0 → 88.2',
-        '切入、自主創造拆開算：切入只算帶球切入的自主兩分，自主創造改看自己創造的跳投與低位（Zion 自主創造 87 → 63）。｜Cameron Johnson/58 → 43/83.8 → 86.6；Bridges/53 → 41/84.7 → 87.1；Paul Reed/93 → 79/78.7 → 79.9；Sengun/91 → 81/78.9 → 79.9；Tre Jones/39 → 49/88.0 → 85.9；Dosunmu/69 → 94/81.4 → 78.6；Avdija/97 → 107/78.5 → 77.6']),
+        '切入、自主創造拆開算：切入只算帶球切入的自主兩分，自主創造改看自己創造的跳投與低位（Zion 自主創造 87 → 63）。｜Cameron Johnson/58 → 43/83.8 → 86.6；Bridges/53 → 41/84.7 → 87.1；Paul Reed/93 → 79/78.7 → 79.9；Sengun/91 → 81/78.9 → 79.9；Tre Jones/39 → 49/88.0 → 85.9；Dosunmu/69 → 94/81.4 → 78.6；Avdija/97 → 107/78.5 → 77.6',
+        '加引力能力值：沒拿球時防守人也不敢離開的射手加分（Klay 419 → 357 名），空間長人略降（Turner 108 → 123 名）。｜Klay/419 → 357/55.9 → 57.9；Hield/259 → 240/65.7 → 66.7；Kennard/135 → 120/75.6 → 76.4；Duncan Robinson/208 → 199/69.6 → 70.4；Hauser/175 → 160/72.9 → 73.6；Turner/108 → 123/77.8 → 76.3；Fox/24 → 20/91.2 → 92.1；Bane/20 → 21/92.0 → 92.0']),
     (('card',), '0.2.9', '2026-11-01', [
         '拿掉「年輕人在爛隊打折」：換新標準後這個折扣反而失準（Flagg 195 → 79 名）。｜Flagg/195 → 79/70.6 → 77.6；Banchero/65 → 158/79.8 → 72.7',
         '拿掉耐力對 OVR 的重複加分：上場時間只算一次（Jalen Williams 17 → 10 名）。｜Jalen Williams/17 → 10/86.9 → 88.2；Porziņģis/60 → 32/79.0 → 81.9；Edgecombe/101 → 150/75.2 → 72.3']),
@@ -278,6 +279,7 @@ ATTR_TIPS = {
     'ft': ('罰球', 'FT', '<b>罰球命中率</b>，看過去四季（近季權重高）。罰得少的人會往聯盟平均靠。', [], '四季滑動窗口：開季看前四季（近季權重高），隨賽季逐場換成本季'),
     'drive': ('切入', 'DRV', '<b>帶球切入</b>到 10 呎內的自主兩分，量與效率各半', [], '四季滑動窗口：開季看前四季（近季權重高），隨賽季逐場換成本季'),
     'foulDraw': ('製造犯規', 'FD', '<b>75%</b> 罰球量 ＋ <b>25%</b> 罰球率。', [('量 75%', '罰球數（per36）'), ('率 25%', '罰球數 ÷ 投籃出手')], '四季滑動窗口：開季看前四季（近季權重高），隨賽季逐場換成本季'),
+    'gravity': ('引力', 'GRV', '<b>沒拿球</b>時防守人也不敢離開他的程度（NBA.com 無球外線引力）', [], None),
     'pass': ('傳球', 'PASS', '<b>50%</b> 助攻量 ＋ <b>50%</b> 助攻率。', [('量 50%', '助攻（per36）'), ('率 50%', '在場時隊友進球被他助攻的比例')], '四季滑動窗口：開季看前四季（近季權重高），隨賽季逐場換成本季'),
     'creation': ('自主創造', 'CRT', '<b>自己創造</b>的跳投與低位出手（不含切入上籃、補籃、空切）per36', [], '四季滑動窗口：開季看前四季（近季權重高），隨賽季逐場換成本季'),
     'rebound': ('籃板', 'REB', '進攻＋防守<b>籃板率</b>：在場時搶下可搶籃板的比例，看過去四季（近季權重高）。', [], '四季滑動窗口：開季看前四季（近季權重高），隨賽季逐場換成本季'),
@@ -290,7 +292,7 @@ ATTR_TIPS = {
     'help': ('護框', 'RIM', '對手在<b>籃下 6 呎內</b>的命中率比預期低多少。', [], '老將四季加權含本季；新秀只看本季'),
     'dbon': ('防守意識', 'DIQ', '輪轉、站位、補防……<b>常規數據以外的防守意識</b>。真實比賽防守 RAPM 和同位置平均的差。',
              [('單位', 'RAPM 分（不是 0–99）'), ('進 OVR', '只有正的部分')], False),
-    'off': ('進攻', 'OFF', '<b>75% 進攻能力值</b>（投籃、切入、製造犯規、傳球、少失誤、自主創造）＋<b>25% 進攻影響力</b>（DARKO＋BPM 近幾季合併，同 OVR 的比例），每 36 分鐘比聯盟平均多幾分；影響力樣本不足 5000 回合的人只看能力值。',
+    'off': ('進攻', 'OFF', '<b>75% 進攻能力值</b>（投籃、切入、引力、製造犯規、傳球、少失誤、自主創造）＋<b>25% 進攻影響力</b>（DARKO＋BPM 近幾季合併，同 OVR 的比例），每 36 分鐘比聯盟平均多幾分；影響力樣本不足 5000 回合的人只看能力值。',
             [('單位', '每 36 分鐘淨分（0＝平均）'), ('不含', '籃板、身高、上場時間')], False),
     'def': ('防守', 'DEF', 'OVR 裡<b>防守</b>貢獻的部分：單防、護框、壓迫，加上防守意識加分，每 36 分鐘比聯盟平均多幾分。',
             [('單位', '每 36 分鐘淨分（0＝平均）'), ('不含', '籃板、身高、上場時間')], False),
@@ -416,6 +418,22 @@ def cell_tip(n, s, v, rows, d='', foot=()):
 # 提示卡 PR／名次人群（使用者 2026-11-01）：只排除場均上場不夠的人（看頁面 MPG 欄），不看總分鐘、不分老將新秀
 POOL_MPG = 15
 NO_RANK_FOOT = f'*上場時間不足（場均未滿 {POOL_MPG} 分鐘），不列名次'
+
+
+GRAVITY_IMPUTED = {'ols': '沒有 NBA.com 引力資料：用三分出手、三分命中率、用球率與位置推估',
+                   'card-ols': '沒有 NBA.com 引力資料：沿用 2025-26 卡的推估（三分出手、命中率、用球率與位置）',
+                   'rookie-g0': '新秀還沒有引力資料：先用 2025 屆新秀的中位數'}
+
+
+def gravity_tip(v, raw, src, pool_raw, inpool=True, note=''):
+    """GRV 格子提示卡（0.2.10j）：原始無球外線引力分數（NBA.com，越高越不敢離開他）＋PR／前十名次；推估的人註明。
+    src：'api'／'2025-26'／'2026-27'／'2025-26+2026-27'＝實際資料，'ols'／'card-ols'／'rookie-g0'＝推估。"""
+    rows = []
+    if raw is not None and src not in ('rookie-g0',):
+        pr, rk = pr_rank(raw, pool_raw)
+        rows.append(('引力分數' + ('（推估）' if src in GRAVITY_IMPUTED else ''), f'{raw:.1f}', pr, rk if inpool and src not in GRAVITY_IMPUTED else None))
+    foot = ([GRAVITY_IMPUTED[src]] if src in GRAVITY_IMPUTED else []) + ([] if inpool else [NO_RANK_FOOT])
+    return cell_tip('引力', 'GRV', round(v), rows, d=f'<b>沒拿球</b>時防守人也不敢離開他的程度{note}', foot=foot)
 
 
 def mpg_pool(mpg):
@@ -661,8 +679,8 @@ def apply_common(s):
 # 籃板、身高兩邊都不算（約佔 OVR 差異一成三）。OVR 還有用人層（分鐘、出賽率），所以兩分相加不等於 OVR。
 # 進攻再混進影響力（使用者 2026-11-01，同 OVR align 的比例）：T6（DARKO＋BPM）pooledPoss ≥ 5000 的人
 # 進攻＝0.75×能力值進攻＋0.25×（0.75×pooledO 減同一群 MIN ≥ 500 的平均）；不夠回合的人只用能力值。
-OD_CARD = Path(__file__).resolve().parents[1] / 'reports/card-0.2.10i/ranking.csv'  # 0.2.10i：drive→drive_D、creation→creationJ，全部係數重擬合（OFF 提示貢獻欄跟著換）
-OD_OFF = ['long', 'mid', 'short', 'ft', 'drive', 'foulDraw', 'tovSkill', 'pass', 'creation']
+OD_CARD = Path(__file__).resolve().parents[1] / 'reports/card-0.2.10j/ranking.csv'  # 0.2.10j：加 gravity（無球外線引力），全部係數重擬合；0.2.10i：drive→drive_D、creation→creationJ（OFF 提示貢獻欄跟著換）
+OD_OFF = ['long', 'mid', 'short', 'ft', 'drive', 'gravity', 'foulDraw', 'tovSkill', 'pass', 'creation']   # gravity：0.2.10j（每 10 點約 +0.19 per36）
 OD_DEF = ['onBall', 'help', 'pressure']
 OD_ALL = OD_OFF + OD_DEF + ['rebound', 'heightInches']
 OD_IMP_W, OD_IMP_POSS = 0.25, 5000   # 同卡片 align 的權重與門檻
@@ -673,6 +691,11 @@ def off_def(rows, key, card_path=OD_CARD):
     import csv
     import numpy as np
     card = list(csv.DictReader(Path(card_path).open(encoding='utf-8')))
+    if card and 'gravity' not in card[0]:   # 0.2.10j：卡片 ranking.csv 沒有 gravity 欄（與 E-198 KG 逐位元相同），從同資料夾 gravity-attr.csv 依姓名補
+        ga = {g['name']: g['gravity'] for g in csv.DictReader((Path(card_path).parent / 'gravity-attr.csv').open(encoding='utf-8'))}
+        for r in card:
+            r['gravity'] = ga[r['name']]
+        rows = [dict(r, gravity=ga.get(r['name'], '')) if 'gravity' not in r else r for r in rows]
     coef = {}
     for ps in {r['pos'] for r in card}:
         g = [r for r in card if r['pos'] == ps]
@@ -740,7 +763,8 @@ REGROUP = [
     ("['help', 'RIM', '護框'], ['pressure', 'PRES', '壓迫']]],", "['help', 'RIM', '護框']]],"),
     ("if (k === 'pressure') h += th('dbon', 'DIQ', '防守意識');", "if (k === 'help') h += th('dbon', 'DIQ', '防守意識');"),
     # 切入不放主畫面（使用者 2026-11-02「切入既然是負分 那就不要列在主畫面了」；0.2.10i 係數每 10 點 −0.03）；仍算進 OFF／OVR
-    ("['drive', 'DRV', '切入'], ['foulDraw', 'FD', '製造犯規']", "['foulDraw', 'FD', '製造犯規']"),
+    # 0.2.10j（R-134／R-135）：原本切入的位置改放引力（進攻組第一欄、製造犯規前面）
+    ("['drive', 'DRV', '切入'], ['foulDraw', 'FD', '製造犯規']", "['gravity', 'GRV', '引力'], ['foulDraw', 'FD', '製造犯規']"),
 ]
 
 
@@ -748,9 +772,7 @@ def regroup_attrs(s):
     for a, b in REGROUP:
         assert s.count(a) == 1, a
         s = s.replace(a, b)
-    s, n = re.subn(r'colspan="(\d+)" class="empty"', lambda m: f'colspan="{int(m.group(1)) - 1}" class="empty"', s)
-    assert n == 1
-    return s
+    return s   # 0.2.10j：切入換成引力，欄數不變（0.2.10i 拿掉切入時的空列 colspan −1 一起撤掉）
 
 
 # 防守意識是能力值，放表格防守組 PRES 右邊（使用者 2026-10-30），不放卡片資訊列（那列桌機整列藏掉）。

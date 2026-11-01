@@ -21,7 +21,11 @@ import pres_drive as PD  # noqa: E402（2026-11-01 壓迫／切入賽中解凍�
 
 HERE = Path(__file__).resolve().parent
 ORIG = HERE / 'run_c4_live.py'
-ROOKIE_JSON = HERE / ('rookie-prior-2026.json' if os.environ.get('SPLIT_DC', '1') != '0' else '_retired/rookie-prior-2026-0210h.json')  # 0.2.10i 換版後重解 δ（L-109）；SPLIT_DC=0 重現 0.2.10h 用當時的 δ
+GRAVITY = os.environ.get('GRAVITY', '1') != '0'   # 0.2.10j（R-134）：GRAVITY=0 重現 0.2.10i（不 import gravity_live、新秀起點讀 _retired/）
+ROOKIE_JSON = HERE / ('_retired/rookie-prior-2026-0210h.json' if os.environ.get('SPLIT_DC', '1') == '0' else
+                      'rookie-prior-2026.json' if GRAVITY else '_retired/rookie-prior-2026-0210i.json')  # 換版後重解 δ（L-109）；GRAVITY=0／SPLIT_DC=0 重現舊版用當時的 δ
+if GRAVITY:
+    import gravity_live as GV  # noqa: E402
 G_GAMES = 82
 DPOS = {'G': 'SG', 'F': 'SF', 'C': 'C'}          # D5：G／F／C → 設計矩陣用的 SG／SF／C（回測與上線同一張表）
 SKIP = ('pressure', 'drive')                     # live 凍結的兩項（同老將）
@@ -83,6 +87,11 @@ def xhat_of(ns, x0, k, rec, arm, rel, dfn=None):
     dfn：rookie_defense.inseason() 的這個人（{'onBall','help','n3','nRim'}）；有值就直接取代 onBall／help（w=1）。"""
     C, F, IC, SA = ns['C'], ns['F'], ns['IC'], ns['SA']
     out, ws, ns_ = dict(x0), {}, {}
+    if GRAVITY:                                         # 0.2.10j：x0 不含 gravity（δ 平移不動它）；本季 0 場＝ROOKIE_G0，有上場＝本季值（w=1，同防守 R-075）
+        out['gravity'] = GV.rookie_g0()
+        if dfn and dfn.get('gravity') is not None:
+            out['gravity'] = dfn['gravity']
+            ws['gravity'], ns_['gravity'] = 1.0, dfn.get('frames26')
     for a in DEF_ATTRS:
         if dfn and dfn.get(a) is not None:
             out[a] = C.clip(dfn[a])
@@ -246,6 +255,8 @@ def vet_defense(sd26, attrs, prior_cards, pw, attrs0):
     print(f'老將防守四季窗口：聯盟 {len(games)} 場（c={c:.2f} 格），權重 {ww}，更新 {n} 人', file=sys.stderr)
     if PD.ON:
         vet_pres_drive(c, attrs)
+    if GRAVITY:
+        vet_gravity(c, attrs, prior_cards)
     live_bonus(pw, c)
     window_ref(attrs0, posmap, pw, c)
 
@@ -267,6 +278,28 @@ def vet_pres_drive(c, attrs):
                 cnt[a] += 1
     PD_INFO = {'c': c, 'weights': ww, 'updated': cnt, 'module': 'live/pres_drive.py'}
     print(f'老將壓迫／切入四季窗口：權重 {ww}，更新 {cnt}', file=sys.stderr)
+
+
+GRAV = {}               # 0.2.10j：{pid: {'gravity','raw','src','frames25','frames26'}}（老將＋新秀）
+GRAV_INFO = {}
+
+
+def vet_gravity(c, attrs, prior_cards):
+    """0.2.10j：gravity＝2025-26／本季無球外線引力 FRAMES 加權×四季窗口季權重（gravity_live.live）；老將換進 attrs，新秀在 write_outputs 用。
+    基準（window_ref）沿用 attrs0＝先驗卡 gravity（＝gravity_live cur=False 的值）。"""
+    rk = json.load(open(ROOKIE_JSON, encoding='utf-8'))['players']
+    pos = {p: pc.get('pos') for p, pc in prior_cards.items()}
+    pos.update({r['playerId']: DPOS[r['pos']] for r in rk if r['playerId'] not in pos})
+    g, info = GV.live(c, NS['ns']['DATA26'], pos, rookies=[r['playerId'] for r in rk if r['playerId'] not in prior_cards])
+    GRAV.clear(); GRAV.update(g)
+    GRAV_INFO.clear(); GRAV_INFO.update(info)
+    n = 0
+    for pid, x in attrs.items():
+        v = g.get(pid)
+        if v is not None:
+            x['gravity'] = v['gravity']
+            n += 1
+    print(f"引力（gravity）：權重 {info['weights']}，本季檔 {info['cur'].get('n')} 人，OLS n={info['ols']['n']}，更新 {n} 人，來源 {info['src']}", file=sys.stderr)
 
 
 def pres_display(pid, pc):
@@ -331,6 +364,11 @@ def write_outputs(g, loc, out_dir, rows, head, nopr):
         PD_ROOK.update(PD.inseason({r['playerId']: r['pos'] for r in rookies}))
         for pid, v in PD_ROOK.items():
             dfns.setdefault(pid, {}).update({a: v.get(a) for a in PD_ATTRS}, minW=v.get('minW'))
+    if GRAVITY:
+        for rk in rookies:
+            v = GRAV.get(rk['playerId'])
+            if v is not None and v['src'] != 'rookie-g0':
+                dfns.setdefault(rk['playerId'], {}).update(gravity=v['gravity'], frames26=v['frames26'])
     _, coef, _ = g['load_usage']()
     dl = {int(r['playerId']): r for r in csv.DictReader(open(DEF_L_LIVE, encoding='utf-8'))}
     bad = team_badness(sd26)
@@ -382,6 +420,8 @@ def write_outputs(g, loc, out_dir, rows, head, nopr):
                      'x0': r['_base']['x'], 'xhat': r['_cur']['x'], 'w': r['_cur']['w'],
                      'chain': {k: r['_chain'][k] for k in ('possW', 'bonus', 'pred', 'predNew', 'd')}})
     json.dump(slim, open(out_dir / 'rookies-detail.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+    if GRAVITY:     # 檢視器 GRV tooltip 用：原始引力值、來源（是否推估）
+        json.dump({'meta': GRAV_INFO, 'players': {str(p): v for p, v in GRAV.items()}}, open(out_dir / 'gravity.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     if PD.ON:       # 檢視器 PRES tooltip 用：窗口後的收縮分量（老將）／本季分量（有上場的新秀）
         played = {r['playerId'] for r in rk_rows if r['N'] > 0}
         side = {'meta': PD_INFO, 'players': {}}
