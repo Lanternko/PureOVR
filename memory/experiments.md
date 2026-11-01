@@ -1837,6 +1837,6 @@
 ### E-183
 - 日期：2026-11-01
 - 假設：pass 的「率」那一半從 AST/astCh（助攻份額）換成 AST/PASSES_MADE（傳球轉助攻，二項式經驗貝氏收縮），可縮小 pass 偏高（E-179、E-180、F-118），且整體不變差。
-- 做法：`reports/E183-pass-conversion/preregistration.md`（草稿）。臂 K0（0.2.9a）／Q；判定 2024-25 原點對 2025-26 RAPM（R-113），統計量照 E-180 §2b。
+- 做法：`reports/E183-pass-conversion/preregistration.md`（已凍結）。臂 K0（0.2.9a）／Q；判定 2024-25 原點對 2025-26 RAPM（R-113），統計量照 E-180 §2b。
 - 已揭露：E-179、E-180（K0h S_all(pass) 已看過）、F-118；只看過 JW、Jokić、Haliburton、LeBron 的 AST/PASS 原始值。
-- 狀態：草稿，等使用者核可凍結。
+- 狀態：已凍結（2026-11-01，使用者「核可凍結」；sha 見 preregistration.sha256）。
