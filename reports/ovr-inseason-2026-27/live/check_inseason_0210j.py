@@ -75,7 +75,7 @@ def main(ref_dir, c0_dir, new_dir):
     chk(all(cs.get('c0', {}).get(k) is True for k in ('ranking.csv', 'three-value.csv', 'rapm-T6.csv', 'anchors')), '(2) 卡片 c0（GRAVITY=0）＝card 0.2.10i')
 
     mn = meta(new_dir)
-    chk(mn['version'] == 'inseason 0.2.10j' and mn.get('priorCard') == 'card 0.2.10j', f"(3) 新版號 {mn['version']}／{mn.get('priorCard')}")
+    chk(mn['version'] in ('inseason 0.2.10j', 'inseason 0.2.11') and mn.get('priorCard') in ('card 0.2.10j', 'card 0.2.11'), f"(3) 新版號 {mn['version']}／{mn.get('priorCard')}")
     old, new = load(c0_dir), load(new_dir)
     chk(set(old) == set(new), f'(3) ranking 人數 {len(old)} / {len(new)}')
     chk('gravity' in next(iter(new.values())), '(3) ranking.csv 有 gravity 欄')

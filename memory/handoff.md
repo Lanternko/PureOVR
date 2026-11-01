@@ -6,7 +6,7 @@
 - **更新**：2026-11-01，Claude Code App（lead；分支 claude/project-thread-63h2fz；handoff 瘦身 29KB→約 7KB）
 
 ## 目前基準（線上）
-- **card／inseason 0.2.10j**（R-134／R-135，E-200，11-02 上線）：加能力值引力 gravity（主畫面 GRV 取代切入位置，每日抓本季引力），`GRAVITY=0` 重現 0.2.10i。`reports/card-0.2.10j/`、`live/gravity_live.py`
+- **card／inseason 0.2.11**（原 0.2.10j，R-137；R-134／R-135，E-200）：加能力值引力 gravity（主畫面 GRV 取代切入位置，每日抓本季引力），`GRAVITY=0` 重現 0.2.10i。`reports/card-0.2.10j/`、`live/gravity_live.py`
 - **card／inseason 0.2.10i**（R-132，E-197，11-01 上線）：drive_D＋creationJ，`SPLIT_DC=0` 重現 0.2.10h。`reports/card-0.2.10i/`
 - **正式卡 card 0.2.10c**（R-122）：`reports/card-0.2.10c/`＝card 0.2.10a（R-121：8 項四季滑動窗口＋L-102 修好的 T6）重擬合＋傳球全位置共用斜率（E-187 KAU，修 JW 偏高）；OFFICIAL_CARD 指它。
 - **新賽季頁 inseason 0.2.10** 已發布（2026-11-01）：8 項每日由窗口算（`live/window8.py`），其他屬性同前；單場評分 **Z1**（R-108，E-169，`scripts/rating_m10.py`）。

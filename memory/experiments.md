@@ -2003,6 +2003,7 @@
 - 做法：`reports/card-0.2.10j/{spec.md,progress.md}`。卡片＝E-198 KG 臂定版（build_0210j.py，與 KG-final 逐位元相同）；賽中 `live/gravity_live.py`（2025-26＋本季 FRAMES 加權×四季窗口季權重，缺值 OLS，凍結池 gravity-pool-card0210j.json）、`scripts/fetch_gravity.mjs`＋daily step_fetch_gravity；新秀起點 build_2k_start 重解 δ。
 - 已揭露：E-198 結果（A 不過，F-141）與 R-135（使用者接受、空間長人下降是對的）；不是新假設檢定，只是上線。
 - 狀態：完成（2026-11-02）：GRAVITY=0 兩端逐位元重現 0.2.10i；check_inseason_0210j.py 全過；R-109 前 100 名移動 ≥10 名卡片頁 11 人、新賽季頁 10 人，前 20 各進出 1 人（Fox 進），字母版 0.2.10j。Klay 卡片 419→357、新賽季 343→316；Turner 108→123。
+- 版號：2026-11-02 使用者升為 PATCH 0.2.11（R-137；原標 0.2.10j，檔名沿用）
 - 相關：E-198、R-134、R-135、F-141、R-109
 - 來源：使用者 2026-11-02「兩頁都上」
 
