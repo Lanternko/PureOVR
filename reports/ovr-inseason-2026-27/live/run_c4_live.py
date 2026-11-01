@@ -643,7 +643,7 @@ def win8_load():
     saved = list(sys.path)
     try:
         import window8 as W8
-        W = W8.Win8()
+        W = W8.Win8(DATA26)   # ovr_history 逐日重算會換掉 ns['DATA26']；窗口也要只讀截斷資料夾（不然 8 項用到未來資料）
         tabs, gd = W.cur_tabs()
         WIN8.update(now=W.attrs_at(gd, tabs), day0=W.day0(tabs), games=gd, pbp=W.n_pbp, attrs=list(W8.C.ATTRS8))
     finally:

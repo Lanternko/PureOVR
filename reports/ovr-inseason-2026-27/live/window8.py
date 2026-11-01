@@ -31,6 +31,46 @@ def _rows(path):
     return [dict(zip(rs['headers'], r)) for r in rs['rowSet']]
 
 
+# ---------------- 投籃區域（mid／short）：有官方 area 用官方；2026-27 pbp 沒有 area／areaDetail，改用距離＋座標推導
+# 規則在看 2025-26 核對結果前依座標慣例定死（NBA stats 座標：籃框原點、0.1 呎；油漆區寬 16 呎＝|x|≤80、從籃框到罰球線 14.25 呎＝y≤142.5；限制區半徑 4 呎）。
+RA_FT, PAINT_X, PAINT_Y = 4.0, 80, 142.5
+# 推導規則對 2025-26 官方 area 的核對 mid 一致率只有 88.0%（< 門檻 95%，F-124、zone-check/zone-check.json），未獲核可前不啟用；
+# 關閉時沒有 area 的資料維持舊行為（區域不計），只多一個 WARNING。
+DERIVE_ZONES = False
+
+
+def _zone(a):
+    """一筆 isFieldGoal==1 的 2pt 動作 -> 0＝mid、1＝short、None＝無法判斷。"""
+    area = a.get('area')
+    if area:
+        return 0 if area == 'Mid-Range' else 1 if area in ('Restricted Area', 'In The Paint (Non-RA)') else None
+    if not DERIVE_ZONES:
+        return None
+    d, x, y = a.get('shotDistance'), a.get('xLegacy'), a.get('yLegacy')
+    if d is not None and d <= RA_FT:
+        return 1
+    if x is None or y is None:
+        return None
+    return 1 if abs(x) <= PAINT_X and y <= PAINT_Y else 0
+
+
+def game_zones(acts, zone=_zone):
+    """{pid: (midA, midM, shortA, shortM)}，以及 isFieldGoal 2pt 總數。"""
+    z = {}
+    n2 = 0
+    for a in acts:
+        if a['actionType'] != '2pt' or a.get('isFieldGoal') != 1:
+            continue
+        n2 += 1
+        k = zone(a)
+        if k is None:
+            continue
+        v = z.setdefault(a['personId'], [0, 0, 0, 0])
+        v[2 * k] += 1
+        v[2 * k + 1] += a.get('shotResult') == 'Made'
+    return {p: tuple(v) for p, v in z.items()}, n2
+
+
 class Win8:
     def __init__(self, data26=DATA26):
         self.data26 = Path(data26)
@@ -60,6 +100,7 @@ class Win8:
 
     # ---------------- 本季（2026-27）逐場表：與 prepare_pergame／extract_pbp 同規則
     def cur_tabs(self):
+        import json
         import extract_pbp as X
         from collections import defaultdict
         D = self.D
@@ -95,13 +136,16 @@ class Win8:
         zg, zp_, zmA, zmM, zsA, zsM = [], [], [], [], [], []
         acc = defaultdict(lambda: [0.0, 0.0, 0.0, 0.0])
         pu = D.pu[PRIOR]
-        npbp = 0
+        npbp = n2all = nzoned = 0
         for g in gids:
             f = self.data26 / 'pbp' / f'{g}.json'
             if not f.exists():
                 continue
             npbp += 1
-            _, zones, drive = X.parse_game((g, f))
+            _, _, drive = X.parse_game((g, f))
+            zones, n2 = game_zones(json.loads(f.read_text(encoding='utf-8'))['data']['game']['actions'])
+            n2all += n2
+            nzoned += sum(v[0] + v[2] for v in zones.values())
             for pid, (mA, mM, sA, sM) in zones.items():
                 if pid in D.pidx:
                     zg.append(gi_of[g]); zp_.append(D.pidx[pid]); zmA.append(mA); zmM.append(mM); zsA.append(sA); zsM.append(sM)
@@ -114,6 +158,9 @@ class Win8:
                 a[3] += w
                 if made:
                     a[2] += 2 + ftm
+        if n2all >= 200 and nzoned < 0.5 * n2all:   # 上游欄位消失（L-098）：本季有大量 2pt 出手但區域幾乎全空，不能靜默當 0
+            print(f'WARNING: 2026-27 pbp 區域缺失：2pt 出手 {n2all}、判得出區域 {nzoned}，mid／short 本季不會更新（area 欄位消失？）', file=sys.stderr)
+        self.n_zoned = (n2all, nzoned)
         t['mid'] = L.Tab(zg, zp_, zmM, zmA, NP)
         t['short'] = L.Tab(zg, zp_, zsM, zsA, NP)
         for g_, p_, m_ in zip(gi, pi, MIN):
