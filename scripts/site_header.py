@@ -17,15 +17,16 @@ def _svg(k, size=16):
 
 SEASON = {'inseason': '2026-27', 'card': '2025-26'}
 
-CSS = """<style>
+CSS = """<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Righteous&display=swap">
+<style>
 .mast{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 78%,transparent);
   -webkit-backdrop-filter:saturate(180%) blur(14px);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line);transition:box-shadow .25s,border-color .25s}
 .mast.scrolled{border-bottom-color:transparent;box-shadow:0 6px 22px -10px rgba(0,0,0,.6)}
 .mast-in{display:flex;align-items:center;gap:16px;height:56px;max-width:1280px;margin:0 auto;box-sizing:border-box;
   padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
 .mbrand{display:inline-flex;align-items:baseline;gap:8px;text-decoration:none;flex:none}
-.mbrand b{font:800 italic 1.75rem/1 var(--f-disp);letter-spacing:.01em;text-transform:uppercase;color:var(--fg)}
-.mbrand b span{font-weight:600;color:var(--muted)}
+.mbrand b{font:400 1.6rem/1 "Righteous",var(--f-disp);letter-spacing:.02em;text-transform:uppercase;color:var(--fg)}
+.mbrand b span{color:var(--muted)}
 .mbrand b i{font-style:inherit;color:var(--gold)}
 .mbrand:hover b span{color:var(--fg)}
 .mbrand small{font:600 .78rem var(--f-disp);letter-spacing:.06em;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -76,7 +77,7 @@ CSS = """<style>
 .wrap>.top,.wrap>.ctrl{display:none}
 @media (max-width:640px){
   .mast-in{height:52px;gap:6px}
-  .mbrand b{font-size:1.4rem}
+  .mbrand b{font-size:1.3rem}
   .mbrand small{display:none}
   .mtabs{margin:0 auto 0 0}
   .mtab,.mtabs .tpick summary{padding:6px 9px;font-size:.95rem}
@@ -160,6 +161,10 @@ def add_masthead(html_str, current):
     s, n = re.subn(r"<script>addEventListener\('DOMContentLoaded',\(\)=>\{const m=document\.getElementById\('modeSeg'\).*?</script>",
                    '', html_str, count=1, flags=re.S)
     assert n == 1, 'modeSeg mover not found'
+    # 能力值預設顯示 99 數字（使用者 2026-11-02「預設使用 99，而不是 A+」）；按過 A+ 的人仍記住 A+
+    a = "localStorage.getItem('bbac.mode') === 'num' ? 'num' : 'grade'; } catch (e) { return 'grade'; }"
+    assert s.count(a) == 1, 'mode default not found'
+    s = s.replace(a, "localStorage.getItem('bbac.mode') === 'grade' ? 'grade' : 'num'; } catch (e) { return 'num'; }")
     assert s.count('<div class="wrap">') == 1, 'wrap not found'
     s = s.replace('<div class="wrap">', CSS + header_html(current) + '\n<div class="wrap">', 1)
     i = s.rfind('</body>')
