@@ -23,6 +23,7 @@ import enrich_roster_viewer as er  # noqa: E402
 from season_nav import add_season_nav, apply_common, regroup_attrs  # noqa: E402
 import season_nav as sn  # noqa: E402
 from site_header import add_masthead  # noqa: E402
+import attr_cell_tips as AT  # noqa: E402
 
 ROOT = er.ROOT
 BASE = ROOT / 'reports/ovr-v58-card-2025-26/roster-viewer.html'
@@ -119,6 +120,8 @@ def main(out=None):
     g_pool = [gr[n][0] for n in pool if n in gr and not gr[n][1]]   # GRV 提示卡 PR／名次：有 NBA.com 資料、場均夠的人
     trows, n_tov = sn.tov_rows(er.SRC, 'PLAYER_NAME', pool)
     hrows = sn.three_rows(er.SRC, 'PLAYER_NAME', pool)   # 3PT 提示卡：2025-26 三分命中率、出手量
+    pid_of = {row[h['PLAYER_NAME']]: int(row[h['PLAYER_ID']]) for row in rs['rowSet']}
+    atips = AT.build(AT.window_stats(True), {pid_of[n] for n in pool if n in pid_of})   # MID／INS／FT／DRV／FD／PASS／CRT／REB／RIM 提示卡：2025-26 季末四季窗口
     oc_ = list(csv.DictReader(ONBALL.open(encoding='utf-8')))
     orows = onball_rows({r['name']: (float(r['C3']), float(r['B']), float(r['T'])) for r in oc_ if '' not in (r['C3'], r['B'], r['T'])}, pool)
     # DIQ 顯示負分：card 0.2.10i 的 defenseBonus（同 0.2.7b） 用 def-L-primary，posMeanD 從同一批人算（max(0, ·) 逐人核對）
@@ -144,6 +147,7 @@ def main(out=None):
                           num('presDisplay'), num('pressure'), num('foulDisc'),
                           {**({'pressure': pres_tip(num('presDisplay'), num('pressure'), ptips[r['name']], n_pres, inpool=r['name'] in pool)} if r['name'] in ptips else {}),
                            **({'threeValue': sn.three_tip(three, hrows[r['name']], '2025-26', r['name'] in pool)} if r['name'] in hrows else {}),
+                           **{a: AT.tip(a, num(a), sub, '（近四季加權）') for a, sub in atips.get(pid_of.get(r['name']), {}).items()},
                            **({'tovSkill': tov_tip(num('tovSkill'), trows[r['name']], n_tov, inpool=r['name'] in pool)} if r['name'] in trows else {}),
                            **({'onBall': onball_tip(num('onBall'), orows[r['name']], inpool=r['name'] in pool)} if r['name'] in orows else {}),
                            'gravity': sn.gravity_tip(num('gravity'), gr[r['name']][0], 'ols' if gr[r['name']][1] else 'api', g_pool, r['name'] in pool, '（2025-26）')},

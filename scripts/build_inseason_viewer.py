@@ -18,6 +18,7 @@ import enrich_roster_viewer as er  # noqa: E402
 from season_nav import add_season_nav, apply_common, regroup_attrs  # noqa: E402
 import season_nav as sn  # noqa: E402
 from site_header import add_masthead  # noqa: E402
+import attr_cell_tips as AT  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'reports/impact-epm-2026-27'))
 import epm_live  # noqa: E402
 from build_card_viewer import (onball_rows, onball_tip, pres_tip, pres_tips, tov_tip,  # noqa: E402
@@ -189,6 +190,7 @@ def main():
     # TO 提示卡：2026-27 至今的失誤、球權、失誤率
     trows, n_tov = sn.tov_rows(SRC26, 'PLAYER_ID', ipool)
     hrows = sn.three_rows(SRC26, 'PLAYER_ID', ipool)   # 3PT 提示卡：本季至今三分命中率、出手量
+    atips = AT.build(AT.window_stats(False, meta['window8']['gamesDone']), ipool)   # MID／INS／FT／DRV／FD／PASS／CRT／REB／RIM 提示卡：四季窗口含本季
     orows, ob_note = onball_live(rows, ipool)
     base = BASE.read_text(encoding='utf-8')
     old = json.loads(re.search(r'const DATA=(\{.*?\});\nconst COLS', base, re.S).group(1))
@@ -226,6 +228,9 @@ def main():
         hr = hrows.get(int(r['playerId']))
         if hr:
             t['threeValue'] = sn.three_tip(float(r['threeValue'] or r['long']), hr, '2026-27 至今', r['playerId'] in pool)
+        for a, sub in atips.get(int(r['playerId']), {}).items():
+            if r.get(a, '') != '':
+                t[a] = AT.tip(a, float(r[a]), sub, '（近四季加權，含本季）')
         tr = trows.get(int(r['playerId']))
         if tr:
             t['tovSkill'] = tov_tip(float(r['tovSkill']), tr, n_tov, '2026-27 至今', r['playerId'] in pool)
