@@ -18,6 +18,7 @@
 - **E-151 年輕側年齡連續**：已預註冊（6820474），每日排程在 2026-27 stints 達 450 場時自動跑 `e151_eval.py` 一次（daily.log 會出現 WARNING「E-151 評估完成」）。不得提前拿卡片去比。
 
 ## 等使用者裁定
+- **F-126 難球命中問題卡**（2026-11-01 開卡，額度 3）：NBA.com Shot Difficulty 逐球 xFG% 有 2025-26、2026-27（`shotqualityvideologs`），Gravity 只有整季。下一步第 0 步診斷：SM＝FG%−xFG% 對卡片殘差的斜率（RAPM 分半交叉）。改卡片 OVR 牴觸 R-020，要使用者改裁定。`reports/F126-shot-difficulty/data-check.md`
 - **R-117 問題卡與停損**（2026-11-01，commit 1697309）：之後的 JW 偏高、長人犯規兩條線都要先補問題卡（F 條目）、算 MDE；兩條已連續多次不過，下一步只能做診斷（例如 JW 名次是否超出 RAPM 分半雜訊），不再提新假設，除非使用者重開額度。預註冊只准「主目標修到／沒弄壞」兩類必過，球隊 MAE 等只權衡（R-042、L-099）。
 - **E-181 無球能力值**（2026-11-01 完成：不採用，F-119、L-096）：無球型（offBall 高、creation 低）在 2024-25 卡對下季 RAPM 確實低估約 9 個百分點，但加「被助攻得分／36」屬性係數幾乎 0、補不回。下一步待使用者：從 T6 目標或 creation 定義下手（同 F-118），或放著。`reports/E181-offball-attr/report.md`
 - **JW 偏高問題卡 F-125**（2026-11-01 停損後診斷）：對卡片目標 T6 殘差 ≈0；對本季 RAPM −0.87、SE 0.79（z −1.1，和 Edwards／Durant 同區），和雜訊分不開；專修 JW 的 MDE 1.6 大於落差，不跑。使用者 /goal 要解決 → 換方向：E-186（目標 T6 混四季 RAPM，w=0.5）已凍結、派 role-card。`reports/F125-jw-noise-check/report.md`
