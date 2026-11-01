@@ -1,7 +1,7 @@
 """E-204：把 card_route.py 的輸出（線上管線格式）整理成卡片資料夾格式（欄位與 reports/card-0.2.12-tov/ranking.csv 相同）。
 用法（repo root）：python -I -X utf8 reports/E204-window-246/make_card.py <card_route 輸出夾> <輸出夾> [版號]
 WIN_LEN=328 的輸出必須與 card-0.2.12-tov/ranking.csv 數值相同（版號參數填 check）。
-其餘檔案（three-value、gravity-attr／raw、rapm-T6）窗口不影響，原樣複製；錨點凍結（summary.json anchors 同 card 0.2.12）。"""
+其餘檔案（three-value、gravity-attr／raw、rapm-T6）窗口不影響，原樣複製；def-L-primary.csv 取 card_route 的 def-L-live.csv 補姓名；錨點凍結（summary.json anchors 同 card 0.2.12）。"""
 import csv
 import hashlib
 import json
@@ -52,6 +52,15 @@ if ver == 'check':     # 數值核對（字串格式不同：mpg 33.0／33.00、
     sys.exit(1 if bad else 0)
 for n in ('three-value.csv', 'rapm-T6.csv', 'gravity-attr.csv', 'gravity-raw.csv'):
     shutil.copyfile(SRC / n, out / n)
+# 防守加成 D 的重擬合（window 246）→ 名單頁 DIQ 負分顯示用（build_card_viewer.defense_centered 要 name 欄）；card 0.2.12 用的是 card-0.2.5+E104 的 def-L-primary.csv（WIN_LEN=328 的 card_route def-L-live.csv 與它逐位相同）
+E104 = ROOT / 'reports/card-0.2.5+E104-defense-pergame-decay/def-L-primary.csv'
+nm = {int(r['playerId']): r['name'] for r in csv.DictReader(open(E104, encoding='utf-8'))}
+nm.update({int(r['playerId']): r['name'] for r in rt})
+with open(out / 'def-L-primary.csv', 'w', encoding='utf-8', newline='') as fh:
+    wr = csv.writer(fh)
+    wr.writerow(['playerId', 'name', 'D', 'poss', 'possUnweighted'])
+    for r in csv.DictReader(open(src_dir / 'def-L-live.csv', encoding='utf-8')):
+        wr.writerow([r['playerId'], nm[int(r['playerId'])], r['D'], r['poss'], r['possUnweighted']])
 summ = json.loads((SRC / 'summary.json').read_text(encoding='utf-8'))
 sha = lambda p: hashlib.sha256(Path(p).read_bytes()).hexdigest()
 summ.update({'version': f'card {ver}', 'base': 'reports/card-0.2.12-tov（card 0.2.12）', 'players': len(rows),

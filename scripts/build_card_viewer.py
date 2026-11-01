@@ -125,7 +125,7 @@ def main(out=None):
     oc_ = list(csv.DictReader(ONBALL.open(encoding='utf-8')))
     orows = onball_rows({r['name']: (float(r['C3']), float(r['B']), float(r['T'])) for r in oc_ if '' not in (r['C3'], r['B'], r['T'])}, pool)
     # DIQ 顯示負分：card 0.2.10i 的 defenseBonus（同 0.2.7b） 用 def-L-primary，posMeanD 從同一批人算（max(0, ·) 逐人核對）
-    dcen = sn.defense_centered(rows, 'name', [(ROOT / 'reports/card-0.2.5+E104-defense-pergame-decay/def-L-primary.csv', None)])
+    dcen = sn.defense_centered(rows, 'name', [(ROOT / 'reports/card-0.2.12b/def-L-primary.csv', None)])   # 0.2.12b：窗口 246 重擬合的 D（E-204；card 0.2.12 用 card-0.2.5+E104 的 def-L-primary.csv）
     assert dcen, 'DIQ 負分：def-L-primary 算回來的 defenseBonus 對不上 card 0.2.10i'
     rows = sn.display_rows(rows)   # 能力值顯示尺（2026-11-02 方案 B）：off/def、名次人群已用原值算完
     data_rows, missing, no_tv = [], [], []
