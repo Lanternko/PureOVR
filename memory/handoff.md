@@ -20,7 +20,7 @@
 - **E-151 年輕側年齡連續**：已預註冊（6820474），每日排程在 2026-27 stints 達 450 場時自動跑 `e151_eval.py` 一次（daily.log 會出現 WARNING「E-151 評估完成」）。不得提前拿卡片去比。
 
 ## 等使用者裁定
-- **E-190**（F-132）：creation 改自主跳投，停在 c0（預註冊前提錯，L-105），待使用者選 errata。
+- **E-190**（F-132）：creation 改自主跳投，errata-1 核可（R-126），派 role-card 中。
 - **E-189 非投籃犯規屬性**（R-125 重開 F-129 額度）：預註冊草稿 `reports/sim-0.1.3+E189-nsfoul-attr/preregistration.md` 待使用者凍結。F-130（球隊造罰球偏大＝5 名真實球員占 73% 出手）待使用者決定改不改。
 - **0.2.10a 後續**（R-121）：新賽季頁仍是舊 T6，等 0.2.12（以 0.2.10a 為底）一起修；H1 封頂壓前段（SGA 118.8→103.8）另議；E-142／E-153／E-186 用舊 T6 要重核。
 - **F-126 難球命中問題卡**（2026-11-01 開卡，額度 3）：NBA.com Shot Difficulty 逐球 xFG% 有 2025-26、2026-27（`shotqualityvideologs`），Gravity 只有整季。下一步第 0 步診斷：SM＝FG%−xFG% 對卡片殘差的斜率（RAPM 分半交叉）。改卡片 OVR 牴觸 R-020，要使用者改裁定。`reports/F126-shot-difficulty/data-check.md`

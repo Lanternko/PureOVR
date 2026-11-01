@@ -1,4 +1,4 @@
-# E-190 errata-1（草稿，待使用者核可）
+# E-190 errata-1（已核可 2026-11-01，使用者「跑」）
 
 - 日期：2026-11-01。原因：c0 第 2 部分不過，預註冊 §0／§1 對舊 creation 的來源、換算、窗口三處寫錯（`report.md`、L-105）；使用者裁定出手歸類（R-126）。預註冊本文不改，本檔取代下列段落。
 - 已揭露：c0 全部數字（`results.json`）；`work/creation-recompute.csv` 的 creationJ 欄（舊版定義）lead 沒看與 drive 的相關、也不再使用。
