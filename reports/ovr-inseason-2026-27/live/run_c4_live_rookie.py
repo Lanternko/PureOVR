@@ -33,7 +33,7 @@ OLD_DEF = "    attrs = live_predict(delta2, rel_, undefined, frozen, diag=diag)\
 NEW_DEF = OLD_DEF + "    _E116.vet_defense(sd26, attrs, prior_cards, pw, attrs0)\n"
 # 2026-11-01 lastOVR／dOVR 基準改 window_ref（REF_W）；檢查 (a) 與 _lastCmp（對正式卡）仍用 ref。E-185：refw 的 MPG 用 mpg_ref（本季 0 場的窗口 MPG；WIN10=0 時＝mpg0）
 OLD_REF = "    ref = e064_convert(ref, mpg0, anc064, r_repl064)\n"
-NEW_REF = OLD_REF + "    refw = e064_convert(apply_usage(dict(_E116.REF_W), usage, ucoef), mpg_ref, anc064, r_repl064)\n"
+NEW_REF = OLD_REF + "    refw = e064_convert(apply_usage(dict(_E116.REF_W), usage_d0, ucoef), mpg_ref, anc064, r_repl064)\n"   # 0.2.10g：usage_d0＝本季 0 場的窗口用人特徵（USAGE_WIN=0 時＝凍結 usage）
 OLD_LAST = "                    'lastOVR': r1(ref[pid]['ovr']), 'dOVR': round(p['ovr'] - ref[pid]['ovr'], 2),\n"
 NEW_LAST = "                    'lastOVR': r1(refw[pid]['ovr']), 'dOVR': round(p['ovr'] - refw[pid]['ovr'], 2),\n"
 OLD_D = "                    '_ovr': p['ovr'], '_d': p['ovr'] - ref[pid]['ovr'],\n"

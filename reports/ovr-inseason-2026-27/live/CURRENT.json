@@ -1,21 +1,24 @@
 {
-  "inseason": "inseason 0.2.10f",
-  "card": "card 0.2.10f",
-  "cardMode": "0210f",
+  "inseason": "inseason 0.2.10g",
+  "card": "card 0.2.10g",
+  "cardMode": "0210g",
   "entry": "run_c4_live_rookie.py",
   "base": "run_c4_live.py",
   "files": [
     "window8.py",
     "window10.py",
+    "window11.py",
+    "build_avail_0210g.py",
+    "avail-hist-0210g.json.gz",
     "build_tvpool_0210f.py",
     "tvpool-members-card0210f.json",
-    "build_usage_0210f.py",
-    "usage-2025-26-card0210f.json",
+    "build_usage_0210g.py",
+    "usage-2025-26-card0210g.json",
     "build_prior_0210d.py",
     "prior-2025-26-card0210d.json",
     "build_prior_027b.py",
     "prior-2025-26-card027b.json",
     "pool-027b.json"
   ],
-  "note": "換版時：更新本檔、舊版建構腳本與凍結檔 git mv 到 _retired/（test/live_current_gate.py 會擋）。新賽季反事實與版本比較只用 run_c4_live_rookie.py。 0.2.10f（E-191b P1m，使用者 2026-11-01 核准）：只換 3PT 欄（threeValue，顯示用、不進 OVR）的對照池＝近三季各自「以該季結尾的窗口值」（窗口加權 MIN≥500，名單凍結在 tvpool-members-card0210f.json）＋本季窗口值；run_c4_live.TV_P1M=0 重現 0.2.10e。card-0.2.10f 的 ranking.csv／rapm-T6.csv 與 0.2.10e 逐位元組相同。 0.2.10e（E-188，R-124）：只換 OVR 映射（PR50→70、PR90→88、PR95→92、PR99→99 分段線性，名次不變），PR90／PR95 取 reports/card-0.2.10e/summary.json（card 0.2.10d 池）；用人層 build_usage_0210e.py（係數、r_repl、其他錨同 0.2.10d）；先驗、窗口、卡端係數管線仍讀 0.2.10d 檔。 0.2.10d（E-185，R-118／R-123）：long、creation、threeValue、MPG_hat 也用 E-175 滑動窗口（window10.py 繼承 window8.py）；底是官方 card 0.2.10c（E-187 KAU：修正後 T6、全部係數在新屬性上重擬合、傳球共用斜率），用人層係數、r_repl、錨點取 reports/card-0.2.10d/usage-features.json 的重擬合值（build_usage_0210d.py），不再凍結 0.2.9a。 WIN10=0 環境變數＝關掉四項窗口、卡／用人層換成 card 0.2.10c（讀 reports/card-0.2.10d/work-selfcheck，需先跑 run_all.py selfcheck 與 build_usage_0210d.py base10c；只供拆項，不上線）。 build_prior_027b／prior-027b／pool-027b 仍是 0210d 的底（build_prior_0210d 讀 0210 先驗，0210 先驗讀 027b），所以 027b 留在頂層。"
+  "note": "換版時：更新本檔、舊版建構腳本與凍結檔 git mv 到 _retired/（test/live_current_gate.py 會擋）。新賽季反事實與版本比較只用 run_c4_live_rookie.py。 0.2.10g（E-192，使用者 2026-11-01 核准）：用人層（L 上場強度、a 出賽率）改四季滑動窗口（window11.py 繼承 window10.py；權重同 E-175 U 臂；可出賽場次＝出賽＋教練決定未上場，出缺勤來源 avail-hist-0210g.json.gz＋data/season-source/dnp-2025-26.json＋本季 boxes），賽中每天用當下窗口重算，y、v 用當下年齡；係數同 0.2.10d，r_repl、錨點用新池重取（usage-2025-26-card0210g.json，build_usage_0210g.py）。run_c4_live.USAGE_WIN=0 重現 0.2.10f（讀 _retired/usage-2025-26-card0210f.json，先驗卡改回 card-0.2.10f）。 0.2.10f（E-191b P1m，使用者 2026-11-01 核准）：只換 3PT 欄（threeValue，顯示用、不進 OVR）的對照池＝近三季各自「以該季結尾的窗口值」（窗口加權 MIN≥500，名單凍結在 tvpool-members-card0210f.json）＋本季窗口值；run_c4_live.TV_P1M=0 重現 0.2.10e。card-0.2.10f 的 ranking.csv／rapm-T6.csv 與 0.2.10e 逐位元組相同。 0.2.10e（E-188，R-124）：只換 OVR 映射（PR50→70、PR90→88、PR95→92、PR99→99 分段線性，名次不變），PR90／PR95 取 reports/card-0.2.10e/summary.json（card 0.2.10d 池）；用人層 build_usage_0210e.py（係數、r_repl、其他錨同 0.2.10d）；先驗、窗口、卡端係數管線仍讀 0.2.10d 檔。 0.2.10d（E-185，R-118／R-123）：long、creation、threeValue、MPG_hat 也用 E-175 滑動窗口（window10.py 繼承 window8.py）；底是官方 card 0.2.10c（E-187 KAU：修正後 T6、全部係數在新屬性上重擬合、傳球共用斜率），用人層係數、r_repl、錨點取 reports/card-0.2.10d/usage-features.json 的重擬合值（build_usage_0210d.py），不再凍結 0.2.9a。 WIN10=0 環境變數＝關掉四項窗口、卡／用人層換成 card 0.2.10c（讀 reports/card-0.2.10d/work-selfcheck，需先跑 run_all.py selfcheck 與 build_usage_0210d.py base10c；只供拆項，不上線）。 build_prior_027b／prior-027b／pool-027b 仍是 0210d 的底（build_prior_0210d 讀 0210 先驗，0210 先驗讀 027b），所以 027b 留在頂層。"
 }

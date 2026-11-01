@@ -98,7 +98,9 @@ PATCH_NOTES = [
         '0.2.10c 傳球改成所有位置共用同一個加分幅度：持球前鋒不再因傳球被多加分（Jalen Williams 9 → 12 名、Scottie Barnes 18 → 27 名；Austin Reaves 26 → 21 名）。',
         '0.2.10d 三分、自主創造也改看近四季滑動窗口，3PT 欄、出賽分鐘預測同步（Sabonis 138 → 75 名、Tyus Jones 343 → 308 名；Jalen Williams 12 → 9 名；Franz Wagner 21 → 42 名）。',
         '0.2.10e 頂端 OVR 拉開：明星不再擠在 85–93 之間，名次不變、99 以上不變（Maxey 85.5 → 92.0、Cade 88.3 → 93.4、Mitchell 93.2 → 96.0）。',
-        '0.2.10f 3PT 欄改用和窗口一致的比較基準，主力射手拉開一點（Curry 120.7 → 125.2、Lonzo Ball 76.7 → 77.8），OVR 與名次不變。']),
+        '0.2.10f 3PT 欄改用和窗口一致的比較基準，主力射手拉開一點（Curry 120.7 → 125.2、Lonzo Ball 76.7 → 77.8），OVR 與名次不變。',
+        # 0.2.10g：前 20 名進出 0、前 100 名移動 >=10 名 5 人，照 R-109 屬字母版
+        '0.2.10g 教練怎麼用人（上場強度、出賽率）也改看近四季滑動窗口，不再只看去年一季，常缺陣或角色起伏大的人更貼近實際（Mamukelashvili 88 → 117 名、Cam Spencer 96 → 126 名；Sengun 101 → 96 名），前 20 名不變。']),
     # 版號 0.2.9a：前 20 名無進出、前 100 名移動 >=10 名 23 人，照 R-109（字母版門檻看前 100 名 <=25 人）屬字母版
     (('card', 'inseason'), '0.2.9a', '2026-11-01', [
         '耐力不再當成 OVR 的得分項：改成只在上場時間裡反映（Porziņģis 60 → 32 名、Jalen Williams 17 → 10 名；Edgecombe 101 → 150 名、Ayton 194 → 239 名）。']),
@@ -215,7 +217,7 @@ def add_season_nav(html_str, current):
     assert current in ('inseason', 'card'), current
     links = ''.join(f'<a href="{href}"' + (' aria-current="page"' if key == current else '') + f'>{label}</a>'
                     for key, label, href in PAGES)
-    note = '<span class="note">開季樣本少，數字大多來自 2026 卡</span>' if current == 'inseason' else ''
+    note = ''   # 0.2.10g（使用者 2026-11-01）：新賽季頁用人層也改四季窗口，與 2025-26 頁同演算法，拿掉「開季樣本少」提示
     # 手機寬度把 #modeSeg 從控制列搬進 .sright，桌機搬回搜尋欄前面
     mover = ("<script>addEventListener('DOMContentLoaded',()=>{const m=document.getElementById('modeSeg'),"
              "r=document.querySelector('.sright'),q=document.getElementById('q'),mq=matchMedia('(max-width:640px)');"
@@ -627,7 +629,7 @@ def apply_common(s):
 # 籃板、身高兩邊都不算（約佔 OVR 差異一成三）。OVR 還有用人層（分鐘、出賽率），所以兩分相加不等於 OVR。
 # 進攻再混進影響力（使用者 2026-11-01，同 OVR align 的比例）：T6（DARKO＋BPM）pooledPoss ≥ 5000 的人
 # 進攻＝0.75×能力值進攻＋0.25×（0.75×pooledO 減同一群 MIN ≥ 500 的平均）；不夠回合的人只用能力值。
-OD_CARD = Path(__file__).resolve().parents[1] / 'reports/card-0.2.10e/ranking.csv'  # 0.2.10e 只換 OVR 映射，pred0 等欄同 0.2.10d
+OD_CARD = Path(__file__).resolve().parents[1] / 'reports/card-0.2.10g/ranking.csv'  # 0.2.10g 只換用人層（L、a），pred0 等欄同 0.2.10d
 OD_OFF = ['long', 'mid', 'short', 'ft', 'drive', 'foulDraw', 'tovSkill', 'pass', 'creation']
 OD_DEF = ['onBall', 'help', 'pressure']
 OD_ALL = OD_OFF + OD_DEF + ['rebound', 'heightInches']

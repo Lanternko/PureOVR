@@ -39,11 +39,12 @@ if 'foulDraw' not in ATTRS:
     ATTRS.insert(ATTRS.index('drive') + 1, 'foulDraw')
 import e062_switch as _E062  # noqa: E402
 # 舊版機制（CARD_MODE 020～029）見 git 歷史／live/_retired/README.md
-CARD_MODE = os.environ.get('CARD_MODE', '0210f')  # 只接受目前版本 0210f（card／inseason 0.2.10f＝0.2.10e＋E-191b P1m 3PT 欄對照池，ranking／OVR 同 0.2.10e；0.2.10e＝0.2.10d 換 OVR 映射，E-188 S3：PR90→88、PR95→92；0.2.10d＝E-185 四項窗口，底 card 0.2.10c 的 KAU 重擬合）。舊版重現請 checkout 當時 commit（見 live/_retired/README.md）
-if CARD_MODE != '0210f':
-    raise SystemExit('CARD_MODE 只接受 0210f（舊版已淘汰，重現請 checkout 當時 commit；見 live/_retired/README.md）')
+CARD_MODE = os.environ.get('CARD_MODE', '0210g')  # 只接受目前版本 0210g（card／inseason 0.2.10g＝0.2.10f＋用人層（L、a）四季滑動窗口，E-192；0.2.10f＝0.2.10e＋E-191b P1m 3PT 欄對照池，ranking／OVR 同 0.2.10e；0.2.10e＝0.2.10d 換 OVR 映射，E-188 S3：PR90→88、PR95→92；0.2.10d＝E-185 四項窗口，底 card 0.2.10c 的 KAU 重擬合）。舊版重現請 checkout 當時 commit（見 live/_retired/README.md）
+if CARD_MODE != '0210g':
+    raise SystemExit('CARD_MODE 只接受 0210g（舊版已淘汰，重現請 checkout 當時 commit；見 live/_retired/README.md）')
 # WIN10=0：關掉 0.2.10d 新增的四項窗口（long、creation、threeValue、MPG_hat），卡／用人層／RAPM 換成 card 0.2.10c（＝card-0.2.10d/work-selfcheck 的逐位元重建，build_usage_0210d.py base10c 產 usage 與 summary），先驗讀 _retired/ 的 0.2.10 檔（屬性同）；只用來拆「0.2.10c 底」與「窗口」各占多少（報告用，不上線）
 WIN10 = os.environ.get('WIN10', '1') != '0'
+USAGE_WIN = WIN10 and os.environ.get('USAGE_WIN', '1') != '0'   # 0.2.10g：用人層（L、a）= 四季窗口（live/window11.py，每天用當下窗口重算；y、v 用當下年齡）；USAGE_WIN=0 重現 0.2.10f（凍結 2025-26 用人特徵，檔在 _retired/）
 TV_P1M = os.environ.get('TV_P1M', '1') != '0'   # 0.2.10f：3PT 欄對照池＝近三季窗口值＋本季（E-191b P1m）；TV_P1M=0 重現 0.2.10e（只用本季窗口池）
 MPG_L_FILE = ROOT / 'reports/card-0.2.12/mpg-L-selection.json'   # E-185：MPG 窗口長度 L（季），只用 2024-25 選（mpg_select.py）
 MPG_L = json.loads(MPG_L_FILE.read_text(encoding='utf-8'))['selected_L'] if WIN10 else None
@@ -58,12 +59,15 @@ if E064_MODE != 'G1':
     raise SystemExit('E064_MODE 只接受 G1（off／G0 是舊頁重現用，已淘汰）')
 # 預註冊 §4.1：stamina 最小樣本 1 場（本身的能力值與 w 都用；其餘 15 屬性照 C4 現行）。
 SA.SEASON_MIN_SAMPLE['stamina'] = 1
-VERSION = 'inseason 0.2.10f'  # R-050／R-114：跟先驗 card 0.2.10f 同號； 第一個字面值會被 daily_inseason_update.probe_base_version 以正規式讀取，勿改成括號／條件式開頭
-CARD_VERSION = 'card 0.2.10f'
+VERSION = 'inseason 0.2.10g'  # R-050／R-114：跟先驗 card 0.2.10g 同號； 第一個字面值會被 daily_inseason_update.probe_base_version 以正規式讀取，勿改成括號／條件式開頭
+CARD_VERSION = 'card 0.2.10g'
+if not USAGE_WIN:   # USAGE_WIN=0：整組回 0.2.10f（先驗卡、usage 檔、summary、ranking 都用 0.2.10f 的）
+    CARD_VERSION = 'card 0.2.10f'
+    VERSION = 'inseason 0.2.10f'
 if not WIN10:
     CARD_VERSION = 'card 0.2.10c'
 _CV = 'card-0.2.10d' if WIN10 else 'card-0.2.10c'   # 係數管線／RAPM 所在的卡（0.2.10e 只換 OVR 映射、0.2.10f 只換 3PT 欄對照池，沒有 cards/、rapm-T6 以外的新檔）
-_OV = CARD_VERSION.replace('card ', 'card-')   # OVR 欄與 summary 所在的卡：'card-0.2.10f'（WIN10=0 時 'card-0.2.10c'）
+_OV = CARD_VERSION.replace('card ', 'card-')   # OVR 欄與 summary 所在的卡：'card-0.2.10g'（USAGE_WIN=0 時 'card-0.2.10f'、WIN10=0 時 'card-0.2.10c'）
 _SC = ROOT / 'reports/card-0.2.10d/work-selfcheck'   # card 0.2.10c 的逐位元重建（WIN10=0 的卡端檔）
 _RET = HERE / '_retired'
 PRIOR = '2025-26'
@@ -87,7 +91,7 @@ def sat_w(m):
     """card 0.2.5 的分鐘權重 W(m) = (1 − e^(−m/15)) / (1 − e^(−36/15))；W(0)=0、W(36)=1。"""
     return (1.0 - math.exp(-m / W_TAU)) / (1.0 - math.exp(-W_REF / W_TAU))
 
-USAGE_FILE = HERE / 'usage-2025-26-card0210f.json' if WIN10 else _SC / 'usage-2025-26-card0210c-nowin.json'     # build_usage_0210f.py 產出（card 0.2.10d 的 KAU 重擬合係數／r_repl／錨點＋E-188 的 PR90／PR95，不是凍結值；WIN10=0 檔由 _retired/build_usage_0210d.py base10c 產）（係數、r_repl、錨點；b8_ydL＝0）；錨點／r_repl 也從這裡讀
+USAGE_FILE = (HERE / 'usage-2025-26-card0210g.json' if USAGE_WIN else _RET / 'usage-2025-26-card0210f.json') if WIN10 else _SC / 'usage-2025-26-card0210c-nowin.json'     # build_usage_0210g.py 產出（0.2.10g：係數同 0.2.10d，r_repl／錨點用新池重取，features 為 2025-26 季末 c=82 窗口值）；USAGE_WIN=0 讀 _retired/ 的 0.2.10f 檔。以下為 0.2.10f 原註解：build_usage_0210f.py 產出（card 0.2.10d 的 KAU 重擬合係數／r_repl／錨點＋E-188 的 PR90／PR95，不是凍結值；WIN10=0 檔由 _retired/build_usage_0210d.py base10c 產）（係數、r_repl、錨點；b8_ydL＝0）；錨點／r_repl 也從這裡讀
 POOL026 = HERE / 'pool-027b.json'                     # e128-card027b/build_pool_027b.py 產出的凍結合併池
 DEF_L_PRIMARY = ROOT / 'reports/card-0.2.5+E104-defense-pergame-decay/def-L-primary.csv'   # UL 防守加成的 --defRapm
 E128_RB = ROOT / 'reports/card-0.2.7+E123-tail-3pt-rim-pres/rebase-027a'
@@ -670,6 +674,24 @@ WIN8_ATTRS = ('drive', 'foulDraw', 'ft', 'mid', 'pass', 'rebound', 'short', 'tov
 WIN8 = {}   # {'now': {pid: {8 項}}, 'day0': {pid: {8 項}}, 'games': 已賽場數, 'pbp': pbp 場數}
 
 
+def _usage_window(W, f):
+    """window11.usage_at 的輸出 -> {pid: {'L','a','y','v','has'}}（卡片名單內每人；L 在 has=False 時是 NaN，apply_usage 不會讀）。"""
+    out = {}
+    for p in W.D.pids:
+        i = W.D.pidx[p]
+        _, y, v = W.age_flags(int(p))
+        out[int(p)] = {'L': float(f['L'][i]), 'a': float(f['a'][i]), 'y': y, 'v': v, 'has': bool(f['has'][i])}
+    return out
+
+
+def usage_features(frozen, win):
+    """卡片用人名單（usage 檔）內的人，L、a、y、v、has 換成窗口值；d 沿用 usage 檔（b8＝0，不進模型）。沒有窗口資料的人（不在 D.pids）維持凍結值。
+    win 為 None（USAGE_WIN=0）時原樣回傳。"""
+    if win is None:
+        return frozen
+    return {pid: ({**u, **win[pid]} if pid in win else u) for pid, u in frozen.items()}
+
+
 def win8_load():
     """四季滑動窗口（過去季權重 window_w(c)＋本季逐場 u 權重）算 8 項屬性；day0＝本季 0 場。載入一次。"""
     if WIN8:
@@ -679,7 +701,11 @@ def win8_load():
         import window8 as W8
         if WIN10:
             import window10 as W10
-            W = W10.Win10(DATA26)
+            if USAGE_WIN:
+                import window11 as W11
+                W = W11.Win11(DATA26)
+            else:
+                W = W10.Win10(DATA26)
         else:
             W = W8.Win8(DATA26)   # ovr_history 逐日重算會換掉 ns['DATA26']；窗口也要只讀截斷資料夾（不然 8 項用到未來資料）
         tabs, gd = W.cur_tabs()
@@ -690,6 +716,9 @@ def win8_load():
                         tv=(W.tv_raw(gd, tabs), W.D.pidx, W10.Win10.tv_value), tvL=4)
             if TV_P1M:
                 WIN8['tvpast'] = W.tv_past_pool(TARGET)
+            if USAGE_WIN:   # 0.2.10g：用人層 L、a（四季窗口，今天與本季 0 場）＋ y、v（當下年齡）
+                WIN8['usage'] = _usage_window(W, W.usage_at(gd, tabs))
+                WIN8['usage_day0'] = _usage_window(W, W.usage_at(0, tabs))
     finally:
         sys.path[:] = saved
     print(f'{VERSION} 窗口：本季 {gd} 場（pbp {WIN8["pbp"]} 場），8 項 {len(WIN8["now"])} 人', file=sys.stderr)
@@ -977,15 +1006,18 @@ def main():
         else:
             mpg_hat[pid] = m0
             mpg_nodata.append(pid)
-    res = apply_usage(res, live_usage(usage, sd26), ucoef)   # R-098：d 用當下球隊；ref／o1 仍用卡的 d
-    ref = apply_usage(ref, usage, ucoef)
+    # 0.2.10g：res 用今天的窗口用人特徵；ref（lastOVR 基準）與 o1 用本季 0 場（day0）窗口；USAGE_WIN=0 兩者都是凍結值（= 0.2.10f）
+    usage_now = usage_features(usage, win8_load()['usage'] if USAGE_WIN else None)
+    usage_d0 = usage_features(usage, win8_load()['usage_day0'] if USAGE_WIN else None)
+    res = apply_usage(res, live_usage(usage_now, sd26), ucoef)   # R-098：d 用當下球隊；ref／o1 仍用卡的 d
+    ref = apply_usage(ref, usage_d0, ucoef)
     res = e064_convert(res, mpg_hat, anc064, r_repl064)
     ref = e064_convert(ref, mpg0, anc064, r_repl064)
 
     # ---- 檢查 (a)：f=0、k 取上界 → 與上季卡逐球員 OVR 差 <0.5（c4_v5 T1）
     a1 = live_predict(delta2, rel_, undefined, frozen, f_force=0.0, k_max=True)
     o1 = pw.predict(a1)
-    o1 = apply_usage(o1, usage, ucoef)
+    o1 = apply_usage(o1, usage_d0, ucoef)
     o1 = e064_convert(o1, mpg0, anc064, r_repl064)
     t1 = max(abs(o1[p]['ovr'] - ref[p]['ovr']) for p in attrs0)
     a1_ref = C4.c4_predict('S*', ALL_N, delta2, rel_, 1.0, undefined, frozen, f_force=0.0, k_max=True)
@@ -1138,6 +1170,9 @@ def main():
                        'card-0.2.12 mpg-c82.csv': ROOT / 'reports/card-0.2.12/mpg-c82.csv',
                        'card-0.2.12 three-value.csv': ROOT / 'reports/card-0.2.12/three-value.csv',
                        'abilityC by season (E-123 t_season acc)': ROOT / 'reports/card-0.2.12/abilityC-by-season.json'})
+    if USAGE_WIN:
+        inputs.update({'window11.py': HERE / 'window11.py', 'avail-hist-0210g.json.gz': HERE / 'avail-hist-0210g.json.gz',
+                       'dnp-2025-26.json (出缺勤)': ROOT / 'data/season-source/dnp-2025-26.json'})
     sha = {k: {'path': rel(v), 'sha256': C.sha256_file(v)} for k, v in inputs.items() if v}
     pbp_files = sorted(p.stem for p in (DATA26 / 'pbp').glob('*.json'))
     games = sorted({r['GAME_ID'] for r in sd26['teamRows']})
@@ -1156,6 +1191,10 @@ def main():
         'players': {'ranked': len(rows), 'noPrior': len(nopr), 'priorCardNotPlayed': len(not_played),
                     'rosterUnplayed': len(unplayed), 'rosterFile': bool(roster)},
         'foulDrawFreeze': {k: v for k, v in load_json(PRIOR_CARD)['foulDrawFreeze'].items() if k != 'poolComposite'},
+        'usageWindow': ({'on': True, 'module': 'live/window11.py', 'players': len(usage_now), 'gamesDone': WIN8['games'],
+                         'note': 'E-192：L＝log1p(窗口 MIN÷窗口可出賽場次)、a＝窗口出賽÷窗口可出賽（權重同 E-175 U 臂：四季、c＝82×已賽場數/1230、本季逐場線性遞減）；y、v 用當下年齡；d 不進模型（b8＝0）。'
+                                 'lastOVR 基準＝本季 0 場窗口；係數同 0.2.10d；窗口內沒有可出賽場次者 predNew＝p。本季出缺勤只含上場名單（沒有 INACTIVE 名單），可出賽場次略低估。'}
+                        if USAGE_WIN else {'on': False, 'note': 'USAGE_WIN=0：用人特徵凍結在 2025-26 全季（= 0.2.10f）'}),
         'usage': {'file': rel(USAGE_FILE), 'payloadSha256': usage_sha, 'frozenAt': PRIOR, 'coef': ucoef,
                   'mpg0': ('card 0.2.10d ranking.csv mpg 欄＝窗口 MPG c=82（依名字配對；卡裡沒有的人退回 MIN／GP）；MPG_hat＝窗口 MPG（window10.mpg_at），lastOVR 基準用 day0 窗口 MPG' if WIN10 else 'card 0.2.4 ranking.csv mpg 欄（依名字配對；卡裡沒有的人退回 MIN／GP）'),
                   'mpg0FromCard': sum(1 for pid, c in prior_cards.items() if c['name'] in mpg_card),
@@ -1187,7 +1226,8 @@ def main():
                 + (f"MPG_hat＝窗口 MPG（Σu·MIN／Σu·GP，過去 {MPG_L} 季＋本季逐場線性遞減，E-185）；lastOVR 基準＝本季 0 場的窗口 MPG；窗口內沒出賽的 {len(mpg_nodata)} 人退回 MPG0。`ovrPer36` 是同一預測的每 36 分鐘 OVR。" if WIN10 else
                    f"MPG_hat = MPG0 + w·(本季場均分鐘 − MPG0)，w＝stamina 的 C4 w（stamina 最小樣本 1 場）；"
                    f"沒有本季視窗紀錄的 {len(mpg_nodata)} 人（含沒出賽者，不在排名內）退回 MPG0。`ovrPer36` 是同一預測的每 36 分鐘 OVR。"))
-    ATTR_NOTE = ((f"- inseason 0.2.10f（E-191b）：3PT 欄（threeValue，顯示用）的對照池改成近三季各自窗口值＋本季窗口值（窗口加權 MIN≥500），ranking／OVR／名次同 0.2.10e。\n" if WIN10 and TV_P1M else "") +
+    ATTR_NOTE = ((f"- inseason 0.2.10g（E-192）：用人層的 L（上場強度）、a（出賽率）也改四季滑動窗口（權重同其他窗口項；y、v 用當下年齡），每天用當下窗口重算，不再凍結在 2025-26；係數同 0.2.10d，r_repl、錨點用新池重取。\n" if USAGE_WIN else "") +
+                (f"- inseason 0.2.10f（E-191b）：3PT 欄（threeValue，顯示用）的對照池改成近三季各自窗口值＋本季窗口值（窗口加權 MIN≥500），ranking／OVR／名次同 0.2.10e。\n" if WIN10 and TV_P1M else "") +
                 (f"- inseason 0.2.10e（E-188，R-124）：只換 OVR 映射（PR90→88、PR95→92，名次不變），屬性、係數同 0.2.10d。\n" if WIN10 else "") +
                 (f"- inseason 0.2.10d（E-185）：long、creation 也改四季滑動窗口（同 8 項的權重；long 是窗口 3PM／3PA 收縮到本季聯盟 3P%、creation 是窗口 FGA/MIN），threeValue、MPG_hat 同為窗口；係數、錨點、r_repl 用 card 0.2.10d 的 KAU 重擬合值（底 card 0.2.10c）。\n" if WIN10 else "") +
                  "- inseason 0.2.10（R-114）：drive、foulDraw、ft、mid、pass、rebound、short、tovSkill 八項＝E-175 四季滑動窗口（過去四季權重 window_w(c)，c＝82×已賽場數/1230；本季逐場線性遞減；收縮 k、先驗 m、映射皆凍結自 2025-26 U 鏈；live/window8.py），不再走 C4 的 x0+w(y−x0)；其餘屬性（stamina 等）仍走 C4。用人層係數、錨點、r_repl 取現行卡的重擬合值（usage 檔）。"
@@ -1196,7 +1236,9 @@ def main():
                  "99 以上與 40 以下照 E-101 尾巴；help 照 E-123 D1 尾巴（不夾 99）；drive、onBall、pressure、presDisplay、physique、heightInches 凍結；防守加成＝UL 值（同 027）。")
     OVR_NOTE += (f"\n- card 0.2.4 用人層（E-091，R-044 = 用人回歸＋當季 RAPM 目標）：p＝上面屬性迴歸的每 36 預測（`predictedPer36`，C4 照常更新），"
                  f"predNew＝b0 + b1·p + b2·L + b3·a + b4·y + b5·v + b6·y·L + b7·v·L + b8·y·d·L（`predNew` 欄）；"
-                 f"L、a、y、v、d 與 has 旗標凍結在 2025-26 全季（`{USAGE_FILE.name}`，payload sha256 {usage_sha[:12]}…，年齡不加一歲），has=False 或不在卡內者 predNew＝p；"
+                 + (f"L、a 與 has 旗標＝四季滑動窗口（0.2.10g，E-192，live/window11.py，每天用當下窗口重算；y、v 用當下年齡；係數、錨點、r_repl 取 `{USAGE_FILE.name}`，payload sha256 {usage_sha[:12]}…），has=False 或不在卡內者 predNew＝p；"
+                    if USAGE_WIN else
+                    f"L、a、y、v、d 與 has 旗標凍結在 2025-26 全季（`{USAGE_FILE.name}`，payload sha256 {usage_sha[:12]}…，年齡不加一歲），has=False 或不在卡內者 predNew＝p；") +
                  f"係數 b0={ucoef['b0']:.4f}、b1={ucoef['b1_p']:.4f}（E-084 results.json）。MPG0＝card 0.2.4 ranking.csv 的 mpg 欄（mpgAvail，依名字配對），卡裡沒有的人退回 MIN／GP。"
                  + ("\n- E-095（CARD_MODE=025）：分鐘權重 mpg/36 改為飽和 W(mpg)=(1−e^(−mpg/15))/(1−e^(−36/15))（card 0.2.5，R-047），錨點／r_repl 取 E-089 results.json report_only.card.new。"))
     OVR_NOTE += f"\n- E-128：用人層係數、r_repl、錨點取 {rel(USAGE_FILE)}（rebase-027a e123a pipeline 重跑，錨點對 rebase-027a/work/cards-result.json 核對）；分鐘權重 W 同 card 0.2.5。"

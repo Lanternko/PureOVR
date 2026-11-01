@@ -1,3 +1,4 @@
+raise SystemExit('已淘汰：本檔只供對照。重現請 checkout 當時 commit（見 live/CURRENT.json、_retired/README.md）')  # R-124 retired guard（0.2.10g 換 build_usage_0210g.py；用人層 L、a 改四季窗口）
 """card 0.2.10f 用人層（E-191b P1m）：ranking.csv／OVR 與 0.2.10e 逐位元組相同，所以用人特徵、係數、r_repl、錨點（含 PR90／PR95）全同 0.2.10e
 （reports/card-0.2.10d/usage-features.json＋reports/card-0.2.10f/summary.json 的 anchors）；只換 sourceSha256 的卡名（card-0.2.10f ranking.csv）。
 逐人核對：card-0.2.10f/ranking.csv 的 ovr＝ovr_map(gRepl)（差 ≤0.06，gRepl 只存 4 位小數）、與 card-0.2.10e/ranking.csv 逐位元組相同、名單與 0.2.10d 相同。
