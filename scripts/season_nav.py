@@ -603,6 +603,9 @@ COMMON_REPLACEMENTS = [
     ('thead th{background:#0b1119;', 'thead th{background:#0a0d10;'),
     ('td.sortcol{background:rgba(242,194,48,.07)}', 'td.sortcol{background:rgba(255,255,255,.035)}'),
     ('fill="#0b1119" stroke="#2c3a4c"', 'fill="#0a0d10" stroke="#29313b"'),
+    # 排序箭頭脫離排版、掛在文字左邊：原本佔寬，換排序欄時整張表寬度會跳（使用者 2026-11-02）
+    ('thead th.sorted::before{content:"▼";font-size:.6rem;margin-right:2px}',
+     'thead th.sorted::before{content:"▼";font-size:.6rem;position:absolute;transform:translateX(calc(-100% - 2px))}'),
     # 頁尾只留等第與 OVR 簡述，點 ▼ 展開詳細算法（使用者 2026-11-01）
     ('    <span>點欄位標題排序，再點一次反向</span>\n    <span>點任一列看球員卡</span>\n', ''),
     ('    <span>OVR 同分多半是 2K27 名次封頂造成的</span>',
@@ -657,6 +660,22 @@ document.querySelector('.tbox').addEventListener('scroll', tboxEdges, { passive:
 addEventListener('resize', fitTable);
 addEventListener('load', fitTable);
 document.fonts && document.fonts.ready.then(fitTable);
+// 欄寬照「全部球員」量一次就鎖住（table-layout:fixed）：自動排版會照這頁的內容算欄寬，
+// 換排序換到 7'4"、三位數三分的人，整張表寬度就跟著跳（使用者 2026-11-02）
+function lockCols() {
+  const t = document.getElementById('tbl'), SZ = SIZE;
+  t.querySelector('colgroup')?.remove();
+  t.style.cssText = 'width:min-content;min-width:0';
+  SIZE = 1e5; render(); SIZE = SZ;
+  const ws = [...t.querySelectorAll('thead tr:last-child th')].filter(th => getComputedStyle(th).display !== 'none')
+    .map(th => Math.ceil(th.getBoundingClientRect().width));
+  t.insertAdjacentHTML('afterbegin', '<colgroup>' + ws.map(w => `<col style="width:${w}px">`).join('') + '</colgroup>');
+  t.style.cssText = `table-layout:fixed;min-width:${ws.reduce((a, b) => a + b, 0)}px`;
+  render();
+}
+let lockT = 0;
+addEventListener('resize', () => { clearTimeout(lockT); lockT = setTimeout(lockCols, 200); });
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(lockCols);
 
 document.getElementById('q').oninput'''),
     # 手機卡片：右欄只放 OVR 會把左欄擠成一長條。改成名字＋資訊列在左、OVR 在右上，
