@@ -25,8 +25,9 @@ HERE = Path(__file__).resolve().parent
 ORIG = HERE / 'run_c4_live.py'
 GRAVITY = os.environ.get('GRAVITY', '1') != '0'   # 0.2.10j（R-134）：GRAVITY=0 重現 0.2.10i（不 import gravity_live、新秀起點讀 _retired/）
 TOV_POSS = os.environ.get('TOV_POSS', '1') != '0'   # 0.2.12（R-139）：TOV_POSS=0 重現 0.2.11（不 import tov_live、新秀 tovSkill 仍走 C4 的 y 更新；新秀起點讀 _retired/）
+TOV_TOUCH = os.environ.get('TOV_TOUCH', '1') != '0'   # 0.2.12c（R-144，E-207）：TOV_TOUCH=0 重現 0.2.12b（新秀起點讀 _retired/rookie-prior-2026-0212b.json）
 ROOKIE_JSON = HERE / ('_retired/rookie-prior-2026-0210h.json' if os.environ.get('SPLIT_DC', '1') == '0' else
-                      'rookie-prior-2026.json' if GRAVITY and TOV_POSS else '_retired/rookie-prior-2026-0211.json' if GRAVITY else '_retired/rookie-prior-2026-0210i.json')  # 換版後重解 δ（L-109）；GRAVITY=0／SPLIT_DC=0 重現舊版用當時的 δ
+                      ('rookie-prior-2026.json' if TOV_TOUCH else '_retired/rookie-prior-2026-0212b.json') if GRAVITY and TOV_POSS else '_retired/rookie-prior-2026-0211.json' if GRAVITY else '_retired/rookie-prior-2026-0210i.json')  # 換版後重解 δ（L-109）；GRAVITY=0／SPLIT_DC=0 重現舊版用當時的 δ
 if GRAVITY:
     import gravity_live as GV  # noqa: E402
 if TOV_POSS:

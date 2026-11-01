@@ -108,9 +108,10 @@ PATCH_NOTES = [
     # 0.2.12a（賽中端字母版，使用者 2026-11-02「現在就上 0.2.11a」，因 0.2.12 同時上線改疊在 0.2.12）：gravity 補值依分鐘往進攻 EPM 收縮，併入 0.2.12 格（R-064）
     # 版號 0.2.12：照 R-109 前 20 名進出 4 人、前 100 名移動 >=10 名 34 人原屬字母版，使用者 2026-11-02「直接採用」E-202 KT 臂（R-139）
     # 0.2.12b（使用者 2026-11-02「Adopt W246」，R-140，E-204）：窗口 328→246 格，係數不重擬合，併入 0.2.12 格（R-064）
+    # 0.2.12c（使用者 2026-11-02「採用上線」，R-144，E-207）：tovSkill 失誤率分母由持球分鐘改觸球次數，併入 0.2.12 格（R-064）
     (('card', 'inseason'), '0.2.12', '2026-11-02', [
         '新賽季反應加快：能力值窗口由四季改為約三季，本季比賽權重加大、舊資料更快淡出。｜Jokić/2 → 2/103.2 → 102.6；Paul George/20 → 24/92.0 → 90.3；Jimmy Butler III/21 → 20/92.0 → 92.0；Tyrese Maxey/35 → 31/88.4 → 89.4；Immanuel Quickley/57 → 87/82.9 → 79.5；Josh Hart/82 → 66/79.7 → 81.5',
-        'TO 改成看持球時間：持球多又少丟球才高分（Brunson 42 → 1 名、Hauser 1 → 277 名）；不太拿球的空間射手與長人 TO 大降（Kornet 23 → 367 名）。｜Brunson/27 → 31/90.7 → 89.3；Cade/11 → 13/93.4 → 93.7；Harden/159 → 137/73.7 → 75.8；Luka/4 → 3/101.7 → 101.6；Jokić/2 → 2/105.7 → 103.2；Hauser/160 → 169/73.6 → 73.2；Hardaway Jr./317 → 341/60.8 → 58.4；Kornet/62 → 99/82.5 → 77.9；Jarrett Allen/44 → 54/86.4 → 83.6',
+        'TO 改成看持球時間與每次觸球的失誤：持球多又少丟球才高分（Reaves 386 → 30 名、Cade 471 → 71 名）；不太拿球的空間射手與長人 TO 大降（Hauser 1 → 54 名、Kornet 23 → 106 名）。｜Reaves/26 → 12/90.8 → 93.8；Cade/11 → 14/93.4 → 93.6；Brunson/27 → 30/90.7 → 89.2；Harden/159 → 143/73.7 → 75.2；Luka/4 → 3/101.7 → 101.8；Jokić/2 → 2/105.7 → 103.1；Hauser/160 → 169/73.6 → 73.1；Hardaway Jr./317 → 314/60.8 → 61.4；Kornet/62 → 71/82.5 → 80.9；Jarrett Allen/44 → 46/86.4 → 85.1',
         '新秀引力不再看幾分鐘的出手：本季沒有引力數據的人，上場越少越參考進攻影響力（Joshua Jefferson 248 → 404 名）。｜Joshua Jefferson/248 → 404/65.4 → 51.4；Ja’Kobi Gillespie/300 → 445/59.9 → 48.8；AJ Dybantsa/52 → 78/83.1 → 79.9；Dejounte Murray/78 → 98/80.0 → 78.3；Javon Small/92 → 123/78.7 → 76.4；Ivica Zubac/95 → 80/78.6 → 79.8']),
     (('card',), '0.2.11', '2026-11-02', [
         '加引力能力值：沒拿球時防守人也不敢離開的射手加分（Klay 419 → 357 名），空間長人略降（Turner 108 → 123 名）。｜Klay/419 → 357/55.9 → 57.9；Hield/259 → 240/65.7 → 66.7；Kennard/135 → 120/75.6 → 76.4；Duncan Robinson/208 → 199/69.6 → 70.4；Hauser/175 → 160/72.9 → 73.6；Turner/108 → 123/77.8 → 76.3；Fox/24 → 20/91.2 → 92.1；Bane/20 → 21/92.0 → 92.0',
@@ -322,8 +323,8 @@ ATTR_TIPS = {
              [('助攻量 50%', '助攻 / 36'), ('助攻率 50%', '在場時隊友進球被他助攻的比例')], ''),
     'creation': ('自主創造', 'CRT', '<b>自己創造</b>的跳投與低位出手量', [], ''),
     'rebound': ('籃板', 'REB', '在場時搶下可搶籃板的<b>籃板率</b>', [], ''),
-    'tovSkill': ('少失誤', 'TO', '<b>每持球分鐘失誤率</b>與<b>持球時間</b>各半',
-                 [('每持球分鐘失誤 50%', '越少越高'), ('持球時間 50%', '每 36 分鐘的持球時間')], ''),
+    'tovSkill': ('少失誤', 'TO', '<b>每次觸球的失誤率</b>與<b>持球時間</b>各半；不持球、失誤少的人不算數',
+                 [('每次觸球失誤 50%', '越少越高'), ('持球時間 50%', '每 36 分鐘的持球時間')], ''),
     'pressure': ('壓迫', 'PRES', '<b>抄截、干擾、逼失誤、造進攻犯規</b>（扣犯規）',
                  [('抄截／干擾／逼失誤', '各 1 份'), ('造進攻犯規', '0.5 份'), ('犯規', '扣 0.25')], ''),
     'onBall': ('單防', 'PER D', '外線<b>干擾出手 ＋ 對位負擔 ＋ 威懾力</b>',
@@ -339,7 +340,7 @@ ATTR_TIPS = {
 # - 細項表三欄：名稱（灰 #8b919a）｜數值（白 #e8eaed，數字等寬）｜PR（小灰字）。聯盟前十在數值後加金色「（#名次）」。
 # - 「越少越好」的項目（犯規）數值旁寫（多）／（普通）／（少），PR 一律是越高越好。卡上不解釋 PR 與名次（使用者 2026-11-01）。
 # - 預設放元素下方，放不下改上方；左右夾在視窗內 8px。捲動就收起。
-# - 觸控（使用者 2026-11-01）：表頭點一下只排序，長按（450ms）才顯示說明；格子點一下顯示 1.5 秒；長按一直顯示，點別處才收，捲動時跟著元素。
+# - 觸控（使用者 2026-11-01）：表頭點一下只排序，長按（450ms）才顯示說明；格子同樣只有長按才顯示（2026-11-02 使用者：點一下不該馬上跳）；長按一直顯示，點別處才收，捲動時跟著元素。
 TIP_CSS = """<style>
 .atip{position:fixed;z-index:60;left:0;top:0;width:min(290px,calc(100vw - 16px));padding:11px 12px 10px;background:#101114;border:1px solid rgba(255,255,255,.08);border-radius:10px;box-shadow:0 12px 28px rgba(0,0,0,.5),0 0 0 1px rgba(0,0,0,.4);color:#c2c7ce;font:400 12px/1.5 var(--f-body);text-align:left;pointer-events:none;opacity:0;transform:translateY(-3px);transition:opacity .14s cubic-bezier(.16,1,.3,1),transform .14s cubic-bezier(.16,1,.3,1)}
 .atip.on{opacity:1;transform:none}
@@ -407,7 +408,7 @@ TIP_JS = """<script>
     const el = target(e);
     if (el !== cur) el ? show(el) : hide();
   });
-  // 觸控：表頭點一下只排序、長按才顯示說明；格子點一下顯示 1.5 秒，長按一直顯示到點別處或捲動
+  // 觸控：表頭與格子都是點一下不顯示（表頭排序、格子開球員卡），長按才顯示，一直顯示到點別處或捲動
   let press = null, eat = false, lastTouch = 0;
   document.addEventListener('pointerdown', e => {
     if (e.pointerType !== 'touch') return;
@@ -422,11 +423,7 @@ TIP_JS = """<script>
     if (press && Math.hypot(e.clientX - press.x, e.clientY - press.y) > 10) cancel();
   });
   document.addEventListener('pointercancel', cancel);
-  document.addEventListener('pointerup', e => {
-    if (!press) return;
-    const el = press.el; cancel();
-    if (el.dataset.ck) show(el, 1500);
-  });
+  document.addEventListener('pointerup', cancel);
   // 長按之後的 click 不算點擊（表頭不排序）；長按不叫出系統選單
   document.addEventListener('click', e => { if (eat) { eat = false; e.preventDefault(); e.stopPropagation(); } }, true);
   document.addEventListener('contextmenu', e => { if (target(e) && Date.now() - lastTouch < 1500) e.preventDefault(); });
@@ -477,8 +474,8 @@ def mpg_pool(mpg):
 
 
 def tov_rows(src, key, pool, poss_src=None):
-    """{key: TO 提示細項}，pool 人數。0.2.12：tovSkill 看持球時間（失誤 ÷ 持球分鐘、持球分鐘各半），
-    提示卡列：失誤／場、持球分鐘／場（名次）、失誤／持球分鐘（PR、名次）。持球分鐘＝NBA.com tracking Possessions 的 TIME_OF_POSS
+    """{key: TO 提示細項}，pool 人數。0.2.12c：tovSkill 看每次觸球的失誤（失誤 ÷ 觸球次數、持球分鐘各半），
+    提示卡列：失誤／場、持球分鐘／場（名次）、每百次觸球失誤（PR、名次）。持球分鐘、觸球次數＝NBA.com tracking Possessions 的 TIME_OF_POSS、TOUCHES
     （卡片頁＝2025-26 整季檔；新賽季頁＝data/defense-seventh/2026-27/possessions.json），key 欄（PLAYER_NAME／PLAYER_ID）和 src 同一種。
     沒有持球分鐘的人只列失誤／場。PR／名次對 pool（key 集合）裡的人；不在 pool 的人只標 PR，不標名次。"""
     rs = json.loads(Path(src).read_text(encoding='utf-8'))['data']['resultSets'][0]
@@ -488,7 +485,7 @@ def tov_rows(src, key, pool, poss_src=None):
         t = tot.setdefault(r[h[key]], [0, 0])
         t[0] += r[h['TOV']] or 0
         t[1] += 1
-    pm = {}
+    pm, tc = {}, {}
     if poss_src and Path(poss_src).exists():
         d = json.loads(Path(poss_src).read_text(encoding='utf-8'))
         d = d.get('data', d)['resultSets']
@@ -496,10 +493,11 @@ def tov_rows(src, key, pool, poss_src=None):
         ph = {k: i for i, k in enumerate(ps['headers'])}
         for r in ps['rowSet']:
             pm[r[ph[key]]] = pm.get(r[ph[key]], 0.0) + float(r[ph['TIME_OF_POSS']] or 0)
+            tc[r[ph[key]]] = tc.get(r[ph[key]], 0.0) + float(r[ph['TOUCHES']] or 0)
     st = {}
     for k, (tov, gp) in tot.items():
-        m = pm.get(k, 0.0)
-        st[k] = (tov / m if m > 0 else None, m / gp if m > 0 else None, tov / gp, k in pool)
+        m, c = pm.get(k, 0.0), tc.get(k, 0.0)
+        st[k] = (100 * tov / c if m > 0 and c > 0 else None, m / gp if m > 0 else None, tov / gp, k in pool)
     pool = [v for v in st.values() if v[3] and v[0] is not None]
     out = {}
     for k, (rate, pg, tg, inpool) in st.items():
@@ -508,7 +506,7 @@ def tov_rows(src, key, pool, poss_src=None):
             pr, rk = pr_rank(rate, [v[0] for v in pool], low_good=True)
             _, rk_p = pr_rank(pg, [v[1] for v in pool])
             rows += [('持球分鐘', f'{pg:.1f}/場', None, rk_p if inpool else None),
-                     ('失誤/持球分鐘', f'{rate:.2f}', pr, rk if inpool else None)]
+                     ('每百次觸球失誤', f'{rate:.1f}', pr, rk if inpool else None)]
         out[k] = rows
     return out, len(pool)
 
@@ -782,7 +780,7 @@ def apply_common(s):
 # 籃板、身高兩邊都不算（約佔 OVR 差異一成三）。OVR 還有用人層（分鐘、出賽率），所以兩分相加不等於 OVR。
 # 進攻再混進影響力（使用者 2026-11-01，同 OVR align 的比例）：T6（DARKO＋BPM）pooledPoss ≥ 5000 的人
 # 進攻＝0.75×能力值進攻＋0.25×（0.75×pooledO 減同一群 MIN ≥ 500 的平均）；不夠回合的人只用能力值。
-OD_CARD = Path(__file__).resolve().parents[1] / 'reports/card-0.2.12b/ranking.csv'  # 0.2.12b：窗口 328→246 格；0.2.12：tovSkill 改看持球時間，全部係數重擬合；0.2.10j：加 gravity（無球外線引力），全部係數重擬合；0.2.10i：drive→drive_D、creation→creationJ（OFF 提示貢獻欄跟著換）
+OD_CARD = Path(__file__).resolve().parents[1] / 'reports/card-0.2.12c/ranking.csv'  # 0.2.12c：tovSkill 失誤率分母改觸球次數，全部係數重擬合；0.2.12b：窗口 328→246 格；0.2.12：tovSkill 改看持球時間，全部係數重擬合；0.2.10j：加 gravity（無球外線引力），全部係數重擬合；0.2.10i：drive→drive_D、creation→creationJ（OFF 提示貢獻欄跟著換）
 OD_OFF = ['long', 'mid', 'short', 'ft', 'drive', 'gravity', 'foulDraw', 'tovSkill', 'pass', 'creation']   # gravity：0.2.10j（每 10 點約 +0.19 per36）
 OD_DEF = ['onBall', 'help', 'pressure']
 OD_ALL = OD_OFF + OD_DEF + ['rebound', 'heightInches']

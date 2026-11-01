@@ -11,7 +11,7 @@ const params = {LeagueID: '00', Season: season, SeasonType: 'Regular Season', Pe
 const url = 'https://stats.nba.com/stats/leaguedashptstats?' + new URLSearchParams(params);
 const H = {headers: {'User-Agent': 'Mozilla/5.0', Referer: 'https://www.nba.com/'}};
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const NEED = ['PLAYER_ID', 'TIME_OF_POSS'];
+const NEED = ['PLAYER_ID', 'TIME_OF_POSS', 'TOUCHES'];
 let data, err;
 for (let t = 1; t <= 3; t++) {
   try {

@@ -64,8 +64,8 @@ def pres_tip(pres, force, sub, n_pool, note='', inpool=True):
 
 
 def tov_tip(v, sub, n_pool, season='2025-26', inpool=True):
-    return sn.cell_tip('少失誤', 'TO', round(v), sub, d=f'{season} 每持球分鐘的失誤越低、持球時間越長，分數越高（各半）',
-                       foot=['持球分鐘＝NBA.com tracking 持球時間；不拿球的人不計入'] + ([] if inpool else [sn.NO_RANK_FOOT]))
+    return sn.cell_tip('少失誤', 'TO', round(v), sub, d=f'{season} 每次觸球的失誤越低、持球時間越長，分數越高（各半）',
+                       foot=['觸球次數、持球分鐘＝NBA.com tracking；不拿球的人失誤少不算數'] + ([] if inpool else [sn.NO_RANK_FOOT]))
 
 
 ONBALL = ROOT / 'reports/card-0.1.1+E060-onball-targeting/components-2025-26.csv'
