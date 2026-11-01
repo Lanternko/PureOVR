@@ -33,14 +33,15 @@ BIO = {'g5': (ROOT / 'data/defense-seventh/2026-27/bio.json', '2026'), 'season':
 SALARY = {'g5': ROOT / 'reports/salary-corr/source/bref.html', 'season': ROOT / 'reports/salary-corr/source/bref2526.html'}
 
 CSS = """
-/* 表格 OVR 分級：金屬稀有度字色＋漸層細框（OP 珍珠／T1 紫／T2 金／T3 銀／T4 銅；70 以下灰字無框；使用者 2026-11-01）。
-   避開紅綠，免得和屬性等第的好壞色（A 綠…F 紅）撞語意。框用 mask 挖空中間，選取列、排序欄的底色照常透出來 */
+/* 表格 OVR 分級：金屬稀有度字色＋漸層細框（110+ 紫／100+ 紅／90+ 金／80+ 銀／70+ 銅；70 以下灰字無框；使用者 2026-11-01）。
+   最高級原本是珍珠白，和銀太像，使用者看過對照後改成 100+ 紅、110+ 紫（知道紅會和屬性等第 F 紅同色）。
+   漸層字要 -webkit-text-fill-color，不然被 td.ovr .ob 的 color 蓋掉變白字。框用 mask 挖空中間，選取列、排序欄的底色照常透出來 */
 td.ovr .ob{position:relative;display:inline-block;min-width:2.4em;padding:1px 5px;border-radius:5px;text-align:center;color:var(--oc)}
 td.ovr .ob::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:var(--of);pointer-events:none;
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
-.ob.t6{--of:linear-gradient(135deg,#fff 0%,#e7d5ff 18%,#bcd6ff 36%,#ffd5ec 58%,#fff1c8 78%,#fff 100%);box-shadow:0 0 8px rgba(220,180,255,.45);
-  background:linear-gradient(135deg,#fff,#e7d5ff 25%,#bcd6ff 50%,#ffd5ec 75%,#fff1c8);-webkit-background-clip:text;background-clip:text;color:transparent}
-.ob.t5{--oc:#c9a2ff;--of:linear-gradient(135deg,#e6d2ff 0%,#a970ff 38%,#6a2fc4 70%,#c49bff 100%);box-shadow:0 0 6px rgba(160,100,255,.35)}
+.ob.t6{--oc:#d2a8ff;--of:linear-gradient(135deg,#f0e0ff 0%,#b47aff 35%,#5a1fb8 70%,#e0c4ff 100%);box-shadow:0 0 10px rgba(170,100,255,.6);
+  background:linear-gradient(135deg,#f3e6ff,#c896ff 45%,#a466ff);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.ob.t5{--oc:#ff7a7a;--of:linear-gradient(135deg,#ffd0d0 0%,#ff4040 38%,#8a0f1f 70%,#ff9a9a 100%);box-shadow:0 0 6px rgba(255,60,60,.4)}
 .ob.t4{--oc:#f2c94c;--of:linear-gradient(135deg,#fff0b0 0%,#e8b923 38%,#8a6400 70%,#f5d469 100%)}
 .ob.t3{--oc:#d4dae3;--of:linear-gradient(135deg,#ffffff 0%,#b8c0cc 38%,#6b7380 70%,#dfe4ea 100%)}
 .ob.t2{--oc:#c98a5a;--of:linear-gradient(135deg,#f0c49c 0%,#b8743f 38%,#6b3a17 70%,#d9a070 100%)}
