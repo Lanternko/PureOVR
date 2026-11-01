@@ -28,3 +28,11 @@
 
 ## 回報（最後訊息）
 CLAUDE.md 六段（第一行 `# 總評`）。直觀證據：前 25 名與 E-190 那 15 人的 0.2.10g→新版名次、OVR、drive、creation；前 100 名移動 ≥10 名人數；線上網址與版號。
+
+## 接手筆記（第 1 輪未完成，2026-11-01，lead 整理）
+- 已確認：2026-27 逐球有需要欄位（n 15416、driving 3137），不觸發停止條件。
+- 已產出：`extract_j.py` → `work/history/crJ-{2022-23..2025-26}.csv.gz`（creationJ 歷史逐場計數）；可直接用，先抽查再用。
+- 卡片端模板：E-190 KJU 臂（`reports/card-0.2.10c+E190-creation-jumper/work/tails/tail-KJ-U.csv`、`creation-KP-KJ.csv`、`drive-D.csv`）。窗口替換點：`live/window10.py` 的 `_creation_r`、`_past('creation','pool')`；tail-U 的產法見 `reports/card-0.2.12/make_tail_U.py`。
+- 賽中端 drive 走凍結管線 `live/pres_drive.py`（v61／E-090／E-101），不是 window8：drive_D 要整條重建（歷史計數、Tv／Te 三季先驗、z 統計、E-101 合併池含 2022-23～2025-26 的 D 類 raw）。這是本單範圍內，卡片頁與新賽季頁要同一套定義（R-128），不拆兩次發布。
+- 風險：E-190 是單季池、本版是四季窗口，值不同要寫明；drive past_pool 在 tail-U 路徑沒重算；SPLIT_DC=0 必須完全走舊路徑（不要混用現行 pu 與當季 pu），否則 c0 會壞。
+- 順序建議：先卡片端（tail→重擬合→ranking c0 與新版）→ 賽中端 creation（window10）→ pres_drive D 類重建 → 用人層／錨點／3PT 池／新秀 δ → 自檢 → npm test → 發布。每完成一段在 `progress.md` 記一行，額度不夠時下一個人能接。
