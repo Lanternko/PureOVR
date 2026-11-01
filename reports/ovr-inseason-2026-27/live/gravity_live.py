@@ -5,6 +5,9 @@
   補值：兩季都缺的人（含新秀）＝E-198 同一套 OLS（raw ~ 1 + 3PA/36 + 3P% + USG% + 位置啞變數，PG 為基準），用本季可得資料擬合：
         樣本＝今天有混合值且本季有上場、bio 有 USG% 的人；特徵＝2026-27 player-games 加總（3PA、3PM、MIN）與 bio USG_PCT；位置＝先驗卡 pos（新秀 G/F/C → SG/SF/C）。
         本季還沒上場的人：老將沿用卡片值（card 0.2.10j gravity-raw.csv，含卡片的補值）；新秀用 ROOKIE_G0（見 freeze()）。
+        GRAVITY_EPM=1（2026-11-02 使用者核可，「OK」；預設關，待 0.2.12 上線後打開）：OLS 補值依本季分鐘往進攻 EPM 推估收縮，
+          raw = w·OLS + (1−w)·(a + b·O)，w = MIN／(MIN + EPM_K)；O＝epm_live.run() 的本季進攻（先驗打底，幾分鐘也穩），
+          a、b＝2025-26 有 API 值的人 raw ~ epm_self 2025-26 O 的單變量 OLS。沒有本季 O 的人照舊用 OLS。（Joshua Jefferson 4 分鐘 OLS 109.6）
   0–99：照 creation（E-175 PctMapper，池＝卡片 2025-26 GP≥30 且 MPG≥20 的原始／補值，凍結；兩端尾巴開），與卡片端同一把尺：
         本季 0 場、只有 2025-26 值的人＝卡片 gravity 逐位元相同。
   基準（lastOVR、本季 0 場）：老將＝卡片值；新秀＝ROOKIE_G0（x0 不含 gravity，build_2k_start 的 δ 平移不動它）。
@@ -31,6 +34,9 @@ G25 = ROOT / 'reports/F126-shot-difficulty/gravity-split/gravity-2025-26.json'
 CUR_FILE = ROOT / 'data/defense-seventh/2026-27/gravity.json'
 BASE25 = ROOT / 'data/benchmark-source/base.json'
 BIO25 = ROOT / 'data/benchmark-source/bio.json'
+EPM25 = ROOT / 'data/external-impact/epm_self/epm_2025-26.csv'
+EPM_ON = __import__('os').environ.get('GRAVITY_EPM', '0') == '1'
+EPM_K = 200.0   # 分鐘；w = MIN／(MIN + EPM_K)
 KEY, FR = 'AVGOFFBALLPERIMETERGRAVITYSCORE', 'FRAMES'
 POS = ['SG', 'SF', 'PF', 'C']
 DPOS = {'G': 'SG', 'F': 'SF', 'C': 'C'}
@@ -102,6 +108,23 @@ def rookie_g0():
 
 
 # ------------------------------------------------------------------ 賽中
+def _epm_prior():
+    """(a, b, {pid: 本季進攻 EPM}, info)：raw ≈ a + b·O（2025-26 擬合）；O 取 epm_live.run(write=False)。"""
+    if 'epm' not in _CACHE:
+        F = frozen()
+        o25 = {int(r['playerId']): float(r['O']) for r in csv.DictReader(open(EPM25, encoding='utf-8')) if r['O']}
+        ps = sorted(p for p, v in F['card'].items() if not v['imputed'] and p in o25)
+        b, a = np.polyfit([o25[p] for p in ps], [F['card'][p]['raw'] for p in ps], 1)
+        import importlib.util
+        sp = importlib.util.spec_from_file_location('epm_live_g', ROOT / 'reports/impact-epm-2026-27/epm_live.py')
+        m = importlib.util.module_from_spec(sp); sp.loader.exec_module(m)
+        rows, summ = m.run(write=False)
+        o26 = {int(r['playerId']): float(r['O']) for r in rows}
+        _CACHE['epm'] = (float(a), float(b), o26, {'a': float(a), 'b': float(b), 'n25': len(ps), 'K': EPM_K, 'n26': len(o26),
+                                                   'dataCutoff': summ.get('dataCutoff') if isinstance(summ, dict) else None})
+    return _CACHE['epm']
+
+
 def cur_leaders():
     """2026-27 gravity.json（scripts/fetch_gravity.mjs）；不存在或格式不對 → ({}, 說明)。"""
     if not CUR_FILE.exists():
@@ -166,6 +189,11 @@ def live(c, data26, pos_of, rookies=(), cur=True):
             f25 = f26 = 0.0
             if beta is not None and x is not None:
                 r, src = float(np.array(x) @ beta), 'ols'
+                if EPM_ON and cur:
+                    ea, eb, o26, _ = _epm_prior()
+                    if pid in o26:
+                        w = feats[pid][0] / (feats[pid][0] + EPM_K)
+                        r, src = w * r + (1 - w) * (ea + eb * o26[pid]), 'ols+epm'
             elif pid in F['card']:
                 r, src = F['card'][pid]['raw'], 'card-ols' if F['card'][pid]['imputed'] else 'card'
             elif pid in rk:
@@ -174,6 +202,8 @@ def live(c, data26, pos_of, rookies=(), cur=True):
             else:
                 continue
         out[pid] = {'gravity': to_attr(r), 'raw': r, 'src': src, 'frames25': f25, 'frames26': f26}
+    if EPM_ON and cur:
+        ols['epmShrink'] = _epm_prior()[3]
     info = {'c': c, 'weights': {'2025-26': w25, '2026-27': w26}, 'cur': finfo, 'ols': ols,
             'src': {k: sum(v['src'] == k for v in out.values()) for k in sorted({v['src'] for v in out.values()})}}
     return out, info
