@@ -72,8 +72,13 @@ CSS = """<style>
 .pn-item li{position:relative}
 .pn-more{display:inline-block;margin-left:5px;padding:0 6px;border:1px solid var(--line);border-radius:3px;color:var(--muted);font-size:.75rem;line-height:1.3;cursor:help;vertical-align:1px}
 .pn-more:hover,.pn-more:focus{color:var(--gold);border-color:var(--gold);outline:0}
-.pn-tip{display:none;position:absolute;left:0;right:0;top:100%;z-index:2;margin-top:3px;padding:6px 9px;background:var(--panel-2);border:1px solid var(--line);border-radius:4px;color:#c9d3df;font-size:.78rem;line-height:1.5;box-shadow:0 6px 18px rgba(0,0,0,.5);cursor:default}
-.pn-more:hover .pn-tip,.pn-more:focus .pn-tip{display:block}
+.pn-tip{display:none;position:absolute;left:0;top:100%;z-index:2;margin-top:4px;padding:8px 12px;grid-template-columns:auto auto auto;gap:3px 16px;
+  background:#e8ecf1;color:#1a2029;border-radius:4px;font:500 .78rem/1.45 var(--f-disp);font-variant-numeric:tabular-nums;white-space:nowrap;box-shadow:0 8px 22px rgba(0,0,0,.55);cursor:default}
+.pn-tip span:nth-child(3n+1){font-weight:700}
+.pn-tip i{font-style:normal;font-size:.68rem;font-weight:700;letter-spacing:.05em;color:#6b7684;margin-right:2px}
+.pn-tip .up{color:#0f8a4a;font-weight:700}
+.pn-tip .dn{color:#c8322b;font-weight:700}
+.pn-more:hover .pn-tip,.pn-more:focus .pn-tip{display:grid}
 .pn-foot{margin:12px 0 0;color:var(--muted);font-size:.72rem;line-height:1.5}
 .legend{align-items:baseline}
 .ovr-t{display:inline-flex;align-items:center;gap:5px;background:none;border:0;padding:0;color:var(--muted);font:inherit;cursor:pointer;text-align:left}
@@ -94,30 +99,30 @@ CSS = """<style>
 # - 只寫公式改動：最新那格用 ('card', 'inseason') 標示「目前」（舊格只留 ('card',)），不另開一格、不寫「已跟上／沒跟上」；只更新比賽資料、網頁 UI、欄位顯示都不寫（R-063）。
 # - 不顯示「正式卡／新賽季」標籤：兩頁已是同一條四季窗口管線、同一個版號（R-111，使用者 2026-11-01「先拿掉標籤」）。
 # - 用字精簡、只留重點：每條寫成「目標：改法（代表球員名次或數值變化）」（冒號前加粗），用球迷看得懂的話，不寫 E／R 編號、不寫「OVR 前 20 名換幾人」等流水帳；代價直接併入括號或分號後一句帶過，不另起一行「代價：」。
-# - 名次變動主文只留 0～2 個代表（開這個議題的起因球員優先，例如 Jokić、Jalen Williams；窗口類這種全面小調整給 0 個），其餘寫在「｜」後面，收進 ⋯ hover（使用者 2026-11-01）。
+# - 名次變動主文只留 0～2 個代表（開這個議題的起因球員優先，例如 Jokić、Jalen Williams；窗口類這種全面小調整給 0 個），完整名單寫在「｜」後面收進 ⋯ hover，每人一列「球員/名次（或數值變化）/OVR 前 → 後」、以「；」分隔，主文提到的人也列進去（使用者 2026-11-01）。
 # - 被後續版本取代或撤銷的條目，前後加 `~...~` 顯示刪除線（`<s>`）。
 PATCH_NOTES = [
     # 版號 0.2.10：前 20 名進出 1 人（Embiid 進、Porter Jr. 出）、前 100 名移動 >=10 名 18 人，照 R-109 屬 PATCH（係數全凍結、只換 8 項屬性來源）
     (('card', 'inseason'), '0.2.10', '2026-11-01', [
-        '8 項能力值改看近四季滑動窗口：中距離、近框、罰球、造犯規、傳球、籃板、少失誤、切入隨比賽更新，換季不再陡跳。｜Flagg 82 → 68 名、Embiid 23 → 18 名；Porter Jr. 20 → 40 名',
-        '修 BPM 漏讀榜首：補回聯盟第一（Jokić 7 → 3 名）。｜Kawhi 3 → 6 名',
-        '傳球加分不分位置：持球前鋒不再多加分（Jalen Williams 9 → 12 名）。｜Barnes 18 → 27 名；Reaves 26 → 21 名',
-        '三分、自主創造與上場分鐘也改看近四季窗口：Sabonis 138 → 75 名。｜Jalen Williams 12 → 9 名；Franz Wagner 21 → 42 名',
-        '拉開明星 OVR 差距：不再擠在 85–93，名次與 99 以上不變（Maxey 85.5 → 92.0）。｜Mitchell 93.2 → 96.0',
+        '8 項能力值改看近四季滑動窗口：中距離、近框、罰球、造犯規、傳球、籃板、少失誤、切入隨比賽更新，換季不再陡跳。｜Flagg/82 → 68/76.1 → 77.0；Embiid/23 → 18/84.0 → 85.2；Porter Jr./20 → 40/84.7 → 81.3',
+        '修 BPM 漏讀榜首：補回聯盟第一（Jokić 7 → 3 名）。｜Jokić/7 → 3/93.5 → 100.6；Kawhi/3 → 6/102.2 → 94.1',
+        '傳球加分不分位置：持球前鋒不再多加分（Jalen Williams 9 → 12 名）。｜Jalen Williams/9 → 12/93.3 → 87.0；Barnes/18 → 27/92.2 → 83.5；Reaves/26 → 21/89.5 → 84.7',
+        '三分、自主創造與上場分鐘也改看近四季窗口：Sabonis 138 → 75 名。｜Sabonis/138 → 75/72.9 → 77.1；Jalen Williams/12 → 9/87.0 → 90.7；Franz Wagner/21 → 42/84.1 → 81.3',
+        '拉開明星 OVR 差距：不再擠在 85–93，名次與 99 以上不變（Maxey 85.5 → 92.0）。｜Maxey/21 → 21/85.5 → 92.0；Mitchell/7 → 7/93.2 → 96.0',
         '3PT 欄改用窗口比較基準：主力射手差距拉開（Curry 120.7 → 125.2），OVR 不變。',
-        '教練用人與出賽率也改看近四季窗口：不再只看單季。｜Sengun 101 → 96 名；Mamukelashvili 88 → 117 名',
-        '賽中年齡固定看開季當天：不再因季中過生日跳分。｜Landale 278 → 257 名；Porziņģis 23 → 37 名']),
+        '教練用人與出賽率也改看近四季窗口：不再只看單季。｜Sengun/101 → 96/78.3 → 78.9；Mamukelashvili/88 → 117/79.2 → 77.0',
+        '賽中年齡固定看開季當天：不再因季中過生日跳分。｜Landale/278 → 257/61.6 → 63.8；Porziņģis/23 → 37/91.0 → 88.2']),
     (('card',), '0.2.9', '2026-11-01', [
-        '拿掉「年輕人在爛隊打折」：換新標準後這個折扣反而失準（Flagg 195 → 79 名）。｜靠球權的 Banchero 65 → 158 名',
-        '拿掉耐力對 OVR 的重複加分：上場時間只算一次（Jalen Williams 17 → 10 名）。｜Porziņģis 60 → 32 名；Edgecombe 101 → 150 名']),
+        '拿掉「年輕人在爛隊打折」：換新標準後這個折扣反而失準（Flagg 195 → 79 名）。｜Flagg/195 → 79/70.6 → 77.6；Banchero/65 → 158/79.8 → 72.7',
+        '拿掉耐力對 OVR 的重複加分：上場時間只算一次（Jalen Williams 17 → 10 名）。｜Jalen Williams/17 → 10/86.9 → 88.2；Porziņģis/60 → 32/79.0 → 81.9；Edgecombe/101 → 150/75.2 → 72.3']),
     (('card',), '0.2.8', '2026-11-01', [
         'OVR 改以 DARKO＋BPM 為準：取代 RAPM（Edwards 38 → 10 名）；防守型角色球員下修（Herb Jones 19 → 156 名）。']),
     (('card',), '0.2.7', '2026-10-30', [
-        '提高防守比重、越近的比賽份量越重：White 8 → 4 名。｜Wembanyama 3 → 2 名；Luka 4 → 9 名',
-        '傳球看量也看率：每 36 分鐘助攻與助攻率各半。｜Trae Young 104 → 110',
-        '3PT、RIM、PRES 突破 99 上限：Curry 3PT 105。｜Thybulle PRES 127',
-        'OVR 拿掉身高體重加分：只看場上表現（Zion 43 → 65 名）。｜Mobley 28 → 23 名',
-        '~爛隊年輕人折扣改看淨勝分：不再以勝率 35% 一刀切。~｜Flagg 293 → 230 名；Rollins 15 → 106 名']),
+        '提高防守比重、越近的比賽份量越重：White 8 → 4 名。｜White/8 → 4/96.5 → 99.7；Wembanyama/3 → 2/101.7 → 103.7；Luka/4 → 9/100.8 → 95.2',
+        '傳球看量也看率：每 36 分鐘助攻與助攻率各半。｜Trae Young/傳球 104 → 110/69.4 → 70.1',
+        '3PT、RIM、PRES 突破 99 上限：Curry 3PT 105。｜Curry/3PT 105/82.5 → 82.5；Thybulle/PRES 127/70.7 → 70.5',
+        'OVR 拿掉身高體重加分：只看場上表現（Zion 43 → 65 名）。｜Zion/43 → 65/81.8 → 79.8；Mobley/28 → 23/84.3 → 84.9',
+        '~爛隊年輕人折扣改看淨勝分：不再以勝率 35% 一刀切。~｜Flagg/293 → 230/61.5 → 68.3；Rollins/15 → 106/86.2 → 76.0']),
     (('card',), '0.2.6', '2026-10-30', [
         '補籃、補扣改算近距離：不再墊高中距離（Kessler 中距離 99 → 61）。',
         '能力值改跨四季比較：偏弱的一季可以沒人到 99。',
@@ -193,8 +198,15 @@ def _note_line(x):
     body = f'<b>{_note_fmt(goal)}</b>：{_note_fmt(rest)}' if sep else _note_fmt(goal)
     if strike:
         body = f'<s style="opacity:.55">{body}</s>'
-    if more:
-        body += f'<span class="pn-more" tabindex="0" aria-label="其他名次變動">⋯<span class="pn-tip" role="tooltip">{_note_fmt(more)}</span></span>'
+    if more:   # 每人一列：球員/名次或數值變化/OVR 變化；OVR 漲綠跌紅
+        rows = ''
+        for row in more.split('；'):
+            name, chg, ovr = row.split('/')
+            a, b = (float(v) for v in ovr.split(' → '))
+            chg = f'第 {chg} 名' if re.fullmatch(r'\d+ → \d+', chg) else chg
+            rows += (f'<span>{html.escape(name)}</span><span>{html.escape(chg)}</span>'
+                     f'<span class="{"up" if b > a else "dn" if b < a else ""}"><i>OVR</i> {html.escape(ovr)}</span>')
+        body += f'<span class="pn-more" tabindex="0" aria-label="名次與 OVR 變動">⋯<span class="pn-tip" role="tooltip">{rows}</span></span>'
     return f'<li>{body}</li>'
 
 
