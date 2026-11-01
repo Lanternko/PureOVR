@@ -49,6 +49,8 @@ def window_stats(card, games_done=None):
     sys.path.insert(0, str(LIVE))
     import window10 as W10
     import rookie_defense as RD
+    import win_len
+    win_len.install()   # E-204：提示卡的窗口值跟線上同一個 WIN_LEN
     W = W10.Win10()
     D = W.D
     if card:
@@ -121,4 +123,4 @@ def build(stats, pool):
 def tip(attr, v, sub, note):
     n, s, d, _ = SPECS[attr]
     rows, foot = sub
-    return sn.cell_tip(n, s, round(v), rows, d=d + note, foot=foot)
+    return sn.cell_tip(n, s, round(v), rows, d=d, foot=foot)
