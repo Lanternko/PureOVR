@@ -1270,3 +1270,10 @@
 - 現值：card 0.2.10j 為 19/30（前 30 平均持球 3.19 分/36）；榜首 Hauser、Hardaway Jr.、Bey、McBride、Trent Jr.。解決＝≤10/30 且 TO 對 2K27 Ball Handle ρ 不下降。雜訊：E-202 phase0 bootstrap。
 - 額度：3（E-202 為第 1 個）。
 - 相關：R-136、R-032、E-069、E-202
+
+### F-144
+- 日期：2026-11-02
+- 發現：0.2.12 的 TO 分母（持球分鐘）偏袒「每次觸球拿很久」的人。2025-26 持球/36≥5 的 64 人中，Reaves 每持球分鐘失誤第 24、每次觸球失誤第 45（每觸球秒數全聯盟第 2）；KPJ 19→30（秒數第 5）；Luka 48→55、Maxey 6→8 幾乎不變。舊 TO（每回合失誤）Reaves 58 與每觸球的結果一致。E-205 降持球權重動不到他們，因為 r 本身就被分母灌高。
+- 證據：lead 診斷（handle-E069 raw 2025-26 Possessions TOUCHES／TIME_OF_POSS ＋ season-source player-games TOV；單季、樣本內，只當方向）
+- 狀態：待使用者選方向（分母改觸球數需另寫預註冊）
+- 相關：E-205、E-202、R-141、F-143
