@@ -265,7 +265,7 @@ ATTR_TIPS = {
     'help': ('護框', 'RIM', '對手在<b>籃下 6 呎內</b>的命中率比預期低多少。', [], '老將四季加權含本季；新秀只看本季'),
     'dbon': ('防守意識', 'DIQ', '輪轉、站位、補防……<b>常規數據以外的防守意識</b>。真實比賽防守 RAPM 和同位置平均的差。',
              [('單位', 'RAPM 分（不是 0–99）'), ('進 OVR', '只有正的部分')], False),
-    'off': ('進攻', 'OFF', 'OVR 裡<b>進攻能力值</b>貢獻的部分：投籃、切入、製造犯規、傳球、少失誤、自主創造，每 36 分鐘比聯盟平均多幾分。',
+    'off': ('進攻', 'OFF', '<b>75% 進攻能力值</b>（投籃、切入、製造犯規、傳球、少失誤、自主創造）＋<b>25% 進攻影響力</b>（DARKO＋BPM 近幾季合併，同 OVR 的比例），每 36 分鐘比聯盟平均多幾分；影響力樣本不足 5000 回合的人只看能力值。',
             [('單位', '每 36 分鐘淨分（0＝平均）'), ('不含', '籃板、身高、上場時間')], False),
     'def': ('防守', 'DEF', 'OVR 裡<b>防守</b>貢獻的部分：單防、護框、壓迫，加上防守意識加分，每 36 分鐘比聯盟平均多幾分。',
             [('單位', '每 36 分鐘淨分（0＝平均）'), ('不含', '籃板、身高、上場時間')], False),
@@ -623,11 +623,14 @@ def apply_common(s):
 # 進攻／防守分（使用者 2026-11-01）：把 OVR 迴歸第一層 pred0 拆開。pred0 在同位置內對能力值是線性的，
 # 係數從正式卡 ranking.csv 照位置重擬合（R²＝1）；新秀 G／F 用 SG／SF 的係數（同 defense_centered 的 DPOS）。
 # 分數＝每 36 分鐘比聯盟平均（正式卡 MIN ≥ 500）多幾分；防守另加 defenseBonus（扣同一群人的平均）。
-# 籃板、身高、align 兩邊都不算（約佔 OVR 差異一成三）。OVR 還有用人層（分鐘、出賽率），所以兩分相加不等於 OVR。
+# 籃板、身高兩邊都不算（約佔 OVR 差異一成三）。OVR 還有用人層（分鐘、出賽率），所以兩分相加不等於 OVR。
+# 進攻再混進影響力（使用者 2026-11-01，同 OVR align 的比例）：T6（DARKO＋BPM）pooledPoss ≥ 5000 的人
+# 進攻＝0.75×能力值進攻＋0.25×（0.75×pooledO 減同一群 MIN ≥ 500 的平均）；不夠回合的人只用能力值。
 OD_CARD = Path(__file__).resolve().parents[1] / 'reports/card-0.2.10e/ranking.csv'  # 0.2.10e 只換 OVR 映射，pred0 等欄同 0.2.10d
 OD_OFF = ['long', 'mid', 'short', 'ft', 'drive', 'foulDraw', 'tovSkill', 'pass', 'creation']
 OD_DEF = ['onBall', 'help', 'pressure']
 OD_ALL = OD_OFF + OD_DEF + ['rebound', 'heightInches']
+OD_IMP_W, OD_IMP_POSS = 0.25, 5000   # 同卡片 align 的權重與門檻
 
 
 def off_def(rows, key, card_path=OD_CARD):
@@ -644,6 +647,10 @@ def off_def(rows, key, card_path=OD_CARD):
     mu = np.array([sum(float(r[a]) for r in q) / len(q) for a in OD_ALL])
     dbm = sum(float(r['defenseBonus']) for r in q) / len(q)
     n_off, n_def = len(OD_OFF), len(OD_DEF)
+    t6 = list(csv.DictReader((Path(card_path).parent / 'rapm-T6.csv').open(encoding='utf-8')))
+    t6 = {k: 0.75 * float(t['pooledO']) for t in t6 if float(t['pooledPoss']) >= OD_IMP_POSS for k in (t['name'], t['playerId'])}
+    t6m = [t6[r['name']] for r in q if r['name'] in t6]
+    t6m = sum(t6m) / len(t6m)
     out, bad = {}, 0
     for r in rows:
         b = coef.get({'G': 'SG', 'F': 'SF'}.get(r['pos'], r['pos']))
@@ -657,7 +664,10 @@ def off_def(rows, key, card_path=OD_CARD):
             bad += 1
             continue
         c = b[1:] * (x - mu)
-        out[r[key]] = (round(float(c[:n_off].sum()), 2),
+        o, imp = float(c[:n_off].sum()), t6.get(str(r.get('playerId', '')), t6.get(r.get('name')))
+        if imp is not None:
+            o = (1 - OD_IMP_W) * o + OD_IMP_W * (imp - t6m)
+        out[r[key]] = (round(o, 2),
                        round(float(c[n_off:n_off + n_def].sum()) + float(r['defenseBonus']) - dbm, 2))
     return out, bad
 
