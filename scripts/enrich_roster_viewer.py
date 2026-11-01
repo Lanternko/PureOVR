@@ -234,7 +234,8 @@ td.ovr .ob::before{content:"";position:absolute;inset:0;border-radius:inherit;pa
   .card .who>.g5{grid-row:6}
 }
 /* 展開至 50 人：表格不限高，跟著頁面捲（fitTable 設的行內 max-height 用 !important 蓋掉） */
-.tbox.grow{max-height:none!important;overflow-y:visible}
+/* 展開後在表格上捲＝整頁捲：拿掉 contain／none，捲動要傳給頁面（使用者 2026-11-01） */
+.tbox.grow{max-height:none!important;overflow-y:visible;overscroll-behavior:auto}
 /* 近 N 場逐場數據（使用者 2026-10-30：數據旁的 ▼ 展開，像 NBA box score） */
 .rx .g5t{flex-basis:100%;display:flex;align-items:center;gap:6px;background:none;border:0;border-top:1px solid var(--line);padding:6px 0 0;
   color:var(--muted);font:600 .8rem var(--f-disp);letter-spacing:.04em;cursor:pointer;text-align:left}
