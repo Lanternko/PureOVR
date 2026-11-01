@@ -748,6 +748,15 @@ def inject(path, real, view='g5'):
          # 展開＝表格往下長、整頁捲，不要表格內捲軸（使用者 2026-11-01）；收回時捲回表格頂
          "  document.querySelector('.tbox').classList.toggle('grow', SIZE === 50);\n"
          "  m.onclick = () => { const top = st.page * SIZE; SIZE = SIZE === 20 ? 50 : 20; st.page = Math.floor(top / SIZE); st.extra = 0; const t = document.querySelector('.tbox'); t.scrollTop = 0; render(); tboxEdges(); if (SIZE === 20 && t.getBoundingClientRect().top < 0) t.scrollIntoView({ block: 'start' }); };"),
+        # 展開至 50 人時表格比視窗高，換頁的 scrollIntoView('nearest') 會把畫面拉走、不能連按下一頁（使用者 2026-11-01）：
+        # 展開時改成讓頁碼列留在原本的螢幕位置
+        ("    b.onclick = () => { st.page = pg; st.extra = 0; render(); document.querySelector('.tbox').scrollIntoView({ block: 'nearest' }); };",
+         "    b.onclick = () => {\n"
+         "      const pe = document.getElementById('pages'), y0 = pe.getBoundingClientRect().top;\n"
+         "      st.page = pg; st.extra = 0; render();\n"
+         "      if (SIZE === 50) scrollBy(0, pe.getBoundingClientRect().top - y0);\n"
+         "      else document.querySelector('.tbox').scrollIntoView({ block: 'nearest' });\n"
+         "    };"),
     ]:
         if new not in s:
             assert s.count(old) == 1, old
