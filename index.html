@@ -1034,7 +1034,12 @@ function pages(n) {
     const b = document.createElement('button');
     b.type = 'button'; b.textContent = l; b.disabled = dis;
     if (cur) b.setAttribute('aria-current', 'page');
-    b.onclick = () => { st.page = pg; st.extra = 0; render(); document.querySelector('.tbox').scrollIntoView({ block: 'nearest' }); };
+    b.onclick = () => {
+      const pe = document.getElementById('pages'), y0 = pe.getBoundingClientRect().top;
+      st.page = pg; st.extra = 0; render();
+      if (SIZE === 50) scrollBy(0, pe.getBoundingClientRect().top - y0);
+      else document.querySelector('.tbox').scrollIntoView({ block: 'nearest' });
+    };
     el.appendChild(b);
   };
   mk('‹', st.page - 1, st.page === 0);
