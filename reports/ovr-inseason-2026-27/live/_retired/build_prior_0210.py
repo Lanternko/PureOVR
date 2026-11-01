@@ -1,3 +1,4 @@
+raise SystemExit('已淘汰：本檔只供對照。重現請 checkout 當時 commit（見 live/CURRENT.json、_retired/README.md）')  # R-114 retired guard
 """inseason 0.2.10 先驗卡：prior-2025-26-card027b.json 的 8 項屬性（drive, foulDraw, ft, mid, pass, rebound, short, tovSkill）
 換成 card 0.2.10 的 E-175 U 窗口值（reports/card-0.2.10/tail-U.csv，以 playerId 配對）；其餘欄位（含 foulDrawFreeze）原樣。
 用法：python -I -B -X utf8 reports/ovr-inseason-2026-27/live/build_prior_0210.py"""

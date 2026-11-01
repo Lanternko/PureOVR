@@ -1,3 +1,4 @@
+raise SystemExit('已淘汰：本檔只供對照。重現請 checkout 當時 commit（見 live/CURRENT.json、_retired/README.md）')  # R-114 retired guard
 """card 0.2.10（R-111/R-114，policy B 全凍結）：照 build_usage_029a.py，卡目錄換成 reports/card-0.2.10/cards/K6；
 用人層第三次 WLS（coef[card]）、r_repl、兩段映射錨一律取 reports/card-0.2.10/frozen.json（即 0.2.9a 值），不重擬合。
 核對對象：reports/card-0.2.10/ranking.csv。輸出 usage-2025-26-card0210.json。
