@@ -29,7 +29,7 @@ CARD = ROOT / 'reports/card-0.2.12-tov'
 RAW = ROOT / 'reports/handle-E069/raw'
 CUR_FILE = ROOT / 'data/defense-seventh/2026-27/possessions.json'
 K, KH, LAM = 64, 256, 0.2
-RAMP_MIN = 1000.0          # 新秀：本季分鐘 ≥ 此值才完全用新定義的值（之前與起點 x0 線性混合）
+RAMP_MIN = 300.0           # 新秀：新定義的權重隨本季分鐘線性遞增，≥ 此值才全用（R-142，使用者 2026-11-02「300 分鐘就夠」；原 1000）
 RND = 9
 _CACHE = {}
 
