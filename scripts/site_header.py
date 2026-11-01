@@ -25,15 +25,14 @@ CSS = """<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=R
 .mast-in{display:flex;align-items:center;gap:16px;height:56px;max-width:1280px;margin:0 auto;box-sizing:border-box;
   padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
 .mbrand{display:inline-flex;align-items:baseline;gap:8px;text-decoration:none;flex:none}
-.mbrand b{font:400 1.6rem/1 "Righteous",var(--f-disp);letter-spacing:.02em;text-transform:uppercase;color:var(--fg)}
+.mbrand b{font:400 1.6rem/1 "Righteous",var(--f-disp);letter-spacing:.02em;color:var(--fg)}
 .mbrand b span{color:var(--muted)}
 .mbrand b i{font-style:inherit;color:var(--gold)}
 .mbrand:hover b span{color:var(--fg)}
 .mbrand small{font:600 .78rem var(--f-disp);letter-spacing:.06em;color:var(--muted);font-variant-numeric:tabular-nums}
-.mtabs{position:relative;display:flex;align-items:center;gap:2px;margin:0 auto 0 4px;align-self:stretch}
+.mtabs{position:relative;display:flex;align-items:center;gap:2px;margin:0 auto 0 8px}
 .mtab,.mtabs .tpick summary{appearance:none;border:0;background:none;color:var(--muted);font:600 1.02rem var(--f-body);letter-spacing:.02em;
   padding:7px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;display:flex;align-items:center;gap:6px;transition:color .14s,background-color .14s}
-.mtabs>*{align-self:center}
 .mtab:hover,.mtabs .tpick summary:hover{color:var(--fg);background:color-mix(in srgb,var(--fg) 7%,transparent)}
 .mtab[aria-selected="true"],.mtabs .tpick.on summary{color:var(--fg);background:var(--panel)}
 .mtabs .tpick summary{border:0}
@@ -43,7 +42,7 @@ CSS = """<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=R
 .mtabs .tpick:not(.on) summary::after{font-size:.78rem;margin-left:6px}
 .mtabs .tpick.on summary{border:0;color:var(--fg)}
 .mtabs .tpick summary:focus-visible,.mtab:focus-visible,.micon:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
-.mind{position:absolute;bottom:-1px;left:var(--ix,0);width:var(--iw,0);height:3px;border-radius:3px 3px 0 0;background:var(--gold);
+.mind{position:absolute;bottom:0;left:var(--ix,0);width:var(--iw,0);height:3px;border-radius:3px 3px 0 0;background:var(--gold);
   box-shadow:0 0 8px color-mix(in srgb,var(--gold) 50%,transparent);pointer-events:none}
 .mast.ready .mind{transition:left .22s cubic-bezier(.2,.7,.2,1),width .22s cubic-bezier(.2,.7,.2,1)}
 .macts{display:flex;align-items:center;gap:8px;flex:none}
@@ -66,7 +65,7 @@ CSS = """<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=R
 .mrow .seg{flex:none;width:max-content}
 .mrow .seg button{height:32px;padding:0 12px;white-space:nowrap}
 .mrow .pnote summary{height:32px;box-sizing:border-box;padding:0 12px}
-.mast .pn{position:fixed;left:auto;right:max(16px,calc((100vw - 1280px)/2 + 16px));top:64px;width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 80px)}
+.mast .pn{position:fixed;left:auto;right:max(16px,calc((100vw - 1280px)/2 + 16px));top:calc(var(--mh,57px) + 8px);width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 80px)}
 .msearch{position:relative;display:flex;align-items:center}
 .msearch .sbtn{display:none}
 .msearch .sbox{position:relative;display:flex;align-items:center}
@@ -76,23 +75,22 @@ CSS = """<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=R
 .msearch #q:focus{outline:0;border-color:var(--gold);width:240px}
 .wrap>.top,.wrap>.ctrl{display:none}
 @media (max-width:640px){
-  .mast-in{height:52px;gap:6px}
-  .mbrand b{font-size:1.3rem}
-  .mbrand small{display:none}
-  .mtabs{margin:0 auto 0 0}
-  .mtab,.mtabs .tpick summary{padding:6px 9px;font-size:.95rem}
-  .mtabs .tpick:not(.on) summary::before{font-size:.95rem}
-  .macts{gap:5px}
+  .mast-in{flex-wrap:wrap;height:auto;padding-top:8px;padding-bottom:0;gap:0 10px}
+  .mbrand b{font-size:1.4rem}
+  .macts{margin-left:auto;gap:6px}
+  .mtabs{order:10;flex-basis:100%;margin:4px 0 0}
+  .mtab,.mtabs .tpick summary{padding:9px 11px 10px;font-size:15px}
+  .mtabs .tpick:not(.on) summary::before{font-size:15px}
   .micon{width:34px;padding:0;justify-content:center}
   .micon>span{display:none}
-  .mpanel{position:fixed;left:12px;right:12px;top:58px;min-width:0}
-  .mast .pn{top:58px;right:12px;width:calc(100vw - 24px)}
+  .mpanel{position:fixed;left:12px;right:12px;top:calc(var(--mh,96px) + 6px);min-width:0}
+  .mast .pn{top:calc(var(--mh,96px) + 6px);right:12px;width:calc(100vw - 24px)}
   .msearch .sbtn{display:inline-flex}
-  .msearch .sbox{display:none;position:fixed;left:12px;right:12px;top:58px;z-index:20;padding:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;box-shadow:0 14px 36px rgba(0,0,0,.6)}
+  .msearch .sbox{display:none;position:fixed;left:12px;right:12px;top:calc(var(--mh,96px) + 6px);z-index:20;padding:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;box-shadow:0 14px 36px rgba(0,0,0,.6)}
   .msearch.open .sbox{display:flex}
   .msearch .sbox>svg{left:20px}
   .msearch #q,.msearch #q:focus{width:100%;height:40px;font-size:16px}
-  .mtabs .tpick .tpop{position:fixed;left:12px!important;right:12px;top:58px;width:auto}
+  .mtabs .tpick .tpop{position:fixed;left:12px!important;right:12px;top:calc(var(--mh,96px) + 6px);width:auto}
 }
 @media (prefers-reduced-motion:reduce){.mast.ready .mind,.msearch #q{transition:none}}
 </style>"""
@@ -111,7 +109,7 @@ const pl=$('#mPlayers');
 const sync=()=>{
   const on=tp&&tp.classList.contains('on');pl.setAttribute('aria-selected',String(!on));
   const t=on?tp.querySelector('summary'):pl,a=tabs.getBoundingClientRect(),r=t.getBoundingClientRect();
-  ind.style.setProperty('--ix',(r.left-a.left+8)+'px');ind.style.setProperty('--iw',Math.max(0,r.width-16)+'px');
+  ind.style.setProperty('--ix',(r.left-a.left)+'px');ind.style.setProperty('--iw',r.width+'px');mast.style.setProperty('--mh',mast.offsetHeight+'px');
   const b=pos&&pos.querySelector('[aria-pressed="true"]');fb.classList.toggle('dot',!!b&&b!==pos.firstElementChild);
 };
 pl.onclick=()=>{const b=$('#teamGrid [data-t="ALL"]');if(b&&tp.classList.contains('on'))b.click();};
