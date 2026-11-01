@@ -1227,6 +1227,19 @@ function tboxEdges() {
   t.classList.toggle('below', t.scrollTop + t.clientHeight < t.scrollHeight - 2);
 }
 document.querySelector('.tbox').addEventListener('scroll', tboxEdges, { passive: true });
+// 手機：表格捲到頂／底後，同一指再拖或下一次滑動都不帶動整頁（overscroll-behavior 在部分瀏覽器擋不住，使用者 2026-11-02）
+(function () {
+  const t = document.querySelector('.tbox');
+  let y0 = 0, x0 = 0;
+  t.addEventListener('touchstart', e => { y0 = e.touches[0].clientY; x0 = e.touches[0].clientX; }, { passive: true });
+  t.addEventListener('touchmove', e => {
+    if (innerWidth > 640 || t.classList.contains('grow') || !e.cancelable) return;
+    const dy = e.touches[0].clientY - y0, dx = e.touches[0].clientX - x0;
+    if (Math.abs(dx) > Math.abs(dy)) return;
+    const top = t.scrollTop <= 0, bot = t.scrollTop + t.clientHeight >= t.scrollHeight - 1;
+    if ((dy > 0 && top) || (dy < 0 && bot)) e.preventDefault();
+  }, { passive: false });
+})();
 addEventListener('resize', fitTable);
 addEventListener('load', fitTable);
 document.fonts && document.fonts.ready.then(fitTable);
