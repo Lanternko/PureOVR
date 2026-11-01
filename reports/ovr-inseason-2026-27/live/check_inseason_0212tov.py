@@ -82,7 +82,7 @@ def main(ref_dir, c0_dir, new_dir):
     chk(len(common) > 500 and dmax < 0.06, f'(2) 先驗 tovSkill 對卡片 ranking.csv：{len(common)} 人 max|diff| {dmax:.3f}')
 
     mn = meta(new_dir)
-    chk(mn['version'] == 'inseason 0.2.12' and mn.get('priorCard') == 'card 0.2.12', f"(3) 新版號 {mn['version']}／{mn.get('priorCard')}")
+    chk(mn['version'] in ('inseason 0.2.12', 'inseason 0.2.12a') and mn.get('priorCard') == 'card 0.2.12', f"(3) 新版號 {mn['version']}／{mn.get('priorCard')}")
     old, new = load(c0_dir), load(new_dir)
     chk(set(old) == set(new), f'(3) ranking 人數 {len(old)} / {len(new)}')
     a0 = mn.get('sanity', {}).get('a_f0_kmax_maxAbsOvrDiff')

@@ -5,7 +5,7 @@
   補值：兩季都缺的人（含新秀）＝E-198 同一套 OLS（raw ~ 1 + 3PA/36 + 3P% + USG% + 位置啞變數，PG 為基準），用本季可得資料擬合：
         樣本＝今天有混合值且本季有上場、bio 有 USG% 的人；特徵＝2026-27 player-games 加總（3PA、3PM、MIN）與 bio USG_PCT；位置＝先驗卡 pos（新秀 G/F/C → SG/SF/C）。
         本季還沒上場的人：老將沿用卡片值（card 0.2.10j gravity-raw.csv，含卡片的補值）；新秀用 ROOKIE_G0（見 freeze()）。
-        GRAVITY_EPM=1（2026-11-02 使用者核可，「OK」；預設關，待 0.2.12 上線後打開）：OLS 補值依本季分鐘往進攻 EPM 推估收縮，
+        GRAVITY_EPM=1（inseason 0.2.12a，2026-11-02 使用者「現在就上 0.2.11a」，因 0.2.12 同時上線改疊在 0.2.12 上；GRAVITY_EPM=0 重現 0.2.12，TOV_POSS=0 時預設關＝重現 0.2.11）：OLS 補值依本季分鐘往進攻 EPM 推估收縮，
           raw = w·OLS + (1−w)·(a + b·O)，w = MIN／(MIN + EPM_K)；O＝epm_live.run() 的本季進攻（先驗打底，幾分鐘也穩），
           a、b＝2025-26 有 API 值的人 raw ~ epm_self 2025-26 O 的單變量 OLS。沒有本季 O 的人照舊用 OLS。（Joshua Jefferson 4 分鐘 OLS 109.6）
   0–99：照 creation（E-175 PctMapper，池＝卡片 2025-26 GP≥30 且 MPG≥20 的原始／補值，凍結；兩端尾巴開），與卡片端同一把尺：
@@ -35,7 +35,8 @@ CUR_FILE = ROOT / 'data/defense-seventh/2026-27/gravity.json'
 BASE25 = ROOT / 'data/benchmark-source/base.json'
 BIO25 = ROOT / 'data/benchmark-source/bio.json'
 EPM25 = ROOT / 'data/external-impact/epm_self/epm_2025-26.csv'
-EPM_ON = __import__('os').environ.get('GRAVITY_EPM', '0') == '1'
+_ENV = __import__('os').environ
+EPM_ON = _ENV.get('GRAVITY_EPM', '0' if _ENV.get('TOV_POSS', '1') == '0' else '1') == '1'
 EPM_K = 200.0   # 分鐘；w = MIN／(MIN + EPM_K)
 KEY, FR = 'AVGOFFBALLPERIMETERGRAVITYSCORE', 'FRAMES'
 POS = ['SG', 'SF', 'PF', 'C']
