@@ -20,20 +20,20 @@ import season_nav as sn  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'reports/impact-epm-2026-27'))
 import epm_live  # noqa: E402
 from build_card_viewer import (onball_rows, onball_tip, pres_tip, pres_tips, tov_tip,  # noqa: E402
-                               PRES_SUB, PRES_LOW_GOOD, POOL_MIN)
+                               PRES_SUB, PRES_LOW_GOOD)
 
 ROOT = er.ROOT
 PD_NOTE = '（老將四季加權含本季；新秀只看本季）'
 
 
-def pres_tips_live(path):
+def pres_tips_live(path, ids):
     """壓迫／切入賽中解凍（2026-11-01）：live/<日>/pres-drive.json 的窗口分量 → ({playerId: 細項列}, pool 人數)。
-    格式同 build_card_viewer.pres_tips；PR／名次人群＝窗口有效分鐘 ≥ 1000 的老將（窗口量已除以權重和，約一季份量）。"""
+    格式同 build_card_viewer.pres_tips；PR／名次人群＝ids（本季場均 ≥ sn.POOL_MPG 分鐘，老將新秀都算；使用者 2026-11-01）。"""
     side = json.loads(path.read_text(encoding='utf-8'))['players']
-    pool = [v for v in side.values() if v['src'] == 'veteran' and v['minW'] >= POOL_MIN]
+    pool = [v for pid, v in side.items() if pid in ids]
     tips = {}
     for pid, v in side.items():
-        lines, inpool = [], v['src'] == 'veteran' and v['minW'] >= POOL_MIN
+        lines, inpool = [], pid in ids
         for k, label, unit, fmt in PRES_SUB:
             c = k.replace('_shr', '')
             x = float(v['shr'][c])
@@ -133,9 +133,9 @@ def add_ovr_chart(live):
     er.CSS += OVR_CSS
 
 
-def onball_live(rows, pool_min):
+def onball_live(rows, pool):
     """PER D 提示卡（E-060 三分量）：和頁面 onBall 同一份累計量——老將＝四季窗口加權含本季（rookie_defense.veteran），
-    新秀＝本季（rookie_defense.inseason）。分量換回 onBall 和頁面差 ≥ 0.05 的人不給卡。PR 人群同 TO（本季上場 ≥ pool_min 分鐘）。"""
+    新秀＝本季（rookie_defense.inseason）。分量換回 onBall 和頁面差 ≥ 0.05 的人不給卡。PR 人群＝pool（int playerId 集合，同 TO）。"""
     sys.path.insert(0, str(ROOT / 'reports/ovr-inseason-2026-27/live'))
     import rookie_defense as RD
     rs = json.loads(SRC26.read_text(encoding='utf-8'))['data']['resultSets'][0]
@@ -158,7 +158,6 @@ def onball_live(rows, pool_min):
             continue
         comps[pid] = x[:3]
         note[pid] = '（四季加權，含本季）' if pid in prior else '（新秀：只看本季）'
-    pool = {int(r['playerId']) for r in rows if float(r['MIN26'] or 0) >= pool_min}
     if off:
         print(f'PER D 提示卡：{off} 人分量換回 onBall 對不上頁面，不給卡', file=sys.stderr)
     return onball_rows(comps, pool), note
@@ -176,14 +175,16 @@ def main():
             'last', 'dovr', 'tips']
     # card 0.2.2 先驗（E-074）：ranking.csv 帶 presDisplay／foulDisc → PRES 欄顯示 presDisplay，提示卡列逼失誤與五分量（同 build_card_viewer.py）
     has_pd = 'presDisplay' in rows[0]
+    # 提示卡名次人群：本季場均（頁面 MPG 欄）≥ sn.POOL_MPG 分鐘
+    pool = sn.mpg_pool({r['playerId']: float(r['MIN26'] or 0) / int(r['N']) for r in rows if int(r['N'])})
+    ipool = {int(k) for k in pool}
     if has_pd:
         cols += ['force', 'foulDisc']
         pd_live = (live / 'pres-drive.json').exists()     # 2026-11-01 壓迫／切入解凍：有側檔就用窗口分量
-        ptips, n_pres = pres_tips_live(live / 'pres-drive.json') if pd_live else pres_tips()   # 否則：2025-26 五分量（凍結）
-    # TO 提示卡：2026-27 至今的失誤、球權、失誤率；PR 人群＝上場 ≥ 15 × 目前最多場數 分鐘（開季樣本少，門檻跟著場數長）
-    pool_min = 15 * max(int(r['N']) for r in rows)
-    trows, n_tov = sn.tov_rows(SRC26, 'PLAYER_ID', pool_min)
-    orows, ob_note = onball_live(rows, pool_min)
+        ptips, n_pres = pres_tips_live(live / 'pres-drive.json', pool) if pd_live else pres_tips({r['name'] for r in rows if r['playerId'] in pool})   # 否則：2025-26 五分量（凍結）
+    # TO 提示卡：2026-27 至今的失誤、球權、失誤率
+    trows, n_tov = sn.tov_rows(SRC26, 'PLAYER_ID', ipool)
+    orows, ob_note = onball_live(rows, ipool)
     base = BASE.read_text(encoding='utf-8')
     old = json.loads(re.search(r'const DATA=(\{.*?\});\nconst COLS', base, re.S).group(1))
     ht = {r[old['cols'].index('name')]: r[old['cols'].index('ht')] for r in old['rows']}
@@ -208,17 +209,17 @@ def main():
                 sub = ptips.get(r['playerId'])
                 t['pressure'] = (sn.cell_tip('壓迫', 'PRES', round(float(r['pressure'])), [], d='新秀：本季還沒有壓迫分量')
                                  if r['presDisplay'] == '' or sub is None else
-                                 pres_tip(float(r['presDisplay']), float(r['pressure']), sub[0], n_pres, PD_NOTE))
+                                 pres_tip(float(r['presDisplay']), float(r['pressure']), sub[0], n_pres, PD_NOTE, r['playerId'] in pool))
             else:
                 t['pressure'] = (sn.cell_tip('壓迫', 'PRES', round(float(r['pressure'])), [], d='新秀：沒有 2025-26 的壓迫分量')
                                  if r['presDisplay'] == '' or r['name'] not in ptips else
-                                 pres_tip(float(r['presDisplay']), float(r['pressure']), ptips[r['name']], n_pres, '（只看 2025-26 賽季數據）'))
+                                 pres_tip(float(r['presDisplay']), float(r['pressure']), ptips[r['name']], n_pres, '（只看 2025-26 賽季數據）', r['playerId'] in pool))
         tr = trows.get(int(r['playerId']))
         if tr:
-            t['tovSkill'] = tov_tip(float(r['tovSkill']), tr, n_tov, '2026-27 至今', pool_min)
+            t['tovSkill'] = tov_tip(float(r['tovSkill']), tr, n_tov, '2026-27 至今', r['playerId'] in pool)
         ob = orows.get(int(r['playerId']))
         if ob:
-            t['onBall'] = onball_tip(float(r['onBall']), ob, ob_note[int(r['playerId'])])
+            t['onBall'] = onball_tip(float(r['onBall']), ob, ob_note[int(r['playerId'])], r['playerId'] in pool)
         return t
     for r in rows:
         num = lambda k: float(r[k])

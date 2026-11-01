@@ -393,9 +393,19 @@ def cell_tip(n, s, v, rows, d='', foot=()):
     return {'n': n, 's': s, 'v': v, 'd': d, 'rows': [list(r) for r in rows], 'foot': list(foot)}
 
 
-def tov_rows(src, key, pool_min):
+# 提示卡 PR／名次人群（使用者 2026-11-01）：只排除場均上場不夠的人（看頁面 MPG 欄），不看總分鐘、不分老將新秀
+POOL_MPG = 15
+NO_RANK_FOOT = f'*上場時間不足（場均未滿 {POOL_MPG} 分鐘），不列名次'
+
+
+def mpg_pool(mpg):
+    """{key: 場均分鐘} → 名次人群（key 集合）。"""
+    return {k for k, m in mpg.items() if m >= POOL_MPG}
+
+
+def tov_rows(src, key, pool):
     """{key: TO 提示細項}，pool 人數。失誤率＝TOV ÷ 球權（FGA＋0.44·FTA＋AST＋TOV），和 tovSkill 同一個式子（build_season_league.js）。
-    PR／名次對上場 ≥ pool_min 分鐘的人；不在 pool 的人只標 PR，不標名次。"""
+    PR／名次對 pool（key 集合）裡的人；不在 pool 的人只標 PR，不標名次。"""
     rs = json.loads(Path(src).read_text(encoding='utf-8'))['data']['resultSets'][0]
     h = {k: i for i, k in enumerate(rs['headers'])}
     tot = {}
@@ -408,7 +418,7 @@ def tov_rows(src, key, pool_min):
     for k, (mn, fga, fta, ast, tov, gp) in tot.items():
         poss = fga + 0.44 * fta + ast + tov
         if poss > 0:
-            st[k] = (tov / poss, poss / gp, tov / gp, mn >= pool_min)
+            st[k] = (tov / poss, poss / gp, tov / gp, k in pool)
     pool = [v for v in st.values() if v[3]]
     out = {}
     for k, (rate, pg, tg, inpool) in st.items():
