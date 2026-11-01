@@ -27,5 +27,20 @@
 - 所有用 `benchmark.mjs options()` 搭 v53 engine 鏈（`engine-e140`、E120／E122／ovr-v53+ 等 worker）的呼叫，重跑後現在會預設開 γ；歷史報告若要重現舊數字，需在 options 刪掉 `nsFoulExp`。v28 等較舊 engine 不認這個 option（npm test 不受影響）。
 - 屬性用 2025-26 全季建，對 2025-26 是樣本內；E-189 的樣本外結果只對半季分割成立。
 - WinImp 對 RAPM 0.432→0.417（E-189）待確認；0.1.3 以前的 WinImp 不能和 0.1.4 直接比。
-- 沒做：多 seed 校準重驗（c／pace 直接沿用 E-189 final，沒在全季 γ 上重跑 round-robin 平均）。
+- 多 seed 校準重驗已補（2026-11-01，見下節）。
 - `.gitignore` 第 7 行忽略整個 `/reports/`：`ns-foul-gamma-2025-26.json` 現在是 `options()` 的執行期依賴，commit 需 `git add -f`，否則乾淨 clone 的 npm test 會讀不到檔（`build_ns_gamma.py`、`report.md`、`npm-test.log` 建議一起 -f）。
+
+## 多 seed 重驗（2026-11-01，5090）
+真預設路徑（`player-impact-v53/engine.mjs` + `options()`，fatigue:false 同 E-189），on＝全季 γ、off＝刪 `nsFoulExp`（＝0.1.3）；新種子 20261250–265（16 個 × 435 場 round-robin，未用於 E-189 校準或判定）。每隊每場、依 seed 配對：
+
+| 項目 | 0.1.3 | 0.1.4 | 相對差 | 種子間 SE |
+|---|---|---|---|---|
+| 非投籃犯規罰球 | 3.879 | 3.886 | +0.19% | 0.74% |
+| 罰球出手 | 23.643 | 23.668 | +0.10% | 0.20% |
+| 得分 | 118.890 | 118.971 | +0.07% | 0.12% |
+| 回合 | 100.484 | 100.475 | −0.01% | 0.04% |
+| 非投籃犯規次數 | 7.444 | 7.456 | +0.16% | 0.41% |
+| 投籃犯規／100 回合 | 10.688 | 10.686 | −0.01% | — |
+
+四項都在 ±1% 內，c／pace 沿用 E-189 成立，不用重校。30 隊層級：罰球出手每隊平均差 0.27（最大 0.76），隊間 sd 2.52→2.50；非投籃罰球隊間 sd 0.76→0.81。
+腳本 `verify-worker.mjs`、`verify-run.mjs`、`verify-analyze.py`；結果 `verify-multiseed.json`（`out-verify/` 不入 git）。5090 樹 `~/s014`＝`~/e189` 疊 HEAD 版改動檔，引擎鏈 145 檔對 HEAD 雜湊比過（只差 CRLF）。
