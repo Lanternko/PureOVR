@@ -758,6 +758,14 @@ def inject(path, real, view='g5'):
          "      if (SIZE === 50) scrollBy(0, pe.getBoundingClientRect().top - y0);\n"
          "      else document.querySelector('.tbox').scrollIntoView({ block: 'nearest' });\n"
          "    };"),
+        # 頁碼固定 7 格（號碼＋…），… 也佔一格同寬，「›」不再隨頁數左右跑，可以連按（使用者 2026-11-01）
+        ("  const show = [...new Set([0, tot - 1, st.page - 1, st.page, st.page + 1])].filter(x => x >= 0 && x < tot).sort((a, b) => a - b);",
+         "  const show = tot <= 7 ? [...Array(tot).keys()]\n"
+         "    : st.page < 4 ? [0, 1, 2, 3, 4, tot - 1]\n"
+         "    : st.page > tot - 5 ? [0, tot - 5, tot - 4, tot - 3, tot - 2, tot - 1]\n"
+         "    : [0, st.page - 1, st.page, st.page + 1, tot - 1];"),
+        ('.pages .gap{color:var(--muted);padding:5px 2px}',
+         '.pages .gap{color:var(--muted);padding:5px 2px;width:34px;box-sizing:border-box;text-align:center}'),
     ]:
         if new not in s:
             assert s.count(old) == 1, old
