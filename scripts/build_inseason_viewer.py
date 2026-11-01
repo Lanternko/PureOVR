@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import enrich_roster_viewer as er  # noqa: E402
 from season_nav import add_season_nav, apply_common, regroup_attrs  # noqa: E402
 import season_nav as sn  # noqa: E402
+from site_header import add_masthead  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'reports/impact-epm-2026-27'))
 import epm_live  # noqa: E402
 from build_card_viewer import (onball_rows, onball_tip, pres_tip, pres_tips, tov_tip,  # noqa: E402
@@ -291,6 +292,7 @@ def main():
     s = sn.apply_cell_tips(s)   # PRES／TO 格子帶浮動提示卡
     s = regroup_attrs(s)  # 和 2025-26 頁同分組；要在上面 PRES 改名之後
     s = add_season_nav(s, 'inseason')
+    s = add_masthead(s, 'inseason')   # 眉頭（2026-11-02，參考 arammeta）
     out = live / 'roster-viewer.html'
     out.write_text(s, encoding='utf-8')
     # 注入隊色／頭像／2026-27 場均（換資料來源與年份文字）

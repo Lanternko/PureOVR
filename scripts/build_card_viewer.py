@@ -22,6 +22,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import enrich_roster_viewer as er  # noqa: E402
 from season_nav import add_season_nav, apply_common, regroup_attrs  # noqa: E402
 import season_nav as sn  # noqa: E402
+from site_header import add_masthead  # noqa: E402
 
 ROOT = er.ROOT
 BASE = ROOT / 'reports/ovr-v58-card-2025-26/roster-viewer.html'
@@ -172,6 +173,7 @@ def main(out=None):
         s = s.replace(a, b)
     s = regroup_attrs(sn.apply_cell_tips(apply_common(s)))   # PRES／TO 格子帶浮動提示卡（兩種顯示模式都有）
     s = add_season_nav(s, 'card')
+    s = add_masthead(s, 'card')   # 眉頭（2026-11-02，參考 arammeta）
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(s, encoding='utf-8')
     er.inject(out, er.aggregate(), view='season')
