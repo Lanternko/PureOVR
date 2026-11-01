@@ -69,6 +69,11 @@ CSS = """<style>
 .pn-item .kw-def{color:#4fa8ff}
 .pn-item .kw-etc{color:#c39bff}
 .pn-item .kw-num{color:var(--fg);font-weight:700;font-variant-numeric:tabular-nums}
+.pn-item li{position:relative}
+.pn-more{display:inline-block;margin-left:5px;padding:0 6px;border:1px solid var(--line);border-radius:3px;color:var(--muted);font-size:.75rem;line-height:1.3;cursor:help;vertical-align:1px}
+.pn-more:hover,.pn-more:focus{color:var(--gold);border-color:var(--gold);outline:0}
+.pn-tip{display:none;position:absolute;left:0;right:0;top:100%;z-index:2;margin-top:3px;padding:6px 9px;background:var(--panel-2);border:1px solid var(--line);border-radius:4px;color:#c9d3df;font-size:.78rem;line-height:1.5;box-shadow:0 6px 18px rgba(0,0,0,.5);cursor:default}
+.pn-more:hover .pn-tip,.pn-more:focus .pn-tip{display:block}
 .pn-foot{margin:12px 0 0;color:var(--muted);font-size:.72rem;line-height:1.5}
 .legend{align-items:baseline}
 .ovr-t{display:inline-flex;align-items:center;gap:5px;background:none;border:0;padding:0;color:var(--muted);font:inherit;cursor:pointer;text-align:left}
@@ -85,37 +90,34 @@ CSS = """<style>
 
 
 # 更新說明（Patch Notes）撰寫要旨（使用者 2026-10-29～11-01）：
-# - 每版一格，新的在上；同一基底的字母小版本併進同一格（R-064）。
-# - 只寫公式改動：新賽季目前用的那版正式卡加 'inseason'（只用來判斷「目前」，只留最新一格），不另開一格、不寫「已跟上／沒跟上」；只更新比賽資料、網頁 UI、欄位顯示都不寫（R-063）。
+# - 每版一格，新的在上；字母小版本一律併入該基底版本的條目清單下面，不單獨開卡，也不寫版號與字母前綴（不寫 0.2.10a、0.2.7a 等，R-064）。
+# - 只寫公式改動：最新那格用 ('card', 'inseason') 標示「目前」（舊格只留 ('card',)），不另開一格、不寫「已跟上／沒跟上」；只更新比賽資料、網頁 UI、欄位顯示都不寫（R-063）。
 # - 不顯示「正式卡／新賽季」標籤：兩頁已是同一條四季窗口管線、同一個版號（R-111，使用者 2026-11-01「先拿掉標籤」）。
 # - 用字精簡、只留重點：每條寫成「目標：改法（代表球員名次或數值變化）」（冒號前加粗），用球迷看得懂的話，不寫 E／R 編號、不寫「OVR 前 20 名換幾人」等流水帳；代價直接併入括號或分號後一句帶過，不另起一行「代價：」。
+# - 名次變動主文只留 0～2 個代表（開這個議題的起因球員優先，例如 Jokić、Jalen Williams；窗口類這種全面小調整給 0 個），其餘寫在「｜」後面，收進 ⋯ hover（使用者 2026-11-01）。
 # - 被後續版本取代或撤銷的條目，前後加 `~...~` 顯示刪除線（`<s>`）。
 PATCH_NOTES = [
     # 版號 0.2.10：前 20 名進出 1 人（Embiid 進、Porter Jr. 出）、前 100 名移動 >=10 名 18 人，照 R-109 屬 PATCH（係數全凍結、只換 8 項屬性來源）
     (('card', 'inseason'), '0.2.10', '2026-11-01', [
-        '中距離、近框、罰球、製造犯規、傳球、籃板、少失誤、切入這 8 項能力值改看過去四季滑動窗口（近季權重高，開季看前四季、隨賽季逐場換成本季），換季時不再一下跳很多。名次變動：Flagg 82 → 68 名、Embiid 23 → 18 名、Porter Jr. 20 → 40 名。',
-        '0.2.10a 補回 OVR 標準漏掉的聯盟第一：BPM 榜首原本被讀成空白而被排除（Jokić 7 → 3 名；Kawhi 3 → 6 名）。',
-        '0.2.10c 傳球改成所有位置共用同一個加分幅度：持球前鋒不再因傳球被多加分（Jalen Williams 9 → 12 名、Scottie Barnes 18 → 27 名；Austin Reaves 26 → 21 名）。',
-        '0.2.10d 三分、自主創造也改看近四季滑動窗口，3PT 欄、出賽分鐘預測同步（Sabonis 138 → 75 名、Tyus Jones 343 → 308 名；Jalen Williams 12 → 9 名；Franz Wagner 21 → 42 名）。',
-        '0.2.10e 頂端 OVR 拉開：明星不再擠在 85–93 之間，名次不變、99 以上不變（Maxey 85.5 → 92.0、Cade 88.3 → 93.4、Mitchell 93.2 → 96.0）。',
-        '0.2.10f 3PT 欄改用和窗口一致的比較基準，主力射手拉開一點（Curry 120.7 → 125.2、Lonzo Ball 76.7 → 77.8），OVR 與名次不變。',
-        # 0.2.10g：前 20 名進出 0、前 100 名移動 >=10 名 5 人，照 R-109 屬字母版
-        '0.2.10g 教練怎麼用人（上場強度、出賽率）也改看近四季滑動窗口，不再只看去年一季，常缺陣或角色起伏大的人更貼近實際（Mamukelashvili 88 → 117 名、Cam Spencer 96 → 126 名；Sengun 101 → 96 名），前 20 名不變。',
-        # 0.2.10h：前 20 名進出 0、前 100 名移動 >=10 名 1 人，照 R-109 屬字母版
-        '0.2.10h 賽中年齡加分（≤23 歲加分、≥31 歲扣分）改用開季當天的年齡、整季固定，不再因為季中過生日跳分（Porziņģis 23 → 37 名；Landale 278 → 257 名）。']),
-    # 版號 0.2.9a：前 20 名無進出、前 100 名移動 >=10 名 23 人，照 R-109（字母版門檻看前 100 名 <=25 人）屬字母版
-    (('card', 'inseason'), '0.2.9a', '2026-11-01', [
-        '耐力不再當成 OVR 的得分項：改成只在上場時間裡反映（Porziņģis 60 → 32 名、Jalen Williams 17 → 10 名；Edgecombe 101 → 150 名、Ayton 194 → 239 名）。']),
-    (('card', 'inseason'), '0.2.9', '2026-11-01', [
-        '拿掉「年輕人在爛隊打折」：換新標準後這個折扣反而失準（Flagg 195 → 79 名；靠球權的 Banchero 65 → 158 名）。']),
+        '8 項能力值改看近四季滑動窗口：中距離、近框、罰球、造犯規、傳球、籃板、少失誤、切入隨比賽更新，換季不再陡跳。｜Flagg 82 → 68 名、Embiid 23 → 18 名；Porter Jr. 20 → 40 名',
+        '修 BPM 漏讀榜首：補回聯盟第一（Jokić 7 → 3 名）。｜Kawhi 3 → 6 名',
+        '傳球加分不分位置：持球前鋒不再多加分（Jalen Williams 9 → 12 名）。｜Barnes 18 → 27 名；Reaves 26 → 21 名',
+        '三分、自主創造與上場分鐘也改看近四季窗口：Sabonis 138 → 75 名。｜Jalen Williams 12 → 9 名；Franz Wagner 21 → 42 名',
+        '拉開明星 OVR 差距：不再擠在 85–93，名次與 99 以上不變（Maxey 85.5 → 92.0）。｜Mitchell 93.2 → 96.0',
+        '3PT 欄改用窗口比較基準：主力射手差距拉開（Curry 120.7 → 125.2），OVR 不變。',
+        '教練用人與出賽率也改看近四季窗口：不再只看單季。｜Sengun 101 → 96 名；Mamukelashvili 88 → 117 名',
+        '賽中年齡固定看開季當天：不再因季中過生日跳分。｜Landale 278 → 257 名；Porziņģis 23 → 37 名']),
+    (('card',), '0.2.9', '2026-11-01', [
+        '拿掉「年輕人在爛隊打折」：換新標準後這個折扣反而失準（Flagg 195 → 79 名）。｜靠球權的 Banchero 65 → 158 名',
+        '拿掉耐力對 OVR 的重複加分：上場時間只算一次（Jalen Williams 17 → 10 名）。｜Porziņģis 60 → 32 名；Edgecombe 101 → 150 名']),
     (('card',), '0.2.8', '2026-11-01', [
         'OVR 改以 DARKO＋BPM 為準：取代 RAPM（Edwards 38 → 10 名）；防守型角色球員下修（Herb Jones 19 → 156 名）。']),
     (('card',), '0.2.7', '2026-10-30', [
-        '提高防守比重、越近的比賽份量越重：Wembanyama 3 → 2 名、White 8 → 4 名；Luka 4 → 9 名。',
-        '0.2.7a 傳球看量也看率：每 36 分鐘助攻與助攻率各半（Trae Young 104 → 110）。',
-        '0.2.7b 3PT、RIM、PRES 突破 99 上限：Curry 3PT 105、Thybulle PRES 127。',
-        '0.2.7c OVR 拿掉身高體重加分：只看場上表現（Zion 43 → 65 名、Mobley 28 → 23 名）。',
-        '~0.2.7d 爛隊年輕人折扣改看淨勝分：不再以勝率 35% 一刀切（Flagg 293 → 230 名；Rollins 15 → 106 名）。~']),
+        '提高防守比重、越近的比賽份量越重：White 8 → 4 名。｜Wembanyama 3 → 2 名；Luka 4 → 9 名',
+        '傳球看量也看率：每 36 分鐘助攻與助攻率各半。｜Trae Young 104 → 110',
+        '3PT、RIM、PRES 突破 99 上限：Curry 3PT 105。｜Thybulle PRES 127',
+        'OVR 拿掉身高體重加分：只看場上表現（Zion 43 → 65 名）。｜Mobley 28 → 23 名',
+        '~爛隊年輕人折扣改看淨勝分：不再以勝率 35% 一刀切。~｜Flagg 293 → 230 名；Rollins 15 → 106 名']),
     (('card',), '0.2.6', '2026-10-30', [
         '補籃、補扣改算近距離：不再墊高中距離（Kessler 中距離 99 → 61）。',
         '能力值改跨四季比較：偏弱的一季可以沒人到 99。',
@@ -146,11 +148,11 @@ def _now_facts(now_text, current):
     """從原本的長說明抽出幾個重點（使用者 2026-10-29：原文太長不適合人讀）；抽不到的欄位就不顯示。"""
     pick = lambda pat: (m.group(1) if (m := re.search(pat, now_text)) else None)
     if current == 'card':
-        facts = [('版本', pick(r'card (\d+\.\d+\.\d+\w*)')), ('資料', pick(r'（(\d{4}-\d{2}) 整季')),
+        facts = [('版本', pick(r'card (\d+\.\d+\.\d+)')), ('資料', pick(r'（(\d{4}-\d{2}) 整季')),
                  ('球員', pick(r'(\d+) 人'))]
     else:
         cutoff = pick(r'數據截至 (\d{4}-\d{2}-\d{2})')
-        facts = [('版本', pick(r'inseason (\d+\.\d+\.\d+\w*)')), ('開季起點', pick(r'開季起點 card (\d+\.\d+\.\d+\w*)')),
+        facts = [('版本', pick(r'inseason (\d+\.\d+\.\d+)')), ('開季起點', pick(r'開季起點 card (\d+\.\d+\.\d+)')),
                  ('數據截至', cutoff and cutoff[5:].replace('-', '/')), ('球員', pick(r'· (\d+) 人'))]
         if facts[1][1]:
             facts[1] = ('開季起點', '正式卡 ' + facts[1][1])
@@ -185,10 +187,15 @@ def _note_fmt(text):
 
 
 def _note_line(x):
+    x, _, more = x.partition('｜')   # ｜後面＝其餘名次變動，收進 hover 提示（使用者 2026-11-01）
     strike = x.startswith('~') and x.endswith('~')
     goal, sep, rest = (x.strip('~') if strike else x).partition('：')
     body = f'<b>{_note_fmt(goal)}</b>：{_note_fmt(rest)}' if sep else _note_fmt(goal)
-    return f'<li><s style="opacity:.55">{body}</s></li>' if strike else f'<li>{body}</li>'
+    if strike:
+        body = f'<s style="opacity:.55">{body}</s>'
+    if more:
+        body += f'<span class="pn-more" tabindex="0" aria-label="其他名次變動">⋯<span class="pn-tip" role="tooltip">{_note_fmt(more)}</span></span>'
+    return f'<li>{body}</li>'
 
 
 def patch_notes_html(now_text, current):
@@ -207,7 +214,7 @@ def patch_notes_html(now_text, current):
             '<h2>Patch <span>Notes</span></h2>'
             f'<div class="pn-now"><b>目前版本</b>{_now_facts(now_text, current)}</div>'
             f'<ol class="pn-list">{"".join(items)}</ol>'
-            '<p class="pn-foot">版號後面的字母（例如 0.2.1e）代表只更新比賽資料，模型沒動。2026 與 2027 兩頁用同一個版號。</p></div></details>'
+            '<p class="pn-foot">2026 與 2027 兩頁共用同一套模型與版號。</p></div></details>'
             # 點面板外或按 Esc 關掉
             "<script>(()=>{const d=document.querySelector('.pnote');"
             "document.addEventListener('click',e=>{if(d.open&&!d.contains(e.target))d.open=false});"
