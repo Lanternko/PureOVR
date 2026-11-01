@@ -1239,3 +1239,10 @@
 - 證據：`reports/F136-fit-side/{report.md,results.json}`（sha 4ecb1324…dda2）；lead 補核指令見 E-195。
 - 狀態：成立（樣本內、L-091）
 - 相關：E-195、E-194、F-136、F-133、F-109、F-118、F-119、L-112、R-130
+
+### F-139
+- 日期：2026-11-02
+- 事實：NBA.com Gravity（2025-26 整季，GP≥55）的「強度」解釋不了接球射手被卡片低估。card 0.2.10g 對 T6 的低估量（MIN≥500、222 人）與平均引力 ρ −0.21、無球外線平均引力 ρ −0.23（引力高的人卡片本來就給多）；接球射手（long≥75、creation≤60，27 人）組內兩者 ρ 皆約 0。唯一有訊號的是「無球外線幀數佔比」（角色有多純粹無球）：射手組內 ρ +0.46（p 0.017，5 個特徵中挑出、未校正多重比較），全體 ρ +0.04。例：Klay 無球外線引力 97 百分位、低估 +2.78；Robinson 93 百分位、低估 −0.29；Hauser 67 百分位、低估 +1.88。
+- 限制：樣本內（卡片照 T6 擬合，R-007）；只有 2025-26 一季；Curry、Cam Johnson、Hield、MPJ 等不足 55 場者沒資料。2026-27 資料已抓（288 人），季末可用本季 RAPM 做樣本外。
+- 證據：`reports/F126-shot-difficulty/gravity-split/`（fetch_gravity_split.mjs、diag_offball.py、diag_offball.json）
+- 相關：E-196、E-181、F-119、R-133、F-126
