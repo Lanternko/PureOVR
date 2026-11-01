@@ -1841,3 +1841,29 @@
 - 已揭露：E-179、E-180（K0h S_all(pass) 已看過）、F-118；只看過 JW、Jokić、Haliburton、LeBron 的 AST/PASS 原始值。
 - 狀態：已凍結（2026-11-01，使用者「核可凍結」；sha 見 preregistration.sha256）。
 - 狀態：完成，不採用（2026-11-01）。Q 的 S_all(pass, e_net) 只改善 +0.023 [−0.006, +0.048]，下界不 > 0，① 不過（② 整體不變差、2a 全過），Q 不是候選；報告 `reports/E183-pass-conversion/report.md`。
+
+### E-184
+- 日期：2026-11-01
+- 假設：進攻方造犯規倍率 (FTA/FGA)/區域平均 重複計入出手區域，造罰球個人差距被放大；加指數 a<1 收回後，開著犯規 k=2 的 30 隊淨分差 MAE 回到 0.1.2 的 +0.1 以內，側翼少低估仍 ≥10 名。lead 預期 g1 過約五成。
+- 做法：`reports/sim-0.1.2+E184-ftdraw-refit/preregistration.md`（草稿）。a 只用球員自己的輸入 FTA/FGA 校正（模擬對輸入斜率＝1），再照 E-140 重解 c、pace；判定新 seed 20261200–231。
+- 已揭露：E-166 全部、F-123 事後拆解（判定 seed 20261028–059 的球隊分項）。
+- 狀態：已凍結（2026-11-01，使用者「凍結執行」；sha256 見 `preregistration.sha256`），執行中
+- 相關：R-115、F-123、E-166、E-140、L-026
+- 來源：使用者 2026-11-01「造罰球散布」
+
+### E-185
+- 日期：2026-11-01
+- 假設：不是假設檢定（R-118 直接上線）。把 long、creation、threeValue、MPG 換成四季窗口，card／inseason 0.2.11 PATCH。
+- 做法：long、creation 照 `reports/E175-sliding-window-card/stage1-methods.md` §2 已寫好的 U 版；MPG 的窗口長度只在 2024-25 選、2025-26 報告；係數／錨全凍結 0.2.9a。報告 `reports/card-0.2.11/report.md`。
+- 狀態：派工實作中
+- 相關：R-118、R-111、R-114、E-175
+- 來源：使用者 2026-11-01「開始 sliding windows」
+
+### E-186
+- 日期：2026-11-01
+- 假設：卡片迴歸目標從 T6（DARKO＋BPM）改成 T6R＝0.5·T6＋0.5·四季合併 RAPM（z 混合），JW 與「creation 高的前鋒」偏高縮小（F-117），整體不弄壞。
+- 做法：`reports/card-0.2.10+E186-t6-rapm-target/preregistration.md`（sha 4528c722…a61c）。臂 K6（現行）／KR；w 固定 0.5 不掃描。硬條件：a1 JW 2025-26 名次 ≥16、a2 三原點 S_F(creation,e_net) 改善下界 >0、b 重現＋npm test＋C 不退超過 2 倍雜訊；其餘只報告。
+- 已揭露：F-113／F-117／F-118／F-125、E-153 結果、JW 各量尺名次；沒看過任何 T6R 卡。
+- 狀態：已凍結（2026-11-01，lead 依使用者 /goal 重開額度凍結，R-117 第 5 條）；派 role-card 執行
+- 相關：F-125、F-117、F-118、E-153、E-142、R-117、R-042
+- 來源：使用者 2026-11-01 `/goal 解決jalen williams被高估的問題`
