@@ -187,6 +187,7 @@ def main():
         ptips, n_pres = pres_tips_live(live / 'pres-drive.json', pool) if pd_live else pres_tips({r['name'] for r in rows if r['playerId'] in pool})   # 否則：2025-26 五分量（凍結）
     # TO 提示卡：2026-27 至今的失誤、球權、失誤率
     trows, n_tov = sn.tov_rows(SRC26, 'PLAYER_ID', ipool)
+    hrows = sn.three_rows(SRC26, 'PLAYER_ID', ipool)   # 3PT 提示卡：本季至今三分命中率、出手量
     orows, ob_note = onball_live(rows, ipool)
     base = BASE.read_text(encoding='utf-8')
     old = json.loads(re.search(r'const DATA=(\{.*?\});\nconst COLS', base, re.S).group(1))
@@ -221,6 +222,9 @@ def main():
                 t['pressure'] = (sn.cell_tip('壓迫', 'PRES', round(float(r['pressure'])), [], d='新秀：沒有 2025-26 的壓迫分量')
                                  if r['presDisplay'] == '' or r['name'] not in ptips else
                                  pres_tip(float(r['presDisplay']), float(r['pressure']), ptips[r['name']], n_pres, '（只看 2025-26 賽季數據）', r['playerId'] in pool))
+        hr = hrows.get(int(r['playerId']))
+        if hr:
+            t['threeValue'] = sn.three_tip(float(r['threeValue'] or r['long']), hr, '2026-27 至今', r['playerId'] in pool)
         tr = trows.get(int(r['playerId']))
         if tr:
             t['tovSkill'] = tov_tip(float(r['tovSkill']), tr, n_tov, '2026-27 至今', r['playerId'] in pool)

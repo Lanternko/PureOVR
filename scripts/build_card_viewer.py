@@ -117,6 +117,7 @@ def main(out=None):
     ptips, n_pres = pres_tips(pool)
     g_pool = [gr[n][0] for n in pool if n in gr and not gr[n][1]]   # GRV 提示卡 PR／名次：有 NBA.com 資料、場均夠的人
     trows, n_tov = sn.tov_rows(er.SRC, 'PLAYER_NAME', pool)
+    hrows = sn.three_rows(er.SRC, 'PLAYER_NAME', pool)   # 3PT 提示卡：2025-26 三分命中率、出手量
     oc_ = list(csv.DictReader(ONBALL.open(encoding='utf-8')))
     orows = onball_rows({r['name']: (float(r['C3']), float(r['B']), float(r['T'])) for r in oc_ if '' not in (r['C3'], r['B'], r['T'])}, pool)
     # DIQ 顯示負分：card 0.2.10i 的 defenseBonus（同 0.2.7b） 用 def-L-primary，posMeanD 從同一批人算（max(0, ·) 逐人核對）
@@ -141,6 +142,7 @@ def main(out=None):
                           num('predictedPer36'), dcen[r['name']], three, *[num(a) for a in cols[11:24]],
                           num('presDisplay'), num('pressure'), num('foulDisc'),
                           {**({'pressure': pres_tip(num('presDisplay'), num('pressure'), ptips[r['name']], n_pres, inpool=r['name'] in pool)} if r['name'] in ptips else {}),
+                           **({'threeValue': sn.three_tip(three, hrows[r['name']], '2025-26', r['name'] in pool)} if r['name'] in hrows else {}),
                            **({'tovSkill': tov_tip(num('tovSkill'), trows[r['name']], n_tov, inpool=r['name'] in pool)} if r['name'] in trows else {}),
                            **({'onBall': onball_tip(num('onBall'), orows[r['name']], inpool=r['name'] in pool)} if r['name'] in orows else {}),
                            'gravity': sn.gravity_tip(num('gravity'), gr[r['name']][0], 'ols' if gr[r['name']][1] else 'api', g_pool, r['name'] in pool, '（2025-26）')},

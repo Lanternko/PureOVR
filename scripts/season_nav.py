@@ -497,6 +497,40 @@ def tov_rows(src, key, pool):
     return out, len(pool)
 
 
+THREE_MIN_3PA36 = 2.0   # 命中率 PR／名次只比 per36 出手 ≥ 2 的人（投 3 中 2 不排第一）
+
+
+def three_rows(src, key, pool):
+    """{key: 3PT 提示細項}：三分進球-出手、命中率、出手量（/36、/場），player-games.json 加總。
+    出手量 PR／名次對 pool；命中率只對 pool 裡 per36 出手 ≥ THREE_MIN_3PA36 的人。"""
+    rs = json.loads(Path(src).read_text(encoding='utf-8'))['data']['resultSets'][0]
+    h = {k: i for i, k in enumerate(rs['headers'])}
+    tot = {}
+    for r in rs['rowSet']:
+        t = tot.setdefault(r[h[key]], [0, 0, 0, 0])
+        for i, c in enumerate(('MIN', 'FG3M', 'FG3A')):
+            t[i] += r[h[c]] or 0
+        t[3] += 1
+    st = {k: (m / a if a else None, 36 * a / mn, gp, m, a, k in pool) for k, (mn, m, a, gp) in tot.items() if mn > 0}
+    vol = [v[1] for v in st.values() if v[5]]
+    acc = [v[0] for v in st.values() if v[5] and v[0] is not None and v[1] >= THREE_MIN_3PA36]
+    out = {}
+    for k, (pct, p36, gp, m, a, inpool) in st.items():
+        pr_v, rk_v = pr_rank(p36, vol)
+        ok = pct is not None and p36 >= THREE_MIN_3PA36
+        pr_a, rk_a = pr_rank(pct, acc) if ok else (None, None)
+        out[k] = [('命中率', f'{100 * pct:.1f}%' if pct is not None else '—', pr_a, rk_a if inpool else None),
+                  ('出手量', f'{p36:.1f}/36', pr_v, rk_v if inpool else None),
+                  ('場均進球-出手', f'{m / gp:.1f}-{a / gp:.1f}', None, None),
+                  ('合計', f'{m}-{a}', None, None)]
+    return out
+
+
+def three_tip(v, sub, season, inpool=True):
+    foot = [f'命中率名次只比每 36 分鐘出手 ≥ {THREE_MIN_3PA36:g} 的人'] + ([] if inpool else [NO_RANK_FOOT])
+    return cell_tip('三分', '3PT', round(v), sub, d=f'{season} 三分球的<b>命中率與出手量</b>', foot=foot)
+
+
 def apply_cell_tips(s):
     """格子改用浮動提示卡：p.tips 有該欄就帶 data-ck、不帶 title（要在 apply_common 之後套）。"""
     for a, b in [
