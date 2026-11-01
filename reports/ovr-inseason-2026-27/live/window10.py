@@ -15,6 +15,7 @@ from pathlib import Path
 import numpy as np
 
 import window8 as W8
+import split_dc as SD   # 0.2.10i：SPLIT_DC=1 時 creation 改 creationJ（crJ 表）；0 時完全走舊路徑
 
 L, C = W8.L, W8.C
 ROOT, HERE = W8.ROOT, W8.HERE
@@ -71,8 +72,13 @@ def season_tabs(D, s):
     rows = [r for r in rows if r['MIN'] and r['GAME_ID'] in gi_of]
     sel = [r for r in rows if r['PLAYER_ID'] in D.pidx]
     f = lambda k: [_num(r, k) for r in sel]
-    return make_tabs(D.NP, [gi_of[r['GAME_ID']] for r in sel], [D.pidx[r['PLAYER_ID']] for r in sel], f('MIN'), f('FG3M'), f('FG3A'), f('FGA'),
-                     D.G[s], [gi_of[r['GAME_ID']] for r in rows], [_num(r, 'FG3M') for r in rows], [_num(r, 'FG3A') for r in rows])
+    t = make_tabs(D.NP, [gi_of[r['GAME_ID']] for r in sel], [D.pidx[r['PLAYER_ID']] for r in sel], f('MIN'), f('FG3M'), f('FG3A'), f('FGA'),
+                  D.G[s], [gi_of[r['GAME_ID']] for r in rows], [_num(r, 'FG3M') for r in rows], [_num(r, 'FG3A') for r in rows])
+    if SD.ON and s in SD.CRJ_SEASONS:   # creationJ：(J 類加權分子, MIN)
+        n = SD.crj_hist(s)[0]
+        t['crJ'] = L.Tab([gi_of[r['GAME_ID']] for r in sel], [D.pidx[r['PLAYER_ID']] for r in sel],
+                         [n.get((r['GAME_ID'], int(r['PLAYER_ID'])), 0.0) for r in sel], f('MIN'), D.NP)
+    return t
 
 
 def lg_total(tabs):
@@ -118,6 +124,17 @@ class Win10(W8.Win8):
         f = lambda k: [_num(r, k) for r in sel]
         t.update(make_tabs(D.NP, [gi_of[r['GAME_ID']] for r in sel], [D.pidx[r['PLAYER_ID']] for r in sel], f('MIN'), f('FG3M'), f('FG3A'), f('FGA'),
                            max(gd, 1), [gi_of[r['GAME_ID']] for r in rows], [_num(r, 'FG3M') for r in rows], [_num(r, 'FG3A') for r in rows]))
+        if SD.ON:   # creationJ 本季：pbp 現算，失手權重用 2025-26 的 J 類 pu；沒有 pbp 的場分子 0、分鐘照算（同 drive 以外各項的分鐘）
+            pu = SD.crj_hist(PRIOR)[1]
+            cj = {}
+            for g in gids:
+                f_ = self.data26 / 'pbp' / f'{g}.json'
+                if f_.exists():
+                    for pid, v in SD.crj_game(f_, pu).items():
+                        cj[(g, int(pid))] = v
+            self.crj_cur = cj          # {(gid, pid): 分子}（全部球員；新秀 creation 用）
+            t['crJ'] = L.Tab([gi_of[r['GAME_ID']] for r in sel], [D.pidx[r['PLAYER_ID']] for r in sel],
+                             [cj.get((r['GAME_ID'], int(r['PLAYER_ID'])), 0.0) for r in sel], f('MIN'), D.NP)
         return t, gd
 
     def season_cur(self, s):
@@ -183,6 +200,9 @@ class Win10(W8.Win8):
         return L.shrink_to(n, d, self.lg_rate(g, cur, S), K_LONG)
 
     def _creation_r(self, g, cur, G, S):
+        if SD.ON:   # creationJ：窗口 J 類加權分子／窗口分鐘×36（不乘 1−dep）
+            n, d = (x[self.ix] for x in self.sums10('crJ', g, cur, G, S))
+            return n / np.maximum(d, 1.0) * 36
         n, d = (x[self.ix] for x in self.sums10('cr', g, cur, G, S))
         return (1 - self.dep) * n / np.maximum(d, 1.0) * 36
 
@@ -193,7 +213,7 @@ class Win10(W8.Win8):
         self.long_map = L.CurveMapper(self.curve3, list(p[self.min500_i]) + self._past('long', 'min500'), top, bot)
         r = self._creation_r(G, cur, G, PRIOR)
         top, bot = self._flags('creation')
-        self.creation_map = L.PctMapper(list(r[self.pool_i]) + self._past('creation', 'pool'), top, bot)
+        self.creation_map = L.PctMapper(list(r[self.pool_i]) + self._past('creationJ' if SD.ON else 'creation', 'pool'), top, bot)
         self.end = {'long': self.long_map(p), 'creation': self.creation_map(r)}   # 2025-26 季末（c=82）窗口值，卡片端用
 
     def extra_at(self, g, tabs, S=TARGET, G=G_TOTAL):

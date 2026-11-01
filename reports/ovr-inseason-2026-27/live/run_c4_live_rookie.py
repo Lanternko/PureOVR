@@ -6,6 +6,7 @@
 也供 backtest.py 匯入：load_ns() 回傳已 exec 的命名空間（不執行 main）。
 """
 import copy
+import os
 import csv
 import json
 import sys
@@ -20,7 +21,7 @@ import pres_drive as PD  # noqa: E402（2026-11-01 壓迫／切入賽中解凍�
 
 HERE = Path(__file__).resolve().parent
 ORIG = HERE / 'run_c4_live.py'
-ROOKIE_JSON = HERE / 'rookie-prior-2026.json'
+ROOKIE_JSON = HERE / ('rookie-prior-2026.json' if os.environ.get('SPLIT_DC', '1') != '0' else '_retired/rookie-prior-2026-0210h.json')  # 0.2.10i 換版後重解 δ（L-109）；SPLIT_DC=0 重現 0.2.10h 用當時的 δ
 G_GAMES = 82
 DPOS = {'G': 'SG', 'F': 'SF', 'C': 'C'}          # D5：G／F／C → 設計矩陣用的 SG／SF／C（回測與上線同一張表）
 SKIP = ('pressure', 'drive')                     # live 凍結的兩項（同老將）

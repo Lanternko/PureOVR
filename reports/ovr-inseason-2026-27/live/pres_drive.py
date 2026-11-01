@@ -39,6 +39,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 sys.path.insert(0, str(HERE))
 import rookie_defense as RD  # noqa: E402
+import split_dc as SD  # noqa: E402（0.2.10i：SPLIT_DC=1 時 drive 換 D 類候選、合併池換 D 類池值；0 時不動）
 
 ON = os.environ.get('UNFREEZE_PD', '1') != '0'
 SEASON = '2026-27'
@@ -229,7 +230,7 @@ def p_window(parts):
 
 # ------------------------------------------------------------------ drive
 def _gz(path):
-    with gzip.open(path, 'rb') as fh:
+    with gzip.open(SD.drive_path(path), 'rb') as fh:
         return list(csv.DictReader(io.TextIOWrapper(fh, encoding='utf-8')))
 
 
@@ -251,7 +252,7 @@ def _cur_drive_shots():
         sys.path.remove(str(V61))
     shots, gids = [], set()
     for p in sorted((CUR / 'pbp').glob('*.json')):
-        gid, _, drive = XP.parse_game((p.stem, p))
+        gid, _, drive = (SD.parse_drive if SD.ON else XP.parse_game)((p.stem, p))
         gids.add(gid)
         shots += [{'gid': gid, 'pid': int(a), 'made': m, 'assisted': ast, 'ftmade': ft, 'cls': cls} for a, m, ast, ft, cls in drive]
     return shots, gids
@@ -351,11 +352,12 @@ def d_frozen():
     stats = (vol[inpool].mean(), vol[inpool].std(), eff[inpool].mean(), eff[inpool].std())
     # E-101 合併池：2025-26 卡片池＋2022-23～2024-25（GP41≥15 且 MPG41≥20）；尾巴開關照 E-090 h1（E-101 的 H1＝{**E090, **E101}）
     raw = json.load(open(E090 / 'work/a0-raw.json', encoding='utf-8'))['drive']
-    vals = list(raw['pool'])
+    pdD = SD.pool_drive_D() if SD.ON else None
+    vals = list(pdD['D_pool2526'] if SD.ON else raw['pool'])
     for s in ('2022-23', '2023-24', '2024-25'):
         sd_ = json.load(open(E101 / 'pool' / f'raw-{s}.json', encoding='utf-8'))
         info = sd_['poolInfo']
-        for k, v in sd_['attrs']['drive'].items():
+        for k, v in (pdD['D'][s] if SD.ON else sd_['attrs']['drive']).items():
             q = info.get(k)
             if q is not None and q['GP41'] > 0 and q['GP41'] >= POOL41[0] and q['MIN41'] / q['GP41'] >= POOL41[1]:
                 vals.append(v)

@@ -17,6 +17,9 @@ sys.path.insert(0, str(E175))
 sys.path.insert(0, str(V61))
 import e175_lib as L  # noqa: E402
 import e175_card as C  # noqa: E402
+sys.path.insert(0, str(HERE))
+import split_dc as SD  # noqa: E402（0.2.10i：SPLIT_DC=1 時 drive 換 D 類、過去季池值換 D／加 creationJ；0 時不動）
+SD.patch_e175(L, C)
 
 TARGET, PRIOR = '2026-27', '2025-26'
 DATA26 = ROOT / 'data/defense-seventh/2026-27'
@@ -145,7 +148,7 @@ class Win8:
             if not f.exists():
                 continue
             npbp += 1
-            _, _, drive = X.parse_game((g, f))
+            _, _, drive = (SD.parse_drive if SD.ON else X.parse_game)((g, f))
             zones, n2 = game_zones(json.loads(f.read_text(encoding='utf-8'))['data']['game']['actions'])
             n2all += n2
             nzoned += sum(v[0] + v[2] for v in zones.values())

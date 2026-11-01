@@ -1977,3 +1977,12 @@
 - 狀態：完成（2026-11-01）：G 與 0.2.10g 逐位元組相同。S（只共用三分）樣本外無效也沒壞。SP 樣本外無球組低估三季平均 +5.2→+4.5 百分位點（縮小 0.7，區間不含 0），ρ .394→.398 沒壞；但產量自由擬合係數只有 creation 的 40–54%，下限三張部件卡（歷史 9/9）全觸發。樣本內接球射手殘差 +22→+19 名、Klay 329→304、高量低效沒被抬；前 100 動≥10 名 15 人（DeRozan 68→98）。數字 `results.json`；待 lead 裁定。
 - 相關：R-133、E-181、E-187、F-119、R-131
 - 來源：使用者 2026-11-01「兩步都做」
+
+### E-197
+- 日期：2026-11-01
+- 假設：切入／自主拆開（R-130、R-132）：drive→drive_D（帶 driving 描述的 10 呎內自主兩分，量 0.5＋效率 0.5）、creation→creationJ（自主跳投＋低位，不含切入上籃、補籃、空切；E-190 errata-1），兩欄走四季滑動窗口、卡片全部係數重擬合後，前段名次幾乎不動、Zion 類「切入重複算進自主」的人 creation 下修。
+- 做法：card／inseason 0.2.10i（直接上線，不做預註冊回測，R-130）。卡片端 `reports/card-0.2.10i/`（drive_pool_D.py→make_tail_0210i.py→run_i.py→build_0210i.py）；賽中端開關集中在 `live/split_dc.py`（window8／window10 crJ／pres_drive D 類），`run_c4_live.py` `SPLIT_DC=0` 重現 0.2.10h（usage／prior／新秀 δ 讀 `_retired/`）；用人層、先驗、錨點重取；build_2k_start 重解 δ（L-109）；自檢 `live/check_inseason_0210i.py`。
+- 結果：c0（SPLIT_DC=0）卡片 ranking／three-value／rapm-T6 與 0.2.10g、賽中 ranking.csv 與 HEAD 版程式（0.2.10h）逐位元組相同。卡片端 MIN≥500 前 20 名進出 0、前 100 名移動 ≥10 名 7 人（R-109 字母版）：Cameron Johnson 58→43、Bridges 53→41、Reed 93→79、Sengun 91→81、Tre Jones 39→49、Dosunmu 69→94、Avdija 97→107；Zion creation 86.8→63.4、Luka 104.6→113.1、Jokić drive 91.3→84.5。賽中端前 20 名進出 0、前 100 名移動 ≥10 名 7 人。新卡 creation 對 E-190 KJ 相關 0.953（E-190 是單季池、GP≥30／MPG≥20、聯盟 JSON 分鐘；本版四季窗口、player-games 分鐘）、drive 對 drive_D_U 0.9993（本版 past pool 用 D 類重算）。`reports/card-0.2.10i/progress.md`、`cmp.json`
+- 狀態：已完成（2026-11-01），已上線（R-132）。
+- 相關：R-130、R-132、E-190、E-194、E-195、F-138、R-109、L-109
+- 來源：使用者派工 2026-11-01
