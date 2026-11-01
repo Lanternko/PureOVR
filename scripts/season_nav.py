@@ -97,7 +97,7 @@ CSS = """<style>
 # 更新說明（Patch Notes）撰寫要旨（使用者 2026-10-29～11-01）：
 # - 每版一格，新的在上；字母小版本一律併入該基底版本的條目清單下面，不單獨開卡，也不寫版號與字母前綴（不寫 0.2.10a、0.2.7a 等，R-064）。
 # - 只寫公式改動：最新那格用 ('card', 'inseason') 標示「目前」（舊格只留 ('card',)），不另開一格、不寫「已跟上／沒跟上」；只更新比賽資料、網頁 UI、欄位顯示都不寫（R-063）。
-# - 不顯示「正式卡／新賽季」標籤：兩頁已是同一條四季窗口管線、同一個版號（R-111，使用者 2026-11-01「先拿掉標籤」）。
+# - 不顯示「正式卡／新賽季」標籤：兩頁已是同一條滑動窗口管線（0.2.12b 起約三季）、同一個版號（R-111，使用者 2026-11-01「先拿掉標籤」）。
 # - 用字精簡、只留重點：每條寫成「目標：改法（代表球員名次或數值變化）」（冒號前加粗），用球迷看得懂的話，不寫 E／R 編號、不寫「OVR 前 20 名換幾人」等流水帳；代價直接併入括號或分號後一句帶過，不另起一行「代價：」。
 # - 名次變動主文只留 0～2 個代表（開這個議題的起因球員優先，例如 Jokić、Jalen Williams；窗口類這種全面小調整給 0 個），完整名單寫在「｜」後面收進 ⋯ hover，每人一列「球員/名次（或數值變化）/OVR 前 → 後」、以「；」分隔，主文提到的人也列進去（使用者 2026-11-01）。
 # - 同一件事分好幾步做的（例如分批改成滑動窗口），合成一條寫，⋯ 名單也合併（使用者 2026-11-02）。
@@ -107,7 +107,9 @@ PATCH_NOTES = [
     # 版號 0.2.11：照 R-109 前 20 名進出 1 人、前 100 名移動 >=10 名 11 人原屬字母版（0.2.10j），使用者 2026-11-02「引進了一個有趣的新能力值。把它升級為patch」（R-137）
     # 0.2.12a（賽中端字母版，使用者 2026-11-02「現在就上 0.2.11a」，因 0.2.12 同時上線改疊在 0.2.12）：gravity 補值依分鐘往進攻 EPM 收縮，併入 0.2.12 格（R-064）
     # 版號 0.2.12：照 R-109 前 20 名進出 4 人、前 100 名移動 >=10 名 34 人原屬字母版，使用者 2026-11-02「直接採用」E-202 KT 臂（R-139）
+    # 0.2.12b（使用者 2026-11-02「Adopt W246」，R-140，E-204）：窗口 328→246 格，係數不重擬合，併入 0.2.12 格（R-064）
     (('card', 'inseason'), '0.2.12', '2026-11-02', [
+        '新賽季反應加快：能力值窗口由四季改為約三季，本季比賽權重加大、舊資料更快淡出。｜Jokić/2 → 2/103.2 → 102.6；Paul George/20 → 24/92.0 → 90.3；Jimmy Butler III/21 → 20/92.0 → 92.0；Tyrese Maxey/35 → 31/88.4 → 89.4；Immanuel Quickley/57 → 87/82.9 → 79.5；Josh Hart/82 → 66/79.7 → 81.5',
         'TO 改成看持球時間：持球多又少丟球才高分（Brunson 42 → 1 名、Hauser 1 → 277 名）；不太拿球的空間射手與長人 TO 大降（Kornet 23 → 367 名）。｜Brunson/27 → 31/90.7 → 89.3；Cade/11 → 13/93.4 → 93.7；Harden/159 → 137/73.7 → 75.8；Luka/4 → 3/101.7 → 101.6；Jokić/2 → 2/105.7 → 103.2；Hauser/160 → 169/73.6 → 73.2；Hardaway Jr./317 → 341/60.8 → 58.4；Kornet/62 → 99/82.5 → 77.9；Jarrett Allen/44 → 54/86.4 → 83.6',
         '新秀引力不再看幾分鐘的出手：本季沒有引力數據的人，上場越少越參考進攻影響力（Joshua Jefferson 248 → 404 名）。｜Joshua Jefferson/248 → 404/65.4 → 51.4；Ja’Kobi Gillespie/300 → 445/59.9 → 48.8；AJ Dybantsa/52 → 78/83.1 → 79.9；Dejounte Murray/78 → 98/80.0 → 78.3；Javon Small/92 → 123/78.7 → 76.4；Ivica Zubac/95 → 80/78.6 → 79.8']),
     (('card',), '0.2.11', '2026-11-02', [
@@ -246,7 +248,7 @@ def add_season_nav(html_str, current):
     assert current in ('inseason', 'card'), current
     links = ''.join(f'<a href="{href}"' + (' aria-current="page"' if key == current else '') + f'>{label}</a>'
                     for key, label, href in PAGES)
-    note = ''   # 0.2.10g（使用者 2026-11-01）：新賽季頁用人層也改四季窗口，與 2025-26 頁同演算法，拿掉「開季樣本少」提示
+    note = ''   # 0.2.10g（使用者 2026-11-01）：新賽季頁用人層也改四季窗口（0.2.12b 起約三季），與 2025-26 頁同演算法，拿掉「開季樣本少」提示
     # 手機寬度把 #modeSeg 從控制列搬進 .sright，桌機搬回搜尋欄前面
     mover = ("<script>addEventListener('DOMContentLoaded',()=>{const m=document.getElementById('modeSeg'),"
              "r=document.querySelector('.sright'),q=document.getElementById('q'),mq=matchMedia('(max-width:640px)');"
@@ -780,7 +782,7 @@ def apply_common(s):
 # 籃板、身高兩邊都不算（約佔 OVR 差異一成三）。OVR 還有用人層（分鐘、出賽率），所以兩分相加不等於 OVR。
 # 進攻再混進影響力（使用者 2026-11-01，同 OVR align 的比例）：T6（DARKO＋BPM）pooledPoss ≥ 5000 的人
 # 進攻＝0.75×能力值進攻＋0.25×（0.75×pooledO 減同一群 MIN ≥ 500 的平均）；不夠回合的人只用能力值。
-OD_CARD = Path(__file__).resolve().parents[1] / 'reports/card-0.2.12-tov/ranking.csv'  # 0.2.12：tovSkill 改看持球時間，全部係數重擬合；0.2.10j：加 gravity（無球外線引力），全部係數重擬合；0.2.10i：drive→drive_D、creation→creationJ（OFF 提示貢獻欄跟著換）
+OD_CARD = Path(__file__).resolve().parents[1] / 'reports/card-0.2.12b/ranking.csv'  # 0.2.12b：窗口 328→246 格；0.2.12：tovSkill 改看持球時間，全部係數重擬合；0.2.10j：加 gravity（無球外線引力），全部係數重擬合；0.2.10i：drive→drive_D、creation→creationJ（OFF 提示貢獻欄跟著換）
 OD_OFF = ['long', 'mid', 'short', 'ft', 'drive', 'gravity', 'foulDraw', 'tovSkill', 'pass', 'creation']   # gravity：0.2.10j（每 10 點約 +0.19 per36）
 OD_DEF = ['onBall', 'help', 'pressure']
 OD_ALL = OD_OFF + OD_DEF + ['rebound', 'heightInches']
