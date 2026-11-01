@@ -304,10 +304,10 @@ th.noh{cursor:default}
 .pn-more:hover .pn-tip,.pn-more:focus .pn-tip{display:grid}
 .pn-foot{margin:12px 0 0;color:var(--muted);font-size:.72rem;line-height:1.5}
 .legend{align-items:baseline}
-.ovr-t{display:inline-flex;align-items:center;gap:5px;background:none;border:0;padding:0;color:var(--muted);font:inherit;cursor:pointer;text-align:left}
+.ovr-t{display:inline;background:none;border:0;padding:0;color:var(--muted);font:inherit;cursor:pointer;text-align:left}
 .ovr-t b{color:var(--fg);font-weight:600}
 .ovr-t:hover,.ovr-t[aria-expanded="true"]{color:var(--fg)}
-.ovr-t i{display:inline-block;font-style:normal;font-size:.72em;transition:transform .15s}
+.ovr-t i{display:inline-block;margin-left:4px;font-style:normal;font-size:.72em;transition:transform .15s}
 .ovr-t[aria-expanded="true"] i{transform:rotate(180deg);color:var(--gold)}
 .ovr-how{flex-basis:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px 16px;margin-top:4px;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-radius:4px;color:var(--muted);font-size:.78rem;line-height:1.55}
 .ovr-how[hidden]{display:none}
@@ -340,8 +340,8 @@ th.noh{cursor:default}
   </div>
   <div class="legend">
     <span>等第：<b class="gA">A</b> ≥82 · <b class="gB">B</b> ≥68 · <b class="gC">C</b> ≥56 · <b class="gD">D</b> ≥44 · <b class="gF">F</b> &lt;44</span>
-    <button type="button" class="ovr-t" aria-expanded="false" onclick="const b=this.nextElementSibling,o=b.hidden;b.hidden=!o;this.setAttribute('aria-expanded',o)">OVR：由<b>傳統數據 ＋ 防守影響力 ＋ 上場時間</b>算出每場比賽影響力 <i>▼</i></button>
-    <div class="ovr-how" hidden><div><span class="oh-t">1. 傳統與對位數據（13 項能力）</span>結合傳統 Box Score（得分、籃板、助攻、抄阻、失誤）、逐球紀錄（<b>自己創造</b> vs 被餵球、切入）與官方對位追蹤（外線干擾三分、對位主將球權、籃下護框降命中率、干擾傳球），換算成 0–99 的單項能力。</div><div><span class="oh-t">2. 防守影響力（DIQ 防守意識）</span>用多年加權的<b>防守 RAPM</b>（在場正負值扣除隊友與對手強弱）比同位置平均高多少，補上傳統數據抓不到的無球輪轉、站位與協防。</div><div><span class="oh-t">3. 上場時間與教練用人</span>結合<b>場均分鐘</b>與<b>出賽率</b>（區分輪休與被冷凍 DNP）。同效率下，能扛越多上場時間的人單場價值越高（邊際遞減）。</div><div><span class="oh-t">4. 怎麼合成 OVR（與 EPM 的關係）</span>不直接拿單一進階數據當 OVR，而是把上述三塊合成、權重對齊進階指標 <b>DARKO＋BPM</b>，衡量「每場能幫球隊多贏幾分」。球員卡右側的 <b>RAPM／EPM</b> 是獨立列出來對照的實際場上影響力；2027 頁以 2026 卡為底（新秀看順位），隨本季表現逐場更新。</div></div>
+    <button type="button" class="ovr-t" aria-expanded="false" onclick="const b=this.nextElementSibling,o=b.hidden;b.hidden=!o;this.setAttribute('aria-expanded',o)">OVR：<b>13 項能力值 ＋ 防守意識 ＋ 上場時間</b>合成的每場影響力<i>▼</i></button>
+    <div class="ovr-how" hidden><div><span class="oh-t">1. 13 項能力值</span>結合傳統 Box Score（得分、籃板、助攻、抄阻、失誤）、逐球紀錄（<b>自己創造</b> vs 被餵球、切入）與官方對位追蹤（外線干擾三分、對位主將球權、籃下護框降命中率、干擾傳球），換算成 0–99 的單項能力。</div><div><span class="oh-t">2. 防守影響力（DIQ 防守意識）</span>用多年加權的<b>防守 RAPM</b>（在場正負值扣除隊友與對手強弱）比同位置平均高多少，補上能力值抓不到的無球輪轉、站位與協防。</div><div><span class="oh-t">3. 上場時間與教練用人</span>結合<b>場均分鐘</b>與<b>出賽率</b>（區分輪休與被冷凍 DNP）。同效率下，能扛越多上場時間的人單場價值越高（邊際遞減）。</div><div><span class="oh-t">4. 怎麼合成 OVR（與 EPM 的關係）</span>不直接拿單一進階數據當 OVR，而是把上述三塊合成、權重對齊進階指標 <b>DARKO＋BPM</b>，衡量「每場能幫球隊多贏幾分」。球員卡右側的 <b>RAPM／EPM</b> 是獨立列出來對照的實際場上影響力；2027 頁以 2026 卡為底（新秀看順位），隨本季表現逐場更新。</div></div>
   </div>
 </div>
 <!-- real-stats:begin -->
