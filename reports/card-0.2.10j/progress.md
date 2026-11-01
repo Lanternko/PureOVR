@@ -5,3 +5,4 @@
 5. 2026-11-02 網站：season_nav（GRV 取代切入位置、ATTR_TIPS、gravity_tip、OD_OFF＋gravity、OD_CARD→0.2.10j、更新說明一行）、build_card_viewer／build_inseason_viewer（GRV 欄＋提示卡、src 說明）；daily 加 step_fetch_gravity；CURRENT.json／README 換 0.2.10j；memory E-200（E-199 已被速度問題卡佔用）＋handoff
 6. 2026-11-02 npm test 全過（52 passed、timed game、live_current_gate OK、rookie_start_gate OK）；log logs/npm-test.log
 - 11-02 02:07 步驟7：選擇性 stage（season_nav／experiments 用 HEAD＋自己改動的 blob），commit
+- 11-02 02:19 步驟8：commit b8b002f push；daily --force 發布（本季引力 288 人），gh-pages 95c1444，線上兩頁 GRV 與更新說明確認
