@@ -61,7 +61,7 @@ thead th .zh{display:block;font:500 .68rem var(--f-body);letter-spacing:0;opacit
 thead tr.grp th{cursor:default;font-size:.7rem;padding:4px;color:#6b7a8d;border-bottom:0;letter-spacing:.12em}
 thead tr.grp th.g{border-left:1px solid var(--line)}
 thead th.sorted{color:var(--gold)}
-thead th.sorted::before{content:"▼";font-size:.6rem;margin-right:2px}
+thead th.sorted::before{content:"▼";font-size:.6rem;position:absolute;transform:translateX(calc(-100% - 2px))}
 thead th.sorted.asc::before{content:"▲"}
 th.gl,td.gl{border-left:1px solid var(--line)}
 td{padding:7px 4px;text-align:center;border-bottom:1px solid #222e3d;font:600 1.02rem var(--f-disp);letter-spacing:.02em}
@@ -197,6 +197,7 @@ th.noh{cursor:default}
   border-radius:6px;font:500 .88rem var(--f-body);transition:width .2s,border-color .12s}
 .msearch #q:focus{outline:0;border-color:var(--gold);width:240px}
 .wrap>.top,.wrap>.ctrl{display:none}
+@media (min-width:641px){.wrap{padding-top:10px}}
 @media (max-width:640px){
   .mast-in{flex-wrap:wrap;height:auto;padding-top:8px;padding-bottom:0;gap:0 10px}
   .mbrand b{font-size:1.4rem}
@@ -247,7 +248,7 @@ th.noh{cursor:default}
 (() => {
   let tip, cur = null, timer, pinned = false;
   const head = k => { const t = ATIP[k]; if (!t) return null;
-    return { n: t[0], s: t[1], d: t[2], rows: t[3].concat(t[4] && FRZ ? [['賽季中', t[4] === true ? '沿用 2026 卡' : t[4]]] : []) }; };
+    return { n: t[0], s: t[1], d: t[2], rows: t[3] }; };
   const cell = el => { const tr = el.closest('tr[data-n]'); if (!tr) return null;
     const n = decodeURIComponent(tr.dataset.n), p = P.find(q => q.name === n);
     return p && p.tips ? p.tips[el.dataset.ck] : null; };
@@ -1150,8 +1151,10 @@ function render() {
 
 let listKey = '';
 function fitTable() {
-  // 以「卡片頂端貼齊視窗頂」為準：卡片＋篩選列以下的空間都給表格
-  const t = document.querySelector('.tbox'), above = t.getBoundingClientRect().top - document.getElementById('card').getBoundingClientRect().top;
+  // 手機以「卡片頂端貼齊視窗頂」為準：卡片＋篩選列以下的空間都給表格。
+  // 桌機有固定眉頭（2026-11-02），改以頁面頂端為準：不捲頁面就看得到表格底，20 人在表格裡捲完（使用者 2026-11-02）
+  const t = document.querySelector('.tbox'), tt = t.getBoundingClientRect().top;
+  const above = innerWidth <= 640 ? tt - document.getElementById('card').getBoundingClientRect().top : tt + scrollY;
   const h = Math.max(innerWidth <= 640 ? 240 : 300, innerHeight - above - 12);
   t.style.maxHeight = Math.round(h) + 'px';
   tboxEdges();
@@ -1166,6 +1169,22 @@ document.querySelector('.tbox').addEventListener('scroll', tboxEdges, { passive:
 addEventListener('resize', fitTable);
 addEventListener('load', fitTable);
 document.fonts && document.fonts.ready.then(fitTable);
+// 欄寬照「全部球員」量一次就鎖住（table-layout:fixed）：自動排版會照這頁的內容算欄寬，
+// 換排序換到 7'4"、三位數三分的人，整張表寬度就跟著跳（使用者 2026-11-02）
+function lockCols() {
+  const t = document.getElementById('tbl'), SZ = SIZE;
+  t.querySelector('colgroup')?.remove();
+  t.style.cssText = 'width:min-content;min-width:0';
+  SIZE = 1e5; render(); SIZE = SZ;
+  const ws = [...t.querySelectorAll('thead tr:last-child th')].filter(th => getComputedStyle(th).display !== 'none')
+    .map(th => Math.ceil(th.getBoundingClientRect().width));
+  t.insertAdjacentHTML('afterbegin', '<colgroup>' + ws.map(w => `<col style="width:${w}px">`).join('') + '</colgroup>');
+  t.style.cssText = `table-layout:fixed;min-width:${ws.reduce((a, b) => a + b, 0)}px`;
+  render();
+}
+let lockT = 0;
+addEventListener('resize', () => { clearTimeout(lockT); lockT = setTimeout(lockCols, 200); });
+(document.fonts ? document.fonts.ready : Promise.resolve()).then(lockCols);
 
 document.getElementById('q').oninput = e => { st.q = e.target.value; st.page = 0; st.extra = 0; render(); };
 render();
