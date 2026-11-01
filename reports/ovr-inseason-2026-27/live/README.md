@@ -1,4 +1,4 @@
-> **現行版本：inseason 0.2.9a（card 0.2.9a，R-107）**。唯一入口 `run_c4_live_rookie.py`；`run_c4_live.py` 不能直接執行。版本與檔案清單見 `CURRENT.json`；0.2.9 以前的建構腳本與凍結檔在 `_retired/`（重現請 checkout 當時 commit）。以下是歷史說明。
+> **現行版本：inseason 0.2.10（card 0.2.10，R-111／R-114；8 項屬性用 E-175 四季滑動窗口，係數與錨全凍結於 reports/card-0.2.10/frozen.json）**。唯一入口 `run_c4_live_rookie.py`；`run_c4_live.py` 不能直接執行。版本與檔案清單見 `CURRENT.json`；0.2.9a 以前的建構腳本與凍結檔在 `_retired/`（重現請 checkout 當時 commit）。以下是歷史說明。
 
 # inseason 0.1.0 即時版（2026-27）
 

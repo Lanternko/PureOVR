@@ -1,3 +1,4 @@
+raise SystemExit('已淘汰：本檔只供對照。重現請 checkout 當時 commit（見 live/CURRENT.json、_retired/README.md）')  # R-114 retired guard
 """card 0.2.9a（R-107）：照 0.2.9 版（用人層同 0.2.9：無 y·d·L、b8_ydL＝0），只把卡目錄換成 reports/card-0.2.9a/cards/K6（第一層拿掉 stamina，E-164 S 臂）。
 核對對象：reports/card-0.2.9a/ranking.csv。輸出 usage-2025-26-card029a.json。
 用法：python -I -B -X utf8 reports/ovr-inseason-2026-27/live/build_usage_029a.py

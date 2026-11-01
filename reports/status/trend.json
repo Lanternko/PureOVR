@@ -165,7 +165,7 @@
   "version": "card 0.2.7c",
   "order": 19,
   "adopted": true,
-  "rhoNetIn": 0.716,
+  "rhoNetIn": 0.714,
   "rhoNetOut": null,
   "rhoDefOut": null,
   "rho2k": 0.733
@@ -192,7 +192,7 @@
   "version": "card 0.2.9",
   "order": 22,
   "adopted": true,
-  "rhoNetIn": 0.716,
+  "rhoNetIn": null,
   "rhoNetOut": null,
   "rhoDefOut": null,
   "rho2k": null

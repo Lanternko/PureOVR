@@ -39,9 +39,9 @@ if 'foulDraw' not in ATTRS:
     ATTRS.insert(ATTRS.index('drive') + 1, 'foulDraw')
 import e062_switch as _E062  # noqa: E402
 # 舊版機制（CARD_MODE 020～029）見 git 歷史／live/_retired/README.md
-CARD_MODE = os.environ.get('CARD_MODE', '029a')  # 只接受目前版本 029a（card／inseason 0.2.9a，R-107，第一層拿掉 stamina）。舊版重現請 checkout 當時 commit（見 live/_retired/README.md）
-if CARD_MODE != '029a':
-    raise SystemExit('CARD_MODE 只接受 029a（舊版已淘汰，重現請 checkout 當時 commit；見 live/_retired/README.md）')
+CARD_MODE = os.environ.get('CARD_MODE', '0210')  # 只接受目前版本 0210（card／inseason 0.2.10，R-114，E-175 滑動窗口卡）。舊版重現請 checkout 當時 commit（見 live/_retired/README.md）
+if CARD_MODE != '0210':
+    raise SystemExit('CARD_MODE 只接受 0210（舊版已淘汰，重現請 checkout 當時 commit；見 live/_retired/README.md）')
 # 相容旗標：run_c4_live_rookie.py（assert）與舊實驗腳本（check_prereq 等）仍讀這幾個名字；029a 恆為真
 M27_MODE = M26_MODE = USAGE_MODE = SAT = True
 E062_MODE = 'off'   # E-062 實驗開關已淘汰（只剩 off）
@@ -53,21 +53,21 @@ if E064_MODE != 'G1':
     raise SystemExit('E064_MODE 只接受 G1（off／G0 是舊頁重現用，已淘汰）')
 # 預註冊 §4.1：stamina 最小樣本 1 場（本身的能力值與 w 都用；其餘 15 屬性照 C4 現行）。
 SA.SEASON_MIN_SAMPLE['stamina'] = 1
-VERSION = 'inseason 0.2.9a'  # R-050／R-107：跟先驗 card 0.2.9a 同號； 第一個字面值會被 daily_inseason_update.probe_base_version 以正規式讀取，勿改成括號／條件式開頭
-CARD_VERSION = 'card 0.2.9a'
+VERSION = 'inseason 0.2.10'  # R-050／R-114：跟先驗 card 0.2.10 同號； 第一個字面值會被 daily_inseason_update.probe_base_version 以正規式讀取，勿改成括號／條件式開頭
+CARD_VERSION = 'card 0.2.10'
 PRIOR = '2025-26'
 TARGET = '2026-27'
 G_GAMES = 82
 C_PARAM = 1.0
 ALL_N = 99                      # 視窗＝全部已打場次
 DATA26 = ROOT / 'data/defense-seventh' / TARGET
-PRIOR_CARD = HERE / 'prior-2025-26-card027b.json'  # build_prior_027b.py 產出（x0＝card 0.2.7b 產生器未四捨五入值；能力值欄 0.2.7b～0.2.9a 逐位元相同）
-CARD_DIR = ROOT / 'reports/card-0.2.9a/cards/K6/primary'   # 屬性迴歸／OVR 管線係數（E-164 S 臂，第一層拿掉 stamina）
+PRIOR_CARD = HERE / 'prior-2025-26-card0210.json'  # build_prior_0210.py 產出（027b 先驗的 8 項屬性換成 card-0.2.10/tail-U.csv；） build_prior_027b.py 產出（x0＝card 0.2.7b 產生器未四捨五入值；能力值欄 0.2.7b～0.2.9a 逐位元相同）
+CARD_DIR = ROOT / 'reports/card-0.2.10/cards/K6/primary'   # 屬性迴歸／OVR 管線係數（E-164 S 臂，第一層拿掉 stamina）
 CARD_SUMMARY = CARD_DIR / 'summary.json'
-RAPM_STAR = ROOT / 'reports/card-0.2.9a/rapm-T6.csv'   # align／封頂讀 E-153 K6 的 T6 換進去的 RAPM（與 card 0.2.8 起同口徑）
+RAPM_STAR = ROOT / 'reports/card-0.2.10/rapm-T6.csv'   # align／封頂讀 E-153 K6 的 T6 換進去的 RAPM（與 card 0.2.8 起同口徑）
 BIO25 = ROOT / 'data/benchmark-source/bio.json'
-FORMAL_RANKING = ROOT / 'reports/card-0.2.9a/ranking.csv'
-CARD024_SUMMARY = ROOT / 'reports/card-0.2.9a/summary.json'     # 名稱沿用舊版；現為 card 0.2.9a summary
+FORMAL_RANKING = ROOT / 'reports/card-0.2.10/ranking.csv'
+CARD024_SUMMARY = ROOT / 'reports/card-0.2.10/summary.json'     # 名稱沿用舊版；現為 card 0.2.10 summary
 CARD024_RANKING = ROOT / 'reports/card-0.2.4/ranking.csv'       # E-095 預註冊 §2：現行 ranking 的 mpg 欄必須與 card 0.2.4 相同
 W_TAU, W_REF = 15.0, 36.0
 
@@ -76,7 +76,7 @@ def sat_w(m):
     """card 0.2.5 的分鐘權重 W(m) = (1 − e^(−m/15)) / (1 − e^(−36/15))；W(0)=0、W(36)=1。"""
     return (1.0 - math.exp(-m / W_TAU)) / (1.0 - math.exp(-W_REF / W_TAU))
 
-USAGE_FILE = HERE / 'usage-2025-26-card029a.json'     # build_usage_029a.py 產出（係數、r_repl、錨點；b8_ydL＝0）；錨點／r_repl 也從這裡讀
+USAGE_FILE = HERE / 'usage-2025-26-card0210.json'     # build_usage_0210.py 產出（0.2.9a 係數／r_repl／錨點全凍結，R-114 裁定 B）（係數、r_repl、錨點；b8_ydL＝0）；錨點／r_repl 也從這裡讀
 POOL026 = HERE / 'pool-027b.json'                     # e128-card027b/build_pool_027b.py 產出的凍結合併池
 DEF_L_PRIMARY = ROOT / 'reports/card-0.2.5+E104-defense-pergame-decay/def-L-primary.csv'   # UL 防守加成的 --defRapm
 E128_RB = ROOT / 'reports/card-0.2.7+E123-tail-3pt-rim-pres/rebase-027a'
@@ -631,6 +631,39 @@ def foul_draw_y(rec):
     return max(40.0, min(99.0, 40 + (p - 1) * 30 / 49 if p < 50 else 70 + (p - 50) * 29 / 49))
 
 
+# ------------------------------------------------------------------ inseason 0.2.10：8 項屬性改 E-175 U 窗口（window8.py）
+WIN8_ATTRS = ('drive', 'foulDraw', 'ft', 'mid', 'pass', 'rebound', 'short', 'tovSkill')
+WIN8 = {}   # {'now': {pid: {8 項}}, 'day0': {pid: {8 項}}, 'games': 已賽場數, 'pbp': pbp 場數}
+
+
+def win8_load():
+    """四季滑動窗口（過去季權重 window_w(c)＋本季逐場 u 權重）算 8 項屬性；day0＝本季 0 場。載入一次。"""
+    if WIN8:
+        return WIN8
+    saved = list(sys.path)
+    try:
+        import window8 as W8
+        W = W8.Win8()
+        tabs, gd = W.cur_tabs()
+        WIN8.update(now=W.attrs_at(gd, tabs), day0=W.day0(tabs), games=gd, pbp=W.n_pbp, attrs=list(W8.C.ATTRS8))
+    finally:
+        sys.path[:] = saved
+    print(f'inseason 0.2.10 窗口：本季 {gd} 場（pbp {WIN8["pbp"]} 場），8 項 {len(WIN8["now"])} 人', file=sys.stderr)
+    return WIN8
+
+
+def win8_override(attrs):
+    """把 8 項屬性換成窗口值（沒有窗口資料的人維持先驗＝card 0.2.10 季末值）。可重複呼叫（冪等）。"""
+    now = win8_load()['now']
+    n = 0
+    for pid, x in attrs.items():
+        v = now.get(int(pid))
+        if v:
+            x.update(v)
+            n += 1
+    return n
+
+
 # ------------------------------------------------------------------ C4（逐球員 N）
 def live_predict(delta2, rel, undefined=(), frozen=(), f_force=None, k_max=False, diag=None):
     prior_cards, _ = F.load_prior(PRIOR)
@@ -831,7 +864,7 @@ def main():
 
     rel_ = V2.load_reliability()
     delta2, undefined, d_info = C4.delta2_info('S*')
-    frozen = ['pressure', 'drive']      # drive：card 0.1.2 改 PBP 版（需前 41 場），賽中重建不了 → 凍結
+    frozen = ['pressure', 'drive'] + [a for a in WIN8_ATTRS if a != 'drive']   # 0.2.10：8 項改窗口（win8_override），C4 不再碰；pressure 凍結（UNFREEZE_PD 另算）
     prior_cards, prior_doc = F.load_prior(PRIOR)
     _, attrs0 = C.deployment('S*')
     pw = PW.for_start(C, 'S*')
@@ -840,6 +873,7 @@ def main():
 
     diag = []
     attrs = live_predict(delta2, rel_, undefined, frozen, diag=diag)
+    n_win8 = win8_override(attrs)
     res = pw.predict(attrs)
     usage, ucoef, usage_sha, mpg_card = {}, None, None, {}
     mpg_hat, mpg_win, w_mpg, mpg_nodata = {}, {}, {}, []
@@ -1022,7 +1056,8 @@ def main():
         '2025-26 player-games': IC.TARGET_BOX, '2025-26 team-games': IC.TARGET_TEAM,
         '2025-26 bio': BIO25, 'threeValue prior (abilityC)': THREE_PRIOR, 'dependence-audit': IC.DEPENDENCE, 'formal ranking (cross-check)': FORMAL_RANKING,
         'usage features (E-091)': USAGE_FILE, 'e084 results (coef/r_repl/anchors)': USAGE_FILE, (CARD_VERSION + ' summary'): CARD024_SUMMARY,
-        'pool-027b (E-128)': POOL026,
+        'pool-027b (E-128)': POOL026, 'window8.py': HERE / 'window8.py', 'card-0.2.10 frozen.json': ROOT / 'reports/card-0.2.10/frozen.json',
+        'card-0.2.10 tail-U.csv': ROOT / 'reports/card-0.2.10/tail-U.csv', '2026-27 pbp (window8) first file': next(iter(sorted((DATA26 / 'pbp').glob('*.json'))), None),
         (CARD_VERSION + ' OVR summary'): CARD_SUMMARY, 'def-L primary (UL bonus)': DEF_L_PRIMARY,
         'rebase-027a cards-result.json (anchors)': E128_RB / 'work/cards-result.json',
         'reliability': V2.RELIABILITY if hasattr(V2, 'RELIABILITY') else None,
@@ -1037,6 +1072,8 @@ def main():
         'games': len(games), 'pbpGames': len(pbp_files), 'missingPbp': sorted(set(games) - set(pbp_files)),
         'gitHead': git_head(), 'start': 'S*', 'prior': PRIOR, 'target': TARGET, 'c': C_PARAM, 'G': G_GAMES,
         'frozenAttrs': frozen + list(IC.FROZEN_ATTRS), 'updatableAttrs': list(C.UPD) + ['foulDraw'],
+        'window8': {'attrs': list(WIN8_ATTRS), 'module': 'live/window8.py', 'gamesDone': WIN8['games'], 'pbpGames': WIN8['pbp'], 'players': n_win8,
+                    'note': '8 項（drive,foulDraw,ft,mid,pass,rebound,short,tovSkill）＝E-175 U 臂四季滑動窗口；其餘屬性仍走 C4；lastOVR 基準＝同模型、本季 0 場（window8.day0）；係數／錨點／r_repl 全凍結在 0.2.9a（R-114 裁定 B）'},
         'delta2Undefined': undefined, 'delta2': delta2,
         'players': {'ranked': len(rows), 'noPrior': len(nopr), 'priorCardNotPlayed': len(not_played),
                     'rosterUnplayed': len(unplayed), 'rosterFile': bool(roster)},
@@ -1070,7 +1107,8 @@ def main():
                 f"兩段映射錨點 PR1/PR50/PR99＝{anc064[0]:.4f}/{anc064[1]:.4f}/{anc064[2]:.4f}（{CARD_VERSION} summary.json 同組）。"
                 f"MPG_hat = MPG0 + w·(本季場均分鐘 − MPG0)，w＝stamina 的 C4 w（stamina 最小樣本 1 場）；"
                 f"沒有本季視窗紀錄的 {len(mpg_nodata)} 人（含沒出賽者，不在排名內）退回 MPG0。`ovrPer36` 是同一預測的每 36 分鐘 OVR。")
-    ATTR_NOTE = ("- E-128（CARD_MODE=027b，預設）：先驗 x0＝card 0.2.7b 產生器的未四捨五入能力值（尾巴原樣、不夾 99）；屬性迴歸＝rebase-027a e123a primary 的 summary.json；"
+    ATTR_NOTE = ("- inseason 0.2.10（R-114）：drive、foulDraw、ft、mid、pass、rebound、short、tovSkill 八項＝E-175 四季滑動窗口（過去四季權重 window_w(c)，c＝82×已賽場數/1230；本季逐場線性遞減；收縮 k、先驗 m、映射皆凍結自 2025-26 U 鏈；live/window8.py），不再走 C4 的 x0+w(y−x0)；其餘屬性（stamina 等）仍走 C4。用人層係數、錨點、r_repl 全凍結在 0.2.9a（R-114 裁定 B）。"
+                 "- 以下為舊版 E-128 說明（其餘屬性的先驗與映射仍適用）：E-128（CARD_MODE=027b，預設）：先驗 x0＝card 0.2.7b 產生器的未四捨五入能力值（尾巴原樣、不夾 99）；屬性迴歸＝rebase-027a e123a primary 的 summary.json；"
                  "賽中觀測值對 live/pool-027b.json 的合併池映射（pass 換 E-125 量×率合成值＋合併池，視窗不收縮、z 常數凍結自 2025-26 卡片端；其餘 8 欄同 pool-027），"
                  "99 以上與 40 以下照 E-101 尾巴；help 照 E-123 D1 尾巴（不夾 99）；drive、onBall、pressure、presDisplay、physique、heightInches 凍結；防守加成＝UL 值（同 027）。")
     OVR_NOTE += (f"\n- card 0.2.4 用人層（E-091，R-044 = 用人回歸＋當季 RAPM 目標）：p＝上面屬性迴歸的每 36 預測（`predictedPer36`，C4 照常更新），"
@@ -1089,7 +1127,7 @@ def main():
 - 3PT 欄 = threeValue（R-024，顯示用、不進 OVR）：vol＝合併（2025-26＋2026-27）3PA/MIN×36；acc＝(k·上季 abilityC＋本季 3PM)/(k＋本季 3PA)，k={THREE_K}（本季沒有出手難度資料，用原始命中）；rep＝合併聯盟 3P%（{tv_info['mu']:.4f}）−0.03；value＝vol×(acc−rep)，在合併 MIN≥500 且有先驗卡的 {tv_info['poolSize']} 人池內取百分位並套 attr()。`long` 欄仍在 ranking.csv 並進 OVR 計算，只是表格不顯示。
 {ATTR_NOTE}
 - 降級的資料層見 `../README.md`。`simulatedPer36` 空白（此流程不跑模擬）。
-- `lastOVR` = 同一逐點管線對先驗卡算出的 OVR（ΔOVR 的基準）；`formalOVR` = {CARD_VERSION} `ranking.csv` 同名球員的 OVR（只供對照）。
+- `lastOVR` = 同一逐點管線、本季 0 場（8 項屬性＝窗口 day0）算出的 OVR（ΔOVR 的基準，R-112）；`formalOVR` = {CARD_VERSION} `ranking.csv` 同名球員的 OVR（只供對照）。
 {OVR_NOTE}
 
 ## 檢查 (a)：f=0、k 取上界 → 與上季卡一致（c4_v5 T1 同款）

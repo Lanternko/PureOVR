@@ -6,19 +6,19 @@
 - **更新**：2026-11-01，Claude Code App（lead；分支 claude/project-thread-63h2fz；handoff 瘦身 29KB→約 7KB）
 
 ## 目前基準（線上）
-- **正式卡 card 0.2.9**（R-104，E-158 Y0）：`reports/card-0.2.9/`；status_snapshot `OFFICIAL_CARD` 已指 0.2.9。版本鏈與每版理由查 experiments／rulings。
-- **新賽季頁 inseason 0.2.9** 已發布；單場評分 **Z1**（R-108，E-169，`scripts/rating_m10.py`）。
+- **正式卡 card 0.2.10**（R-114，E-175）：`reports/card-0.2.10/`；8 項能力值（mid、short、ft、foulDraw、pass、rebound、tovSkill、drive）改 R-076 四季滑動窗口，OVR 係數／錨點／用人層凍結 0.2.9a（`frozen.json`）。status_snapshot `OFFICIAL_CARD` 指 0.2.10。
+- **新賽季頁 inseason 0.2.10** 已發布（2026-11-01）：8 項每日由窗口算（`live/window8.py`），其他屬性同前；單場評分 **Z1**（R-108，E-169，`scripts/rating_m10.py`）。
 - **網站**：首頁 2026-27、`2025-26.html`（`build_card_viewer.py`、`enrich_roster_viewer.py`、共用 `season_nav.py`）。能力值說明文字在 `season_nav.py` 的 `ATTR_TIPS`，改屬性公式要一起改；新格子提示用 `sn.cell_tip()`。只改 UI 用 `python -I scripts/daily_inseason_update.py --shell` 立刻發布；每日排程 14:30／16:30＋22:30 補對位（registry `basketball-inseason-daily`）。
 - **模擬 sim 0.1.2**（R-094，防守者投籃犯規預設開；之前的 WinImp 數字不能直接比，G3）；防守 `nba-defense-v3`（R-010）；賽中 OVR C4（E-033）、顯示值 B0。
 - 新賽季頁版本由 `reports/ovr-inseason-2026-27/live/CURRENT.json` 決定，`test/live_current_gate.py` 掛在 npm test（L-090）；舊建構腳本放 `live/_retired/`。
 
 ## 進行中
-- **card／inseason 0.2.9a 拿掉 stamina 已發布**（2026-11-01，R-107／R-109，commit 162c139、gh-pages fb59ab0；連同壓迫／切入解凍，R-110）。舊路徑守門：`live/CURRENT.json`＋`test/live_current_gate.py`（L-090）。待辦：另開 session 做 role-audit 重算 → 使用者 G5。
-- **E-166 罰球防守 β×k**（側翼低估線，F-103～F-105）：2026-11-01 完成「不採用」（F-111）。k=2 把罰球防守補到實測散布，36 名防守型非中鋒平均少低估 12 名、Spearman +0.04；但 30 隊 MAE +0.154 超過門檻 0.1、E-067 S 偏袒長人變大。報告 `reports/sim-0.1.2+E166-ft-defense/report.md`。同日 F-112 查 WinImp 情境：換成同位置隊友，36 人低估 90.6→54.1、中鋒 −60→+9，但整體 ρ 0.388→0.324；主版中鋒每場有 +2.4 位置紅利、得分後衛防守權重 0.01；分鐘不是原因。報告 `reports/sim-0.1.2-winimp-context/report.md`。下一步等使用者選。
+- **card／inseason 0.2.10 已發布**（2026-11-01，R-114）：稽核用顯示組合值評 foulDraw／pass 時不過 adopt（F-116），使用者知情仍上線。待辦：card-0.2.10 獨立 role-audit（`audit/` 只有說明）、換季跳動同口徑對 0.2.9a 沒量到、Porter Jr. 20→40 要看、使用者 G5。
+- **E-166 罰球防守 β×k**（側翼低估線，F-103～F-105）：2026-11-01 完成「不採用」（F-111）。k=2 把罰球防守補到實測散布，36 名防守型非中鋒平均少低估 12 名、Spearman +0.04；但 30 隊 MAE +0.154 超過門檻 0.1、E-067 S 偏袒長人變大。報告 `reports/sim-0.1.2+E166-ft-defense/report.md`。同日 F-112 查 WinImp 情境：換成同位置隊友，36 人低估 90.6→54.1、中鋒 −60→+9，但整體 ρ 0.388→0.324；主版中鋒每場有 +2.4 位置紅利、得分後衛防守權重 0.01；分鐘不是原因。報告 `reports/sim-0.1.2-winimp-context/report.md`。同日 F-114 雙中鋒：實測雙中鋒≈加總（+0.8／100，雜訊內），模擬多 +2.6／100（籃下防守疊加），整隊換一個平均 C 強 4 分／場；報告 `reports/sim-0.1.2-twin-c/report.md`。分區補充：實測雙中鋒沒讓對手多投三分，唯一穩定成本是對手多罰 +2.6／100（模擬 +0.3）。使用者選雙長人犯規成本：E-178 預註冊已凍結（≥2 中鋒時犯規 logit +γ），j0 過，但引擎的位置是槽位標籤、γ 永遠不觸發（L-094）；修正 A1（改用球員本身位置）已凍結、執行中，派工 task 20261101-081630-b7c13f。
 - **E-151 年輕側年齡連續**：已預註冊（6820474），每日排程在 2026-27 stints 達 450 場時自動跑 `e151_eval.py` 一次（daily.log 會出現 WARNING「E-151 評估完成」）。不得提前拿卡片去比。
 
 ## 等使用者裁定
-- **E-175 滑動窗口卡**（R-111，取代 E-174）：所有屬性改 R-076 滑動窗口，對現行按季分塊（F-112）比預測未來場次的誤差。預註冊已凍結（sha 15ba2d7d…36ad），role-card 子代理執行中。
+- **E-181 無球能力值**（2026-11-01 完成：不採用，F-119、L-096）：無球型（offBall 高、creation 低）在 2024-25 卡對下季 RAPM 確實低估約 9 個百分點，但加「被助攻得分／36」屬性係數幾乎 0、補不回。下一步待使用者：從 T6 目標或 creation 定義下手（同 F-118），或放著。`reports/E181-offball-attr/report.md`
 - **E-172／E-173 Jalen Williams 偏高**（F-108、F-109）：E-173 判「壓迫沒有被高估」，但歷史原點能力值是 2025-26 現值（L-091），只算弱證據。只報告項：切入高的人卡片系統性高於下季 RAPM（−0.21，三季都負），等使用者決定要不要開乾淨版（當季屬性）的切入實驗。`reports/E173-pressure-vs-rapm/report.md`
 - **ΔOVR 基準（R-112，2026-11-01）**：老將 lastOVR＝今天的模型但本季 0 場（窗口 cur=False、防守 D 逐人 leave-one-out、posMeanD 用賽中版），0 場的人 ΔOVR 全部 0；JW +2.34→+0.35。已發布。
 - **E-162／F-106 產量評價**：卡相對 T6 不低估高用球者，只是相對薪水低估。選項：接受 T6、在口徑或目標提高市場權重（要另寫預註冊）、先放著。`reports/card-0.2.9+E162-per-volume/report.md`。

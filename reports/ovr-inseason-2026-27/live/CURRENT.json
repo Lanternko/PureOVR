@@ -1,15 +1,18 @@
 {
-  "inseason": "inseason 0.2.9a",
-  "card": "card 0.2.9a",
-  "cardMode": "029a",
+  "inseason": "inseason 0.2.10",
+  "card": "card 0.2.10",
+  "cardMode": "0210",
   "entry": "run_c4_live_rookie.py",
   "base": "run_c4_live.py",
   "files": [
-    "build_usage_029a.py",
-    "usage-2025-26-card029a.json",
+    "window8.py",
+    "build_usage_0210.py",
+    "usage-2025-26-card0210.json",
+    "build_prior_0210.py",
+    "prior-2025-26-card0210.json",
     "build_prior_027b.py",
     "prior-2025-26-card027b.json",
     "pool-027b.json"
   ],
-  "note": "換版時：更新本檔、舊版建構腳本與凍結檔 git mv 到 _retired/（test/live_current_gate.py 會擋）。新賽季反事實與版本比較只用 run_c4_live_rookie.py。"
+  "note": "換版時：更新本檔、舊版建構腳本與凍結檔 git mv 到 _retired/（test/live_current_gate.py 會擋）。新賽季反事實與版本比較只用 run_c4_live_rookie.py。 0.2.10（R-111/R-114）：8 項屬性用 E-175 滑動窗口（window8.py），係數與錨全凍結於 reports/card-0.2.10/frozen.json；build_prior_027b／prior-027b／pool-027b 仍是 0210 的底（build_prior_0210 讀 027b 先驗），所以留在頂層。"
 }

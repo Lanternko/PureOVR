@@ -210,12 +210,15 @@ def window_ref(attrs0, posmap, pw, c):
     base = copy.deepcopy(attrs0)
     vd, _ = RD.veteran(c, '2026-27', posmap, cur=False)
     pv = PD.veteran(c, cur=False)[0] if PD.ON else {}
+    d0 = NS['ns']['win8_load']()['day0']       # 0.2.10：8 項屬性的基準＝窗口 day0（本季 0 場）
     for pid, x in base.items():
         for src, ks in ((vd, DEF_ATTRS), (pv, PD_ATTRS)):
             v = src.get(pid) or {}
             for a in ks:
                 if v.get(a) is not None:
                     x[a] = v[a]
+        if int(pid) in d0:
+            x.update(d0[int(pid)])
     swap_bonus(pw, 'base')
     REF_W.clear()
     REF_W.update(pw.predict(base))

@@ -30,7 +30,7 @@ class LiveCurrent(unittest.TestCase):
 
     def test_old_card_mode_fails(self):
         code = ("import sys; sys.path.insert(0, r'%s'); import run_c4_live_rookie as R; R.load_ns()" % str(LIVE))
-        for bad in ('029', '028', '027b'):
+        for bad in ('029a', '029', '028', '027b'):
             r = run(['-c', code], env={'CARD_MODE': bad})
             self.assertNotEqual(r.returncode, 0, f'CARD_MODE={bad} 應失敗')
         r = run(['-c', code], env={'CARD_MODE': CUR['cardMode']})
