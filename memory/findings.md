@@ -1218,3 +1218,10 @@
 - 證據：`reports/F126-shot-difficulty/diag1/{preregistration.md,report.md,result.json,diag1.py}`
 - 狀態：成立（樣本內分半診斷）
 - 相關：F-126、F-134、E-081、E-075、R-020、R-117
+
+### F-136
+- 日期：2026-11-01
+- 說法：E-194（KJ 卡、三歷史原點合併，MIN≥500）：切入型球員被高估（Spearman(drive, 下季殘差) −0.244）可拆成「卡片高過 T6」（擬合端，Spearman(drive, pct(T6)−pct(OVR)) −0.257，三季 −0.29／−0.30／−0.20，穩定）與「T6 高過下季 RAPM」（目標端，−0.109，三季 −0.01／−0.17／−0.13，不穩）；共變異份額約 52%／48%。drive 欄本身對卡（+0.08 OVR）與對下季 RAPM（每 10 點 +0.3 百分位，SE 1.1）都 ≈0，拿掉 drive 不影響下季名次 ρ。drive 前 25% 的人比其他人多 +10.1 OVR，屬性線性部分最大是 pass +5.7、ft +2.0、creation +2.0（這是「給多少分」，不是「多給」；三欄對下季 RAPM 值多少沒量）。
+- 證據：`reports/F133-drive-scoring/{report.md,results.json}`（results sha 64871421…cc94，重跑一致）
+- 狀態：成立（樣本內、L-091：三原點能力值同為 2025-26 現值，三季非獨立）
+- 相關：E-194、F-133、F-132、R-130、F-118
