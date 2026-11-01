@@ -105,7 +105,10 @@ CSS = """<style>
 PATCH_NOTES = [
     # 版號 0.2.10：前 20 名進出 1 人（Embiid 進、Porter Jr. 出）、前 100 名移動 >=10 名 18 人，照 R-109 屬 PATCH（係數全凍結、只換 8 項屬性來源）
     # 版號 0.2.11：照 R-109 前 20 名進出 1 人、前 100 名移動 >=10 名 11 人原屬字母版（0.2.10j），使用者 2026-11-02「引進了一個有趣的新能力值。把它升級為patch」（R-137）
-    (('card', 'inseason'), '0.2.11', '2026-11-02', [
+    # 版號 0.2.12：照 R-109 前 20 名進出 4 人、前 100 名移動 >=10 名 34 人原屬字母版，使用者 2026-11-02「直接採用」E-202 KT 臂（R-139）
+    (('card', 'inseason'), '0.2.12', '2026-11-02', [
+        'TO 改成看持球時間：持球多又少丟球才高分（Brunson 42 → 1 名、Hauser 1 → 277 名）；不太拿球的空間射手與長人 TO 大降（Kornet 23 → 367 名）。｜Brunson/27 → 31/90.7 → 89.3；Cade/11 → 13/93.4 → 93.7；Harden/159 → 137/73.7 → 75.8；Luka/4 → 3/101.7 → 101.6；Jokić/2 → 2/105.7 → 103.2；Hauser/160 → 169/73.6 → 73.2；Hardaway Jr./317 → 341/60.8 → 58.4；Kornet/62 → 99/82.5 → 77.9；Jarrett Allen/44 → 54/86.4 → 83.6']),
+    (('card',), '0.2.11', '2026-11-02', [
         '加引力能力值：沒拿球時防守人也不敢離開的射手加分（Klay 419 → 357 名），空間長人略降（Turner 108 → 123 名）。｜Klay/419 → 357/55.9 → 57.9；Hield/259 → 240/65.7 → 66.7；Kennard/135 → 120/75.6 → 76.4；Duncan Robinson/208 → 199/69.6 → 70.4；Hauser/175 → 160/72.9 → 73.6；Turner/108 → 123/77.8 → 76.3；Fox/24 → 20/91.2 → 92.1；Bane/20 → 21/92.0 → 92.0',
         '能力值頂端改尺：前 10%＝88、前 5%＝92、前 1%＝97，再往上看領先多少；3PT 98 以上從 15 人變 5 人（Curry 128 → 126），OVR 與名次不變。']),
     (('card',), '0.2.10', '2026-11-01', [
@@ -311,8 +314,8 @@ ATTR_TIPS = {
     'pass': ('傳球', 'PASS', '<b>50%</b> 助攻量 ＋ <b>50%</b> 助攻率。', [('量 50%', '助攻（per36）'), ('率 50%', '在場時隊友進球被他助攻的比例')], '四季滑動窗口：開季看前四季（近季權重高），隨賽季逐場換成本季'),
     'creation': ('自主創造', 'CRT', '<b>自己創造</b>的跳投與低位出手（不含切入上籃、補籃、空切）per36', [], '四季滑動窗口：開季看前四季（近季權重高），隨賽季逐場換成本季'),
     'rebound': ('籃板', 'REB', '進攻＋防守<b>籃板率</b>：在場時搶下可搶籃板的比例，看過去四季（近季權重高）。', [], '四季滑動窗口：開季看前四季（近季權重高），隨賽季逐場換成本季'),
-    'tovSkill': ('少失誤', 'TO', '<b>失誤 ÷ 球權次數</b>，越少越高。球權多的人分母也大，不會因為常拿球就吃虧。',
-                 [('球權次數', '他投籃、罰球、助攻或失誤結束的進攻')], '四季滑動窗口：開季看前四季（近季權重高），隨賽季逐場換成本季'),
+    'tovSkill': ('少失誤', 'TO', '<b>每持球分鐘的失誤</b>低、<b>持球時間</b>長，各佔一半。不拿球的人不計入。',
+                 [('每持球分鐘失誤 50%', '越少越高'), ('持球分鐘 50%', '每 36 分鐘的持球時間')], '四季滑動窗口：開季看前四季（近季權重高），隨賽季逐場換成本季'),
     'pressure': ('壓迫', 'PRES', '<b>抄截</b>、<b>干擾傳球</b>、對位<b>逼出失誤</b>、造進攻犯規，再扣犯規。',
                  [('抄截／干擾／逼失誤', '各 1 份'), ('造進攻犯規', '0.5 份'), ('犯規', '扣 0.25（只影響顯示）')], '老將四季加權含本季；新秀只看本季'),
     'onBall': ('單防', 'PER D', '外線<b>干擾出手</b> ＋ <b>對位負擔</b> ＋ <b>威懾力</b>。',
@@ -469,29 +472,40 @@ def mpg_pool(mpg):
     return {k for k, m in mpg.items() if m >= POOL_MPG}
 
 
-def tov_rows(src, key, pool):
-    """{key: TO 提示細項}，pool 人數。失誤率＝TOV ÷ 球權（FGA＋0.44·FTA＋AST＋TOV），和 tovSkill 同一個式子（build_season_league.js）。
-    PR／名次對 pool（key 集合）裡的人；不在 pool 的人只標 PR，不標名次。"""
+def tov_rows(src, key, pool, poss_src=None):
+    """{key: TO 提示細項}，pool 人數。0.2.12：tovSkill 看持球時間（失誤 ÷ 持球分鐘、持球分鐘各半），
+    提示卡列：失誤／場、持球分鐘／場（名次）、失誤／持球分鐘（PR、名次）。持球分鐘＝NBA.com tracking Possessions 的 TIME_OF_POSS
+    （卡片頁＝2025-26 整季檔；新賽季頁＝data/defense-seventh/2026-27/possessions.json），key 欄（PLAYER_NAME／PLAYER_ID）和 src 同一種。
+    沒有持球分鐘的人只列失誤／場。PR／名次對 pool（key 集合）裡的人；不在 pool 的人只標 PR，不標名次。"""
     rs = json.loads(Path(src).read_text(encoding='utf-8'))['data']['resultSets'][0]
     h = {k: i for i, k in enumerate(rs['headers'])}
     tot = {}
     for r in rs['rowSet']:
-        t = tot.setdefault(r[h[key]], [0, 0, 0, 0, 0, 0])
-        for i, c in enumerate(('MIN', 'FGA', 'FTA', 'AST', 'TOV')):
-            t[i] += r[h[c]] or 0
-        t[5] += 1
+        t = tot.setdefault(r[h[key]], [0, 0])
+        t[0] += r[h['TOV']] or 0
+        t[1] += 1
+    pm = {}
+    if poss_src and Path(poss_src).exists():
+        d = json.loads(Path(poss_src).read_text(encoding='utf-8'))
+        d = d.get('data', d)['resultSets']
+        ps = d[0] if isinstance(d, list) else d
+        ph = {k: i for i, k in enumerate(ps['headers'])}
+        for r in ps['rowSet']:
+            pm[r[ph[key]]] = pm.get(r[ph[key]], 0.0) + float(r[ph['TIME_OF_POSS']] or 0)
     st = {}
-    for k, (mn, fga, fta, ast, tov, gp) in tot.items():
-        poss = fga + 0.44 * fta + ast + tov
-        if poss > 0:
-            st[k] = (tov / poss, poss / gp, tov / gp, k in pool)
-    pool = [v for v in st.values() if v[3]]
+    for k, (tov, gp) in tot.items():
+        m = pm.get(k, 0.0)
+        st[k] = (tov / m if m > 0 else None, m / gp if m > 0 else None, tov / gp, k in pool)
+    pool = [v for v in st.values() if v[3] and v[0] is not None]
     out = {}
     for k, (rate, pg, tg, inpool) in st.items():
-        pr, rk = pr_rank(rate, [v[0] for v in pool], low_good=True)
-        _, rk_p = pr_rank(pg, [v[1] for v in pool])
-        out[k] = [('失誤', f'{tg:.1f}/場', None, None), ('球權', f'{pg:.1f}/場', None, rk_p if inpool else None),
-                  ('失誤率', f'{100 * rate:.1f}%', pr, rk if inpool else None)]
+        rows = [('失誤', f'{tg:.1f}/場', None, None)]
+        if rate is not None:
+            pr, rk = pr_rank(rate, [v[0] for v in pool], low_good=True)
+            _, rk_p = pr_rank(pg, [v[1] for v in pool])
+            rows += [('持球分鐘', f'{pg:.1f}/場', None, rk_p if inpool else None),
+                     ('失誤/持球分鐘', f'{rate:.2f}', pr, rk if inpool else None)]
+        out[k] = rows
     return out, len(pool)
 
 
@@ -741,7 +755,7 @@ def apply_common(s):
 # 籃板、身高兩邊都不算（約佔 OVR 差異一成三）。OVR 還有用人層（分鐘、出賽率），所以兩分相加不等於 OVR。
 # 進攻再混進影響力（使用者 2026-11-01，同 OVR align 的比例）：T6（DARKO＋BPM）pooledPoss ≥ 5000 的人
 # 進攻＝0.75×能力值進攻＋0.25×（0.75×pooledO 減同一群 MIN ≥ 500 的平均）；不夠回合的人只用能力值。
-OD_CARD = Path(__file__).resolve().parents[1] / 'reports/card-0.2.10j/ranking.csv'  # 0.2.10j：加 gravity（無球外線引力），全部係數重擬合；0.2.10i：drive→drive_D、creation→creationJ（OFF 提示貢獻欄跟著換）
+OD_CARD = Path(__file__).resolve().parents[1] / 'reports/card-0.2.12-tov/ranking.csv'  # 0.2.12：tovSkill 改看持球時間，全部係數重擬合；0.2.10j：加 gravity（無球外線引力），全部係數重擬合；0.2.10i：drive→drive_D、creation→creationJ（OFF 提示貢獻欄跟著換）
 OD_OFF = ['long', 'mid', 'short', 'ft', 'drive', 'gravity', 'foulDraw', 'tovSkill', 'pass', 'creation']   # gravity：0.2.10j（每 10 點約 +0.19 per36）
 OD_DEF = ['onBall', 'help', 'pressure']
 OD_ALL = OD_OFF + OD_DEF + ['rebound', 'heightInches']

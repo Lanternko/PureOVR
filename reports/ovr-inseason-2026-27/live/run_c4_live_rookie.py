@@ -22,13 +22,16 @@ import pres_drive as PD  # noqa: E402（2026-11-01 壓迫／切入賽中解凍�
 HERE = Path(__file__).resolve().parent
 ORIG = HERE / 'run_c4_live.py'
 GRAVITY = os.environ.get('GRAVITY', '1') != '0'   # 0.2.10j（R-134）：GRAVITY=0 重現 0.2.10i（不 import gravity_live、新秀起點讀 _retired/）
+TOV_POSS = os.environ.get('TOV_POSS', '1') != '0'   # 0.2.12（R-139）：TOV_POSS=0 重現 0.2.11（不 import tov_live、新秀 tovSkill 仍走 C4 的 y 更新；新秀起點讀 _retired/）
 ROOKIE_JSON = HERE / ('_retired/rookie-prior-2026-0210h.json' if os.environ.get('SPLIT_DC', '1') == '0' else
-                      'rookie-prior-2026.json' if GRAVITY else '_retired/rookie-prior-2026-0210i.json')  # 換版後重解 δ（L-109）；GRAVITY=0／SPLIT_DC=0 重現舊版用當時的 δ
+                      'rookie-prior-2026.json' if GRAVITY and TOV_POSS else '_retired/rookie-prior-2026-0211.json' if GRAVITY else '_retired/rookie-prior-2026-0210i.json')  # 換版後重解 δ（L-109）；GRAVITY=0／SPLIT_DC=0 重現舊版用當時的 δ
 if GRAVITY:
     import gravity_live as GV  # noqa: E402
+if TOV_POSS:
+    import tov_live as TL  # noqa: E402
 G_GAMES = 82
 DPOS = {'G': 'SG', 'F': 'SF', 'C': 'C'}          # D5：G／F／C → 設計矩陣用的 SG／SF／C（回測與上線同一張表）
-SKIP = ('pressure', 'drive')                     # live 凍結的兩項（同老將）
+SKIP = ('pressure', 'drive') + (('tovSkill',) if TOV_POSS else ())                     # live 凍結的兩項（同老將）
 DEF_ATTRS = ('onBall', 'help')                   # 2026-10-30 使用者：新秀防守一有數據就換成當季值（w=1，rookie_defense.py）
 
 OLD_LINE = "    C.write_csv(out_dir / 'ranking.csv', [{k: r[k] for k in head} for r in rows], head)\n"
@@ -92,6 +95,11 @@ def xhat_of(ns, x0, k, rec, arm, rel, dfn=None):
         if dfn and dfn.get('gravity') is not None:
             out['gravity'] = dfn['gravity']
             ws['gravity'], ns_['gravity'] = 1.0, dfn.get('frames26')
+    if TOV_POSS and dfn and dfn.get('tovRows') is not None:   # 0.2.12：新秀 tovSkill＝持球時間定義（本季整季）與起點 x0 依分鐘漸進混合（tov_live.rookie_tov）；沒有持球資料＝維持起點
+        tv, tw, tm = TL.rookie_tov(dfn['tovRows'], dfn['tovPid'], dfn['tovPos'], x0['tovSkill'])
+        if tv is not None:
+            out['tovSkill'] = C.clip(tv)
+            ws['tovSkill'], ns_['tovSkill'] = tw, tm
     for a in DEF_ATTRS:
         if dfn and dfn.get(a) is not None:
             out[a] = C.clip(dfn[a])
@@ -364,6 +372,11 @@ def write_outputs(g, loc, out_dir, rows, head, nopr):
         PD_ROOK.update(PD.inseason({r['playerId']: r['pos'] for r in rookies}))
         for pid, v in PD_ROOK.items():
             dfns.setdefault(pid, {}).update({a: v.get(a) for a in PD_ATTRS}, minW=v.get('minW'))
+    if TOV_POSS:
+        for rk in rookies:
+            b_ = sd26['box'].get(rk['playerId'])
+            if b_ and b_['rows']:
+                dfns.setdefault(rk['playerId'], {}).update(tovRows=b_['rows'], tovPid=rk['playerId'], tovPos=DPOS[rk['pos']])
     if GRAVITY:
         for rk in rookies:
             v = GRAV.get(rk['playerId'])

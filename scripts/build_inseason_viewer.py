@@ -187,8 +187,8 @@ def main():
         cols += ['force', 'foulDisc']
         pd_live = (live / 'pres-drive.json').exists()     # 2026-11-01 壓迫／切入解凍：有側檔就用窗口分量
         ptips, n_pres = pres_tips_live(live / 'pres-drive.json', pool) if pd_live else pres_tips({r['name'] for r in rows if r['playerId'] in pool})   # 否則：2025-26 五分量（凍結）
-    # TO 提示卡：2026-27 至今的失誤、球權、失誤率
-    trows, n_tov = sn.tov_rows(SRC26, 'PLAYER_ID', ipool)
+    # TO 提示卡：2026-27 至今的失誤、持球分鐘、每持球分鐘失誤（0.2.12）
+    trows, n_tov = sn.tov_rows(SRC26, 'PLAYER_ID', ipool, ROOT / 'data/defense-seventh/2026-27/possessions.json')
     hrows = sn.three_rows(SRC26, 'PLAYER_ID', ipool)   # 3PT 提示卡：本季至今三分命中率、出手量
     atips = AT.build(AT.window_stats(False, meta['window8']['gamesDone']), ipool)   # MID／INS／FT／DRV／FD／PASS／CRT／REB／RIM 提示卡：四季窗口含本季
     orows, ob_note = onball_live(rows, ipool)

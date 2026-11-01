@@ -20,6 +20,10 @@ import e175_card as C  # noqa: E402
 sys.path.insert(0, str(HERE))
 import split_dc as SD  # noqa: E402（0.2.10i：SPLIT_DC=1 時 drive 換 D 類、過去季池值換 D／加 creationJ；0 時不動）
 SD.patch_e175(L, C)
+import os  # noqa: E402
+TOV_POSS = os.environ.get('TOV_POSS', '1') != '0'   # 0.2.12：tovSkill 改持球時間（凍結池，見 tov_live.py）；TOV_POSS=0 重現 0.2.11
+if TOV_POSS:
+    import tov_live as TL  # noqa: E402
 
 TARGET, PRIOR = '2026-27', '2025-26'
 DATA26 = ROOT / 'data/defense-seventh/2026-27'
@@ -220,7 +224,7 @@ class Win8:
         score = .5 * (36 * rn['driveVol'] - z['mv']) / z['sv'] + .5 * (rn['driveEff'] - z['me']) / z['se']
         has = S['driveVol'][1][ix] > 0
         M = U['mappers']
-        out = {'rebound': M['rebound'](rn['rebound']), 'tovSkill': M['tovSkill'](-rn['tovSkill']),
+        out = {'rebound': M['rebound'](rn['rebound']), 'tovSkill': TL.vet_values(self, S, S['_pm']) if TOV_POSS else M['tovSkill'](-rn['tovSkill']),
                'foulDraw': M['foulDrawComposite'](comp_fd), 'pass': M['passComposite'](comp_pass),
                'drive': np.where(has, M['drive'](score), 70.0)}
         for a in ('ft', 'mid', 'short'):
@@ -234,11 +238,20 @@ class Win8:
     def check_season_end(self):
         S, G = PRIOR, self.D.G[PRIOR]
         sums = {a: self.sums(a, G, self.D.tab[S][a], G, S) for a in ORDER}
+        if TOV_POSS:
+            sums['_pm'] = TL.window_pm(self, G, {'vol': self.D.tab[S]['vol']}, G, S, S)
         out = self.map_sums(sums)
-        return {a: float(np.abs(out[a] - self.U['mapped'][a]).max()) for a in C.ATTRS8}
+        ref = dict(self.U['mapped'])
+        if TOV_POSS:      # 0.2.12：tovSkill 的基準＝卡片 tov-raw.csv（逐位元）
+            import csv
+            rows = list(csv.DictReader(open(TL.CARD / 'tov-raw.csv', encoding='utf-8')))
+            ref['tovSkill'] = np.array([float(r['tovSkill']) for r in rows])
+        return {a: float(np.abs(out[a] - ref[a]).max()) for a in C.ATTRS8}
 
     def attrs_at(self, g, tabs):
         S = {a: self.sums(a, g, tabs[a], G_TOTAL) for a in ORDER}
+        if TOV_POSS:
+            S['_pm'] = TL.window_pm(self, g, tabs, G_TOTAL, TARGET, TARGET)
         out = self.map_sums(S)
         return {int(p): {a: float(out[a][i]) for a in C.ATTRS8} for i, p in enumerate(self.pids)}
 
