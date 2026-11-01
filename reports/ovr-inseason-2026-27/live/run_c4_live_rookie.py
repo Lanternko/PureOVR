@@ -31,9 +31,9 @@ NEW_LINE = "    _E116.write_outputs(globals(), locals(), out_dir, rows, head, no
 # 2026-10-30 使用者：老將防守解凍，「用 TUL 類似的做法」→ onBall／help 改四季窗口逐場線性遞減（rookie_defense.veteran）
 OLD_DEF = "    attrs = live_predict(delta2, rel_, undefined, frozen, diag=diag)\n"
 NEW_DEF = OLD_DEF + "    _E116.vet_defense(sd26, attrs, prior_cards, pw, attrs0)\n"
-# 2026-11-01 lastOVR／dOVR 基準改 window_ref（REF_W）；檢查 (a) 與 _lastCmp（對正式卡）仍用 ref
+# 2026-11-01 lastOVR／dOVR 基準改 window_ref（REF_W）；檢查 (a) 與 _lastCmp（對正式卡）仍用 ref。E-185：refw 的 MPG 用 mpg_ref（本季 0 場的窗口 MPG；WIN10=0 時＝mpg0）
 OLD_REF = "    ref = e064_convert(ref, mpg0, anc064, r_repl064)\n"
-NEW_REF = OLD_REF + "    refw = e064_convert(apply_usage(dict(_E116.REF_W), usage, ucoef), mpg0, anc064, r_repl064)\n"
+NEW_REF = OLD_REF + "    refw = e064_convert(apply_usage(dict(_E116.REF_W), usage, ucoef), mpg_ref, anc064, r_repl064)\n"
 OLD_LAST = "                    'lastOVR': r1(ref[pid]['ovr']), 'dOVR': round(p['ovr'] - ref[pid]['ovr'], 2),\n"
 NEW_LAST = "                    'lastOVR': r1(refw[pid]['ovr']), 'dOVR': round(p['ovr'] - refw[pid]['ovr'], 2),\n"
 OLD_D = "                    '_ovr': p['ovr'], '_d': p['ovr'] - ref[pid]['ovr'],\n"
