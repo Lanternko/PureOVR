@@ -2051,8 +2051,9 @@
 - 日期：2026-11-02
 - 問題：E-206 觸球分母上線到兩頁（card 0.2.12a／inseason 0.2.12b）。
 - 做法：`reports/card-0.2.12b-touch/spec.md`。`TOV_TOUCH=0` 重現線上 0.2.12／0.2.12a。不是新假設檢定，只是上線。
-- 狀態：進行中
+- 狀態：完成（2026-11-02）。card／inseason 0.2.12c 上線（commit e92fae6，gh-pages 0540dcd）；疊在 W246 的 0.2.12b，池與係數在 328 窗口建（＝E-206 KC final 988b741f）再套到 W246 卡片路徑；TOV_TOUCH=0 兩端逐位元組重現 0.2.12b。產物 `reports/card-0.2.12c/`、`reports/card-0.2.12c-w328/`，自檢 `live/check_inseason_0212c.py`
 - 相關：R-144、E-206
+
 ### E-209
 - 日期：2026-11-02
 - 問題：R-096 新秀起點曲線 T(順位)=73−5.9·ln(順位) 在現行 inseason／card 0.2.12b 管線下還站不站得住；B 重播 2025-26 屆前 3/6/10/20 場與季末，看第 6 場加分留多少；C 把 2026 屆放進 B 的分布。派工編號 E-208，與 `reports/E208-team-rating` 撞號，本條改記 E-209，報告目錄仍是 `reports/E208-rookie-start-recheck/`。

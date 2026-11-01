@@ -14,6 +14,7 @@
 - 新賽季頁版本由 `reports/ovr-inseason-2026-27/live/CURRENT.json` 決定，`test/live_current_gate.py` 掛在 npm test（L-090）；舊建構腳本放 `live/_retired/`。
 
 ## 進行中
+- **TO 觸球分母已做成 0.2.12c**（R-144，E-207，11-02 上線，commit e92fae6、gh-pages 0540dcd）：tovSkill 的 r 分母持球分鐘→觸球次數；`TOV_TOUCH=0` 重現 0.2.12b。池與係數建在 328 窗口、套到 W246（`reports/card-0.2.12c/`）。
 - **遺忘調陡 W246 已做成 0.2.12b**（F-142、E-201、E-204、R-140，11-02）：四季窗口 328→246 格，兩頁（新賽季頁、2025-26 卡片頁）；`live/win_len.py`（`WIN_LEN=328` 重現 0.2.12a／card 0.2.12），卡片端 `reports/card-0.2.12b/`，報告 `reports/E204-window-246/report.md`。season_nav.py 更新說明、「四季」字樣、`OD_CARD`→card-0.2.12b 已補（11-02）。待辦：E-207 原預定 inseason 0.2.12b，撞號，要改 0.2.12c。
 - **0.2.10 待辦**（R-114）：獨立 role-audit 沒做（F-116：組合值評 foulDraw／pass 不過，使用者知情上線）；換季跳動對 0.2.9a 沒量；Porter Jr. 20→40；G5。
 - **E-166 β×2 → sim 0.1.3 已上線**（R-120）：非中鋒罰球防守散布 0.54→1.04、中鋒 0.23→0.56；防守型非中鋒少低估 12 名，S 偏袒長人 +79→+107、30 隊 MAE +0.154。未解：名次和 S 方向相反、F-112 剩 +54 名低估。`reports/sim-0.1.2+E166-ft-defense/`
