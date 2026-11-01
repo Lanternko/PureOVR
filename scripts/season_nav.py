@@ -739,6 +739,8 @@ REGROUP = [
      "['球權', [['rebound', 'REB', '籃板'], ['tovSkill', 'TO', '少失誤'], ['pressure', 'PRES', '壓迫']]],"),
     ("['help', 'RIM', '護框'], ['pressure', 'PRES', '壓迫']]],", "['help', 'RIM', '護框']]],"),
     ("if (k === 'pressure') h += th('dbon', 'DIQ', '防守意識');", "if (k === 'help') h += th('dbon', 'DIQ', '防守意識');"),
+    # 切入不放主畫面（使用者 2026-11-02「切入既然是負分 那就不要列在主畫面了」；0.2.10i 係數每 10 點 −0.03）；仍算進 OFF／OVR
+    ("['drive', 'DRV', '切入'], ['foulDraw', 'FD', '製造犯規']", "['foulDraw', 'FD', '製造犯規']"),
 ]
 
 
@@ -746,6 +748,8 @@ def regroup_attrs(s):
     for a, b in REGROUP:
         assert s.count(a) == 1, a
         s = s.replace(a, b)
+    s, n = re.subn(r'colspan="(\d+)" class="empty"', lambda m: f'colspan="{int(m.group(1)) - 1}" class="empty"', s)
+    assert n == 1
     return s
 
 
