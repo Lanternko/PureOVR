@@ -18,6 +18,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import rookie_defense as RD  # noqa: E402
 import defense_bonus as DB  # noqa: E402
 import pres_drive as PD  # noqa: E402（2026-11-01 壓迫／切入賽中解凍；UNFREEZE_PD=0 時完全不呼叫）
+import win_len  # noqa: E402（E-204／R-140：四季窗口長度開關，WIN_LEN 預設 246；WIN_LEN=328 重現 0.2.12a 以前）
+win_len.install()
 
 HERE = Path(__file__).resolve().parent
 ORIG = HERE / 'run_c4_live.py'

@@ -25,7 +25,7 @@ from build_card_viewer import (onball_rows, onball_tip, pres_tip, pres_tips, tov
                                PRES_SUB, PRES_LOW_GOOD)
 
 ROOT = er.ROOT
-PD_NOTE = '（老將四季加權含本季；新秀只看本季）'
+PD_NOTE = '（老將近三季加權含本季；新秀只看本季）'
 
 
 def pres_tips_live(path, ids):
@@ -159,7 +159,7 @@ def onball_live(rows, pool):
             off += 1
             continue
         comps[pid] = x[:3]
-        note[pid] = '（四季加權，含本季）' if pid in prior else '（新秀：只看本季）'
+        note[pid] = '（近三季加權，含本季）' if pid in prior else '（新秀：只看本季）'
     if off:
         print(f'PER D 提示卡：{off} 人分量換回 onBall 對不上頁面，不給卡', file=sys.stderr)
     return onball_rows(comps, pool), note
@@ -230,7 +230,7 @@ def main():
             t['threeValue'] = sn.three_tip(float(r['threeValue'] or r['long']), hr, '2026-27 至今', r['playerId'] in pool)
         for a, sub in atips.get(int(r['playerId']), {}).items():
             if r.get(a, '') != '':
-                t[a] = AT.tip(a, float(r[a]), sub, '（近四季加權，含本季）')
+                t[a] = AT.tip(a, float(r[a]), sub, '（近三季加權，含本季）')
         tr = trows.get(int(r['playerId']))
         if tr:
             t['tovSkill'] = tov_tip(float(r['tovSkill']), tr, n_tov, '2026-27 至今', r['playerId'] in pool)
@@ -264,7 +264,7 @@ def main():
     s = s.replace('<h1>2025-26 <span>OVR</span> 名單</h1>', '<h1>2026-27 <span>OVR</span> 名單</h1>', 1)
     s = re.sub(r'<div class="src">.*?</div>',
                f'<div class="src">OVR：賽中 C4（{meta["version"]}），開季起點 {meta["priorCard"]}{"（用人回歸＋當季 RAPM 目標）" if "predNew" in rows[0] else ""}；數據截至 {meta["dataCutoff"]}；'
-               f'{("PRES＝逼失誤扣犯規（老將四季加權含本季、新秀只看本季）· " if pd_live else "PRES＝逼失誤扣犯規（沿用 2025-26 數據）· ") if has_pd else ""}{"GRV＝引力：沒拿球時防守人也不敢離開他的程度（NBA.com 無球外線引力，2025-26 與本季加權；沒有資料的人用三分出手、命中率、用球率與位置推估）· " if 'gravity' in rows[0] else ""}N=已打場數 · {len(rows)} 人（另 {nopr} 人沒有上季卡，未列入）· 樣本很小，只看趨勢</div>', s, count=1, flags=re.S)
+               f'{("PRES＝逼失誤扣犯規（老將近三季加權含本季、新秀只看本季）· " if pd_live else "PRES＝逼失誤扣犯規（沿用 2025-26 數據）· ") if has_pd else ""}{"GRV＝引力：沒拿球時防守人也不敢離開他的程度（NBA.com 無球外線引力，2025-26 與本季加權；沒有資料的人用三分出手、命中率、用球率與位置推估）· " if 'gravity' in rows[0] else ""}N=已打場數 · {len(rows)} 人（另 {nopr} 人沒有上季卡，未列入）· 樣本很小，只看趨勢</div>', s, count=1, flags=re.S)
     new_data = json.dumps({'cols': cols, 'rows': data_rows}, ensure_ascii=False, separators=(',', ':'))
     s = re.sub(r'const DATA=\{.*?\};\nconst COLS', lambda m: f'const DATA={new_data};\nconst COLS', s, count=1, flags=re.S)
     for a, b in [

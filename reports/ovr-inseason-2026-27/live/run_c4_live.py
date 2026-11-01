@@ -59,8 +59,8 @@ if E064_MODE != 'G1':
     raise SystemExit('E064_MODE 只接受 G1（off／G0 是舊頁重現用，已淘汰）')
 # 預註冊 §4.1：stamina 最小樣本 1 場（本身的能力值與 w 都用；其餘 15 屬性照 C4 現行）。
 SA.SEASON_MIN_SAMPLE['stamina'] = 1
-VERSION = 'inseason 0.2.12a'  # R-050／R-114：先驗卡 card 0.2.12；0.2.12a＝gravity 補值依本季分鐘往進攻 EPM 收縮（gravity_live.EPM_ON；GRAVITY_EPM=0 重現 0.2.12）；0.2.12＝tovSkill 改看持球時間（R-139，E-203，live/tov_live.py，檔名用 0212／card-0.2.12-tov）；0.2.11（原標 0.2.10j，R-137 使用者升為 PATCH；檔名沿用 0210j）＝加能力值 gravity（無球外線引力，R-134／R-135，live/gravity_live.py）；0.2.10i＝drive→drive_D、creation→creationJ（R-130／R-132，live/split_dc.py）；0.2.10h＝賽中端 y、v 改用開季當天年齡（R-129，E-193），卡片端不動。 第一個字面值會被 daily_inseason_update.probe_base_version 以正規式讀取，勿改成括號／條件式開頭
-CARD_VERSION = 'card 0.2.12'
+VERSION = 'inseason 0.2.12b'  # R-050／R-114：先驗卡 card 0.2.12b；0.2.12b＝四季窗口由 328 格縮成 246 格（R-140，E-204，live/win_len.py；WIN_LEN=328 重現 0.2.12a）；0.2.12a＝gravity 補值依本季分鐘往進攻 EPM 收縮（gravity_live.EPM_ON；GRAVITY_EPM=0 重現 0.2.12）；0.2.12＝tovSkill 改看持球時間（R-139，E-203，live/tov_live.py，檔名用 0212／card-0.2.12-tov）；0.2.11（原標 0.2.10j，R-137 使用者升為 PATCH；檔名沿用 0210j）＝加能力值 gravity（無球外線引力，R-134／R-135，live/gravity_live.py）；0.2.10i＝drive→drive_D、creation→creationJ（R-130／R-132，live/split_dc.py）；0.2.10h＝賽中端 y、v 改用開季當天年齡（R-129，E-193），卡片端不動。 第一個字面值會被 daily_inseason_update.probe_base_version 以正規式讀取，勿改成括號／條件式開頭
+CARD_VERSION = 'card 0.2.12b'   # 0.2.12b＝同上窗口 246（reports/card-0.2.12b/）；WIN_LEN=328 時回 card 0.2.12
 AGE_START = os.environ.get('AGE_START', '1') != '0'   # 0.2.10h：y、v 用開季當天足歲（data/defense-seventh/2026-27/birthdates.json，live/window11.py）；AGE_START=0 重現 0.2.10g（本季 bio AGE）
 # 0.2.10i（R-130／R-132）：切入／自主拆開。SPLIT_DC=0 重現 0.2.10h（卡 card 0.2.10g；先驗、usage 讀 _retired/；window8／window10／pres_drive 由 split_dc.ON 走舊路徑）
 SPLIT_DC = os.environ.get('SPLIT_DC', '1') != '0'
@@ -76,6 +76,8 @@ if TOV_POSS and not GRAVITY:
     raise SystemExit('重現 0.2.10i 以前的版本要同時設 TOV_POSS=0 GRAVITY=0')
 if os.environ.get('GRAVITY_EPM', '1') == '0':
     VERSION = 'inseason 0.2.12'
+if os.environ.get('WIN_LEN', '246') == '328':   # 0.2.12b（R-140，E-204）：WIN_LEN=328 重現 0.2.12a（GRAVITY_EPM=0 則 0.2.12）；win_len.install() 在 run_c4_live_rookie 載入時讀同一個環境變數
+    VERSION, CARD_VERSION = ('inseason 0.2.12' if os.environ.get('GRAVITY_EPM', '1') == '0' else 'inseason 0.2.12a'), 'card 0.2.12'
 if not TOV_POSS:
     VERSION, CARD_VERSION = 'inseason 0.2.11', 'card 0.2.11'
 if not GRAVITY:
@@ -877,8 +879,13 @@ def load_usage():
     if hashlib.sha256(FORMAL_RANKING.read_bytes()).hexdigest() != summ['ranking_csv_sha256']:
         raise SystemExit(f'{CARD_VERSION} ranking.csv sha256 與 summary.json 不符')
     # 0.2.7d 起沒另存錨點：build_usage 已逐人核對 582 人 OVR；這裡核對它用的是同一張卡
-    if doc['sourceSha256'][_OV + ' ranking.csv'] != summ['ranking_csv_sha256']:
-        raise SystemExit(f'usage 檔不是用現行 {CARD_VERSION} ranking.csv 建的')
+    # 0.2.12b（R-140，E-204）：窗口縮短不重取係數、r_repl、錨點，usage 檔仍是用 card 0.2.12（card-0.2.12-tov）建的
+    usrc, usumm = _OV, summ
+    if CARD_VERSION == 'card 0.2.12b':
+        usrc = 'card-0.2.12-tov'
+        usumm = load_json(ROOT / 'reports/card-0.2.12-tov/summary.json')
+    if doc['sourceSha256'][usrc + ' ranking.csv'] != usumm['ranking_csv_sha256']:
+        raise SystemExit(f'usage 檔不是用現行 {usrc} ranking.csv 建的')
     return {int(k): v for k, v in doc['players'].items()}, doc['coef'], doc['payloadSha256']
 
 
