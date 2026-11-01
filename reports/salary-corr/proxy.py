@@ -16,8 +16,8 @@ def adv(y):
         if k in out: continue   # 第一列＝TOT（被交易球員的合計）
         v={}
         for f in F:
-            x=re.search(rf'data-stat="{f}"[^>]*>([^<]*)<',row); 
-            try: v[f]=float(x.group(1)) if x else 0.0
+            x=re.search(rf'data-stat="{f}"[^>]*>(.*?)</td>',row,re.S)   # L-102：去掉 <strong>
+            try: v[f]=float(re.sub(r'<[^>]+>','',x.group(1))) if x else 0.0
             except ValueError: v=None; break
         if v is None: continue
         out[k]=v

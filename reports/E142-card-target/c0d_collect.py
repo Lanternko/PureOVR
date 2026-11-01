@@ -73,8 +73,8 @@ def bpm_parse(path):
         if k in out: continue                    # 第一列＝TOT
         v = {}
         for f in BF:
-            x = re.search(rf'data-stat="{f}"[^>]*>([^<]*)<', row)
-            v[f] = x.group(1) if x else ''
+            x = re.search(rf'data-stat="{f}"[^>]*>(.*?)</td>', row, re.S)   # L-102：聯盟第一包在 <strong> 裡，先去標籤
+            v[f] = re.sub(r'<[^>]+>', '', x.group(1)).strip() if x else ''
         out[k] = (nm, v)
     return out
 
