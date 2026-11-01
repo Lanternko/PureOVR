@@ -20,6 +20,7 @@ import window10 as W10
 L = W8.L
 ROOT, HERE = W8.ROOT, W8.HERE
 TARGET, PRIOR, G_TOTAL = W10.TARGET, W10.PRIOR, W10.G_TOTAL
+BIRTHDATES = ROOT / 'data/defense-seventh' / TARGET / 'birthdates.json'   # scripts/fetch_birthdates_2026_27.mjs 產出的凍結檔（commonplayerinfo BIRTHDATE）
 AVAIL_HIST = HERE / 'avail-hist-0210g.json.gz'
 HIST_SEASONS = ['2022-23', '2023-24', '2024-25']
 DNP_PRIOR = ROOT / 'data/season-source/dnp-2025-26.json'
@@ -30,6 +31,7 @@ SUS_MIN_PLAYED, SUS_MIN_AVG, SUS_RUN = 10, 24.0, 3
 INACTIVE_NOREASON_TO_COACH = False   # BASE_OPTS
 AGE_Y, AGE_V = 23, 31
 USAGE_SWITCH_ENV = 'USAGE_WIN'       # '0'＝關掉窗口，回 0.2.10f（凍結 2025-26 用人特徵）
+AGE_START_ENV = 'AGE_START'          # '0'＝y、v 回 0.2.10g 的舊行為（本季 bio AGE＝抓取當下年齡，季中過生日會跳）；預設 0.2.10h：開季當天足歲，整季固定
 
 
 def minutes_of(s):
@@ -143,6 +145,23 @@ class Win11(W10.Win10):
             self.T10[s]['ap'] = self._ap_tab(s)
         self.age25 = self._ages(ROOT / 'data/benchmark-source/bio.json')
         self.age_cur = self._ages(self.data26 / 'bio.json') if (self.data26 / 'bio.json').exists() else {}
+        self.age_start = self._ages_at_start() if __import__('os').environ.get(AGE_START_ENV, '1') != '0' else {}
+        self.age_fallback = {'bio': set(), 'bio25': set(), 'none': set()}   # age_flags 沒有 DOB 時退回哪裡（記錄用）
+
+    def _ages_at_start(self):
+        """{pid: 開季當天足歲}。開季日＝本季 player-games 最早 GAME_DATE（整季固定；ovr_history 的截斷夾最早日不變）。沒有 birthdates.json 直接報錯（不靜默退回舊行為）。"""
+        import datetime as dt
+        if not BIRTHDATES.exists():
+            raise FileNotFoundError(f'{BIRTHDATES} 不存在：先跑 node scripts/fetch_birthdates_2026_27.mjs（或 AGE_START=0 回 0.2.10g）')
+        pl = W8._rows(self.data26 / 'player-games.json')
+        self.season_start = dt.date.fromisoformat(min(r['GAME_DATE'] for r in pl)[:10]) if pl else None
+        if self.season_start is None:
+            return {}
+        out = {}
+        for pid, b in json.loads(BIRTHDATES.read_text(encoding='utf-8'))['birthdates'].items():
+            d = dt.date.fromisoformat(b)
+            out[int(pid)] = self.season_start.year - d.year - ((self.season_start.month, self.season_start.day) < (d.month, d.day))
+        return out
 
     @staticmethod
     def _ages(path):
@@ -187,9 +206,24 @@ class Win11(W10.Win10):
         den = np.where(has, ap, 1.0)
         return {'L': np.where(has, np.log1p(mn / den), np.nan), 'a': np.where(has, pl / den, 0.0), 'has': has, 'ap': ap, 'pl': pl, 'mn': mn}
 
+    def age_summary(self):
+        """meta 用：開季日、有 DOB 人數、退回 bio 年齡的人數（age_flags 對 D.pids 全部呼叫過之後才完整）。"""
+        f = self.age_fallback
+        return {'seasonStart': str(self.season_start), 'birthdates': len(self.age_start), 'file': BIRTHDATES.relative_to(ROOT).as_posix(),
+                'fallbackBio2627': len(f['bio']), 'fallbackBio2526': len(f['bio25']), 'noAge': len(f['none'])}
+
     def age_flags(self, pid):
-        """(age, y, v)：本季 bio 的 AGE，沒有（本季還沒上場）用 2025-26 bio；都沒有 -> (None, 0, 0)。"""
-        a = self.age_cur.get(pid, self.age25.get(pid))
+        """(age, y, v)：0.2.10h 起用開季當天足歲（birthdates.json）；沒有 DOB 的人退回本季 bio 的 AGE，再退回 2025-26 bio（age_fallback 記人）；
+        都沒有 -> (None, 0, 0)。AGE_START=0＝0.2.10g：本季 bio AGE、再 2025-26 bio。"""
+        a = self.age_start.get(pid)
+        if a is None:
+            a = self.age_cur.get(pid)
+            if self.age_start and a is not None:
+                self.age_fallback['bio'].add(pid)
+            elif a is None:
+                a = self.age25.get(pid)
+                if self.age_start:
+                    self.age_fallback['bio25' if a is not None else 'none'].add(pid)
         return a, float(a is not None and a <= AGE_Y), float(a is not None and a >= AGE_V)
 
 

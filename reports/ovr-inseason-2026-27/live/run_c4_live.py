@@ -59,8 +59,11 @@ if E064_MODE != 'G1':
     raise SystemExit('E064_MODE 只接受 G1（off／G0 是舊頁重現用，已淘汰）')
 # 預註冊 §4.1：stamina 最小樣本 1 場（本身的能力值與 w 都用；其餘 15 屬性照 C4 現行）。
 SA.SEASON_MIN_SAMPLE['stamina'] = 1
-VERSION = 'inseason 0.2.10g'  # R-050／R-114：跟先驗 card 0.2.10g 同號； 第一個字面值會被 daily_inseason_update.probe_base_version 以正規式讀取，勿改成括號／條件式開頭
+VERSION = 'inseason 0.2.10h'  # R-050／R-114：先驗卡 card 0.2.10g；0.2.10h＝賽中端 y、v 改用開季當天年齡（R-129，E-193），卡片端不動。 第一個字面值會被 daily_inseason_update.probe_base_version 以正規式讀取，勿改成括號／條件式開頭
 CARD_VERSION = 'card 0.2.10g'
+AGE_START = os.environ.get('AGE_START', '1') != '0'   # 0.2.10h：y、v 用開季當天足歲（data/defense-seventh/2026-27/birthdates.json，live/window11.py）；AGE_START=0 重現 0.2.10g（本季 bio AGE）
+if not AGE_START:
+    VERSION = 'inseason 0.2.10g'
 if not USAGE_WIN:   # USAGE_WIN=0：整組回 0.2.10f（先驗卡、usage 檔、summary、ranking 都用 0.2.10f 的）
     CARD_VERSION = 'card 0.2.10f'
     VERSION = 'inseason 0.2.10f'
@@ -719,6 +722,8 @@ def win8_load():
             if USAGE_WIN:   # 0.2.10g：用人層 L、a（四季窗口，今天與本季 0 場）＋ y、v（當下年齡）
                 WIN8['usage'] = _usage_window(W, W.usage_at(gd, tabs))
                 WIN8['usage_day0'] = _usage_window(W, W.usage_at(0, tabs))
+                if AGE_START and W.age_start:
+                    WIN8['ageStart'] = W.age_summary()   # 0.2.10h：y、v 用開季當天年齡；沒有 DOB 的人退回 bio 年齡
     finally:
         sys.path[:] = saved
     print(f'{VERSION} 窗口：本季 {gd} 場（pbp {WIN8["pbp"]} 場），8 項 {len(WIN8["now"])} 人', file=sys.stderr)
@@ -1200,6 +1205,7 @@ def main():
                   'mpg0FromCard': sum(1 for pid, c in prior_cards.items() if c['name'] in mpg_card),
                   'mpg0Fallback': sum(1 for pid, c in prior_cards.items() if c['name'] not in mpg_card)},
         'e128': m26_info,
+        **({'ageStart': WIN8['ageStart']} if WIN8.get('ageStart') else {}),
         'inputs': sha, 'mapping2025_26': {'priors': mp['priors'], 'poolSize': mp['poolSize'],
                                           'boxPlayersDroppedNoBio': mp['boxPlayersDroppedNoBio'],
                                           'priorShotSampleFilled': [mp['priorShotSampleFilled'], mp['priorCards']]},

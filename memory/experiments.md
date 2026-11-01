@@ -1943,3 +1943,12 @@
 - 狀態：已完成（2026-11-01），使用者核准上線（R-128）。限制：Y0 係數未窗口化；本季 C 少算；d 未實作；賽中端 30→31 歲年齡旗標翻轉造成 v 項 −0.22/36（約 −4～−6 OVR，Allen、Gordon、Kuzma、Martin）。
 - 相關：R-128、E-175、E-185、E-188、E-191、R-118、R-109
 - 來源：使用者派工 2026-11-01
+
+### E-193
+- 日期：2026-11-01
+- 假設：賽中端年齡旗標改用開季當天年齡後，只有「開季後過生日」或「本季還沒上場、之前用到一年前的 2025-26 bio」的人會變，前段名次幾乎不動。
+- 做法：inseason 0.2.10h（直接上線，R-129）。`scripts/fetch_birthdates_2026_27.mjs` 抓 592 人 DOB（Python urllib 會被 stats.nba.com 擋逾時，改用 node）→ birthdates.json；`window11.py` `Win11.age_flags` 預設用 age_start，`AGE_START=0` 回舊行為；meta.json 多 `ageStart`（開季日、DOB 人數、退回 bio 人數）。自檢 `live/check_inseason_0210h.py`。
+- 結果：AGE_START=0 的 ranking.csv／no-prior.csv／pres-drive.json 與 0.2.10g 逐位元組相同。age_start≠本季 bio AGE 11 人，皆生日在 10-22～10-30（Booker、Brown、Vučević、Landale、Tate…）；y 或 v 改變 11 人（其中 8 人本季未上場、舊版用 2025-26 bio 少算一歲）：Porziņģis v 0→1（OVR 91.0→88.2，23→37 名）、Landale v 1→0（278→257 名）、Tate v 1→0、Pedulla y 1→0（54.5→54.8）。Grayson Allen、Gordon、Kuzma、Caleb Martin age_start＝31（不變）。前 20 名進出 0、前 100 名移動 ≥10 名 1 人，名次有變 47／484 人。`reports/E193-age-start/check.txt`
+- 狀態：已完成（2026-11-01）。限制：卡片端仍用 2025-26 bio 年齡；之後新增球員（季中簽約、雙向轉正）要重跑 fetch 補 DOB，否則退回 bio 年齡（meta ageStart.fallback* 會記）。
+- 相關：R-129、E-192、R-128、R-109
+- 來源：使用者派工 2026-11-01
