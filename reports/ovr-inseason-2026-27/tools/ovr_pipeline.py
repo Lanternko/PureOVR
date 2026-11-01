@@ -65,6 +65,10 @@ class OVRPipeline:
         self.mean = np.array([s['formula']['attributeMean'][a] for a in self.attrs], float)
         self.sd = np.array([s['formula']['attributeSD'][a] for a in self.attrs], float)
         self.b = np.array([s['formula']['intercept']] + s['formula']['coefficientsOnStandardized'], float)
+        # E-180/E-187：card 0.2.10c 起位置交互項拿掉 pass（--dropInteract pass）→ 係數少 4 個；由係數個數判斷（舊 summary 仍用全部 INTERACT）
+        k = (len(self.b) - 1 - len(self.attrs)) // 4
+        assert len(self.b) - 1 == len(self.attrs) + 4 * k and k in (len(INTERACT), len(INTERACT) - 1), (len(self.b), len(self.attrs))
+        self.interact = INTERACT if k == len(INTERACT) else [a for a in INTERACT if a != 'pass']
         self.anchors = (s['scaleAnchorsPer36']['PR1'], s['scaleAnchorsPer36']['PR50'],
                         s['scaleAnchorsPer36']['PR99'])
         self.pids = sorted(prior_cards)
@@ -106,7 +110,7 @@ class OVRPipeline:
         pos_arr = np.array(self.pos)
         for p in POS[:-1]:
             d = (pos_arr == p).astype(float)[:, None]
-            cols.append(d * z[:, [self.attrs.index(a) for a in INTERACT]])
+            cols.append(d * z[:, [self.attrs.index(a) for a in self.interact]])
         X = np.hstack(cols)
         return np.c_[np.ones(len(X)), X] @ self.b
 

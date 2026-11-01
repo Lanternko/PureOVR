@@ -1867,6 +1867,7 @@
 - 假設：不是假設檢定（R-118 直接上線）。把 long、creation、threeValue、MPG 換成四季窗口，card／inseason 0.2.11 PATCH。
 - 做法：long、creation 照 `reports/E175-sliding-window-card/stage1-methods.md` §2 已寫好的 U 版；MPG 的窗口長度只在 2024-25 選、2025-26 報告；係數／錨全凍結 0.2.9a。報告 `reports/card-0.2.11/report.md`。
 - 狀態：完成（2026-11-01）：改名 card／inseason 0.2.12（0.2.11 被另一 session 先用於 0.2.10a），底是 card 0.2.10a（R-121）；自我檢查逐位元過（卡端與新賽季端）、npm test 全過、未發佈；R-122 把正式卡改成 0.2.10b，OFFICIAL_CARD／導覽／卡片頁的 patch 未 commit（存 reports/card-0.2.12/work/patches），待決定是否改疊 0.2.10b。報告 `reports/card-0.2.12/report.md`
+- 狀態：完成（2026-11-01，R-123 後改版號）：疊在 card 0.2.10c（KAU）上，字母版 card／inseason 0.2.10d（0.2.13 改名，不留）；自我檢查逐位元重建 0.2.10c 過、npm test 全過；窗口把 0.2.10c 壓下的 JW 帶回第 9 名（OVR 90.7），Franz Wagner 21→42。報告 `reports/card-0.2.10d/report.md`
 - 相關：R-118、R-111、R-114、E-175
 - 來源：使用者 2026-11-01「開始 sliding windows」
 

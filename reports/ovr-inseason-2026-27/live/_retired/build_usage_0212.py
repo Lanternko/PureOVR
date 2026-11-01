@@ -1,3 +1,4 @@
+raise SystemExit('已淘汰：本檔只供對照。重現請 checkout 當時 commit（見 live/CURRENT.json、_retired/README.md）')  # R-114 retired guard
 """card 0.2.12（E-185，R-111/R-114，policy B 全凍結）：照 build_usage_0210.py，卡目錄換成 reports/card-0.2.12/cards/K6；
 唯一差別：用人層的 MPG（mpgAvail，進 g＝(pred−r_repl)·w_sat(mpg)）換成 card-0.2.12/mpg-c82.csv 的窗口 MPG（同 card-0.2.12/use_layer.py mpg_path）；
 錨點凍結（0.2.9a 值），所以「錨點重算差」會不為 0（量尺沒改）；核對 ovr／mpg／gRepl 對 card-0.2.12/ranking.csv 逐格相同。

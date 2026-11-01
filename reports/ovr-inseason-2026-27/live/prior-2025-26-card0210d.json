@@ -1,7 +1,7 @@
 {
  "schemaVersion": 1,
  "season": "2025-26",
- "note": "card 0.2.12 先驗：card 0.2.10 先驗：E-128 CARD_MODE=027b 的 x0：先取 card 0.2.7 產生器 load() 的未四捨五入值，再以 rebase-027a/work/tail-e123a.csv 覆蓋 13 個尾巴屬性（含 E-125 pass、E-123 pressure），help＝E-123 def-new.csv new_help（0.1 位）；stamina／heightInches＝LEAGUE 名單卡。其餘欄位沿用 prior-2025-26-v5.json。presDisplay、foulDisc 只供顯示（card 0.2.7b ranking.csv）。 ／ 8 項屬性換 card-0.2.10/tail-U.csv（E-175 滑動窗口，2025-26 季末）。 ／ long、creation 換 card-0.2.12/tail-U.csv（E-185 四季滑動窗口，2025-26 季末）。",
+ "note": "card 0.2.10d 先驗：card 0.2.10 先驗：E-128 CARD_MODE=027b 的 x0：先取 card 0.2.7 產生器 load() 的未四捨五入值，再以 rebase-027a/work/tail-e123a.csv 覆蓋 13 個尾巴屬性（含 E-125 pass、E-123 pressure），help＝E-123 def-new.csv new_help（0.1 位）；stamina／heightInches＝LEAGUE 名單卡。其餘欄位沿用 prior-2025-26-v5.json。presDisplay、foulDisc 只供顯示（card 0.2.7b ranking.csv）。 ／ 8 項屬性換 card-0.2.10/tail-U.csv（E-175 滑動窗口，2025-26 季末）。 ／ long、creation 換 card-0.2.12/tail-U.csv（E-185 四季滑動窗口，2025-26 季末）。",
  "sources": {
   "formalCard": {
    "file": "reports/card-0.2.7b/ranking.csv",
@@ -67,7 +67,7 @@
    "file": "reports/ovr-inseason-2026-27/live/prior-2025-26-card027b.json",
    "sha256": "dd5d86fe39a71e9f4e8222e22a85f7a091358d437ce1d084093375b5489faffd"
   },
-  "card0212TailU": {
+  "card0210dTailU": {
    "file": "reports/card-0.2.12/tail-U.csv",
    "sha256": "166c808965b292482232c64c83bc870d7c4fdaf795a6702a62978589b86ad1a7"
   },
