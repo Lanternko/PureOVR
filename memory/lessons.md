@@ -459,3 +459,11 @@
 - 由來：使用者 2026-11-01「我 rules 有寫機會成本……我覺得某個項目最重要，例如 JW 太高估、沒有採用 sliding windows，然後模型會跟我扯很多球隊 MAE 變差，改善幅度不大」
 - 對應測試或關卡：role-lead 寫預註冊與 role-audit 稽核預註冊時逐列標「目標／沒弄壞／權衡」；README「問題卡與停損」第 3 條。
 - 相關：R-042、L-041、R-117、R-114、R-115、E-164、E-166、E-175、E-177
+
+### L-098
+- 日期：2026-11-01
+- 規則：上游資料欄位消失時程式不能靜默把當季資料當 0。讀進來的欄位要有健檢：本季有大量出手（2pt ≥ 200）但分區結果幾乎全空（< 50%）就要 raise 或 WARNING；窗口類屬性還要看「本季分母 > 0 的人數」。
+- 細節：inseason 0.2.10 的 mid／short 用 pbp 的 `area` 欄分區，2026-27 pbp 完全沒有 `area`／`areaDetail`（只有 shotDistance、x、y、xLegacy、yLegacy），全聯盟本季 mid／short 分母都是 0，這兩項整季停在 day0（例：Simons mid 70.5、short 52.8 不動）；driveVol／ft 正常所以沒人發現。
+- 由來：使用者看 Simons 的 mid／short 整季不動才查到。
+- 對應測試或關卡：`window8.Win8.cur_tabs` 已加 WARNING（2pt 出手 ≥ 200 且判得出區域 < 50%）。
+- 相關：F-124、E-175、R-114

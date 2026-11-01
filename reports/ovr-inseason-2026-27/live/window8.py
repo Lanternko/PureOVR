@@ -34,9 +34,10 @@ def _rows(path):
 # ---------------- 投籃區域（mid／short）：有官方 area 用官方；2026-27 pbp 沒有 area／areaDetail，改用距離＋座標推導
 # 規則在看 2025-26 核對結果前依座標慣例定死（NBA stats 座標：籃框原點、0.1 呎；油漆區寬 16 呎＝|x|≤80、從籃框到罰球線 14.25 呎＝y≤142.5；限制區半徑 4 呎）。
 RA_FT, PAINT_X, PAINT_Y = 4.0, 80, 142.5
-# 推導規則對 2025-26 官方 area 的核對 mid 一致率只有 88.0%（< 門檻 95%，F-124、zone-check/zone-check.json），未獲核可前不啟用；
+# 推導規則核對（F-124）：第一輪（2025-26）mid 一致率 88.0% 未過；加「佔位座標＝無法判斷」規則後用沒看過的 2024-25 核對：
+# mid 97.4%／short 100%（可判斷者），無法判斷 9.3%／3.3%，過門檻（≥95%、≤10%），2026-11-01 使用者核可啟用。
 # 關閉時沒有 area 的資料維持舊行為（區域不計），只多一個 WARNING。
-DERIVE_ZONES = False
+DERIVE_ZONES = True
 
 
 def _zone(a):
@@ -47,6 +48,8 @@ def _zone(a):
     if not DERIVE_ZONES:
         return None
     d, x, y = a.get('shotDistance'), a.get('xLegacy'), a.get('yLegacy')
+    if x == 0 and y == 0 and not d:               # 佔位座標（距離 0／缺、xLegacy＝yLegacy＝0）：不是真實出手位置，無法判斷、不計分子分母
+        return None
     if d is not None and d <= RA_FT:
         return 1
     if x is None or y is None:
