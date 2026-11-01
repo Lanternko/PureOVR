@@ -94,7 +94,8 @@ PATCH_NOTES = [
     # 版號 0.2.10：前 20 名進出 1 人（Embiid 進、Porter Jr. 出）、前 100 名移動 >=10 名 18 人，照 R-109 屬 PATCH（係數全凍結、只換 8 項屬性來源）
     (('card', 'inseason'), '0.2.10', '2026-11-01', [
         '中距離、近框、罰球、製造犯規、傳球、籃板、少失誤、切入這 8 項能力值改看過去四季滑動窗口（近季權重高，開季看前四季、隨賽季逐場換成本季），換季時不再一下跳很多。名次變動：Flagg 82 → 68 名、Embiid 23 → 18 名、Porter Jr. 20 → 40 名。',
-        '0.2.10a 補回 OVR 標準漏掉的聯盟第一：BPM 榜首原本被讀成空白而被排除（Jokić 7 → 3 名；Kawhi 3 → 6 名）。']),
+        '0.2.10a 補回 OVR 標準漏掉的聯盟第一：BPM 榜首原本被讀成空白而被排除（Jokić 7 → 3 名；Kawhi 3 → 6 名）。',
+        '0.2.10c 傳球改成所有位置共用同一個加分幅度：持球前鋒不再因傳球被多加分（Jalen Williams 9 → 12 名、Scottie Barnes 18 → 27 名；Austin Reaves 26 → 21 名）。']),
     # 版號 0.2.9a：前 20 名無進出、前 100 名移動 >=10 名 23 人，照 R-109（字母版門檻看前 100 名 <=25 人）屬字母版
     (('card', 'inseason'), '0.2.9a', '2026-11-01', [
         '耐力不再當成 OVR 的得分項：改成只在上場時間裡反映（Porziņģis 60 → 32 名、Jalen Williams 17 → 10 名；Edgecombe 101 → 150 名、Ayton 194 → 239 名）。']),
@@ -627,11 +628,11 @@ OD_DEF = ['onBall', 'help', 'pressure']
 OD_ALL = OD_OFF + OD_DEF + ['rebound', 'heightInches']
 
 
-def off_def(rows, key):
-    """{rows[key]: (進攻分, 防守分)}；pred0 用卡片係數算回來差超過 0.02 的人給 (None, None)，回 (dict, 對不上人數)。"""
+def off_def(rows, key, card_path=OD_CARD):
+    """{rows[key]: (進攻分, 防守分)}；pred0 用卡片係數算回來差超過 0.02 的人給 (None, None)，回 (dict, 對不上人數)。card_path＝係數來源卡（新賽季頁用預設 0.2.10，正式卡頁傳自己的卡）。"""
     import csv
     import numpy as np
-    card = list(csv.DictReader(OD_CARD.open(encoding='utf-8')))
+    card = list(csv.DictReader(Path(card_path).open(encoding='utf-8')))
     coef = {}
     for ps in {r['pos'] for r in card}:
         g = [r for r in card if r['pos'] == ps]
