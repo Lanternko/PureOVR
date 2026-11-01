@@ -294,7 +294,7 @@ def probe_base_version() -> str | None:
 
 
 def step_c4(out_dir: Path) -> dict:
-    checked([py_exe(), '-I', str(RUN_LIVE), str(out_dir)], ROOT, TIMEOUTS['c4'])
+    checked([py_exe(), '-I', '-X', 'utf8', str(RUN_LIVE), str(out_dir)], ROOT, TIMEOUTS['c4'])
     meta = load_json(out_dir / 'meta.json')
     if not meta.get('version') or not meta.get('dataCutoff'):
         raise RuntimeError(f'meta.json 缺 version/dataCutoff：{out_dir}')
@@ -305,7 +305,7 @@ def step_history(out_dir: Path) -> None:
     """名單頁 OVR 折線（2026-10-31）：資料截到每個比賽日重算 OVR → ovr-history.json（同版號、同資料的日子走快取）。
     失敗不擋發布，名單頁就不畫折線。"""
     try:
-        r = run([py_exe(), '-I', str(HISTORY), str(out_dir)], ROOT, TIMEOUTS['history'])
+        r = run([py_exe(), '-I', '-X', 'utf8', str(HISTORY), str(out_dir)], ROOT, TIMEOUTS['history'])
     except subprocess.TimeoutExpired:
         log.warning('ovr_history 逾時；這次不畫 OVR 折線')
         return
@@ -314,7 +314,7 @@ def step_history(out_dir: Path) -> None:
 
 
 def step_viewer(out_dir: Path) -> Path:
-    checked([py_exe(), '-I', str(VIEWER), str(out_dir)], ROOT, TIMEOUTS['viewer'])
+    checked([py_exe(), '-I', '-X', 'utf8', str(VIEWER), str(out_dir)], ROOT, TIMEOUTS['viewer'])
     html = out_dir / 'roster-viewer.html'
     if not html.exists() or html.stat().st_size < 10_000:
         raise RuntimeError(f'roster-viewer.html 不存在或太小：{html}')
@@ -324,7 +324,7 @@ def step_viewer(out_dir: Path) -> Path:
 def step_card_viewer(out_dir: Path) -> Path:
     """建 2025-26 正式卡頁（含賽季切換列），輸出到工作夾，與賽中頁一起發布成 2025-26.html。"""
     html = out_dir / 'card-roster-viewer.html'
-    checked([py_exe(), '-I', str(CARD_VIEWER), str(html)], ROOT, TIMEOUTS['viewer'])
+    checked([py_exe(), '-I', '-X', 'utf8', str(CARD_VIEWER), str(html)], ROOT, TIMEOUTS['viewer'])
     if not html.exists() or html.stat().st_size < 10_000:
         raise RuntimeError(f'card-roster-viewer.html 不存在或太小：{html}')
     return html
