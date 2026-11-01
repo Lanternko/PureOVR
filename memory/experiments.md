@@ -2011,6 +2011,7 @@
 - 問題：TO 改成「每持球分鐘失誤率（收縮）0.5＋持球時間/36 0.5」、全部係數重擬合後，TO 對 2K27 Ball Handle 是否更準、TO 榜是否不再被不持球的人佔據，且整體 OVR 沒弄壞（F-143 額度第 1 個）。
 - 做法：`reports/card-0.2.10j+E202-to-possession/{preregistration.md,spec.md}`（凍結 2026-11-02）。底 card 0.2.10j；收縮法沿用 E-069 方法 c 的選法、分子改全部失誤。
 - 已揭露：現行 TO 前 30 有 19 人持球低於中位數；三種用球量名次（Jokić 球權 5／持球 58、Brunson 13／2）；失誤率與球權/36 相關 0.08。沒看過新 TO 的數值、係數或名次。
-- 狀態：進行中
+- 結果（role-card 子代理，lead 抽查 results.json／KT ranking 相符；969a835）：A 過（TO 對 2K27 Ball Handle ρ 0.08→0.79，MDE 0.088）；沒弄壞過（c0 逐位元、npm test、OVR 對本季 RAPM ρ 0.591→0.575，門檻 −0.114）；B 19→0。代價：TO 與 creation／pass 相關升到 0.72／0.78（VIF 5.4），OVR 對 EPM ρ 0.793→0.769，前 100 有 34 人移動 ≥10 名；Kornet OVR 名次 62→99、Jalen Williams 10→22。A 大幅通過部分是定義使然（2K Ball Handle 本身偏用球量，E-069 已見 0.74）。
+- 狀態：完成（2026-11-02，待使用者裁定採用；未做 role-audit）
 - 相關：F-143、R-136、R-032、E-069、E-198
 - 來源：使用者 2026-11-02「用持球時間」
