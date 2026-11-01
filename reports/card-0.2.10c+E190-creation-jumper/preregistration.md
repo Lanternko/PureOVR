@@ -2,7 +2,7 @@
 
 - 日期：2026-11-01。問題卡 F-132（額度 3，本實驗第 1 個）。使用者 2026-11-01：「切入和傳球、自主不一樣……切入只說他過人到禁區的速度很快、成功率很高，不一定代表運球晃出中距離空檔的能力很強」→ 要預註冊。
 - 基準：正式卡 card 0.2.10c（`reports/card-0.2.10c/ranking.csv`，sha e46315bd…158b）；建法＝`reports/card-0.2.10a+E187-rebase/` 臂 KAU。
-- 狀態：**草稿，待使用者凍結**。凍結時在本目錄寫 `preregistration.sha256`，之後不改；有錯寫 errata 給使用者核可。
+- 狀態：**已凍結**（2026-11-01，使用者「核可」）；sha256 見 `preregistration.sha256`，之後不改，有錯寫 errata 給使用者核可。
 
 ## 0. 已揭露（lead 看過）
 - 0.2.10 tail-U.csv（2025-26，MIN≥500，379 人）：r(drive, creation) = 0.875；VIF drive 5.92、creation 5.68；drive 被其他能力值解釋 R² 0.83。
