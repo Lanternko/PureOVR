@@ -1840,3 +1840,4 @@
 - 做法：`reports/E183-pass-conversion/preregistration.md`（已凍結）。臂 K0（0.2.9a）／Q；判定 2024-25 原點對 2025-26 RAPM（R-113），統計量照 E-180 §2b。
 - 已揭露：E-179、E-180（K0h S_all(pass) 已看過）、F-118；只看過 JW、Jokić、Haliburton、LeBron 的 AST/PASS 原始值。
 - 狀態：已凍結（2026-11-01，使用者「核可凍結」；sha 見 preregistration.sha256）。
+- 狀態：完成，不採用（2026-11-01）。Q 的 S_all(pass, e_net) 只改善 +0.023 [−0.006, +0.048]，下界不 > 0，① 不過（② 整體不變差、2a 全過），Q 不是候選；報告 `reports/E183-pass-conversion/report.md`。
