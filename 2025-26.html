@@ -84,7 +84,7 @@ td.sortcol{background:rgba(255,255,255,.035)}
 .pages button,.more{background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:3px;font:600 .95rem var(--f-disp);min-width:34px;padding:5px 9px;cursor:pointer;font-variant-numeric:tabular-nums}
 .pages button[aria-current="page"]{background:var(--gold);color:var(--gold-ink);border-color:var(--gold)}
 .pages button:disabled{opacity:.35;cursor:default}
-.pages .gap{color:var(--muted);padding:5px 2px}
+.pages .gap{color:var(--muted);padding:5px 2px;width:34px;box-sizing:border-box;text-align:center}
 .more{padding:6px 14px}
 .count{color:var(--muted);font-size:.85rem}
 .legend{color:var(--muted);font-size:.78rem;display:flex;flex-wrap:wrap;gap:4px 14px}
@@ -980,7 +980,10 @@ function pages(n) {
     el.appendChild(b);
   };
   mk('‹', st.page - 1, st.page === 0);
-  const show = [...new Set([0, tot - 1, st.page - 1, st.page, st.page + 1])].filter(x => x >= 0 && x < tot).sort((a, b) => a - b);
+  const show = tot <= 7 ? [...Array(tot).keys()]
+    : st.page < 4 ? [0, 1, 2, 3, 4, tot - 1]
+    : st.page > tot - 5 ? [0, tot - 5, tot - 4, tot - 3, tot - 2, tot - 1]
+    : [0, st.page - 1, st.page, st.page + 1, tot - 1];
   let prev = -1;
   for (const i of show) {
     if (i - prev > 1) { const s = document.createElement('span'); s.className = 'gap'; s.textContent = '…'; el.appendChild(s); }
