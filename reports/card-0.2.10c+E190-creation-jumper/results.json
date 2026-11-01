@@ -1,0 +1,60 @@
+{
+ "experiment": "E-190",
+ "date": "2026-11-01",
+ "status": "STOPPED_AT_c0",
+ "prereg_sha256": "00ae636e37b48948631015b8626c4b940dcb0f76b763d320bced87c884c440eb",
+ "prereg_sha256_ok": true,
+ "c0": {
+  "part1_KAU_rebuild": {
+   "pass": true,
+   "ranking_sha256": {
+    "KAU-2025-26": "e46315bded816662b842460903104794f369d371e14f22df459d35eddc23158b",
+    "KA-2022-23": "1ea566ec64f005018ef6233cf9b5e1883828adc94c8d005e48170fcdcaa9dde8",
+    "KA-2023-24": "479d0670d9887c79451418ae48c6ca3e2cfb8ae101888733b14460d0a5a90154",
+    "KA-2024-25": "259a98557092e71f843439169fe2b3ef3f338f7afa7be6dc3b24c111950c7dca"
+   },
+   "reference_0.2.10c_sha256": "e46315bded816662b842460903104794f369d371e14f22df459d35eddc23158b",
+   "rows": {"2025-26": 582, "2022-23": 298, "2023-24": 349, "2024-25": 417}
+  },
+  "part2_old_creation_reproduction": {
+   "pass": false,
+   "threshold": "max |diff| < 1e-6",
+   "pbp_old_vs_tail_all582": {"max_abs": 41.424, "mean_abs": 5.826, "n_gt_1e-6": 582, "n_gt_5": 239, "pearson_r": 0.889},
+   "pbp_old_vs_tail_MIN500_378": {"max_abs": 17.605, "mean_abs": 3.816, "n_gt_5": 108, "n_gt_10": 22, "pearson_r": 0.958},
+   "formula_to_attribute_vs_tail_MIN500": {"max_abs": 9.735, "mean_abs": 0.661, "n_gt_0.5": 174},
+   "raw_formula_vs_a0raw_creation_r": {"max_abs": 0.0, "n": 582},
+   "raw_pbp_old_vs_a0raw_creation_r": {"max_abs": 5.616, "mean_abs": 0.678},
+   "selfshare_MIN500": {"pbp_mean": 0.3297, "dep_mean": 0.3055, "r": 0.903},
+   "reasons": [
+    "old raw = (1 - creationDependence_sourceRole) * FGA/MIN*36; creationDependence_sourceRole = player-impact-v30 receiveOpportunityRate/terminalOpportunityRate adjusted by selfCreation (src/source_creation_dependence.js), a sim-model quantity, not pbp assisted weighting",
+    "old mapping = E-101 merged multi-season pool + top/bottom tails (build_e101_p.py percentile_attr_merged; tail range 38.8-108.7), not attach_creation to_attribute on single-season GP>=30/MPG>=20 pool",
+    "tail-U.csv creation in 0.2.10c is the single-season 2025-26 value (tail-e123a.csv), not an R-118 four-season window (that is 0.2.10d); all four origins share it (L-091)"
+   ]
+  }
+ },
+ "phase0": "not run (c0 failed)",
+ "KJ": "not run (c0 failed)",
+ "a1": null, "a2": null, "b": "b(0) fail",
+ "inputs_sha256": {
+  "reports/card-0.2.10/tail-U.csv": "ff959cd0eee276d2817ba10db3c5fc14ca640e302a8c3810590c071730301dba",
+  "reports/card-0.2.7+E123-tail-3pt-rim-pres/rebase-027a/work/tail-e123a.csv": "14b27b9d6cc67be1df4a4829666837a3a21c29c20513a4148863624713226231",
+  "reports/E142-card-target/phase1-work/cands/T6-2022-23.pkl": "e6873f6bca4067a223251fa47af8528ba3ffc89c966dc9aa085d3702509f90df",
+  "reports/E142-card-target/phase1-work/cands/T6-2023-24.pkl": "c5cc81e3bf7c94cc685b8abed17255c86972a82871529df3c901c01962f1eef0",
+  "reports/E142-card-target/phase1-work/cands/T6-2024-25.pkl": "747f6e555e4bf3d172f779c43ba7cfb17255107ec4fe4b2f8a1797a8696053c9",
+  "reports/E142-card-target/phase1-work/cands/T6-2025-26.pkl": "13cb929439bf8ff6affcbcba1b8932ef1cce62afe8c56d527d4153b637c2a786",
+  "reports/ovr-v55-card-E-2025-26/season-league-E2-lam0.4.json": "f454866e98e370c904e88d0efa4c0125900ee2e02f5538478a2142ff2d99fea5",
+  "data/defense-a-source/manifest.json": "0bb849fc0a3301cd8bff4c3733f0623c24e1328b5c43342dbfb848ce5dd3efed",
+  "reports/player-impact-v41/2025-26-player-validation.csv": "70a99a12d3abe1f0412c4b3724c7057e591cf92114a7f7f20db45825b4b5d52b",
+  "reports/card-0.2.4+E090-onball-tail/work/a0-raw.json": "c63ee1df576d70eb5b48d74dad3f5563a0a56a18c9a76f9406e3a6f87d3c15fb",
+  "reports/card-0.2.7+E125-pass-volume/work/build_e101_p.py": "46df5e1208d5860c33433b991842d80c59fffbc52952ea4767f609b0e42dac26",
+  "reports/E180-pass-pool-creation-interact/calibrate_wing_t.py": "ee06e9e232bc90bb94e94ef04e8d70f7c545eb589d1fb8918ed8425bc2ebb007",
+  "reports/card-0.2.10a+E187-rebase/build.py": "f543ef51710fff49cb3e5fa005cbb65d3397b8e9ffdc3db95df3e05378f83810"
+ },
+ "outputs_sha256": {
+  "build.py": "ab2200c9d3ffd8b67d0ea5a70c95138b31967a4b6fc5d1df751f9d3f46b75d62",
+  "run_all.py": "f77718bcf2e4c2b3b23477de924d089b073c2e7bd276b5e57702ca74718d4290",
+  "build_creation_jumper.py": "2ff9de5484f11a00660375eb82332e1548af92481cea77228cb58253dc4b38dc",
+  "work/creation-recompute.csv": "c4f4bea7388087413ae1ce2cbb9a95652d81bc1e782d96fc62af9131b0551069",
+  "work/creation-c0.json": "f0c18d3e0323f68a99343b0cb3c7e91895c8ef3dd9bb5589d3d71d9c2a8bc349"
+ }
+}
