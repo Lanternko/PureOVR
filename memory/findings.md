@@ -1262,3 +1262,11 @@
 - 限制：只有 2025-26 一季、同季 RAPM（半樣本外）；API 只收 234 人，348 人靠 OLS 補值（主要靠 USG%）。
 - 證據：`reports/card-0.2.10j+E198-gravity/{report.md,results.json}`
 - 相關：F-140、F-139、E-198、F-119
+
+### F-143
+- 日期：2026-11-02
+- 類型：問題卡（R-117）——「TO 榜被不持球的人佔據」
+- 成功怎麼量：card 2025-26 MIN≥500 的 TO 前 30 名中，持球時間/36 低於池中位數的人數（池中位 2.86 分/36，handle.csv 2025-26 TIME_OF_POSS ÷ 出賽分鐘）。
+- 現值：card 0.2.10j 為 19/30（前 30 平均持球 3.19 分/36）；榜首 Hauser、Hardaway Jr.、Bey、McBride、Trent Jr.。解決＝≤10/30 且 TO 對 2K27 Ball Handle ρ 不下降。雜訊：E-202 phase0 bootstrap。
+- 額度：3（E-202 為第 1 個）。
+- 相關：R-136、R-032、E-069、E-202
