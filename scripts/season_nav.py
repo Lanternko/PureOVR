@@ -54,14 +54,10 @@ CSS = """<style>
 .pn-now dd{margin:0;color:var(--fg);font:700 .95rem var(--f-disp);font-variant-numeric:tabular-nums}
 .pn-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .pn-item{--acc:#5b6b7f;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--acc);border-radius:5px;padding:9px 12px 10px}
-.pn-item.tk-card{--acc:var(--gold)}
-.pn-item.tk-inseason{--acc:#5aa9e6}
+.pn-item{--acc:var(--gold)}
 .pn-item.cur{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}
 .pn-item header{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
 .pn-ver{font:800 1.2rem var(--f-disp);color:var(--fg);font-variant-numeric:tabular-nums;letter-spacing:.02em}
-.pn-tag{font:700 .68rem var(--f-disp);letter-spacing:.08em;padding:2px 6px;border-radius:3px;background:var(--panel-2);color:var(--muted)}
-.pn-tag.tk-card{background:#3a3110;color:var(--gold)}
-.pn-tag.tk-inseason{background:#12304a;color:#8cc8ff}
 .pn-cur{font:700 .68rem var(--f-disp);letter-spacing:.08em;padding:2px 6px;border-radius:3px;background:var(--gold);color:var(--gold-ink)}
 .pn-item time{margin-left:auto;color:var(--muted);font:500 .75rem var(--f-disp);font-variant-numeric:tabular-nums}
 .pn-item ul{margin:6px 0 0;padding-left:1.15em;color:#c9d3df;font-size:.82rem;line-height:1.6}
@@ -90,10 +86,10 @@ CSS = """<style>
 
 # 更新說明（Patch Notes）撰寫要旨（使用者 2026-10-29～11-01）：
 # - 每版一格，新的在上；同一基底的字母小版本併進同一格（R-064）。
-# - 只寫公式改動：新賽季目前用的那版正式卡加 'inseason' 標籤（只留最新一格），不另開一格、不寫「已跟上／沒跟上」；只更新比賽資料、網頁 UI、欄位顯示都不寫（R-063）。
+# - 只寫公式改動：新賽季目前用的那版正式卡加 'inseason'（只用來判斷「目前」，只留最新一格），不另開一格、不寫「已跟上／沒跟上」；只更新比賽資料、網頁 UI、欄位顯示都不寫（R-063）。
+# - 不顯示「正式卡／新賽季」標籤：兩頁已是同一條四季窗口管線、同一個版號（R-111，使用者 2026-11-01「先拿掉標籤」）。
 # - 用字精簡、只留重點：每條寫成「目標：改法（代表球員名次或數值變化）」（冒號前加粗），用球迷看得懂的話，不寫 E／R 編號、不寫「OVR 前 20 名換幾人」等流水帳；代價直接併入括號或分號後一句帶過，不另起一行「代價：」。
 # - 被後續版本取代或撤銷的條目，前後加 `~...~` 顯示刪除線（`<s>`）。
-TRACK = {'card': '正式卡', 'inseason': '新賽季'}
 PATCH_NOTES = [
     # 版號 0.2.10：前 20 名進出 1 人（Embiid 進、Porter Jr. 出）、前 100 名移動 >=10 名 18 人，照 R-109 屬 PATCH（係數全凍結、只換 8 項屬性來源）
     (('card', 'inseason'), '0.2.10', '2026-11-01', [
@@ -193,8 +189,7 @@ def patch_notes_html(now_text, current):
     for tracks, ver, date, lines in PATCH_NOTES:
         is_cur = any((t, ver) in cur for t in tracks)
         items.append(
-            f'<li class="pn-item tk-{tracks[0]}{" cur" if is_cur else ""}"><header>'
-            + ''.join(f'<span class="pn-tag tk-{t}">{TRACK[t]}</span>' for t in tracks)
+            f'<li class="pn-item{" cur" if is_cur else ""}"><header>'
             + f'<b class="pn-ver">{ver}</b>'
             + ('<span class="pn-cur">目前</span>' if is_cur else '')
             + (f'<time datetime="{date}">{date[5:].replace("-", "/")}</time>' if date else '')
@@ -203,7 +198,7 @@ def patch_notes_html(now_text, current):
             '<h2>Patch <span>Notes</span></h2>'
             f'<div class="pn-now"><b>目前版本</b>{_now_facts(now_text, current)}</div>'
             f'<ol class="pn-list">{"".join(items)}</ol>'
-            '<p class="pn-foot">版號後面的字母（例如 0.2.1e）代表只更新比賽資料，模型沒動。新賽季版號跟它用的正式卡同號。</p></div></details>'
+            '<p class="pn-foot">版號後面的字母（例如 0.2.1e）代表只更新比賽資料，模型沒動。2026 與 2027 兩頁用同一個版號。</p></div></details>'
             # 點面板外或按 Esc 關掉
             "<script>(()=>{const d=document.querySelector('.pnote');"
             "document.addEventListener('click',e=>{if(d.open&&!d.contains(e.target))d.open=false});"
