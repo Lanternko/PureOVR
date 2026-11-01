@@ -96,7 +96,8 @@ PATCH_NOTES = [
         '中距離、近框、罰球、製造犯規、傳球、籃板、少失誤、切入這 8 項能力值改看過去四季滑動窗口（近季權重高，開季看前四季、隨賽季逐場換成本季），換季時不再一下跳很多。名次變動：Flagg 82 → 68 名、Embiid 23 → 18 名、Porter Jr. 20 → 40 名。',
         '0.2.10a 補回 OVR 標準漏掉的聯盟第一：BPM 榜首原本被讀成空白而被排除（Jokić 7 → 3 名；Kawhi 3 → 6 名）。',
         '0.2.10c 傳球改成所有位置共用同一個加分幅度：持球前鋒不再因傳球被多加分（Jalen Williams 9 → 12 名、Scottie Barnes 18 → 27 名；Austin Reaves 26 → 21 名）。',
-        '0.2.10d 三分、自主創造也改看近四季滑動窗口，3PT 欄、出賽分鐘預測同步（Sabonis 138 → 75 名、Tyus Jones 343 → 308 名；Jalen Williams 12 → 9 名；Franz Wagner 21 → 42 名）。']),
+        '0.2.10d 三分、自主創造也改看近四季滑動窗口，3PT 欄、出賽分鐘預測同步（Sabonis 138 → 75 名、Tyus Jones 343 → 308 名；Jalen Williams 12 → 9 名；Franz Wagner 21 → 42 名）。',
+        '0.2.10e 頂端 OVR 拉開：明星不再擠在 85–93 之間，名次不變、99 以上不變（Maxey 85.5 → 92.0、Cade 88.3 → 93.4、Mitchell 93.2 → 96.0）。']),
     # 版號 0.2.9a：前 20 名無進出、前 100 名移動 >=10 名 23 人，照 R-109（字母版門檻看前 100 名 <=25 人）屬字母版
     (('card', 'inseason'), '0.2.9a', '2026-11-01', [
         '耐力不再當成 OVR 的得分項：改成只在上場時間裡反映（Porziņģis 60 → 32 名、Jalen Williams 17 → 10 名；Edgecombe 101 → 150 名、Ayton 194 → 239 名）。']),
@@ -623,14 +624,14 @@ def apply_common(s):
 # 係數從正式卡 ranking.csv 照位置重擬合（R²＝1）；新秀 G／F 用 SG／SF 的係數（同 defense_centered 的 DPOS）。
 # 分數＝每 36 分鐘比聯盟平均（正式卡 MIN ≥ 500）多幾分；防守另加 defenseBonus（扣同一群人的平均）。
 # 籃板、身高、align 兩邊都不算（約佔 OVR 差異一成三）。OVR 還有用人層（分鐘、出賽率），所以兩分相加不等於 OVR。
-OD_CARD = Path(__file__).resolve().parents[1] / 'reports/card-0.2.10d/ranking.csv'
+OD_CARD = Path(__file__).resolve().parents[1] / 'reports/card-0.2.10e/ranking.csv'  # 0.2.10e 只換 OVR 映射，pred0 等欄同 0.2.10d
 OD_OFF = ['long', 'mid', 'short', 'ft', 'drive', 'foulDraw', 'tovSkill', 'pass', 'creation']
 OD_DEF = ['onBall', 'help', 'pressure']
 OD_ALL = OD_OFF + OD_DEF + ['rebound', 'heightInches']
 
 
 def off_def(rows, key, card_path=OD_CARD):
-    """{rows[key]: (進攻分, 防守分)}；pred0 用卡片係數算回來差超過 0.02 的人給 (None, None)，回 (dict, 對不上人數)。card_path＝係數來源卡（新賽季頁用預設 0.2.10d，正式卡頁傳自己的卡）。"""
+    """{rows[key]: (進攻分, 防守分)}；pred0 用卡片係數算回來差超過 0.02 的人給 (None, None)，回 (dict, 對不上人數)。card_path＝係數來源卡（新賽季頁用預設 0.2.10e，正式卡頁傳自己的卡）。"""
     import csv
     import numpy as np
     card = list(csv.DictReader(Path(card_path).open(encoding='utf-8')))

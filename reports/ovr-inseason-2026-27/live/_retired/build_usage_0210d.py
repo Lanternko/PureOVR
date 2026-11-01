@@ -1,3 +1,4 @@
+raise SystemExit('已淘汰：本檔只供對照。重現請 checkout 當時 commit（見 live/CURRENT.json、_retired/README.md）')  # R-124 retired guard（0.2.10e 換 build_usage_0210e.py；WIN10=0 用的 work-selfcheck 檔已產好）
 """card 0.2.10d 用人層（E-185；R-111/R-118）：和 0.2.12 版的差別是係數不凍結——card 0.2.10d 在新屬性上整套重擬合（E-187 KAU 同法：修正後 T6、第三層 WLS、r_repl、兩段映射錨都重算），
 本程式只把 reports/card-0.2.10d/usage-features.json（e162_build.pipe 在重擬合當下存的每人特徵＋該次係數／r_repl／錨點）轉成 inseason 讀的 usage 檔，並逐人核對：
   ovr（.1f）、mpg（.2f）、gRepl（.4f）三欄與 card-0.2.10d/ranking.csv 逐格相同（features 檔內已核對，這裡再核對一次）。

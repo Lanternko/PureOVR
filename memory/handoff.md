@@ -6,6 +6,7 @@
 - **更新**：2026-11-01，Claude Code App（lead；分支 claude/project-thread-63h2fz；handoff 瘦身 29KB→約 7KB）
 
 ## 目前基準（線上）
+- **card／inseason 0.2.10e**（R-124，E-188，2026-11-01 本機 commit、未 push／未部署）：0.2.10d 只換 OVR 映射 PR50→70、PR90→88、PR95→92、PR99→99（名次不變，[90,99) 23 人）；OFFICIAL_CARD、build_card_viewer、season_nav、live/CURRENT.json 都指 0.2.10e。副作用：新賽季 ΔOVR 在 70–88 段 ×1.66、92–99 段 ×0.49。`reports/card-0.2.10e/`
 - **正式卡 card 0.2.10c**（R-122）：`reports/card-0.2.10c/`＝card 0.2.10a（R-121：8 項四季滑動窗口＋L-102 修好的 T6）重擬合＋傳球全位置共用斜率（E-187 KAU，修 JW 偏高）；OFFICIAL_CARD 指它。
 - **新賽季頁 inseason 0.2.10** 已發布（2026-11-01）：8 項每日由窗口算（`live/window8.py`），其他屬性同前；單場評分 **Z1**（R-108，E-169，`scripts/rating_m10.py`）。
   - 2026-11-01：2026-27 pbp 沒有 area 欄位，mid／short 整季停在 day0；改用距離＋座標推導區域（佔位座標不計），2024-25 核對 mid 97.4%／short 100% 後上線（F-124、L-098，d8eaf90）；同時修歷史折線 8 項偷看全季資料。
@@ -21,7 +22,6 @@
 ## 等使用者裁定
 - **E-190**（F-132）：creation 改自主跳投，停在 c0（預註冊前提錯，L-105），待使用者選 errata。
 - **E-189 非投籃犯規屬性**（R-125 重開 F-129 額度）：預註冊草稿 `reports/sim-0.1.3+E189-nsfoul-attr/preregistration.md` 待使用者凍結。F-130（球隊造罰球偏大＝5 名真實球員占 73% 出手）待使用者決定改不改。
-- **E-188 OVR 頂端錨 S3 → card 0.2.10b**（2026-11-01，F-131）：PR90→88、PR95→92，≥500 分鐘池 OVR 90–99 從 4 人變 20 人，名次與其他欄逐位元不變，npm test 過。未切 `OFFICIAL_CARD`、未部署、未 commit；新賽季頁 patch 在 `reports/card-0.2.10a+E188-ovr-top-scale/live-patch.md`，要交 27 賽季 session（0.2.12）。副作用：70–88 段 ΔOVR ×1.66、92–99 段 ×0.49。E-187 KAU 已採用為 0.2.10c（R-122），E-188 上線前要把 `build_card_0210b.py` 的 BASE 改成 0.2.10c 重跑（錨不變）。
 - **0.2.10a 後續**（R-121）：新賽季頁仍是舊 T6，等 0.2.12（以 0.2.10a 為底）一起修；H1 封頂壓前段（SGA 118.8→103.8）另議；E-142／E-153／E-186 用舊 T6 要重核。
 - **F-126 難球命中問題卡**（2026-11-01 開卡，額度 3）：NBA.com Shot Difficulty 逐球 xFG% 有 2025-26、2026-27（`shotqualityvideologs`），Gravity 只有整季。下一步第 0 步診斷：SM＝FG%−xFG% 對卡片殘差的斜率（RAPM 分半交叉）。改卡片 OVR 牴觸 R-020，要使用者改裁定。`reports/F126-shot-difficulty/data-check.md`
 - **R-117 停損**：JW、長人犯規兩條線只做診斷，不提新假設，除非使用者重開額度；全文見 rulings。

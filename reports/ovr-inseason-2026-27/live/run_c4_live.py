@@ -39,9 +39,9 @@ if 'foulDraw' not in ATTRS:
     ATTRS.insert(ATTRS.index('drive') + 1, 'foulDraw')
 import e062_switch as _E062  # noqa: E402
 # 舊版機制（CARD_MODE 020～029）見 git 歷史／live/_retired/README.md
-CARD_MODE = os.environ.get('CARD_MODE', '0210d')  # 只接受目前版本 0210d（card／inseason 0.2.10d，E-185：long／creation／threeValue／MPG 也改 E-175 窗口，底 card 0.2.10c 的 KAU 重擬合）。舊版重現請 checkout 當時 commit（見 live/_retired/README.md）
-if CARD_MODE != '0210d':
-    raise SystemExit('CARD_MODE 只接受 0210d（舊版已淘汰，重現請 checkout 當時 commit；見 live/_retired/README.md）')
+CARD_MODE = os.environ.get('CARD_MODE', '0210e')  # 只接受目前版本 0210e（card／inseason 0.2.10e＝0.2.10d 換 OVR 映射，E-188 S3：PR90→88、PR95→92；0.2.10d＝E-185 四項窗口，底 card 0.2.10c 的 KAU 重擬合）。舊版重現請 checkout 當時 commit（見 live/_retired/README.md）
+if CARD_MODE != '0210e':
+    raise SystemExit('CARD_MODE 只接受 0210e（舊版已淘汰，重現請 checkout 當時 commit；見 live/_retired/README.md）')
 # WIN10=0：關掉 0.2.10d 新增的四項窗口（long、creation、threeValue、MPG_hat），卡／用人層／RAPM 換成 card 0.2.10c（＝card-0.2.10d/work-selfcheck 的逐位元重建，build_usage_0210d.py base10c 產 usage 與 summary），先驗讀 _retired/ 的 0.2.10 檔（屬性同）；只用來拆「0.2.10c 底」與「窗口」各占多少（報告用，不上線）
 WIN10 = os.environ.get('WIN10', '1') != '0'
 MPG_L_FILE = ROOT / 'reports/card-0.2.12/mpg-L-selection.json'   # E-185：MPG 窗口長度 L（季），只用 2024-25 選（mpg_select.py）
@@ -57,11 +57,12 @@ if E064_MODE != 'G1':
     raise SystemExit('E064_MODE 只接受 G1（off／G0 是舊頁重現用，已淘汰）')
 # 預註冊 §4.1：stamina 最小樣本 1 場（本身的能力值與 w 都用；其餘 15 屬性照 C4 現行）。
 SA.SEASON_MIN_SAMPLE['stamina'] = 1
-VERSION = 'inseason 0.2.10d'  # R-050／R-114：跟先驗 card 0.2.10d 同號； 第一個字面值會被 daily_inseason_update.probe_base_version 以正規式讀取，勿改成括號／條件式開頭
-CARD_VERSION = 'card 0.2.10d'
+VERSION = 'inseason 0.2.10e'  # R-050／R-114：跟先驗 card 0.2.10e 同號； 第一個字面值會被 daily_inseason_update.probe_base_version 以正規式讀取，勿改成括號／條件式開頭
+CARD_VERSION = 'card 0.2.10e'
 if not WIN10:
     CARD_VERSION = 'card 0.2.10c'
-_CV = CARD_VERSION.replace('card ', 'card-')   # 'card-0.2.10d'（WIN10=0 時 'card-0.2.10c'）
+_CV = 'card-0.2.10d' if WIN10 else 'card-0.2.10c'   # 係數管線／RAPM 所在的卡（0.2.10e 只換 OVR 映射，沒有 cards/、rapm-T6 以外的新檔）
+_OV = CARD_VERSION.replace('card ', 'card-')   # OVR 欄與 summary 所在的卡：'card-0.2.10e'（WIN10=0 時 'card-0.2.10c'）
 _SC = ROOT / 'reports/card-0.2.10d/work-selfcheck'   # card 0.2.10c 的逐位元重建（WIN10=0 的卡端檔）
 _RET = HERE / '_retired'
 PRIOR = '2025-26'
@@ -75,8 +76,8 @@ CARD_DIR = ROOT / f'reports/{_CV}/cards/K6/primary' if WIN10 else _SC / 'base-KA
 CARD_SUMMARY = CARD_DIR / 'summary.json'
 RAPM_STAR = ROOT / f'reports/{_CV}/rapm-T6.csv'   # align／封頂讀 E-153 K6 的 T6 換進去的 RAPM（與 card 0.2.8 起同口徑）
 BIO25 = ROOT / 'data/benchmark-source/bio.json'
-FORMAL_RANKING = ROOT / f'reports/{_CV}/ranking.csv'
-CARD024_SUMMARY = ROOT / f'reports/{_CV}/summary.json' if WIN10 else _SC / 'summary-card0210c.json'     # 名稱沿用舊版；現為現行 card summary
+FORMAL_RANKING = ROOT / f'reports/{_OV}/ranking.csv'
+CARD024_SUMMARY = ROOT / f'reports/{_OV}/summary.json' if WIN10 else _SC / 'summary-card0210c.json'     # 名稱沿用舊版；現為現行 card summary
 CARD024_RANKING = ROOT / 'reports/card-0.2.4/ranking.csv'       # E-095 預註冊 §2：現行 ranking 的 mpg 欄必須與 card 0.2.4 相同
 W_TAU, W_REF = 15.0, 36.0
 
@@ -85,7 +86,7 @@ def sat_w(m):
     """card 0.2.5 的分鐘權重 W(m) = (1 − e^(−m/15)) / (1 − e^(−36/15))；W(0)=0、W(36)=1。"""
     return (1.0 - math.exp(-m / W_TAU)) / (1.0 - math.exp(-W_REF / W_TAU))
 
-USAGE_FILE = HERE / 'usage-2025-26-card0210d.json' if WIN10 else _SC / 'usage-2025-26-card0210c-nowin.json'     # build_usage_0210d.py 產出（card 0.2.10d 的 KAU 重擬合係數／r_repl／錨點，不是凍結值）（係數、r_repl、錨點；b8_ydL＝0）；錨點／r_repl 也從這裡讀
+USAGE_FILE = HERE / 'usage-2025-26-card0210e.json' if WIN10 else _SC / 'usage-2025-26-card0210c-nowin.json'     # build_usage_0210e.py 產出（card 0.2.10d 的 KAU 重擬合係數／r_repl／錨點＋E-188 的 PR90／PR95，不是凍結值；WIN10=0 檔由 _retired/build_usage_0210d.py base10c 產）（係數、r_repl、錨點；b8_ydL＝0）；錨點／r_repl 也從這裡讀
 POOL026 = HERE / 'pool-027b.json'                     # e128-card027b/build_pool_027b.py 產出的凍結合併池
 DEF_L_PRIMARY = ROOT / 'reports/card-0.2.5+E104-defense-pergame-decay/def-L-primary.csv'   # UL 防守加成的 --defRapm
 E128_RB = ROOT / 'reports/card-0.2.7+E123-tail-3pt-rim-pres/rebase-027a'
@@ -766,15 +767,23 @@ def rel(p):
 
 
 def e064_anchors():
-    """回傳 (錨點 [PR1, PR50, PR99], r_repl)：usage 檔的 anchors／rRepl（load_usage 已核對它用的是現行 ranking.csv）。"""
+    """回傳 (錨點 [PR1, PR50, PR99, PR90, PR95], r_repl)：usage 檔的 anchors／rRepl（load_usage 已核對它用的是現行 ranking.csv）；沒有 PR90／PR95 時為 None。"""
     d = load_json(USAGE_FILE)
     a = d['anchors']
-    return [a['PR1'], a['PR50'], a['PR99']], d['rRepl']
+    return [a['PR1'], a['PR50'], a['PR99'], a.get('PR90'), a.get('PR95')], d['rRepl']
 
 
 def e064_map(g, anc):
-    p1, p50, p99 = anc
-    return 40 + 30 * (g - p1) / (p50 - p1) if g <= p50 else 70 + 29 * (g - p50) / (p99 - p50)
+    """E-188 S3（R-124）：PR50→70、PR90→88、PR95→92、PR99→99 分段線性；≤PR50、≥PR99 同舊兩段式；沒有 PR90／PR95 退回舊兩段式。
+    同 reports/card-0.2.10a+E188-ovr-top-scale/ovr_map.py。"""
+    p1, p50, p99 = anc[:3]
+    if g <= p50:
+        return 40 + 30 * (g - p1) / (p50 - p1)
+    if g >= p99 or len(anc) < 5 or anc[3] is None:
+        return 70 + 29 * (g - p50) / (p99 - p50)
+    for x0, x1, y0, y1 in ((p50, anc[3], 70.0, 88.0), (anc[3], anc[4], 88.0, 92.0), (anc[4], p99, 92.0, 99.0)):
+        if g <= x1:
+            return y0 + (y1 - y0) * (g - x0) / (x1 - x0)
 
 
 def load_usage():
@@ -1162,11 +1171,13 @@ def main():
                        for d in ch) or '（無屬性變動）'
         mv_detail.append(f"- {r['name']}（{r['team']}，N={r['N']}，ΔOVR {r['_d']:+.2f}）：{txt}")
     OVR_NOTE = (f"- OVR 為每場（R-028，E-064 副版）：g = (預測每 36 分鐘淨值 − r_repl)·MPG_hat/36，r_repl＝{r_repl064:.4f}（替補水準 PR10），"
-                f"兩段映射錨點 PR1/PR50/PR99＝{anc064[0]:.4f}/{anc064[1]:.4f}/{anc064[2]:.4f}（{CARD_VERSION} summary.json 同組）。"
+                f"映射錨點 PR1/PR50/PR99＝{anc064[0]:.4f}/{anc064[1]:.4f}/{anc064[2]:.4f}（{CARD_VERSION} summary.json 同組）"
+                + (f"，PR90/PR95＝{anc064[3]:.4f}/{anc064[4]:.4f}（E-188 S3：PR50→70、PR90→88、PR95→92、PR99→99 分段線性）。" if anc064[3] is not None else "（兩段式）。")
                 + (f"MPG_hat＝窗口 MPG（Σu·MIN／Σu·GP，過去 {MPG_L} 季＋本季逐場線性遞減，E-185）；lastOVR 基準＝本季 0 場的窗口 MPG；窗口內沒出賽的 {len(mpg_nodata)} 人退回 MPG0。`ovrPer36` 是同一預測的每 36 分鐘 OVR。" if WIN10 else
                    f"MPG_hat = MPG0 + w·(本季場均分鐘 − MPG0)，w＝stamina 的 C4 w（stamina 最小樣本 1 場）；"
                    f"沒有本季視窗紀錄的 {len(mpg_nodata)} 人（含沒出賽者，不在排名內）退回 MPG0。`ovrPer36` 是同一預測的每 36 分鐘 OVR。"))
-    ATTR_NOTE = ((f"- inseason 0.2.10d（E-185）：long、creation 也改四季滑動窗口（同 8 項的權重；long 是窗口 3PM／3PA 收縮到本季聯盟 3P%、creation 是窗口 FGA/MIN），threeValue、MPG_hat 同為窗口；係數、錨點、r_repl 用 card 0.2.10d 的 KAU 重擬合值（底 card 0.2.10c）。\n" if WIN10 else "") +
+    ATTR_NOTE = ((f"- inseason 0.2.10e（E-188，R-124）：只換 OVR 映射（PR90→88、PR95→92，名次不變），屬性、係數同 0.2.10d。\n" if WIN10 else "") +
+                (f"- inseason 0.2.10d（E-185）：long、creation 也改四季滑動窗口（同 8 項的權重；long 是窗口 3PM／3PA 收縮到本季聯盟 3P%、creation 是窗口 FGA/MIN），threeValue、MPG_hat 同為窗口；係數、錨點、r_repl 用 card 0.2.10d 的 KAU 重擬合值（底 card 0.2.10c）。\n" if WIN10 else "") +
                  "- inseason 0.2.10（R-114）：drive、foulDraw、ft、mid、pass、rebound、short、tovSkill 八項＝E-175 四季滑動窗口（過去四季權重 window_w(c)，c＝82×已賽場數/1230；本季逐場線性遞減；收縮 k、先驗 m、映射皆凍結自 2025-26 U 鏈；live/window8.py），不再走 C4 的 x0+w(y−x0)；其餘屬性（stamina 等）仍走 C4。用人層係數、錨點、r_repl 取現行卡的重擬合值（usage 檔）。"
                  "- 以下為舊版 E-128 說明（其餘屬性的先驗與映射仍適用）：E-128（CARD_MODE=027b，預設）：先驗 x0＝card 0.2.7b 產生器的未四捨五入能力值（尾巴原樣、不夾 99）；屬性迴歸＝rebase-027a e123a primary 的 summary.json；"
                  "賽中觀測值對 live/pool-027b.json 的合併池映射（pass 換 E-125 量×率合成值＋合併池，視窗不收縮、z 常數凍結自 2025-26 卡片端；其餘 8 欄同 pool-027），"

@@ -26,7 +26,7 @@ TEAM_NOTE = '卡片版本（v55–v58）只改顯示用 OVR，不影響模擬 wi
 EVAL_POSS = 5000
 LOW_MIN, RAPM_FAR, BIGS = 1000, 100, {'C', 'PF'}
 LATEST_SIM = 'v54'  # latest sim board measured
-OFFICIAL_CARD = 'reports/card-0.2.10d/ranking.csv'  # 2026-11-01 起正式卡片 = card 0.2.10d（0.2.10c 的 long、creation、threeValue、MPG 再改四季滑動窗口，E-185）；card 0.2.10c（0.2.10a 的修正後 T6 重擬合＋傳球全位置共用斜率，E-187 KAU，修 JW 偏高 F-125）；0.2.10a（0.2.10 只換 2025-26 T6：L-102 BPM 解析補回 Jokić／Wembanyama；0.2.10 = card 0.2.9a 係數全凍結，8 項屬性改 E-175 四季滑動窗口；R-111／R-114）。0.2.9a 以前見 reports/card-0.2.9a、card-0.2.9
+OFFICIAL_CARD = 'reports/card-0.2.10e/ranking.csv'  # 2026-11-01 起正式卡片 = card 0.2.10e（0.2.10d 只換 OVR 映射：PR90→88、PR95→92，E-188 S3，R-124）；card 0.2.10d（0.2.10c 的 long、creation、threeValue、MPG 再改四季滑動窗口，E-185）；card 0.2.10c（0.2.10a 的修正後 T6 重擬合＋傳球全位置共用斜率，E-187 KAU，修 JW 偏高 F-125）；0.2.10a（0.2.10 只換 2025-26 T6：L-102 BPM 解析補回 Jokić／Wembanyama；0.2.10 = card 0.2.9a 係數全凍結，8 項屬性改 E-175 四季滑動窗口；R-111／R-114）。0.2.9a 以前見 reports/card-0.2.9a、card-0.2.9
 C028_CARD = 'reports/card-0.2.8/ranking.csv'  # card 0.2.8（= card 0.2.7d 的 OVR 迴歸目標整個換成 T6；E-153 K6、R-102），2026-11-01 由 0.2.9 取代
 C027D_CARD = 'reports/card-0.2.7d/ranking.csv'  # card 0.2.7d（= card 0.2.7c + E-147 連續 d），2026-10-30 起正式，2026-11-01 由 0.2.8 取代
 C027C_CARD = 'reports/card-0.2.7c/ranking.csv'  # card 0.2.7c（= card 0.2.7b + E-131 OVR 迴歸拿掉 physique；R-084），由 0.2.7d 取代
@@ -188,9 +188,9 @@ def personal(rapm_by_id, rapm_by_name, holdout, backfill):
     c022_2k, c022_d, c022_ci, e071_2k = c022_rho()
     c023_k = eval_2k(C023_EVAL, 'E075')
     c024_k = eval_2k(C024_EVAL, 'E084')
-    add('卡片 OVR（正式卡片板，card 0.2.10a）', '2025-26 T6 補回 L-102 BPM 解析漏掉的聯盟第一（Jokić 7→3 名）；其餘同 0.2.10：card 0.2.9a 係數與錨全凍結，8 項屬性（drive、foulDraw、ft、mid、pass、rebound、short、tovSkill）改 E-175 四季滑動窗口（R-111／R-114，2026-11-01）；0.2.9 起拿掉年輕×爛隊×時間（y·d·L）折扣（E-158 Y0，R-104）（遊戲本體不讀取任何 OVR）',
+    add('卡片 OVR（正式卡片板，card 0.2.10e）', '0.2.10e：OVR 映射頂端加 PR90→88、PR95→92 兩錨（名次不變，E-188）；0.2.10d：long／creation／threeValue／MPG 四季窗口；0.2.10c：傳球共用斜率；0.2.10a：2025-26 T6 補回 L-102 BPM 解析漏掉的聯盟第一（Jokić 7→3 名）；其餘同 0.2.10：card 0.2.9a 係數與錨全凍結，8 項屬性（drive、foulDraw、ft、mid、pass、rebound、short、tovSkill）改 E-175 四季滑動窗口（R-111／R-114，2026-11-01）；0.2.9 起拿掉年輕×爛隊×時間（y·d·L）折扣（E-158 Y0，R-104）（遊戲本體不讀取任何 OVR）',
         [(float(r['ovr']), rapm_by_name.get(r['name'])) for r in rows(OFFICIAL_CARD)],
-        f'{CIRC}；每場 OVR；card 0.2.10d = 0.2.10c + long／creation／threeValue／MPG 四季窗口（E-185）；card 0.2.10c = E-175 滑動窗口屬性 + 修正後 T6（L-102）重擬合 + 傳球共用斜率（E-187）；0.2.9 的 E-158 預註冊判定通過（年輕子群 C +0.106、下界 +0.035；全體 +0.001）；此列 ρ vs RAPM 照舊用 RAPM 算；對 2K27 ρ 尚無 0.2.10 的 evaluation.json，不填；來源 card-0.2.10d', src=OFFICIAL_CARD, k2=None)
+        f'{CIRC}；每場 OVR；card 0.2.10e = 0.2.10d + OVR 頂端加 PR90／PR95 錨（E-188 S3，名次不變）；card 0.2.10d = 0.2.10c + long／creation／threeValue／MPG 四季窗口（E-185）；card 0.2.10c = E-175 滑動窗口屬性 + 修正後 T6（L-102）重擬合 + 傳球共用斜率（E-187）；0.2.9 的 E-158 預註冊判定通過（年輕子群 C +0.106、下界 +0.035；全體 +0.001）；此列 ρ vs RAPM 照舊用 RAPM 算；對 2K27 ρ 尚無 0.2.10 的 evaluation.json，不填；來源 card-0.2.10d', src=OFFICIAL_CARD, k2=None)
     add('卡片 OVRcard 0.2.8（前正式版）', 'card 0.2.7d 的 OVR 迴歸目標整個換成 T6（DARKO 與 BPM 攻守季內 z 平均）；2025-26 原點 alpha=1，usage 層 rapm1 不換（E-153 K6，2026-11-01 使用者裁定 R-102；同日由 card 0.2.9 取代）（遊戲本體不讀取任何 OVR）',
         [(float(r['ovr']), rapm_by_name.get(r['name'])) for r in rows(C028_CARD)],
         f'{CIRC}；每場 OVR；card 0.2.8 = card 0.2.7d + 目標換 T6；E-153 預註冊四項檢查全過（bootstrap 90% 下界 +0.0033，邊際小）；npm test 52 過；此列 ρ vs RAPM 照舊用 RAPM 算（目標已不是 RAPM，樣本內意義不同）；對 2K27 ρ 尚無 0.2.8 的 evaluation.json，不填；來源 card-0.2.8', src=C028_CARD, k2=None)
