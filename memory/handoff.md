@@ -6,7 +6,7 @@
 - **更新**：2026-11-01，Claude Code App（lead；分支 claude/project-thread-63h2fz；handoff 瘦身 29KB→約 7KB）
 
 ## 目前基準（線上）
-- **正式卡 card 0.2.10a**（R-121）：`reports/card-0.2.10a/`＝0.2.10（R-114／E-175：8 項能力值四季滑動窗口，係數／錨／用人層凍結 0.2.9a）＋L-102 修好的 2025-26 T6（OFFICIAL_CARD 指它）。
+- **正式卡 card 0.2.10c**（R-122）：`reports/card-0.2.10c/`＝card 0.2.10a（R-121：8 項四季滑動窗口＋L-102 修好的 T6）重擬合＋傳球全位置共用斜率（E-187 KAU，修 JW 偏高）；OFFICIAL_CARD 指它。
 - **新賽季頁 inseason 0.2.10** 已發布（2026-11-01）：8 項每日由窗口算（`live/window8.py`），其他屬性同前；單場評分 **Z1**（R-108，E-169，`scripts/rating_m10.py`）。
   - 2026-11-01：2026-27 pbp 沒有 area 欄位，mid／short 整季停在 day0；改用距離＋座標推導區域（佔位座標不計），2024-25 核對 mid 97.4%／short 100% 後上線（F-124、L-098，d8eaf90）；同時修歷史折線 8 項偷看全季資料。
 - **網站**：首頁 2026-27、`2025-26.html`（`build_card_viewer.py`、`enrich_roster_viewer.py`、共用 `season_nav.py`）。能力值說明文字在 `season_nav.py` 的 `ATTR_TIPS`，改屬性公式要一起改；新格子提示用 `sn.cell_tip()`。只改 UI 用 `python -I scripts/daily_inseason_update.py --shell` 立刻發布；每日排程 14:30／16:30＋22:30 補對位（registry `basketball-inseason-daily`）。
