@@ -26,6 +26,8 @@ THREE_REP_GAP = 0.03
 ABIL_JSON = ROOT / 'reports/card-0.2.12/abilityC-by-season.json'
 DEP_CSV = ROOT / 'reports/player-impact-v41/2025-26-player-validation.csv'
 EXTRA = ('long', 'creation')
+TV_MEMBERS = HERE / 'tvpool-members-card0210f.json'   # E-191b P1m：各過去季 SV 人群（build_tvpool_0210f.py 由 season-values.json 凍結）
+TV_POOL_MIN = 500                                     # P1m：窗口加權 MIN 門檻
 
 
 def wL(c, nseas=4):
@@ -225,6 +227,22 @@ class Win10(W8.Win8):
         vol = np.where(mn > 0, a / np.where(mn > 0, mn, 1) * 36, np.nan)
         return vol, acc, vol * (acc - (mu - THREE_REP_GAP))
 
+    def tv_past_pool(self, s, members=None):
+        """E-191b P1m 的過去季人群：t ∈ {s−3..s−1} 且有 SV 人群者，各取「以 t 結尾的窗口 threeValue 原值」，
+        只收該季 SV 名單內、在 D.pidx、窗口加權 MIN>=500、非 NaN 者。回 {t: {pid: value}}（t 升冪）。"""
+        mem = members if members is not None else json.loads(TV_MEMBERS.read_text(encoding='utf-8'))['seasons']
+        y = int(s[:4])
+        out = {}
+        for t in sorted(mem):
+            if not y - 3 <= int(t[:4]) <= y - 1:
+                continue
+            cur, G = self.season_cur(t)
+            n, a, mn = self.tv_raw(G, cur, t, G, 4)
+            m_, a_ = lg_total(self.T10[t])
+            _, _, val = self.tv_value(n, a, mn, m_ / a_)
+            out[t] = {int(p): float(val[self.D.pidx[int(p)]]) for p in mem[t]
+                      if int(p) in self.D.pidx and mn[self.D.pidx[int(p)]] >= TV_POOL_MIN and not np.isnan(val[self.D.pidx[int(p)]])}
+        return out
 
 if __name__ == '__main__':
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')

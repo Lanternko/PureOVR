@@ -39,11 +39,12 @@ if 'foulDraw' not in ATTRS:
     ATTRS.insert(ATTRS.index('drive') + 1, 'foulDraw')
 import e062_switch as _E062  # noqa: E402
 # 舊版機制（CARD_MODE 020～029）見 git 歷史／live/_retired/README.md
-CARD_MODE = os.environ.get('CARD_MODE', '0210e')  # 只接受目前版本 0210e（card／inseason 0.2.10e＝0.2.10d 換 OVR 映射，E-188 S3：PR90→88、PR95→92；0.2.10d＝E-185 四項窗口，底 card 0.2.10c 的 KAU 重擬合）。舊版重現請 checkout 當時 commit（見 live/_retired/README.md）
-if CARD_MODE != '0210e':
-    raise SystemExit('CARD_MODE 只接受 0210e（舊版已淘汰，重現請 checkout 當時 commit；見 live/_retired/README.md）')
+CARD_MODE = os.environ.get('CARD_MODE', '0210f')  # 只接受目前版本 0210f（card／inseason 0.2.10f＝0.2.10e＋E-191b P1m 3PT 欄對照池，ranking／OVR 同 0.2.10e；0.2.10e＝0.2.10d 換 OVR 映射，E-188 S3：PR90→88、PR95→92；0.2.10d＝E-185 四項窗口，底 card 0.2.10c 的 KAU 重擬合）。舊版重現請 checkout 當時 commit（見 live/_retired/README.md）
+if CARD_MODE != '0210f':
+    raise SystemExit('CARD_MODE 只接受 0210f（舊版已淘汰，重現請 checkout 當時 commit；見 live/_retired/README.md）')
 # WIN10=0：關掉 0.2.10d 新增的四項窗口（long、creation、threeValue、MPG_hat），卡／用人層／RAPM 換成 card 0.2.10c（＝card-0.2.10d/work-selfcheck 的逐位元重建，build_usage_0210d.py base10c 產 usage 與 summary），先驗讀 _retired/ 的 0.2.10 檔（屬性同）；只用來拆「0.2.10c 底」與「窗口」各占多少（報告用，不上線）
 WIN10 = os.environ.get('WIN10', '1') != '0'
+TV_P1M = os.environ.get('TV_P1M', '1') != '0'   # 0.2.10f：3PT 欄對照池＝近三季窗口值＋本季（E-191b P1m）；TV_P1M=0 重現 0.2.10e（只用本季窗口池）
 MPG_L_FILE = ROOT / 'reports/card-0.2.12/mpg-L-selection.json'   # E-185：MPG 窗口長度 L（季），只用 2024-25 選（mpg_select.py）
 MPG_L = json.loads(MPG_L_FILE.read_text(encoding='utf-8'))['selected_L'] if WIN10 else None
 # 相容旗標：run_c4_live_rookie.py（assert）與舊實驗腳本（check_prereq 等）仍讀這幾個名字；029a 恆為真
@@ -57,12 +58,12 @@ if E064_MODE != 'G1':
     raise SystemExit('E064_MODE 只接受 G1（off／G0 是舊頁重現用，已淘汰）')
 # 預註冊 §4.1：stamina 最小樣本 1 場（本身的能力值與 w 都用；其餘 15 屬性照 C4 現行）。
 SA.SEASON_MIN_SAMPLE['stamina'] = 1
-VERSION = 'inseason 0.2.10e'  # R-050／R-114：跟先驗 card 0.2.10e 同號； 第一個字面值會被 daily_inseason_update.probe_base_version 以正規式讀取，勿改成括號／條件式開頭
-CARD_VERSION = 'card 0.2.10e'
+VERSION = 'inseason 0.2.10f'  # R-050／R-114：跟先驗 card 0.2.10f 同號； 第一個字面值會被 daily_inseason_update.probe_base_version 以正規式讀取，勿改成括號／條件式開頭
+CARD_VERSION = 'card 0.2.10f'
 if not WIN10:
     CARD_VERSION = 'card 0.2.10c'
-_CV = 'card-0.2.10d' if WIN10 else 'card-0.2.10c'   # 係數管線／RAPM 所在的卡（0.2.10e 只換 OVR 映射，沒有 cards/、rapm-T6 以外的新檔）
-_OV = CARD_VERSION.replace('card ', 'card-')   # OVR 欄與 summary 所在的卡：'card-0.2.10e'（WIN10=0 時 'card-0.2.10c'）
+_CV = 'card-0.2.10d' if WIN10 else 'card-0.2.10c'   # 係數管線／RAPM 所在的卡（0.2.10e 只換 OVR 映射、0.2.10f 只換 3PT 欄對照池，沒有 cards/、rapm-T6 以外的新檔）
+_OV = CARD_VERSION.replace('card ', 'card-')   # OVR 欄與 summary 所在的卡：'card-0.2.10f'（WIN10=0 時 'card-0.2.10c'）
 _SC = ROOT / 'reports/card-0.2.10d/work-selfcheck'   # card 0.2.10c 的逐位元重建（WIN10=0 的卡端檔）
 _RET = HERE / '_retired'
 PRIOR = '2025-26'
@@ -86,7 +87,7 @@ def sat_w(m):
     """card 0.2.5 的分鐘權重 W(m) = (1 − e^(−m/15)) / (1 − e^(−36/15))；W(0)=0、W(36)=1。"""
     return (1.0 - math.exp(-m / W_TAU)) / (1.0 - math.exp(-W_REF / W_TAU))
 
-USAGE_FILE = HERE / 'usage-2025-26-card0210e.json' if WIN10 else _SC / 'usage-2025-26-card0210c-nowin.json'     # build_usage_0210e.py 產出（card 0.2.10d 的 KAU 重擬合係數／r_repl／錨點＋E-188 的 PR90／PR95，不是凍結值；WIN10=0 檔由 _retired/build_usage_0210d.py base10c 產）（係數、r_repl、錨點；b8_ydL＝0）；錨點／r_repl 也從這裡讀
+USAGE_FILE = HERE / 'usage-2025-26-card0210f.json' if WIN10 else _SC / 'usage-2025-26-card0210c-nowin.json'     # build_usage_0210f.py 產出（card 0.2.10d 的 KAU 重擬合係數／r_repl／錨點＋E-188 的 PR90／PR95，不是凍結值；WIN10=0 檔由 _retired/build_usage_0210d.py base10c 產）（係數、r_repl、錨點；b8_ydL＝0）；錨點／r_repl 也從這裡讀
 POOL026 = HERE / 'pool-027b.json'                     # e128-card027b/build_pool_027b.py 產出的凍結合併池
 DEF_L_PRIMARY = ROOT / 'reports/card-0.2.5+E104-defense-pergame-decay/def-L-primary.csv'   # UL 防守加成的 --defRapm
 E128_RB = ROOT / 'reports/card-0.2.7+E123-tail-3pt-rim-pres/rebase-027a'
@@ -619,6 +620,11 @@ def three_value_columns(prior_ids, extra_ids=()):
         cols[pid] = c
     # extra_ids（名單上還沒出賽的人）只給值、不進池，已出賽者的百分位不受影響
     pool = [c['value'] for pid, c in cols.items() if pid in prior_ids and c['ok'] and c['minAll'] >= THREE_POOL_MIN]
+    n_past = 0
+    if WIN10 and TV_P1M:
+        # E-191b P1m（0.2.10f）：池＝近三季各自「以該季結尾的窗口值」（窗口加權 MIN>=500）＋本季窗口值（上面那批），尺度和窗口值一致
+        past = [v for d in win8_load()['tvpast'].values() for v in d.values()]
+        pool, n_past = past + pool, len(past)
     # 2026-10-30 使用者「3PT 不要封 99」：027b 頂端改走 E-101 百分位尾巴（同卡片 threeValue：top 開、bot 關），
     # 錨點取本季即時池（m26_anchors），不用 pool-027b 的凍結錨點（那是 E-123 難度調整值，量尺不同）
     an = m26_anchors(pool) if pool else None
@@ -631,8 +637,11 @@ def three_value_columns(prior_ids, extra_ids=()):
 
     for c in cols.values():
         c['threeValue'] = attr_open(c['value']) if c['ok'] else None
-    return cols, {'mu': mu, 'rep': rep, 'k': THREE_K, 'poolMin': THREE_POOL_MIN, 'poolSize': len(pool),
-                  'leagueFG3M': m_all, 'leagueFG3A': a_all, 'topTail': an}
+    info = {'mu': mu, 'rep': rep, 'k': THREE_K, 'poolMin': THREE_POOL_MIN, 'poolSize': len(pool),
+            'leagueFG3M': m_all, 'leagueFG3A': a_all, 'topTail': an}
+    if WIN10 and TV_P1M:
+        info['poolPast'] = n_past   # 池裡來自前三季的人數（其餘為本季）
+    return cols, info
 
 
 # ------------------------------------------------------------------ foulDraw（E-070 公式，CARD_MODE=022）
@@ -679,6 +688,8 @@ def win8_load():
             Ls = MPG_L
             WIN8.update(mpg=W.mpg_at(gd, tabs, nseas=Ls), mpg_day0=W.mpg_at(0, tabs, nseas=Ls), mpgL=Ls,
                         tv=(W.tv_raw(gd, tabs), W.D.pidx, W10.Win10.tv_value), tvL=4)
+            if TV_P1M:
+                WIN8['tvpast'] = W.tv_past_pool(TARGET)
     finally:
         sys.path[:] = saved
     print(f'{VERSION} 窗口：本季 {gd} 場（pbp {WIN8["pbp"]} 場），8 項 {len(WIN8["now"])} 人', file=sys.stderr)
@@ -1154,7 +1165,7 @@ def main():
                                           'boxPlayersDroppedNoBio': mp['boxPlayersDroppedNoBio'],
                                           'priorShotSampleFilled': [mp['priorShotSampleFilled'], mp['priorCards']]},
         'sanity': sanity,
-        'threeValue': {**tv_info, 'formula': ('vol*(acc-rep); vol=四季窗口 3PA/MIN*36; acc=(n_w+k*mu)/(a_w+k)，n_w＝各季 abilityC×加權3PA（沒有 abilityC 的季用原始 FG3M）; rep=合併聯盟3P%-0.03; 池=窗口 MIN>=500且有先驗卡; 百分位→attr() 40-99，PR≥99 走頂端尾巴（錨點＝即時池 r99、S）（E-185）' if WIN10 else 'vol*(acc-rep); vol=合併(2025-26+2026-27)3PA/MIN*36; acc=(k*abilityC_2025-26+FG3M_2026-27)/(k+FG3A_2026-27)'
+        'threeValue': {**tv_info, 'formula': ('vol*(acc-rep); vol=四季窗口 3PA/MIN*36; acc=(n_w+k*mu)/(a_w+k)，n_w＝各季 abilityC×加權3PA（沒有 abilityC 的季用原始 FG3M）; rep=合併聯盟3P%-0.03; 池=窗口 MIN>=500且有先驗卡' + ('，加上近三季各自以該季結尾的窗口值（窗口加權 MIN>=500；E-191b P1m，0.2.10f）' if TV_P1M else '') + '; 百分位→attr() 40-99，PR≥99 走頂端尾巴（錨點＝池 r99、S）（E-185）' if WIN10 else 'vol*(acc-rep); vol=合併(2025-26+2026-27)3PA/MIN*36; acc=(k*abilityC_2025-26+FG3M_2026-27)/(k+FG3A_2026-27)'
                        '（本季無出手難度資料，用原始命中）; rep=合併聯盟3P%-0.03; 池=合併MIN>=500且有先驗卡; 百分位→attr() 40-99，027b 下 PR≥99 走頂端尾巴（錨點＝即時池 r99、S）'),
                        'note': '顯示用，不進 OVR（R-024）；long 欄仍留在 ranking.csv 並進 OVR，但表格不顯示'},
     }
@@ -1176,7 +1187,8 @@ def main():
                 + (f"MPG_hat＝窗口 MPG（Σu·MIN／Σu·GP，過去 {MPG_L} 季＋本季逐場線性遞減，E-185）；lastOVR 基準＝本季 0 場的窗口 MPG；窗口內沒出賽的 {len(mpg_nodata)} 人退回 MPG0。`ovrPer36` 是同一預測的每 36 分鐘 OVR。" if WIN10 else
                    f"MPG_hat = MPG0 + w·(本季場均分鐘 − MPG0)，w＝stamina 的 C4 w（stamina 最小樣本 1 場）；"
                    f"沒有本季視窗紀錄的 {len(mpg_nodata)} 人（含沒出賽者，不在排名內）退回 MPG0。`ovrPer36` 是同一預測的每 36 分鐘 OVR。"))
-    ATTR_NOTE = ((f"- inseason 0.2.10e（E-188，R-124）：只換 OVR 映射（PR90→88、PR95→92，名次不變），屬性、係數同 0.2.10d。\n" if WIN10 else "") +
+    ATTR_NOTE = ((f"- inseason 0.2.10f（E-191b）：3PT 欄（threeValue，顯示用）的對照池改成近三季各自窗口值＋本季窗口值（窗口加權 MIN≥500），ranking／OVR／名次同 0.2.10e。\n" if WIN10 and TV_P1M else "") +
+                (f"- inseason 0.2.10e（E-188，R-124）：只換 OVR 映射（PR90→88、PR95→92，名次不變），屬性、係數同 0.2.10d。\n" if WIN10 else "") +
                 (f"- inseason 0.2.10d（E-185）：long、creation 也改四季滑動窗口（同 8 項的權重；long 是窗口 3PM／3PA 收縮到本季聯盟 3P%、creation 是窗口 FGA/MIN），threeValue、MPG_hat 同為窗口；係數、錨點、r_repl 用 card 0.2.10d 的 KAU 重擬合值（底 card 0.2.10c）。\n" if WIN10 else "") +
                  "- inseason 0.2.10（R-114）：drive、foulDraw、ft、mid、pass、rebound、short、tovSkill 八項＝E-175 四季滑動窗口（過去四季權重 window_w(c)，c＝82×已賽場數/1230；本季逐場線性遞減；收縮 k、先驗 m、映射皆凍結自 2025-26 U 鏈；live/window8.py），不再走 C4 的 x0+w(y−x0)；其餘屬性（stamina 等）仍走 C4。用人層係數、錨點、r_repl 取現行卡的重擬合值（usage 檔）。"
                  "- 以下為舊版 E-128 說明（其餘屬性的先驗與映射仍適用）：E-128（CARD_MODE=027b，預設）：先驗 x0＝card 0.2.7b 產生器的未四捨五入能力值（尾巴原樣、不夾 99）；屬性迴歸＝rebase-027a e123a primary 的 summary.json；"

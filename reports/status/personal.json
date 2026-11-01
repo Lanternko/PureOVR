@@ -40,14 +40,14 @@
   "note": "已收束；球隊層 2025-26 勝場 MAE 變差，未切換對局資料，卡片板仍為 v53 校準；不讀 RAPM，樣本內即樣本外：同一份分數直接對 A 半、B 半 RAPM 各算一次 ρ 再平均（reports/ovr-metrics-backfill-2025-26）"
  },
  {
-  "layer": "卡片 OVR（正式卡片板，card 0.2.10e）",
-  "description": "0.2.10e：OVR 映射頂端加 PR90→88、PR95→92 兩錨（名次不變，E-188）；0.2.10d：long／creation／threeValue／MPG 四季窗口；0.2.10c：傳球共用斜率；0.2.10a：2025-26 T6 補回 L-102 BPM 解析漏掉的聯盟第一（Jokić 7→3 名）；其餘同 0.2.10：card 0.2.9a 係數與錨全凍結，8 項屬性（drive、foulDraw、ft、mid、pass、rebound、short、tovSkill）改 E-175 四季滑動窗口（R-111／R-114，2026-11-01）；0.2.9 起拿掉年輕×爛隊×時間（y·d·L）折扣（E-158 Y0，R-104）（遊戲本體不讀取任何 OVR）",
+  "layer": "卡片 OVR（正式卡片板，card 0.2.10f）",
+  "description": "0.2.10f：3PT 欄對照池改近三季窗口值＋本季（E-191b P1m；OVR 與名次同 0.2.10e）；0.2.10e：OVR 映射頂端加 PR90→88、PR95→92 兩錨（名次不變，E-188）；0.2.10d：long／creation／threeValue／MPG 四季窗口；0.2.10c：傳球共用斜率；0.2.10a：2025-26 T6 補回 L-102 BPM 解析漏掉的聯盟第一（Jokić 7→3 名）；其餘同 0.2.10：card 0.2.9a 係數與錨全凍結，8 項屬性（drive、foulDraw、ft、mid、pass、rebound、short、tovSkill）改 E-175 四季滑動窗口（R-111／R-114，2026-11-01）；0.2.9 起拿掉年輕×爛隊×時間（y·d·L）折扣（E-158 Y0，R-104）（遊戲本體不讀取任何 OVR）",
   "players": 414,
   "rhoNet": 0.722,
   "rhoDefense": 0.437,
   "holdoutRho": "未量測",
   "rho2k": "未量測",
-  "note": "ρRAPM 樣本內（align/封頂用 RAPM）；每場 OVR；card 0.2.10e = 0.2.10d + OVR 頂端加 PR90／PR95 錨（E-188 S3，名次不變）；card 0.2.10d = 0.2.10c + long／creation／threeValue／MPG 四季窗口（E-185）；card 0.2.10c = E-175 滑動窗口屬性 + 修正後 T6（L-102）重擬合 + 傳球共用斜率（E-187）；0.2.9 的 E-158 預註冊判定通過（年輕子群 C +0.106、下界 +0.035；全體 +0.001）；此列 ρ vs RAPM 照舊用 RAPM 算；對 2K27 ρ 尚無 0.2.10 的 evaluation.json，不填；來源 card-0.2.10d"
+  "note": "ρRAPM 樣本內（align/封頂用 RAPM）；每場 OVR；card 0.2.10f = 0.2.10e + 3PT 欄新對照池（E-191b P1m，OVR 不變）；card 0.2.10e = 0.2.10d + OVR 頂端加 PR90／PR95 錨（E-188 S3，名次不變）；card 0.2.10d = 0.2.10c + long／creation／threeValue／MPG 四季窗口（E-185）；card 0.2.10c = E-175 滑動窗口屬性 + 修正後 T6（L-102）重擬合 + 傳球共用斜率（E-187）；0.2.9 的 E-158 預註冊判定通過（年輕子群 C +0.106、下界 +0.035；全體 +0.001）；此列 ρ vs RAPM 照舊用 RAPM 算；對 2K27 ρ 尚無 0.2.10 的 evaluation.json，不填；來源 card-0.2.10f（ranking.csv 同 card-0.2.10e）"
  },
  {
   "layer": "卡片 OVRcard 0.2.8（前正式版）",

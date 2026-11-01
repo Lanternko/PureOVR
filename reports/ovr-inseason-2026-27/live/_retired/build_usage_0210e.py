@@ -1,3 +1,4 @@
+raise SystemExit('已淘汰：本檔只供對照。重現請 checkout 當時 commit（見 live/CURRENT.json、_retired/README.md）')  # R-124 retired guard（0.2.10f 換 build_usage_0210f.py；ranking／OVR 同 0.2.10e）
 """card 0.2.10e 用人層（E-188 S3，R-124）：用人特徵、係數、r_repl、PR1／PR50／PR99 與 0.2.10d 相同（reports/card-0.2.10d/usage-features.json），
 只多存 PR90／PR95 兩錨（取 reports/card-0.2.10e/summary.json，card 0.2.10d 池 gRepl、MIN≥500、qf），run_c4_live.e064_map 用四節點映射。
 逐人核對：card-0.2.10e/ranking.csv 的 ovr＝ovr_map(gRepl)（差 ≤0.06，gRepl 只存 4 位小數）、名單與 0.2.10d 相同。
