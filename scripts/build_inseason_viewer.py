@@ -305,10 +305,11 @@ def main():
     er.JS = er.JS.replace('2025-26 例行賽紀錄', '2026-27 賽季紀錄')
     # 影響力四格改用 2026-27 自製 EPM 式（當季 box 先驗＋生涯 RAPM 先驗＋當季 RAPM；只顯示，不進 OVR）
     epm_rows, _ = epm_live.run()
-    # 第四格改放當季 box 估計（boxO＋boxD）：開季在場減不在場雜訊太大（Wembanyama +53.5），使用者 2026-10-30 選換掉
-    epm_imp = {r['playerId']: {k: v for k, v in (('o', r['O']), ('d', r['D']),
-                                                 ('onoff', None if r['boxO'] is None else r['boxO'] + r['boxD'])) if v is not None}
+    # 第四格：原在場減不在場雜訊太大（Wembanyama +53.5，使用者 2026-10-30 換成 box 估計），2026-11-03 再換成場均評分（見下方 JS 替換）
+    epm_imp = {r['playerId']: {k: v for k, v in (('o', r['O']), ('d', r['D'])) if v is not None}
                for r in epm_rows}
+    # 場均評分格沿用近 5 場表的五色（原本只掛在 .g5 底下）
+    er.CSS += '.chip i.c5a{color:var(--g-a)}.chip i.c5b{color:var(--g-b)}.chip i.c5c{color:#a3abb5}.chip i.c5d{color:#f09a8c}.chip i.c5f{color:var(--g-f)}\n'
     er.IMPACT_LOADER = lambda: {pid: {k: round(v, 2) for k, v in d.items()} for pid, d in epm_imp.items()}
     add_ovr_chart(live)
     for a, b in [
@@ -316,9 +317,13 @@ def main():
         ('2025-26 RAPM 進攻：', '2026-27 自製 EPM 式（本季數據表＋生涯 RAPM 打底＋本季 RAPM）進攻：'),
         ('2025-26 RAPM 防守：', '2026-27 自製 EPM 式（本季數據表＋生涯 RAPM 打底＋本季 RAPM）防守：'),
         ('2025-26 RAPM 淨值＝進攻＋防守', '2026-27 自製 EPM 式淨值＝進攻＋防守（本季數據表＋生涯 RAPM 打底＋本季 RAPM）'),
-        ('2025-26 他在場減不在場的球隊每 100 回合淨效率（扣掉球隊本身強弱；會受替補好壞影響）',
-         '2026-27 只看本季數據表（得分、出手、助攻、籃板、抄阻、失誤等）估的每 100 回合淨影響，不看比分；打得越少越被拉向同上場時間的平均'),
-        ("'在場增益'", "'本季數據估計'"),
+        # 第四格再改成本季場均評分（Z1 0–10，整季每場平均；使用者 2026-11-03）：box 估計開季被收縮約八成，
+        # Ty Jerome 場均 25.8 分只排 #53、藍領中鋒反而前 15；評分抓得到開季爆發。顏色＝和自己上季比，新秀和聯盟平均 5.8 比
+        ("    chip('在場增益', m.onoff, '2025-26 他在場減不在場的球隊每 100 回合淨效率（扣掉球隊本身強弱；會受替補好壞影響）' + (m.on == null ? '' : '；在場時球隊淨效率 ' + sg(m.on)))}",
+         "    (() => { const v = r.sd ? r.sd.gc : null, b = r.gc ? r.gc.b : null;\n"
+         "      const tip = GC_DEF + '。本季每場評分平均' + (b == null ? '；沒有上季紀錄，顏色和聯盟平均 5.8 比' : '；上季 ' + gcS(b) + '，顏色＝和自己上季比');\n"
+         "      return `<span class=\"chip\" title=\"${tip}\">場均評分<i class=\"${v == null ? 'flat' : gcCls(v - (b == null ? 5.8 : b), GC_CUT5)}\">${v == null ? '—' : gcS(v)}</i></span>`; })()}"),
+        ("'在場增益'", "'場均評分'"),
     ]:
         assert er.JS.count(a) >= 1, a
         er.JS = er.JS.replace(a, b)
