@@ -1,0 +1,400 @@
+"""每日傷病名單＋球隊評分（E-208 第二階段，spec: reports/E208-team-rating/spec-site.md）。
+
+流程：抓 ESPN 傷病 → 抓 NBA.com 賽程 → 組兩份分鐘（近況／今日陣容）→ 模擬（scripts/team_ratings_sim.mjs，引擎 sim 0.1.4）→ 預測勝場
+→ 寫 data/season-source-2026-27/team-ratings.json 與 injuries.json。網頁由 build_teams_page.py 讀 team-ratings.json 建成 teams.html。
+
+分鐘規則（E-208 (c)，reports/E208-team-rating/minutes_rules.py 的 norm）：
+- 近況：該隊最近 10 場（box score）的實際分鐘平均，取前 10 人，正規化成 240 分鐘、單人上限 48。
+- 今日陣容：同上，但先拿掉 ESPN 傷病名單裡 Out／Doubtful／Suspension 的人，剩下的再取前 10 人、正規化到 240、上限 48。
+  Questionable／Day-To-Day 保留。
+評分＝名單對「聯盟平均隊」各打 SEEDS 場（換主客）：ORtg／DRtg 扣「近況」版的聯盟平均（兩版共用，兩版差＝純傷兵影響）。
+預測勝場＝目前勝 + 剩餘賽程逐場 Φ((marginA − marginB ± H) / σ)；H=2.5、σ=12（同 E-208）。賽程抓不到時，剩餘場次用對其他 29 隊的平均勝率。
+子程序一律 CREATE_NO_WINDOW。失敗由呼叫端（daily_inseason_update）降級成 WARNING，不擋球員頁發布。
+
+用法：python -I -X utf8 scripts/team_ratings_daily.py [live_dir] [--seeds N] [--workers N] [--no-fetch]
+  live_dir 預設＝publish_state.json 最後發布那天的夾（內含 ranking.csv、meta.json）。
+"""
+from __future__ import annotations
+
+import argparse
+import collections
+import csv
+import datetime as dt
+import glob
+import json
+import logging
+import math
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+import unicodedata
+import urllib.request
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+E208 = ROOT / 'reports/E208-team-rating'
+sys.path.insert(0, str(E208))
+from minutes_rules import norm  # noqa: E402  (E-208 (c) 的正規化：前 10 人、240 分鐘、上限 48)
+
+SEASON = '2026-27'
+SRC = ROOT / f'data/season-source-{SEASON}'
+INJURIES = SRC / 'injuries.json'
+SCHEDULE = SRC / 'schedule.json'
+RATINGS = SRC / 'team-ratings.json'
+BOXES = ROOT / f'data/defense-seventh/{SEASON}/boxes'
+LEAGUE = ROOT / f'data/defense-seventh/{SEASON}/league.json'
+LIVE = ROOT / 'reports/ovr-inseason-2026-27/live'
+SIM = ROOT / 'scripts/team_ratings_sim.mjs'
+ESPN_URL = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/injuries'
+H, SIGMA, SEEDS, GAMES, LAST_N = 2.5, 12.0, 200, 82, 10   # H、σ 同 E-208 預註冊
+OUT_STATUS = {'out', 'doubtful', 'suspension'}            # 今日陣容拿掉的狀態（小寫）
+ESPN_ABBR = {'GS': 'GSW', 'NO': 'NOP', 'NY': 'NYK', 'SA': 'SAS', 'WSH': 'WAS', 'UTAH': 'UTA', 'PHO': 'PHX', 'BRK': 'BKN', 'CHO': 'CHA'}
+CREATE_NO_WINDOW = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
+ATTRS = ['long', 'mid', 'short', 'ft', 'drive', 'tovSkill', 'pass', 'rebound', 'physique', 'onBall', 'help', 'stamina']
+
+log = logging.getLogger('daily_inseason.team_ratings')
+
+
+# ----------------------------------------------------------------- 純函式（有測試）
+def nn(s: str) -> str:
+    """球員姓名正規化：去重音、去 Jr./Sr./II/III/IV、只留小寫字母。"""
+    s = unicodedata.normalize('NFKD', s or '').encode('ascii', 'ignore').decode().lower()
+    s = re.sub(r'\b(jr|sr|ii|iii|iv|v)\b\.?', ' ', s)
+    return re.sub(r'[^a-z]', '', s)
+
+
+def Phi(x: float) -> float:
+    return 0.5 * (1 + math.erf(x / math.sqrt(2)))
+
+
+def is_out(status: str) -> bool:
+    return (status or '').strip().lower() in OUT_STATUS
+
+
+def avg_minutes(prior: list) -> dict:
+    """prior＝該隊此前最多 10 場的 [[pid, min], …] 列表 → {pid: 平均分鐘}（沒上場的場次算 0，同 E-208 rule_c）。"""
+    tot: collections.Counter = collections.Counter()
+    for r in prior:
+        for p, m in r:
+            tot[p] += m
+    n = len(prior) or 1
+    return {p: v / n for p, v in tot.items()}
+
+
+def rotation(prior: list, fallback: list, excluded=frozenset()) -> list:
+    """最近 10 場實際分鐘平均（拿掉 excluded）→ 前 10 人、240 分鐘、上限 48。
+    prior 為空時用 fallback（[[pid, mpg], …]，季前預期）。
+    不足 8 人（大量缺陣）時用 fallback 依序補人，補到 8 人以上，確保能分滿 240／上限 48。"""
+    base = avg_minutes(prior) if prior else {p: m for p, m in fallback}
+    items = [[p, m] for p, m in base.items() if p not in excluded]
+    if len(items) < 8:
+        have = {p for p, _ in items}
+        for p, m in sorted(fallback, key=lambda t: -t[1]):
+            if len(items) >= 8:
+                break
+            if p not in have and p not in excluded:
+                items.append([p, max(m, 1.0)]); have.add(p)
+    return norm(items)
+
+
+def margin_win_prob(d: float, home: bool) -> float:
+    return Phi((d + (H if home else -H)) / SIGMA)
+
+
+def predict_wins(wins: int, played: int, remaining: list, margin: dict, tid: str) -> tuple:
+    """remaining＝[(homeId, awayId), …] 本隊的剩餘賽程；回傳 (預測最終勝場, 逐場加總的場數, 以平均勝率補的場數)。
+    賽程沒涵蓋到 82 場的部分（賽程抓不到、或盃賽淘汰賽未定）用對其他 29 隊的平均勝率補。"""
+    exp = 0.0
+    for h, a in remaining:
+        if str(h) == tid:
+            exp += margin_win_prob(margin[tid] - margin[str(a)], True)
+        else:
+            exp += 1 - margin_win_prob(margin[str(h)] - margin[tid], True)
+    others = [o for o in margin if o != tid]
+    pool = sum(0.5 * (margin_win_prob(margin[tid] - margin[o], True) + margin_win_prob(margin[tid] - margin[o], False)) for o in others) / len(others)
+    rest = max(0, GAMES - played - len(remaining))
+    return wins + exp + rest * pool, len(remaining), rest
+
+
+def parse_espn(d: dict) -> list:
+    """ESPN injuries JSON → 精簡清單（隊用 ESPN 縮寫轉成 NBA tricode）。"""
+    out = []
+    for t in d.get('injuries', []):
+        for i in t.get('injuries', []):
+            a = i.get('athlete') or {}
+            ab = ((a.get('team') or {}).get('abbreviation')) or ''
+            raw, comment = i.get('status') or '', (i.get('shortComment') or '')[:240]
+            # ESPN 的 status 只有 Out／Day-To-Day／Suspension；官方的 Doubtful 只出現在簡評（"is listed as doubtful for Monday's game"）。
+            # Day-To-Day 且簡評寫 doubtful 時升成 Doubtful（今日陣容會拿掉）；其餘 Day-To-Day（questionable／probable）保留。
+            eff = 'Doubtful' if raw.lower() == 'day-to-day' and re.search(r'doubtful', comment, re.I) else raw
+            out.append({'name': a.get('displayName') or '', 'team': ESPN_ABBR.get(ab, ab), 'teamName': t.get('displayName'),
+                        'status': eff, 'espnStatus': raw, 'date': i.get('date'),
+                        'comment': comment, 'returnDate': (i.get('details') or {}).get('returnDate')})
+    return out
+
+
+def attach_ids(items: list, index: dict) -> tuple:
+    """index＝{nn(姓名): [(pid, tricode), …]}。先姓名（同名多人時用球隊挑）；對不上的放進 unmatched，不猜。"""
+    matched, unmatched = [], []
+    for it in items:
+        c = index.get(nn(it['name']), [])
+        if len(c) > 1:
+            c = [x for x in c if x[1] == it['team']] or []
+        if len(c) == 1:
+            matched.append({**it, 'playerId': c[0][0]})
+        else:
+            matched.append({**it, 'playerId': None}); unmatched.append(it['name'])
+    return matched, unmatched
+
+
+# ----------------------------------------------------------------- 資料
+def mins(s: str) -> float:
+    m = re.fullmatch(r'PT(\d+)M([\d.]+)S', s or '')
+    return int(m[1]) + float(m[2]) / 60 if m else 0.0
+
+
+def load_boxes() -> tuple:
+    """回傳 (按時間排序的每隊每場 [[pid, 正規化分鐘]], {tid: tricode}, {pid: 名字})。同 prep_forward_minutes 的做法。"""
+    games, tri, names = [], {}, {}
+    for f in sorted(glob.glob(str(BOXES / '*.json'))):
+        g = json.load(open(f, encoding='utf-8'))['data']['game']
+        if g.get('gameStatus') != 3:
+            continue
+        r = {}
+        for k in ('homeTeam', 'awayTeam'):
+            t = g[k]
+            tid = str(t['teamId']); tri[tid] = t.get('teamTricode') or tri.get(tid, '')
+            for p in t['players']:
+                names[p['personId']] = p.get('name') or ' '.join(filter(None, [p.get('firstName'), p.get('familyName')]))
+            r[tid] = norm([[p['personId'], mins(p['statistics']['minutes'])] for p in t['players']])
+        games.append((g['gameTimeUTC'], g['gameId'], r))
+    games.sort(key=lambda t: (t[0], t[1]))
+    hist: dict = collections.defaultdict(list)
+    for _, _, r in games:
+        for tid, lst in r.items():
+            hist[tid].append(lst)
+    return hist, tri, names
+
+
+def fetch_json(url: str, timeout: int = 30) -> dict:
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return json.loads(r.read().decode('utf-8'))
+
+
+def load_injuries(index: dict, fetch: bool = True) -> dict:
+    """抓 ESPN 傷病並存 injuries.json。失敗：沿用上一份、標 stale。官方傷病報告 PDF 後備沒做（沒有 PDF 解析套件），見報告。"""
+    prev = {}
+    try:
+        prev = json.loads(INJURIES.read_text(encoding='utf-8'))
+    except Exception:
+        pass
+    now = dt.datetime.now().astimezone().isoformat(timespec='seconds')
+    if fetch:
+        try:
+            raw = fetch_json(ESPN_URL)
+            items = parse_espn(raw)
+            if not items:
+                raise RuntimeError('ESPN 傷病名單是空的')
+            matched, unmatched = attach_ids(items, index)
+            doc = {'fetchedAt': now, 'source': 'espn', 'espnTimestamp': raw.get('timestamp'), 'stale': False, 'items': matched, 'unmatched': unmatched}
+            INJURIES.parent.mkdir(parents=True, exist_ok=True)
+            INJURIES.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+            if unmatched:
+                log.info('傷病名單 %d 人對不上球員（多半本季還沒上場）：%s', len(unmatched), '、'.join(unmatched[:30]))
+            return doc
+        except Exception as e:  # noqa: BLE001
+            log.warning('ESPN 傷病抓取失敗（%s）；沿用前一份', e)
+    if prev.get('items') is not None:
+        prev['stale'] = True
+        return prev
+    log.warning('沒有任何傷病資料；兩個版本名單相同')
+    return {'fetchedAt': None, 'source': None, 'espnTimestamp': None, 'stale': True, 'items': [], 'unmatched': []}
+
+
+def load_schedule(fetch: bool = True) -> dict:
+    """node scripts/fetch_schedule.mjs（失敗不覆寫舊檔），再讀 schedule.json。回傳 {} 表示沒有賽程。"""
+    if fetch:
+        try:
+            r = subprocess.run([node_exe(), 'scripts/fetch_schedule.mjs', SEASON], cwd=str(ROOT), capture_output=True, text=True,
+                               encoding='utf-8', errors='replace', timeout=180, creationflags=CREATE_NO_WINDOW, stdin=subprocess.DEVNULL)
+            if r.returncode != 0:
+                log.warning('fetch_schedule exit=%s：%s；沿用舊賽程檔', r.returncode, (r.stderr or r.stdout).strip()[-200:])
+        except Exception as e:  # noqa: BLE001
+            log.warning('fetch_schedule 失敗（%s）；沿用舊賽程檔', e)
+    try:
+        return json.loads(SCHEDULE.read_text(encoding='utf-8'))
+    except Exception:
+        return {}
+
+
+def node_exe() -> str:
+    for c in (shutil.which('node'), r'C:\Program Files\nodejs\node.exe'):
+        if c and Path(c).exists():
+            return c
+    raise RuntimeError('找不到 node')
+
+
+def engine_inputs(rows: list, card_rows: list) -> dict:
+    """引擎端的屬性差：live − 卡片（同 E-208 prep_forward）；卡片裡沒有或引擎沒有的人（新秀）用 live − 卡片聯盟分鐘加權平均。"""
+    xids = {int(k) for k in json.load(open(E208 / 'players-attrs.json', encoding='utf-8'))['players']}
+    cardN = {nn(r['name']): r for r in card_rows}
+    W = sum(float(r['MIN']) for r in card_rows)
+    cmean = {a: sum(float(r[a]) * float(r['MIN']) for r in card_rows) / W for a in ATTRS}
+    deltas, new = {}, []
+    for r in rows:
+        pid = int(r['playerId']); c = cardN.get(nn(r['name']))
+        if pid in xids and c is not None:
+            deltas[pid] = {a: float(r[a]) - float(c[a]) for a in ATTRS}
+        else:
+            new.append(pid); deltas[pid] = {a: float(r[a]) - cmean[a] for a in ATTRS}
+    return {'attrs': ATTRS, 'deltas': {str(k): v for k, v in deltas.items()}, 'newPlayers': new}
+
+
+def run_sim(inp: dict, seeds: int, workers: int) -> dict:
+    """平行起 node 子程序（無視窗）；每個子程序負責 jobs[i % N == shard]。回傳 {(team, ver): 累計量}。"""
+    tmp = Path(tempfile.mkdtemp(prefix='team-ratings-', dir=ROOT / 'data'))
+    try:
+        (tmp / 'in.json').write_text(json.dumps(inp), encoding='utf-8')
+        procs = [subprocess.Popen([node_exe(), str(SIM), str(tmp / 'in.json'), str(s), str(workers), str(tmp / f'out-{s}.json'), str(seeds)],
+                                  cwd=str(ROOT), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='utf-8', errors='replace',
+                                  creationflags=CREATE_NO_WINDOW, stdin=subprocess.DEVNULL) for s in range(workers)]
+        for p in procs:
+            out, err = p.communicate(timeout=1500)
+            if p.returncode != 0:
+                raise RuntimeError(f'team_ratings_sim exit={p.returncode}：{(err or out).strip()[-400:]}')
+        res, missing = {}, set()
+        for s in range(workers):
+            d = json.load(open(tmp / f'out-{s}.json', encoding='utf-8'))
+            missing |= set(d['missing'])
+            for o in d['res']:
+                res[(str(o['team']), o['ver'])] = o
+        return {'res': res, 'missing': sorted(missing)}
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+# ----------------------------------------------------------------- 主流程
+def read_csv(p: Path) -> list:
+    return list(csv.DictReader(open(p, encoding='utf-8')))
+
+
+def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = True) -> dict:
+    t0 = time.time()
+    meta = json.loads((live_dir / 'meta.json').read_text(encoding='utf-8'))
+    rows = read_csv(live_dir / 'ranking.csv')
+    card_name = (meta.get('priorCard') or 'card 0.2.12b').replace('card ', 'card-')
+    card_csv = ROOT / f'reports/{card_name}/ranking.csv'
+    if not card_csv.exists():
+        card_csv = ROOT / 'reports/card-0.2.12b/ranking.csv'
+    card_rows = read_csv(card_csv)
+
+    hist, tri, box_names = load_boxes()
+    teams = json.loads((E208 / 'inputs.json').read_text(encoding='utf-8'))['teams']      # tid → {name, abbr, …}
+    tids = sorted(teams)
+    assert len(tids) == 30, len(tids)
+    tri2tid = {v: k for k, v in tri.items()}
+    live_team = {int(r['playerId']): tri2tid.get(r['team']) for r in rows}                 # 現在的球隊（交易後以 live 為準）
+    ovr = {int(r['playerId']): float(r['ovr']) for r in rows}
+    pname = {**box_names, **{int(r['playerId']): r['name'] for r in rows}}
+    index: dict = collections.defaultdict(list)
+    for pid, nm in pname.items():
+        index[nn(nm)].append((pid, tri.get(live_team.get(pid) or '', '')))
+    inj = load_injuries(index, fetch)
+    out_pids = collections.defaultdict(set); all_inj = collections.defaultdict(list)
+    for it in inj['items']:
+        tid = tri2tid.get(it['team'])
+        pid = it.get('playerId')
+        if pid is not None and live_team.get(pid):
+            tid = live_team[pid]            # 球員現在的隊（ESPN 與 live 不同步時以 live 為準）
+        if tid is None:
+            continue
+        all_inj[tid].append(it)
+        if pid is not None and is_out(it['status']):
+            out_pids[tid].add(pid)
+
+    pre = collections.defaultdict(list)     # 季前預期（MPGhat）：沒有任何 box 時的後備
+    for r in rows:
+        tid = live_team.get(int(r['playerId']))
+        if tid:
+            pre[tid].append([int(r['playerId']), float(r['MPGhat'])])
+    rosters = {}
+    for tid in tids:
+        prior = hist[tid][-LAST_N:]
+        moved = {p for r in prior for p, _ in r if live_team.get(p) not in (None, tid)}   # 此後被交易走的人不算進輪替
+        recent = rotation(prior, pre[tid], excluded=moved)
+        today = rotation(prior, pre[tid], excluded=moved | out_pids[tid])
+        rosters[tid] = {'c': recent, 'today': today}
+    jobs = []
+    for tid in tids:
+        jobs.append({'team': tid, 'ver': 'c', 'roster': rosters[tid]['c']})
+        if rosters[tid]['today'] != rosters[tid]['c']:
+            jobs.append({'team': tid, 'ver': 'today', 'roster': rosters[tid]['today']})
+    inp = {**engine_inputs(rows, card_rows), 'jobs': jobs, 'teamIds': tids}
+    workers = max(1, min(workers, len(jobs)))
+    sim = run_sim(inp, seeds, workers)
+    log.info('球隊評分模擬：%d 份名單 × %d 場，%d 個 worker，%.0f 秒', len(jobs), seeds, workers, time.time() - t0)
+
+    def stat(tid, ver):
+        o = sim['res'].get((tid, ver)) or sim['res'][(tid, 'c')]    # 今日名單和近況相同時共用
+        return {'margin': o['msum'] / o['n'], 'ortg': 100 * o['pf'] / o['pof'], 'drtg': 100 * o['pa'] / o['poa']}
+    st = {v: {t: stat(t, v) for t in tids} for v in ('c', 'today')}
+    mo = sum(st['c'][t]['ortg'] for t in tids) / 30; md = sum(st['c'][t]['drtg'] for t in tids) / 30    # 兩版共用「近況」版的聯盟平均
+    lg = json.loads(LEAGUE.read_text(encoding='utf-8'))['schedule']
+    played_ids = {g['id'] for g in lg}
+    wl = collections.defaultdict(lambda: [0, 0])
+    for g in lg:
+        o = g['observed']; h = o['homeScore'] > o['awayScore']
+        wl[str(g['homeId'])][0 if h else 1] += 1; wl[str(g['awayId'])][1 if h else 0] += 1
+    sch = load_schedule(fetch)
+    remaining = [(h, a) for gid, _, h, a in sch.get('games', []) if gid not in played_ids]
+    rem_by = collections.defaultdict(list)
+    for h, a in remaining:
+        rem_by[str(h)].append((h, a)); rem_by[str(a)].append((h, a))
+
+    out_teams = {}
+    for tid in tids:
+        W, L = wl[tid]
+        rec = {'name': teams[tid]['name'], 'abbr': tri.get(tid) or teams[tid]['abbr'], 'W': W, 'L': L,
+               'injured': [{k: it.get(k) for k in ('name', 'status', 'date', 'comment', 'returnDate', 'playerId')} for it in all_inj[tid]]}
+        for v in ('c', 'today'):
+            s = st[v][tid]
+            pw, ng, nr = predict_wins(W, W + L, rem_by[tid], {t: st[v][t]['margin'] for t in tids}, tid)
+            rec[v] = {'ortg': s['ortg'] - mo, 'drtg': s['drtg'] - md, 'net': (s['ortg'] - mo) - (s['drtg'] - md), 'margin': s['margin'],
+                      'predWins': pw, 'schedGames': ng, 'poolGames': nr,
+                      'rotation': [{'pid': p, 'name': pname.get(p, str(p)), 'min': m, 'ovr': ovr.get(p)} for p, m in rosters[tid][v if v == 'c' else 'today']]}
+        rec['nOut'] = len(out_pids[tid])
+        out_teams[tid] = rec
+    doc = {'generatedAt': dt.datetime.now().astimezone().isoformat(timespec='seconds'), 'season': SEASON, 'version': meta.get('version'),
+           'dataCutoff': meta.get('dataCutoff'), 'engine': 'sim 0.1.4', 'seeds': seeds, 'H': H, 'sigma': SIGMA, 'lastN': LAST_N,
+           'gamesPlayed': len(lg), 'injuries': {k: inj.get(k) for k in ('fetchedAt', 'source', 'espnTimestamp', 'stale', 'unmatched')},
+           'schedule': {'fetchedAt': sch.get('fetchedAt'), 'source': sch.get('source'), 'remainingGames': len(remaining)},
+           'missingProfiles': sim['missing'], 'elapsedSec': round(time.time() - t0, 1), 'teams': out_teams}
+    RATINGS.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+    return doc
+
+
+def default_live_dir() -> Path:
+    cutoff = json.loads((LIVE / 'publish_state.json').read_text(encoding='utf-8'))['dataCutoff']
+    return LIVE / cutoff
+
+
+def main(argv=None) -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument('live_dir', nargs='?')
+    ap.add_argument('--seeds', type=int, default=SEEDS)
+    ap.add_argument('--workers', type=int, default=8)
+    ap.add_argument('--no-fetch', action='store_true')
+    a = ap.parse_args(argv)
+    if not log.handlers:
+        logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+    d = compute(Path(a.live_dir) if a.live_dir else default_live_dir(), a.seeds, a.workers, not a.no_fetch)
+    print(f"done {d['elapsedSec']}s, teams={len(d['teams'])}")
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())

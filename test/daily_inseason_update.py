@@ -142,7 +142,7 @@ class Shell(unittest.TestCase):
         t = Path(self.t.name)
         self.saved = {k: getattr(D, k) for k in ['LIVE', 'STATE_PATH', 'BUILD_ROOT', 'LOG_PATH', 'LOCK_PATH',
                                                   'step_fetch_games', 'step_fetch_inseason', 'step_c4',
-                                                  'step_viewer', 'step_card_viewer', 'publish_html']}
+                                                  'step_viewer', 'step_card_viewer', 'step_team_ratings', 'publish_html']}
         D.LIVE, D.STATE_PATH, D.BUILD_ROOT = t / 'live', t / 'live/publish_state.json', t / 'build'
         D.LOG_PATH, D.LOCK_PATH = t / 'daily.log', t / 'daily.lock'
         (D.LIVE / '2026-10-27').mkdir(parents=True)
@@ -161,6 +161,8 @@ class Shell(unittest.TestCase):
                 return work / name
             return f
         D.step_viewer, D.step_card_viewer = viewer('roster-viewer.html'), viewer('card-roster-viewer.html')
+        make_teams = viewer('teams.html')
+        D.step_team_ratings = lambda out_dir, live_dir, recompute=True: make_teams(out_dir)
         self.calls = []
         D.publish_html = lambda repo, files, msg, **kw: self.calls.append((files, msg)) or 'new'
 
@@ -175,13 +177,27 @@ class Shell(unittest.TestCase):
     def test_shell_publish(self):
         self.assertEqual(D.main(['--shell']), 0)
         files, msg = self.calls[0]
-        self.assertEqual(sorted(files), ['2025-26.html', 'index.html'])
+        self.assertEqual(sorted(files), ['2025-26.html', 'index.html', 'teams.html'])
         self.assertTrue(msg.startswith('inseason 0.2.0a 頁面更新（數據至 2026-10-27'))
         st = D.load_json(D.STATE_PATH)
         self.assertEqual(st['ghPagesCommit'], 'new')
         for k in ['base', 'letter', 'displayVersion', 'dataSha256', 'pbpCount', 'dataCutoff']:
             self.assertEqual(st[k], self.state[k])
         self.assertTrue((D.LIVE / '2026-10-27/roster-viewer.html').exists())
+
+    def test_shell_teams_failure_does_not_block_other_pages(self):
+        D.step_team_ratings = lambda *a, **k: None          # 球隊評分失敗：step 回 None，原頁照常發布
+        self.assertEqual(D.main(['--shell']), 0)
+        self.assertEqual(sorted(self.calls[0][0]), ['2025-26.html', 'index.html'])
+
+    def test_step_team_ratings_swallows_errors(self):
+        D.step_team_ratings = self.saved['step_team_ratings']
+        saved = D.checked
+        D.checked = lambda *a, **k: (_ for _ in ()).throw(RuntimeError('boom'))
+        try:
+            self.assertIsNone(D.step_team_ratings(Path(self.t.name), Path(self.t.name)))
+        finally:
+            D.checked = saved
 
     def test_shell_dry_run(self):
         self.assertEqual(D.main(['--shell', '--dry-run']), 0)

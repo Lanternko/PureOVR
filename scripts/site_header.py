@@ -33,6 +33,7 @@ CSS = """<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=R
 .mtabs{position:relative;display:flex;align-items:center;gap:2px;margin:0 auto 0 8px}
 .mtab,.mtabs .tpick summary{appearance:none;border:0;background:none;color:var(--muted);font:600 1.02rem var(--f-body);letter-spacing:.02em;
   padding:7px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;display:flex;align-items:center;gap:6px;transition:color .14s,background-color .14s}
+.mtab{text-decoration:none}
 .mtab:hover,.mtabs .tpick summary:hover{color:var(--fg);background:color-mix(in srgb,var(--fg) 7%,transparent)}
 .mtab[aria-selected="true"],.mtabs .tpick.on summary{color:var(--fg);background:var(--panel)}
 .mtabs .tpick summary{border:0}
@@ -143,7 +144,8 @@ def header_html(current):
         f'<a class="mbrand" href="index.html" aria-label="PureOVR 首頁"><b><span>Pure</span><i>OVR</i></b><small>{SEASON[current]}</small></a>'
         '<nav class="mtabs" aria-label="主要分頁">'
         '<button type="button" class="mtab" id="mPlayers" aria-selected="true">球員</button>'
-        '<span class="mind" aria-hidden="true"></span></nav>'
+        '<span class="mind" aria-hidden="true"></span>'
+        '<a class="mtab" id="mTeams" href="teams.html">球隊評分</a></nav>'
         '<div class="macts">'
         f'<details class="mpop" id="mFilter"><summary class="micon" title="篩選" aria-label="篩選">{_svg("filter", 15)}<span>篩選</span></summary>'
         '<div class="mpanel"><div class="mrow"><b>位置</b><div id="mPos"></div></div></div></details>'
@@ -155,6 +157,26 @@ def header_html(current):
         f'<div class="sbox">{_svg("search", 15)}</div></div>'
         '</div></div></header>'
     )
+
+
+def teams_masthead(season='2026-27'):
+    """teams.html 的眉頭：同一組 CSS，分頁＝球員（連回首頁）｜球隊評分（目前頁）。回傳 (css, header_html, js)。"""
+    hdr = (
+        '<header class="mast"><div class="mast-in">'
+        f'<a class="mbrand" href="index.html" aria-label="PureOVR 首頁"><b><span>Pure</span><i>OVR</i></b><small>{season}</small></a>'
+        '<nav class="mtabs" aria-label="主要分頁">'
+        '<a class="mtab" id="mPlayers" href="index.html">球員</a>'
+        '<span class="mind" aria-hidden="true"></span>'
+        '<a class="mtab" id="mTeams" href="teams.html" aria-selected="true">球隊評分</a></nav>'
+        '</div></header>'
+    )
+    js = ("<script>(()=>{const m=document.querySelector('.mast'),tabs=m.querySelector('.mtabs'),ind=m.querySelector('.mind'),"
+          "cur=m.querySelector('.mtab[aria-selected=\"true\"]');"
+          "const sync=()=>{const a=tabs.getBoundingClientRect(),r=cur.getBoundingClientRect();"
+          "ind.style.setProperty('--ix',(r.left-a.left)+'px');ind.style.setProperty('--iw',r.width+'px');m.style.setProperty('--mh',m.offsetHeight+'px');};"
+          "addEventListener('resize',sync);sync();if(document.fonts)document.fonts.ready.then(sync);requestAnimationFrame(()=>m.classList.add('ready'));"
+          "const sc=()=>m.classList.toggle('scrolled',scrollY>4);addEventListener('scroll',sc,{passive:true});sc();})()</script>")
+    return CSS, hdr, js
 
 
 def add_masthead(html_str, current):

@@ -317,9 +317,30 @@
 - 對應測試或關卡：預註冊凍結前（lead）；role-audit 準度核對
 - 相關：L-068、F-076、F-077
 
+### L-115
+- 日期：2026-11-02
+- 規則：共用工作樹（多個 session 同時在同一個 checkout）一律不得用 git stash／checkout／reset／restore 這類會動別人工作樹或 index 的指令；要看「我的改動以外的狀態」用 `git diff`／`git status`／`git show`，要隔離就開 worktree。
+- 細節：
+  - E-208 第二階段的子 session 為了確認一個測試失敗是不是自己造成的，在共用工作樹跑了 `git stash` 再 `git stash pop`；pop 不帶 `--index`，其他 session 已 stage 的刪除與修改被還原成未 stage，index 被清掉（lead 事後從 `refs/backup/stash-e208-20261102` 補救）。
+  - 要判斷失敗歸屬，直接讀失敗訊息（這次一眼看得出是新增的 teams.html 進了發布清單），不需要比對「沒有我的改動」的版本。
+- 由來：E-208 第二階段實作（teams.html）第 1 輪
+- 對應測試或關卡：無（靠規則）；派工 spec 的硬規則欄位
+- 相關：（無）
+
+### L-116
+- 日期：2026-11-02
+- 規則：用 bash heredoc 或 `python - <<EOF` 寫含 ``、`
+` 的程式碼時，字串要用 raw 字串並在寫完後 grep 控制字元（``）；正則一律要有一個「應該匹配」的測試。
+- 細節：
+  - team_ratings_daily.py 的 `r'doubtful'` 經 heredoc 寫入後變成真的 backspace 字元，正則永遠不匹配，ESPN 的 Doubtful 全被當成 Day-To-Day 留在輪替裡；是新寫的測試（簡評含 doubtful 應升成 Doubtful）抓到，不是看輸出抓到。
+  - 同樣的轉義問題讓 commit 訊息字串的換行被寫成真換行，`ast.parse` 才發現。
+- 由來：E-208 第二階段實作
+- 對應測試或關卡：`test/team_ratings_gate.py::Injuries::test_parse_espn`
+- 相關：L-115
+
 ---
 
-下一個新 ID：L-115。
+下一個新 ID：L-117。
 
 ## 舊 ID 對照
 

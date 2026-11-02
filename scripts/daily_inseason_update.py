@@ -45,9 +45,11 @@ HISTORY = LIVE / 'ovr_history.py'               # 名單頁 OVR 折線：逐日�
 CARD_VIEWER = ROOT / 'scripts/build_card_viewer.py'
 E151_EVAL = ROOT / 'reports/card-0.2.7d+E151-young-curve/e151_eval.py'   # 預註冊驗收，達標跑一次
 E151_RESULT = E151_EVAL.parent / 'results.json'
+TEAM_RATINGS = ROOT / 'scripts/team_ratings_daily.py'      # E-208 第二階段：傷病名單＋球隊評分
+TEAMS_PAGE = ROOT / 'scripts/build_teams_page.py'
 CREATE_NO_WINDOW = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
 
-TIMEOUTS = {'games': 900, 'matchups': 1800, 'inseason': 3600, 'tracking': 600, 'gravity': 300, 'possessions': 300, 'stints': 1800, 'c4': 3600, 'viewer': 600, 'history': 3600, 'prereg': 900, 'git': 180}
+TIMEOUTS = {'games': 900, 'matchups': 1800, 'inseason': 3600, 'tracking': 600, 'gravity': 300, 'possessions': 300, 'stints': 1800, 'c4': 3600, 'viewer': 600, 'history': 3600, 'prereg': 900, 'ratings': 300, 'git': 180}
 CO_AUTHOR = 'Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>'
 
 log = logging.getLogger('daily_inseason')
@@ -259,6 +261,46 @@ def step_prereg_e151() -> None:
         log.info('E-151 未評估 exit=%s：%s', r.returncode, last[:300])
 
 
+def step_team_ratings(out_dir: Path, live_dir: Path | None, recompute: bool = True) -> Path | None:
+    """每日傷病名單＋球隊評分（team_ratings_daily.py）→ teams.html。回傳 teams.html 路徑；任何失敗只記警告、回傳 None，
+    不擋原本頁面的發布。recompute=False（--shell）只用上次算好的 team-ratings.json 重畫頁面。"""
+    try:
+        if recompute:
+            checked([py_exe(), '-I', '-X', 'utf8', str(TEAM_RATINGS), str(live_dir)], ROOT, TIMEOUTS['ratings'])
+        html = out_dir / 'teams.html'
+        checked([py_exe(), '-I', '-X', 'utf8', str(TEAMS_PAGE), str(html)], ROOT, TIMEOUTS['viewer'])
+        return html
+    except Exception as e:
+        log.warning('球隊評分頁略過（不影響其他頁面）：%s', str(e)[-400:])
+        return None
+
+
+def teams_message(cutoff: str) -> str:
+    return f'teams 球隊評分 數據至 {cutoff}\n\n{CO_AUTHOR}\n'
+
+
+def publish_teams_only(state: dict, args) -> None:
+    """沒有新比賽時傷病名單仍會變：只重算球隊評分並更新 gh-pages 的 teams.html。"""
+    cutoff = state.get('dataCutoff')
+    live_dir = LIVE / cutoff if cutoff else None
+    if not live_dir or not (live_dir / 'ranking.csv').exists() or args.dry_run:
+        return
+    BUILD_ROOT.mkdir(parents=True, exist_ok=True)
+    work = Path(tempfile.mkdtemp(prefix='teams-', dir=BUILD_ROOT))
+    try:
+        html = step_team_ratings(work, live_dir)
+        if html is None:
+            return
+        try:
+            sha = publish_html(ROOT, {'teams.html': html}, teams_message(cutoff),
+                               remote=args.remote, branch=args.branch)
+            log.info('球隊評分頁已發布，gh-pages commit=%s', sha or '（內容未變）')
+        except Exception as e:
+            log.warning('球隊評分頁發布失敗（不影響其他頁面）：%s', str(e)[-400:])
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+
+
 def step_fetch_inseason() -> dict:
     """fetch_inseason 在有 PBP 抓不到時 exit 1（預期）。末行是 JSON 摘要＝腳本跑完了，才算「預期的 exit 1」；
     沒有摘要（bio 抓失敗、例外、逾時）才是真失敗。"""
@@ -453,6 +495,7 @@ def _run(args) -> int:
     probe = probe_base_version()
     if unchanged and not args.force and probe is not None and probe == state.get('base'):
         log.info('沒有新比賽資料且版號未動（%s），不發布', state.get('base'))
+        publish_teams_only(state, args)
         return 0
 
     # run_c4_live 的 rel() 要求輸出夾在 repo 內；data/ 已被 .gitignore
@@ -472,6 +515,7 @@ def _run(args) -> int:
         html = step_viewer(work)
         card_html = step_card_viewer(work)
         cutoff = meta['dataCutoff']
+        teams_html = step_team_ratings(work, work)      # 用剛算好的 ranking.csv；失敗回 None，不擋其他頁
 
         if args.dry_run:
             log.info('dry-run：不 push、不寫 state、不複製到 live/。輸出夾 %s（保留）', work)
@@ -480,8 +524,10 @@ def _run(args) -> int:
 
         final = LIVE / cutoff
         shutil.copytree(work, final, dirs_exist_ok=True)
-        sha = publish_html(ROOT, {'index.html': final / 'roster-viewer.html', '2025-26.html': final / card_html.name},
-                           commit_message(shown, cutoff),
+        pages = {'index.html': final / 'roster-viewer.html', '2025-26.html': final / card_html.name}
+        if teams_html is not None:
+            pages['teams.html'] = final / teams_html.name
+        sha = publish_html(ROOT, pages, commit_message(shown, cutoff),
                            remote=args.remote, branch=args.branch)
         state.pop('letter', None)
         state.update({'base': base, 'displayVersion': shown, 'dataSha256': data_sha,
@@ -510,15 +556,19 @@ def _run_shell(args) -> int:
         shutil.copytree(final, work, dirs_exist_ok=True)
         html = step_viewer(work)
         card_html = step_card_viewer(work)
+        teams_html = step_team_ratings(work, None, recompute=False)
         if args.dry_run:
             log.info('dry-run（shell）：不 push、不寫 state。輸出夾 %s（保留）', work)
             work = None
             return 0
         shutil.copyfile(html, final / html.name)
         shutil.copyfile(card_html, final / card_html.name)
+        pages = {'index.html': final / html.name, '2025-26.html': final / card_html.name}
+        if teams_html is not None:
+            shutil.copyfile(teams_html, final / teams_html.name)
+            pages['teams.html'] = final / teams_html.name
         shown = state.get('displayVersion', '')
-        sha = publish_html(ROOT, {'index.html': final / html.name, '2025-26.html': final / card_html.name},
-                           shell_commit_message(shown, cutoff), remote=args.remote, branch=args.branch)
+        sha = publish_html(ROOT, pages, shell_commit_message(shown, cutoff), remote=args.remote, branch=args.branch)
         if sha:
             state['ghPagesCommit'] = sha
             state['lastShellPublished'] = dt.datetime.now().astimezone().isoformat(timespec='seconds')
