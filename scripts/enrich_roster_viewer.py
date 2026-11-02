@@ -94,9 +94,9 @@ div.tbox{background:#1b232d}
 #tbl tbody tr:hover td.nm{background:var(--panel-2)}
 #tbl tbody tr.sel td.nm{background:var(--gold);color:var(--gold-ink)}
 /* 桌機名字欄固定寬（使用者 2026-11-01：表格只畫目前這頁的人，換排序時名字欄跟著當頁最長名字變寬變窄）；
-   200px＝全名單最長 Yanic Konan Niederhäuser 約 162px＋新秀嫩芽 18px＋左右內距，更長的截成 … */
+   160px（使用者 2026-11-02 收窄到剛好放下 Shai Gilgeous-Alexander，原 200px）：Giannis Antetokounmpo 約 138px 也放得下，最長的 Yanic Konan Niederhäuser 約 162px 會截成 … */
 @media (min-width:641px){
-  #tbl th.nm,#tbl td.nm{width:200px;min-width:200px;max-width:200px;box-sizing:border-box}
+  #tbl th.nm,#tbl td.nm{width:160px;min-width:160px;max-width:160px;box-sizing:border-box}
   #tbl td.nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   /* 桌機總評左邊的位置／球隊／身高也跟 # 球員一樣黑（使用者 2026-11-02） */
   #tbl tbody td:is(:nth-child(3),:nth-child(4),:nth-child(5)):not([colspan]){background:#0a0d10}
