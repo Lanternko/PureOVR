@@ -92,7 +92,7 @@ td.net{font:800 1.15rem var(--f-disp)}
 </style>"""
 
 BODY = """<div class="wrap">
-<div><h1>球隊評分<small id="stamp"></small></h1></div>
+<div><h1>戰力排行<small id="stamp"></small></h1></div>
 <div class="meta" id="meta"></div>
 <div class="vctl"><div class="seg" id="viewSeg" role="group" aria-label="名單版本"><button type="button" data-v="today" aria-pressed="true">可用</button><button type="button" data-v="c" aria-pressed="false">全員</button></div>
 <span class="hint" id="viewHint"></span></div>
@@ -166,7 +166,7 @@ def build(doc: dict) -> str:
     data = json.dumps(doc, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
     return ('<!doctype html>\n<html lang="zh-Hant"><head><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1">'
-            '<title>球隊評分 · PureOVR</title>'
+            '<title>戰力排行 · PureOVR</title>'
             '<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 64 64\'%3E%3Crect width=\'64\' height=\'64\' rx=\'14\' fill=\'%230d1014\'/%3E%3Ccircle cx=\'32\' cy=\'32\' r=\'22\' fill=\'%23f2c230\'/%3E%3C/svg%3E">'
             '<link rel="preconnect" href="https://fonts.googleapis.com">'
             '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap">'

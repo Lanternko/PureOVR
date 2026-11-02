@@ -270,7 +270,8 @@ class Header(unittest.TestCase):
             self.assertIn('href="teams.html"', site_header.header_html(cur))
         css, hdr, js = site_header.teams_masthead()
         self.assertIn('href="teams.html"', hdr)
-        self.assertIn('球隊評分', hdr)
+        self.assertIn('戰力排行', hdr)
+        self.assertIn('href="index.html#team"', hdr)
 
     def test_page_builds(self):
         doc = {'season': '2026-27', 'teams': {}, 'injuries': {}, 'schedule': {}, 'version': 'inseason x', 'dataCutoff': 'd', 'generatedAt': 'g',

@@ -19,6 +19,7 @@ SEASON = {'inseason': '2026-27', 'card': '2025-26'}
 
 CSS = """<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Righteous&display=swap">
 <style>
+body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰力排行兩頁之間會上下左右跳 */
 .mast{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 78%,transparent);
   -webkit-backdrop-filter:saturate(180%) blur(14px);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line);transition:box-shadow .25s,border-color .25s}
 .mast.scrolled{border-bottom-color:transparent;box-shadow:0 6px 22px -10px rgba(0,0,0,.6)}
@@ -31,13 +32,14 @@ CSS = """<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=R
 .mbrand:hover b span{color:var(--fg)}
 .mbrand small{font:600 .78rem var(--f-disp);letter-spacing:.06em;color:var(--muted);font-variant-numeric:tabular-nums}
 .mtabs{position:relative;display:flex;align-items:center;gap:2px;margin:0 auto 0 8px}
-.mtab,.mtabs .tpick summary{appearance:none;border:0;background:none;color:var(--muted);font:600 1.02rem var(--f-body);letter-spacing:.02em;
-  padding:7px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;display:flex;align-items:center;gap:6px;transition:color .14s,background-color .14s}
+.mtab,.mtabs .tpick summary{appearance:none;box-sizing:border-box;margin:0;border:0;background:none;color:var(--muted);font:600 1.02rem/1 var(--f-body);letter-spacing:.02em;
+  height:36px;padding:0 14px;border-radius:8px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:color .14s,background-color .14s}
+.mtabs .tpick summary img{width:18px;height:18px;margin:0}
 .mtab{text-decoration:none}
 .mtab:hover,.mtabs .tpick summary:hover{color:var(--fg);background:color-mix(in srgb,var(--fg) 7%,transparent)}
 .mtab[aria-selected="true"],.mtabs .tpick.on summary{color:var(--fg);background:var(--panel)}
 .mtabs .tpick summary{border:0}
-.mtabs .tpick summary::after{content:"▾";font-size:.75em;opacity:.7}
+.mtabs .tpick summary::after,.mtab-pick::after{content:"▾";font-size:.75em;opacity:.7}
 .mtabs .tpick:not(.on) summary{font-size:0;gap:0}
 .mtabs .tpick:not(.on) summary::before{content:"球隊";font-size:1.02rem}
 .mtabs .tpick:not(.on) summary::after{font-size:.78rem;margin-left:6px}
@@ -79,9 +81,10 @@ CSS = """<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=R
 @media (max-width:640px){
   .mast-in{flex-wrap:wrap;height:auto;padding-top:8px;padding-bottom:0;gap:0 10px}
   .mbrand b{font-size:1.4rem}
+  .mbrand{min-height:34px}  /* 和 .micon 同高：沒有右側按鈕的戰力排行頁，分頁列才不會比首頁高 */
   .macts{margin-left:auto;gap:6px}
   .mtabs{order:10;flex-basis:100%;margin:4px 0 0}
-  .mtab,.mtabs .tpick summary{padding:9px 11px 10px;font-size:15px}
+  .mtab,.mtabs .tpick summary{height:40px;padding:0 11px;font-size:15px}
   .mtabs .tpick:not(.on) summary::before{font-size:15px}
   .micon{width:34px;padding:0;justify-content:center}
   .micon>span{display:none}
@@ -104,7 +107,7 @@ CSS = """<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=R
 JS = """<script>(()=>{
 const $=s=>document.querySelector(s),mast=$('.mast');if(!mast)return;
 const tabs=$('.mtabs'),ind=$('.mind'),tp=$('#teamPick'),pos=$('#posSeg'),fb=$('#mFilter>summary');
-if(tp)tabs.insertBefore(tp,ind);
+if(tp){tabs.insertBefore(tp,ind);if(location.hash==='#team'){history.replaceState(null,'',location.pathname+location.search);setTimeout(()=>tp.open=true);}}
 if(pos)$('#mPos').append(pos);
 const season=$('.snav .seg');if(season)$('#mSeason').append(season);
 const mode=$('#modeSeg');if(mode)$('#mMode').append(mode);
@@ -145,7 +148,7 @@ def header_html(current):
         '<nav class="mtabs" aria-label="主要分頁">'
         '<button type="button" class="mtab" id="mPlayers" aria-selected="true">球員</button>'
         '<span class="mind" aria-hidden="true"></span>'
-        '<a class="mtab" id="mTeams" href="teams.html">球隊評分</a></nav>'
+        '<a class="mtab" id="mTeams" href="teams.html">戰力排行</a></nav>'
         '<div class="macts">'
         f'<details class="mpop" id="mFilter"><summary class="micon" title="篩選" aria-label="篩選">{_svg("filter", 15)}<span>篩選</span></summary>'
         '<div class="mpanel"><div class="mrow"><b>位置</b><div id="mPos"></div></div></div></details>'
@@ -160,14 +163,15 @@ def header_html(current):
 
 
 def teams_masthead(season='2026-27'):
-    """teams.html 的眉頭：同一組 CSS，分頁＝球員（連回首頁）｜球隊評分（目前頁）。回傳 (css, header_html, js)。"""
+    """teams.html 的眉頭：同一組 CSS，分頁＝球員（連回首頁）｜球隊（首頁並打開選隊）｜戰力排行（目前頁）。回傳 (css, header_html, js)。"""
     hdr = (
         '<header class="mast"><div class="mast-in">'
         f'<a class="mbrand" href="index.html" aria-label="PureOVR 首頁"><b><span>Pure</span><i>OVR</i></b><small>{season}</small></a>'
         '<nav class="mtabs" aria-label="主要分頁">'
         '<a class="mtab" id="mPlayers" href="index.html">球員</a>'
+        '<a class="mtab mtab-pick" href="index.html#team">球隊</a>'
         '<span class="mind" aria-hidden="true"></span>'
-        '<a class="mtab" id="mTeams" href="teams.html" aria-selected="true">球隊評分</a></nav>'
+        '<a class="mtab" id="mTeams" href="teams.html" aria-selected="true">戰力排行</a></nav>'
         '</div></header>'
     )
     js = ("<script>(()=>{const m=document.querySelector('.mast'),tabs=m.querySelector('.mtabs'),ind=m.querySelector('.mind'),"
