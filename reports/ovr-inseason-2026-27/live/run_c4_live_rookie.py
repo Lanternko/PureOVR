@@ -20,6 +20,8 @@ import defense_bonus as DB  # noqa: E402
 import pres_drive as PD  # noqa: E402（2026-11-01 壓迫／切入賽中解凍；UNFREEZE_PD=0 時完全不呼叫）
 import win_len  # noqa: E402（E-204／R-140：四季窗口長度開關，WIN_LEN 預設 246；WIN_LEN=328 重現 0.2.12a 以前）
 win_len.install()
+import recent_boost  # noqa: E402（E-221／R-147：本季近期加成開關，RECENT_BOOST 預設 0＝關閉，線上行為位元不變）
+recent_boost.install()
 
 HERE = Path(__file__).resolve().parent
 ORIG = HERE / 'run_c4_live.py'
