@@ -295,6 +295,8 @@ div.tbox{background:#1b232d}
   .rx .g5t[aria-expanded="true"] i{background:var(--gold)}
 }
 .tabbr{color:var(--tt);font-weight:600}
+/* 選中列是金底（使用者 2026-11-03：灰／黃／橘隊的縮寫變隊色後看不見）：縮寫改用兩個主題色中較深的那個 */
+#tbl tbody tr.sel .tabbr{color:var(--dk,inherit)}
 /* impact chips：RAPM 攻守淨（對聯盟平均）、在場減不在場（每 100 回合） */
 .chip i.up{color:var(--g-a)}
 .chip i.dn{color:var(--g-f)}
@@ -377,9 +379,11 @@ const rookieTag = p => REAL_VIEW === 'g5' && ROOKIES.has(p.name)
   ? `<span class="rkp" title="新秀：沒有上季卡，開季起點由選秀順位與位置估，已打 ${p.gp} 場，打越多場越看自己的數據" role="img" aria-label="新秀"></span>` : '';
 // 交易球員的 team 是「舊/新」，最後一段是現在的球隊
 const teamOf = t => TEAM_COLORS[t.split('/').pop()];
+const lum = h => { const n = parseInt(h.slice(1), 16); return 0.299 * (n >> 16) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255); };
 function teamVars(t) {
   const c = teamOf(t);
-  return c ? `--tc:${c[0]};--tc2:${c[1]};--card:${c[2]};--ink:${c[3]};--tt:${c[4] || c[2]}` : '';
+  // --dk：兩個主題色裡比較深的那個，選中列（金底）的縮寫用
+  return c ? `--tc:${c[0]};--tc2:${c[1]};--card:${c[2]};--ink:${c[3]};--tt:${c[4] || c[2]};--dk:${lum(c[0]) <= lum(c[1]) ? c[0] : c[1]}` : '';
 }
 function teamCell(t) {
   return teamOf(t) ? `<span class="tabbr" style="${teamVars(t)}">${t}</span>` : t;
