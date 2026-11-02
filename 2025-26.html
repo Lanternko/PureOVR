@@ -949,20 +949,22 @@ function impactChips(p) {
 // 桌機表格不左右捲（使用者 2026-11-03）：視窗放不下整張表時整張等比縮小（zoom），不裁掉欄位；換頁／排序重畫後重算。
 (() => {
   const box = document.querySelector('.tbox'), tbl = document.getElementById('tbl'); if (!box || !tbl) return;
-  const mq = matchMedia('(min-width:641px)'); let busy = false;
-  function fit() {
-    if (busy) return; busy = true;
-    tbl.style.zoom = '';
+  const mq = matchMedia('(min-width:641px)'); let raf = 0, last = '';
+  // 不先清掉 zoom 再量（會整張先膨脹再收回，Ctrl+- 時很卡）：offsetWidth 是未縮放的自然寬度，直接算，值沒變就不寫
+  function run() {
+    raf = 0;
+    let z = '', bw = '';
     if (mq.matches) {
       const p = box.parentElement, cs = getComputedStyle(p);
-      box.style.width = '';
       const avail = p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - (box.offsetWidth - box.clientWidth) - 2, w = tbl.offsetWidth;
-      if (w > avail && avail > 0) { tbl.style.zoom = (avail / w).toFixed(4); box.style.width = '100%'; }
-    } else box.style.width = '';
-    busy = false;
+      if (w > avail && avail > 0) { z = (avail / w).toFixed(3); bw = '100%'; }
+    }
+    if (z + bw === last) return;
+    last = z + bw; tbl.style.zoom = z; box.style.width = bw;
   }
+  const fit = () => { if (!raf) raf = requestAnimationFrame(run); };
   addEventListener('resize', fit); mq.addEventListener('change', fit);
-  new MutationObserver(fit).observe(tbl, {childList: true, subtree: true});
+  new MutationObserver(fit).observe(tbl.tBodies[0] || tbl, {childList: true});
   fit();
 })();
 // 手機表格手勢鎖方向（使用者 2026-10-29：往上滑時手會左右偏，表格跟著晃）：先移動 10px 才判方向，
