@@ -746,7 +746,13 @@ document.getElementById('q').oninput'''),
     grid.onclick = e => {
       const b = e.target.closest('button[data-t]');
       if (!b) return;
-      st.rk = b.dataset.t === 'ROOKIE'; st.team = st.rk ? 'ALL' : b.dataset.t; st.page = 0; st.extra = 0; d.open = false; render();
+      st.rk = b.dataset.t === 'ROOKIE'; st.team = st.rk ? 'ALL' : b.dataset.t; st.page = 0; st.extra = 0; d.open = false;
+      // 選隊後球員卡顯示該隊（或新秀）OVR 最高的人（使用者 2026-11-03）
+      if (st.rk || st.team !== 'ALL') {
+        const top = P.filter(p => st.rk ? ROOKIES.has(p.name) : p.team.split('/').pop() === st.team).sort((x, y) => y.ovr - x.ovr)[0];
+        if (top) st.sel = top.name;
+      }
+      render();
     };
     // 面板靠左展開，超出螢幕右緣就往左推
     d.addEventListener('toggle', () => {

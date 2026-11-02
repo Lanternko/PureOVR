@@ -57,6 +57,7 @@ body[data-view="rank"] .wrap{display:none}
 body:not([data-view="rank"]) #rankHost{display:none}
 body[data-view="rank"] #mFilter,body[data-view="rank"] .msearch{display:none}  /* 篩選、搜尋只對球員檢視有意義 */
 body[data-view="rank"] .mtabs #teamPick.on summary{color:var(--muted);background:none}
+.mtabs #teamPick[open] summary,body[data-view="rank"] .mtabs #teamPick[open].on summary{color:var(--gold-ink);background:var(--gold)}  /* 點開選隊：黃色高亮 */
 .mind{view-transition-name:tab-ind}  /* 只給底線命名；.wrap 整頁快照太大 */
 .mast.vt-running .mind{transition:none!important}  /* 切檢視時由 View Transition 負責滑動，不再疊 CSS 過渡 */
 ::view-transition-group(tab-ind){animation-duration:.22s;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
@@ -156,7 +157,9 @@ function go(v,push,abbr){
 }
 if(PR){
   tr.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button)return;e.preventDefault();go('rank',true,null);});
-  if(tp)tp.addEventListener('click',e=>{if(view==='rank'&&e.target.closest('summary'))go('players',true);},true);
+  /* 排行檢視下點「球隊」：先黃色高亮並展開選隊，選完才跳到球隊名單（使用者 2026-11-03） */
+  const tg=$('#teamGrid');
+  if(tg)tg.addEventListener('click',e=>{if(view==='rank'&&e.target.closest('button[data-t]')){sy.players=0;go('players',true);}});
   addEventListener('popstate',()=>{const h=parseHash();go(h.rank?'rank':'players',false,h.rank?h.abbr:undefined);});
   document.body.dataset.view=view;if(view==='rank')document.title='戰力排行 · PureOVR';
   const h0=parseHash();if(h0.rank){PR.open(h0.abbr);PR.ensure();}else(window.requestIdleCallback||setTimeout)(()=>PR.ensure());
