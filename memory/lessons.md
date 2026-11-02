@@ -338,9 +338,19 @@
 - 對應測試或關卡：`test/team_ratings_gate.py::Injuries::test_parse_espn`
 - 相關：L-115
 
+### L-117
+- 日期：2026-11-02
+- 規則：判斷某個屬性賽中是否凍結，要看 R-076 等裁定與 `run_c4_live_rookie.py` 實際把值換掉的路徑（例如 `vet_defense` → `rookie_defense.veteran`），不能看 live `meta.json` 的 `frozenAttrs`。
+- 細節：
+  - 2026-11-01 的 meta `frozenAttrs` 仍列 onBall、help，但老將 onBall／help 每天走四季逐場遞減窗口，本季資料在裡面；只是開季時本季在窗口裡的有效權重只有約 4–8%（76 人主力，聯盟 92 場時），看起來像凍結。真的凍結的是 physique 等。
+  - App 照 frozenAttrs 跟使用者說防守「整季凍結」，是錯的說法。
+- 由來：defense-update-speed spec（lead 更正）與第 0 步核對（`reports/defense-update-speed/step0/weights.json`）
+- 對應測試或關卡：無（靠規則）；回答「某屬性有沒有在更新」前先 grep 實際替換路徑
+- 相關：R-076、E-218
+
 ---
 
-下一個新 ID：L-117。
+下一個新 ID：L-118。
 
 ## 舊 ID 對照
 

@@ -56,6 +56,11 @@ def primary(season):
     return out
 
 
+def next_day(D):
+    import datetime as dt
+    return (dt.date.fromisoformat(D) + dt.timedelta(days=1)).isoformat()
+
+
 def secondary(season):
     A = json.load(open(OUT / f'arms-{season}.json', encoding='utf-8'))
     X = json.load(gzip.open(OUT / f'attrs-{season}.json.gz', 'rt', encoding='utf-8'))
@@ -65,6 +70,12 @@ def secondary(season):
         ds = sorted(s['D'] for s in A['snaps'] if s['N'] == N)
         D = ds[len(ds) // 2]                             # 該季第 N 場快照日的中位數（預註冊 §5）
         tgt = X['tgt'][D]
+        # 預註冊 §5「D 之後出場 ≥ 500 分鐘」：advanced 表（PerMode=Totals）的 MIN 實為每場平均，總分鐘＝MIN×GP（2026-11-02 跑後發現，只修實作、門檻不變）
+        adv = json.load(open(HERE.parent / 'data/cut' / season / f'from-{next_day(D)}-advanced.json', encoding='utf-8'))['data']['resultSets'][0]
+        I = adv['headers'].index
+        mtot = {str(r[I('PLAYER_ID')]): r[I('MIN')] * r[I('GP')] for r in adv['rowSet']}
+        for p in tgt:
+            tgt[p]['minRem'] = mtot.get(p, 0)
         r = {'D': D}
         for a in ('onBall', 'help'):
             pids = [p for p in tgt if int(p) in vets and tgt[p].get('minRem', 0) >= MIN_REM and a in tgt[p]
