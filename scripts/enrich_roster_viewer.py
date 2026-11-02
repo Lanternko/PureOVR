@@ -97,6 +97,9 @@ div.tbox{background:#1b232d}
    160px（使用者 2026-11-02 收窄到剛好放下 Shai Gilgeous-Alexander，原 200px）：Giannis Antetokounmpo 約 138px 也放得下，最長的 Yanic Konan Niederhäuser 約 162px 會截成 … */
 @media (min-width:641px){
   #tbl th.nm,#tbl td.nm{width:160px;min-width:160px;max-width:160px;box-sizing:border-box}
+  /* 名字欄收緊後整張表也往中間縮（使用者 2026-11-02）：不再撐滿 1280／最小 1060，改成內容寬並置中 */
+  .tbox{width:fit-content;max-width:100%;margin-inline:auto}
+  #tbl{width:auto;min-width:0}
   #tbl td.nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   /* 桌機總評左邊的位置／球隊／身高也跟 # 球員一樣黑（使用者 2026-11-02） */
   #tbl tbody td:is(:nth-child(3),:nth-child(4),:nth-child(5)):not([colspan]){background:#0a0d10}
