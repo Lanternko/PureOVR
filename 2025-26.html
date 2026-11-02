@@ -472,7 +472,11 @@ td.ovr .ob::before{content:"";position:absolute;inset:0;border-radius:inherit;pa
 #tbl thead tr:last-child th[data-k]:not([data-k=name],[data-k=pos],[data-k=team],[data-k=ht],[data-k=ovr],[data-k=min],[data-k=gp],[data-k=dovr]) .zh{font-size:.62rem}
 /* 名字欄不再整條金底（使用者 2026-10-29：醜、被列線切得斷裂）；改深色底，只有選中列金色 */
 #tbl th.nm{background:#0a0d10;color:var(--muted)}
-#tbl td.nm{background:var(--panel);color:var(--fg);box-shadow:inset -1px 0 0 var(--line)}
+/* 球員、總評兩欄底色改成和表頭一樣黑（使用者 2026-11-02：像 x 軸標題） */
+#tbl td.nm{background:#0a0d10;color:var(--fg);box-shadow:inset -1px 0 0 var(--line)}
+#tbl tbody td.ovr{background:#0a0d10}
+#tbl tbody td.ovr.sortcol{background:linear-gradient(rgba(255,255,255,.035),rgba(255,255,255,.035)) #0a0d10}
+#tbl tbody tr:hover td.ovr{background:var(--panel-2)}
 #tbl tbody tr:hover td.nm{background:var(--panel-2)}
 #tbl tbody tr.sel td.nm{background:var(--gold);color:var(--gold-ink)}
 /* 桌機名字欄固定寬（使用者 2026-11-01：表格只畫目前這頁的人，換排序時名字欄跟著當頁最長名字變寬變窄）；
@@ -506,8 +510,8 @@ td.ovr .ob::before{content:"";position:absolute;inset:0;border-radius:inherit;pa
   #tbl td.no{width:28px;font-size:.78rem}
   #tbl th[data-k="ovr"],#tbl td.ovr{position:sticky;left:88px;z-index:1;box-shadow:6px 0 6px -5px rgba(0,0,0,.7)}
   #tbl th[data-k="ovr"]{z-index:2}
-  #tbl tbody td.ovr{background:var(--panel);font-size:1rem}
-  #tbl tbody td.ovr.sortcol{background:linear-gradient(rgba(255,255,255,.035),rgba(255,255,255,.035)) var(--panel)}
+  #tbl tbody td.ovr{background:#0a0d10;font-size:1rem}
+  #tbl tbody td.ovr.sortcol{background:linear-gradient(rgba(255,255,255,.035),rgba(255,255,255,.035)) #0a0d10}
   #tbl tbody tr:hover td.ovr{background:var(--panel-2)}
   #tbl tbody tr.sel td.ovr{background:#253040}
   #tbl tbody{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
