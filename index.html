@@ -477,6 +477,9 @@ td.ovr .ob::before{content:"";position:absolute;inset:0;border-radius:inherit;pa
 #tbl tbody td.ovr{background:#0a0d10}
 /* 左邊釘住的 # 球員 總評全黑，右邊能力值格子拉淺，一黑一淺才看得出哪邊能滑（使用者 2026-11-02） */
 #tbl tbody td.no{background:#0a0d10}
+/* 選中列總評格跟名字一起變金，但紅／金框裡面維持黑（使用者 2026-11-02） */
+#tbl tbody tr.sel td.ovr,#tbl tbody tr.sel:hover td.ovr{background:var(--gold)}
+#tbl tbody tr.sel td.ovr .ob{background:#0a0d10}
 div.tbox{background:#1b232d}
 #tbl tbody td.ovr.sortcol{background:#0a0d10}
 #tbl tbody tr:hover td.ovr{background:var(--panel-2)}
@@ -516,7 +519,6 @@ div.tbox{background:#1b232d}
   #tbl tbody td.ovr{background:#0a0d10;font-size:1rem}
   #tbl tbody td.ovr.sortcol{background:#0a0d10}
   #tbl tbody tr:hover td.ovr{background:var(--panel-2)}
-  #tbl tbody tr.sel td.ovr{background:#253040}
   #tbl tbody{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 }
 /* team colors + headshot */
