@@ -1,4 +1,6 @@
-"""名單頁眉頭（使用者 2026-11-02「重新設計眉頭，參考 arammeta」）：黏頂毛玻璃一列＝PUREOVR 字標｜球員・球隊分頁｜篩選・設定・搜尋。
+"""名單頁眉頭（使用者 2026-11-02「重新設計眉頭，參考 arammeta」）：黏頂毛玻璃一列＝PUREOVR 字標｜球員・球隊・戰力排行分頁｜篩選・設定・搜尋。
+2026-11-02「直接合併單頁」：2026-27 名單頁內嵌戰力排行檢視（rank_view.py），三個分頁共用同一個眉頭；用 body[data-view] 切檢視、
+history.pushState＋popstate 管網址（#rank、#rank/LAL）、View Transition 讓底線滑過去；2025-26 卡片頁沒有排行檢視，戰力排行連到 index.html#rank。
 原本的控制項（#posSeg、#teamPick、#modeSeg、#q、賽季切換、更新說明）在頁尾腳本裡原封搬進眉頭，事件與 render 不用改；
 舊的 .top 標題列與 .ctrl 控制列只剩空殼，直接隱藏。add_season_nav 之後呼叫。"""
 import re
@@ -50,6 +52,15 @@ body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰
 .mtabs .tpick summary:focus-visible,.mtab:focus-visible,.micon:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .mind{position:absolute;bottom:0;left:var(--ix,0);width:var(--iw,0);height:3px;border-radius:3px 3px 0 0;background:var(--gold);
   box-shadow:0 0 8px color-mix(in srgb,var(--gold) 50%,transparent);pointer-events:none}
+html{scrollbar-gutter:stable}  /* 排行檢視比名單短，捲軸有無不同會讓眉頭橫向位移 */
+body[data-view="rank"] .wrap{display:none}
+body:not([data-view="rank"]) #rankHost{display:none}
+body[data-view="rank"] #mFilter,body[data-view="rank"] .msearch{display:none}  /* 篩選、搜尋只對球員檢視有意義 */
+body[data-view="rank"] .mtabs #teamPick.on summary{color:var(--muted);background:none}
+.mind{view-transition-name:tab-ind}  /* 只給底線命名；.wrap 整頁快照太大 */
+.mast.vt-running .mind{transition:none!important}  /* 切檢視時由 View Transition 負責滑動，不再疊 CSS 過渡 */
+::view-transition-group(tab-ind){animation-duration:.22s;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.12s}
 .mast:not(.ready) .mind{visibility:hidden}
 .mast:not(.ready) .mtab[aria-selected="true"]{position:relative}
 .mast:not(.ready) .mtab[aria-selected="true"]::before{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:3px 3px 0 0;background:var(--gold);
@@ -121,14 +132,35 @@ const season=$('.snav .seg');if(season)$('#mSeason').append(season);
 const mode=$('#modeSeg');if(mode)$('#mMode').append(mode);
 const pn=$('.snav .pnote');if(pn)$('#mNotes').append(pn);else $('#mNotes').closest('.mrow').remove();
 const q=$('#q');if(q){$('.msearch .sbox').append(q);q.placeholder='搜尋球員或球隊';}
-const pl=$('#mPlayers');
+const pl=$('#mPlayers'),tr=$('#mTeams'),PR=window.PureRank,T0=document.title,sy={},reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const parseHash=()=>{const m=/^#rank(?:[/]([A-Za-z]{2,4}))?$/.exec(location.hash);return m?{rank:true,abbr:m[1]?m[1].toUpperCase():null}:{rank:false}};
+let view=PR&&parseHash().rank?'rank':'players';
 const sync=()=>{
-  const on=tp&&tp.classList.contains('on');pl.setAttribute('aria-selected',String(!on));
-  const t=on?tp.querySelector('summary'):pl,a=tabs.getBoundingClientRect(),r=t.getBoundingClientRect();
+  const on=tp&&tp.classList.contains('on'),rk=view==='rank';pl.setAttribute('aria-selected',String(!on&&!rk));tr.setAttribute('aria-selected',String(rk));
+  const t=rk?tr:on?tp.querySelector('summary'):pl,a=tabs.getBoundingClientRect(),r=t.getBoundingClientRect();
   ind.style.setProperty('--ix',(r.left-a.left)+'px');ind.style.setProperty('--iw',r.width+'px');mast.style.setProperty('--mh',mast.offsetHeight+'px');
   const b=pos&&pos.querySelector('[aria-pressed="true"]');fb.classList.toggle('dot',!!b&&b!==pos.firstElementChild);
 };
-pl.onclick=()=>{const b=$('#teamGrid [data-t="ALL"]');if(b&&tp.classList.contains('on'))b.click();};
+pl.onclick=()=>{const b=$('#teamGrid [data-t="ALL"]');if(b&&tp&&tp.classList.contains('on'))b.click();if(PR)go('players',true);};
+function show(v,abbr){
+  if(v==='rank'){if(abbr!==undefined)PR.open(abbr);PR.ensure();}
+  if(v===view)return;
+  sy[view]=scrollY;view=v;document.body.dataset.view=v;document.title=v==='rank'?'戰力排行 · PureOVR':T0;sync();scrollTo(0,sy[v]||0);
+}
+function go(v,push,abbr){
+  if(push&&v!==view)history.pushState(null,'',v==='rank'?'#rank':location.pathname+location.search);
+  if(v===view||!document.startViewTransition||reduce)return show(v,abbr);
+  mast.classList.add('vt-running');
+  const t=document.startViewTransition(()=>show(v,abbr));
+  t.ready.catch(()=>{});t.finished.catch(()=>{}).finally(()=>mast.classList.remove('vt-running'));
+}
+if(PR){
+  tr.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button)return;e.preventDefault();go('rank',true,null);});
+  if(tp)tp.addEventListener('click',e=>{if(view==='rank'&&e.target.closest('summary'))go('players',true);},true);
+  addEventListener('popstate',()=>{const h=parseHash();go(h.rank?'rank':'players',false,h.rank?h.abbr:undefined);});
+  document.body.dataset.view=view;if(view==='rank')document.title='戰力排行 · PureOVR';
+  const h0=parseHash();if(h0.rank){PR.open(h0.abbr);PR.ensure();}else(window.requestIdleCallback||setTimeout)(()=>PR.ensure());
+}
 const mo=new MutationObserver(sync);
 if(tp)mo.observe(tp,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
 if(pos)mo.observe(pos,{childList:true,subtree:true,attributes:true});
@@ -157,7 +189,7 @@ def header_html(current):
         '<button type="button" class="mtab" id="mPlayers" aria-selected="true">球員</button>'
         '<span class="mtab mtab-pick" id="mPickPh">球隊</span>'
         '<span class="mind" aria-hidden="true"></span>'
-        '<a class="mtab" id="mTeams" href="teams.html">戰力排行</a></nav>'
+        '<a class="mtab" id="mTeams" href="index.html#rank">戰力排行</a></nav>'
         '<div class="macts">'
         f'<details class="mpop" id="mFilter"><summary class="micon" title="篩選" aria-label="篩選">{_svg("filter", 15)}<span>篩選</span></summary>'
         '<div class="mpanel"><div class="mrow"><b>位置</b><div id="mPos"></div></div></div></details>'
@@ -171,27 +203,6 @@ def header_html(current):
     )
 
 
-def teams_masthead(season='2026-27'):
-    """teams.html 的眉頭：同一組 CSS，分頁＝球員（連回首頁）｜球隊（首頁並打開選隊）｜戰力排行（目前頁）。回傳 (css, header_html, js)。"""
-    hdr = (
-        '<header class="mast"><div class="mast-in">'
-        f'<a class="mbrand" href="index.html" aria-label="PureOVR 首頁"><b><span>Pure</span><i>OVR</i></b><small>{season}</small></a>'
-        '<nav class="mtabs" aria-label="主要分頁">'
-        '<a class="mtab" id="mPlayers" href="index.html">球員</a>'
-        '<a class="mtab mtab-pick" href="index.html#team">球隊</a>'
-        '<span class="mind" aria-hidden="true"></span>'
-        '<a class="mtab" id="mTeams" href="teams.html" aria-selected="true">戰力排行</a></nav>'
-        '</div></header>'
-    )
-    js = ("<script>(()=>{const m=document.querySelector('.mast'),tabs=m.querySelector('.mtabs'),ind=m.querySelector('.mind'),"
-          "cur=m.querySelector('.mtab[aria-selected=\"true\"]');"
-          "const sync=()=>{const a=tabs.getBoundingClientRect(),r=cur.getBoundingClientRect();"
-          "ind.style.setProperty('--ix',(r.left-a.left)+'px');ind.style.setProperty('--iw',r.width+'px');m.style.setProperty('--mh',m.offsetHeight+'px');};"
-          "addEventListener('resize',sync);sync();if(document.fonts)document.fonts.ready.then(sync);requestAnimationFrame(()=>m.classList.add('ready'));"
-          "const sc=()=>m.classList.toggle('scrolled',scrollY>4);addEventListener('scroll',sc,{passive:true});sc();})()</script>")
-    return CSS, hdr, js
-
-
 def add_masthead(html_str, current):
     assert current in SEASON, current
     # season_nav 的 #modeSeg 手機／桌機搬家腳本會把它搬回控制列，眉頭接手後拿掉
@@ -203,6 +214,12 @@ def add_masthead(html_str, current):
     assert s.count(a) == 1, 'mode default not found'
     s = s.replace(a, "localStorage.getItem('bbac.mode') === 'grade' ? 'grade' : 'num'; } catch (e) { return 'num'; }")
     assert s.count('<div class="wrap">') == 1, 'wrap not found'
-    s = s.replace('<div class="wrap">', CSS + header_html(current) + '\n<div class="wrap">', 1)
+    rank_html, rank_js = '', ''
+    if current == 'inseason':  # 戰力排行檢視只有 2026-27 名單頁有；#rank 直連時在首次繪製前先切好，不閃一下球員檢視
+        import rank_view
+        rank_html, rank_js = rank_view.embed()
+        rank_html += "<script>if(/^#rank/.test(location.hash))document.body.dataset.view='rank'</script>"
+    s = s.replace('<div class="wrap">', CSS + header_html(current) + '\n' + rank_html + '<div class="wrap">', 1)
     i = s.rfind('</body>')
-    return s[:i] + JS + s[i:] if i >= 0 else s + JS
+    tail = rank_js + JS
+    return s[:i] + tail + s[i:] if i >= 0 else s + tail

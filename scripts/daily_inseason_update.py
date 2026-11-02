@@ -262,7 +262,7 @@ def step_prereg_e151() -> None:
 
 
 def step_team_ratings(out_dir: Path, live_dir: Path | None, recompute: bool = True) -> Path | None:
-    """每日傷病名單＋球隊評分（team_ratings_daily.py）→ teams.html。回傳 teams.html 路徑；任何失敗只記警告、回傳 None，
+    """每日傷病名單＋球隊評分（team_ratings_daily.py）→ teams.html（轉址頁）＋同資料夾 teams-data.json（名單頁排行檢視 fetch 的資料）。回傳 teams.html 路徑；任何失敗只記警告、回傳 None，
     不擋原本頁面的發布。recompute=False（--shell）只用上次算好的 team-ratings.json 重畫頁面。"""
     try:
         if recompute:
@@ -292,7 +292,7 @@ def publish_teams_only(state: dict, args) -> None:
         if html is None:
             return
         try:
-            sha = publish_html(ROOT, {'teams.html': html}, teams_message(cutoff),
+            sha = publish_html(ROOT, {'teams.html': html, 'teams-data.json': html.with_name('teams-data.json')}, teams_message(cutoff),
                                remote=args.remote, branch=args.branch)
             log.info('球隊評分頁已發布，gh-pages commit=%s', sha or '（內容未變）')
         except Exception as e:
@@ -527,6 +527,7 @@ def _run(args) -> int:
         pages = {'index.html': final / 'roster-viewer.html', '2025-26.html': final / card_html.name}
         if teams_html is not None:
             pages['teams.html'] = final / teams_html.name
+            pages['teams-data.json'] = final / 'teams-data.json'
         sha = publish_html(ROOT, pages, commit_message(shown, cutoff),
                            remote=args.remote, branch=args.branch)
         state.pop('letter', None)
@@ -566,7 +567,9 @@ def _run_shell(args) -> int:
         pages = {'index.html': final / html.name, '2025-26.html': final / card_html.name}
         if teams_html is not None:
             shutil.copyfile(teams_html, final / teams_html.name)
+            shutil.copyfile(teams_html.with_name('teams-data.json'), final / 'teams-data.json')
             pages['teams.html'] = final / teams_html.name
+            pages['teams-data.json'] = final / 'teams-data.json'
         shown = state.get('displayVersion', '')
         sha = publish_html(ROOT, pages, shell_commit_message(shown, cutoff), remote=args.remote, branch=args.branch)
         if sha:
