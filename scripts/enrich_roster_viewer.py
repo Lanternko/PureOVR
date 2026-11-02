@@ -340,6 +340,10 @@ div.tbox{background:#1b232d}
 .card .ring svg{filter:drop-shadow(0 6px 14px rgba(0,0,0,.45));
   background:radial-gradient(circle at 32% 24%,rgba(255,255,255,.22),transparent 42%);border-radius:50%;
   -webkit-backdrop-filter:blur(10px) saturate(1.6);backdrop-filter:blur(10px) saturate(1.6)}
+/* 桌機卡片與頁首寬度跟著表格（使用者 2026-11-02）：--tw 由 JS 量 #tbl 的自然寬度，兩側各留 16px 內距 */
+@media (min-width:641px){
+  html[style*="--tw"] .wrap,html[style*="--tw"] .mast-in{max-width:min(1360px,calc(var(--tw) + 32px))}
+}
 """
 
 # [主色, 副色, 卡片底色, 背號字色]。主色、副色是官方配色（表格色標、卡片底帶）；
@@ -585,6 +589,12 @@ function impactChips(p) {
   };
   box.addEventListener('touchend', end);
   box.addEventListener('touchcancel', () => { s = null; });
+})();
+(() => {
+  const t = document.getElementById('tbl'); if (!t || !window.ResizeObserver) return;
+  const de = document.documentElement;
+  const sync = () => { const w = Math.round(t.getBoundingClientRect().width); if (w > 0) de.style.setProperty('--tw', w + 'px'); };
+  new ResizeObserver(sync).observe(t); sync();
 })();
 """
 
