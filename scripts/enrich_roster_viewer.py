@@ -73,13 +73,13 @@ td.ovr .ob::before{content:"";position:absolute;inset:0;border-radius:inherit;pa
 }
 /* 能力值欄一樣寬（使用者 2026-10-29）：原本被中文副標長短撐開 35–67px；副標縮小讓四字（製造犯規）也放得下一行 */
 #tbl thead tr:last-child th[data-k]:not([data-k=name],[data-k=pos],[data-k=team],[data-k=ht],[data-k=ovr],[data-k=min],[data-k=gp],[data-k=dovr]){
-  width:44px;min-width:44px;box-sizing:border-box;padding-left:2px;padding-right:2px}   /* 48→44（使用者 2026-11-02：能力值欄太寬）；四字副標 .62rem 約 40px */
+  width:38px;min-width:38px;box-sizing:border-box;padding-left:1px;padding-right:1px}   /* 44→38（2026-11-03 桌機要 100% 就放得下）；48→44（使用者 2026-11-02：能力值欄太寬）；四字副標 .62rem 約 40px */
 /* 分鐘／場數／較開季也固定寬（使用者 2026-10-30：表格 min-width 1060 多出來的寬度原本都分給這幾欄） */
 #tbl thead tr:last-child th:is([data-k=min],[data-k=gp]){width:46px;box-sizing:border-box}
 #tbl thead tr:last-child th[data-k=dovr]{width:54px;box-sizing:border-box}
 /* 手機表格本來就左右捲，不用撐到 1060px，每欄照內容寬 */
 @media (max-width:640px){#tbl{min-width:0;width:max-content}}
-#tbl thead tr:last-child th[data-k]:not([data-k=name],[data-k=pos],[data-k=team],[data-k=ht],[data-k=ovr],[data-k=min],[data-k=gp],[data-k=dovr]) .zh{font-size:.62rem}
+#tbl thead tr:last-child th[data-k]:not([data-k=name],[data-k=pos],[data-k=team],[data-k=ht],[data-k=ovr],[data-k=min],[data-k=gp],[data-k=dovr]) .zh{font-size:.58rem}
 /* 名字欄不再整條金底（使用者 2026-10-29：醜、被列線切得斷裂）；改深色底，只有選中列金色 */
 #tbl th.nm{background:#0a0d10;color:var(--muted)}
 /* 球員、總評兩欄底色改成和表頭一樣黑（使用者 2026-11-02：像 x 軸標題） */
@@ -96,7 +96,7 @@ div.tbox{background:#1b232d}
 /* 桌機名字欄固定寬（使用者 2026-11-01：表格只畫目前這頁的人，換排序時名字欄跟著當頁最長名字變寬變窄）；
    160px（使用者 2026-11-02 收窄到剛好放下 Shai Gilgeous-Alexander，原 200px）：Giannis Antetokounmpo 約 138px 也放得下，最長的 Yanic Konan Niederhäuser 約 162px 會截成 … */
 @media (min-width:641px){
-  #tbl th.nm,#tbl td.nm{width:160px;min-width:160px;max-width:160px;box-sizing:border-box}
+  #tbl th.nm,#tbl td.nm{width:140px;min-width:140px;max-width:140px;box-sizing:border-box}
   /* 名字欄收緊後整張表也往中間縮（使用者 2026-11-02）：不再撐滿 1280／最小 1060，改成內容寬並置中 */
   .tbox{width:fit-content;max-width:100%;margin-inline:auto;overflow-x:hidden!important}
   #tbl{width:auto;min-width:0}
@@ -138,6 +138,7 @@ div.tbox{background:#1b232d}
 }
 /* team colors + headshot */
 .card .tag{background:var(--card,var(--red));box-shadow:inset 0 -7px 0 var(--tc,transparent);position:relative;min-width:230px}
+.card .tag::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.1) 38%,transparent 39%),radial-gradient(90% 50% at 20% 0%,rgba(255,255,255,.28),transparent 70%);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.4),inset 0 3px 6px rgba(255,255,255,.35),inset 0 -14px 24px rgba(0,0,0,.28)}  /* 玻璃質感：斜向反光＋亮色內緣＋底部壓暗，白/黑/任何隊色都靠透明度疊加 */
 .tag .pos{background:var(--tc,#fff);color:#fff;position:relative;z-index:1}
 .tag .rk{position:relative;z-index:1;color:var(--ink,#fff);text-shadow:0 0 8px var(--card,#000)}
 .tag .logo{position:absolute;right:30px;top:50%;transform:translateY(-50%);height:150px;width:150px;object-fit:contain;opacity:.9;pointer-events:none}
@@ -556,7 +557,7 @@ function impactChips(p) {
     if (mq.matches) {
       const p = box.parentElement, cs = getComputedStyle(p);
       box.style.width = '';
-      const avail = p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 24, w = tbl.offsetWidth;
+      const avail = p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - (box.offsetWidth - box.clientWidth) - 2, w = tbl.offsetWidth;
       if (w > avail && avail > 0) { tbl.style.zoom = (avail / w).toFixed(4); box.style.width = '100%'; }
     } else box.style.width = '';
     busy = false;
