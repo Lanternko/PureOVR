@@ -564,9 +564,9 @@ function impactChips(p) {
     last = z + bw; tbl.style.zoom = z; box.style.width = bw;
   }
   const fit = () => { if (!raf) raf = requestAnimationFrame(run); };
-  addEventListener('resize', fit); mq.addEventListener('change', fit);
+  addEventListener('resize', run); mq.addEventListener('change', run);  // resize／RO 在繪製前觸發，同步算才不會多閃一格舊尺寸（rAF 會晚一格＝膨脹再收回）
   new MutationObserver(fit).observe(tbl.tBodies[0] || tbl, {childList: true});
-  if (window.ResizeObserver) { const ro = new ResizeObserver(fit); ro.observe(box.parentElement); ro.observe(tbl); }  // 字型載入、視窗／縮放改變後版面才定，要重算
+  if (window.ResizeObserver) { const ro = new ResizeObserver(run); ro.observe(box.parentElement); ro.observe(tbl); }  // 字型載入、視窗／縮放改變後版面才定，要重算
   fit();
 })();
 // 手機表格手勢鎖方向（使用者 2026-10-29：往上滑時手會左右偏，表格跟著晃）：先移動 10px 才判方向，
