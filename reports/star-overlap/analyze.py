@@ -4,7 +4,11 @@ import numpy as np
 from scipy.stats import rankdata
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.abspath(os.path.join(HERE, '..', '..')); E = f'{ROOT}/reports/E208-team-rating'
 BOOT, BSEED, CREATOR_Q = 5000, 20261102, 0.70
-names = json.load(open(f'{HERE}/names.json', encoding='utf-8')); LU = json.load(open(f'{HERE}/lineups.json', encoding='utf-8'))
+names = json.load(open(f'{HERE}/names.json', encoding='utf-8'))
+# 偏離（見 report.md）：2024-25 有 7 位球星不在 582 人名單，補姓名（player-games 2024-25），selfOpp=None（不算創造者）；判定邏輯未動
+_pg = json.load(open(f'{ROOT}/data/season-source-2024-25/player-games.json', encoding='utf-8'))['data']['resultSets']; _pg = _pg[0] if isinstance(_pg, list) else _pg
+for _r in _pg['rowSet']: names.setdefault(str(_r[1]), dict(name=_r[2], pos=None, selfOpp=None))
+LU = json.load(open(f'{HERE}/lineups.json', encoding='utf-8'))
 def spearman(a, b): ra, rb = rankdata(a), rankdata(b); return float(np.corrcoef(ra, rb)[0, 1])
 def boot_ci(f, n, rng):
     v = []

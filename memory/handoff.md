@@ -11,9 +11,9 @@
 - **網站**：首頁 2026-27、`2025-26.html`（`build_card_viewer.py`、`enrich_roster_viewer.py`、共用 `season_nav.py`）。能力值說明文字在 `season_nav.py` 的 `ATTR_TIPS`，改屬性公式要一起改；新格子提示用 `sn.cell_tip()`。只改 UI 用 `python -I scripts/daily_inseason_update.py --shell` 立刻發布；每日排程 14:30／16:30＋22:30 補對位（registry `basketball-inseason-daily`）。
 - **模擬 sim 0.1.3**（R-120，2026-11-01：0.1.2 的防守者投籃犯規 β×2、c −0.05625、pace ×0.998125，`benchmark.mjs` options()；0.1.2 以前的 WinImp 數字不能直接比，G3）；防守 `nba-defense-v3`（R-010）；賽中 OVR C4（E-033）、顯示值 B0。
 - **新秀開季起點**（R-096，2026-11-01 重解）：0.2.10e～h 換版後 δ 沒重解、起點跑掉（L-109）；已用 `reports/E121-rookie-scale/build_2k_start.py` 重解，42 人 ≤0.05；`test/rookie_start_gate.py`（npm test）擋換版後再跑掉。換版後要重跑該腳本。
-- 新賽季頁版本由 `reports/ovr-inseason-2026-27/live/CURRENT.json` 決定，`test/live_current_gate.py` 掛在 npm test（L-090）；舊建構腳本放 `live/_retired/`。
 
 ## 進行中
+- **球星重疊遞減 E-217**（11-02）：H1 不通過，OL 單隊多為噪音，要驗證需約 10 倍場數。`reports/star-overlap/report.md`
 - **E-208／E-213 球隊評分**（11-02）：`teams.html` 上線；傷病 ESPN→官方PDF（E-214）；缺陣球員補底卡 E-216。`reports/E208-team-rating/report-missing-profiles.md`
 - **TO 觸球分母已做成 0.2.12c**（R-144，E-207，11-02 上線，commit e92fae6、gh-pages 0540dcd）：tovSkill 的 r 分母持球分鐘→觸球次數；`TOV_TOUCH=0` 重現 0.2.12b。池與係數已在 W246 重擬合（11-02，底 `reports/card-0.2.12c-w246/`，產物 `reports/card-0.2.12c/`；版號仍 0.2.12c）。
 - **遺忘調陡 W246 已做成 0.2.12b**（F-142、E-201、E-204、R-140，11-02）：四季窗口 328→246 格，兩頁（新賽季頁、2025-26 卡片頁）；`live/win_len.py`（`WIN_LEN=328` 重現 0.2.12a／card 0.2.12），卡片端 `reports/card-0.2.12b/`，報告 `reports/E204-window-246/report.md`。season_nav.py 更新說明、「四季」字樣、`OD_CARD`→card-0.2.12b 已補（11-02）。待辦：E-207 原預定 inseason 0.2.12b，撞號，要改 0.2.12c。
