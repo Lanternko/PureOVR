@@ -848,7 +848,7 @@ div.tbox{background:#1b232d}
 @media (min-width:641px){
   html[style*="--tw"] .wrap,html[style*="--tw"] .mast-in{max-width:min(1360px,calc(var(--tw) + 32px))}
 }
-.chip i.c5a{color:var(--g-a)}.chip i.c5b{color:var(--g-b)}.chip i.c5c{color:#a3abb5}.chip i.c5d{color:#f09a8c}.chip i.c5f{color:var(--g-f)}
+.chip small.rk5{font:600 .72rem var(--f-disp);color:var(--muted);margin-top:1px}.chip i.c5a{color:var(--g-a)}.chip i.c5b{color:var(--g-b)}.chip i.c5c{color:#a3abb5}.chip i.c5d{color:#f09a8c}.chip i.c5f{color:var(--g-f)}
 
 .card .g5.hc{display:flex;flex-wrap:wrap;gap:12px;align-items:stretch;justify-self:stretch;overflow:visible;border:0;background:none}
 .card .g5.hc[hidden]{display:none}
@@ -1033,9 +1033,13 @@ function impactChips(p) {
   return `<div class="strong">${chip('進攻影響', m.o, '2026-27 自製 EPM 式（本季數據表＋生涯 RAPM 打底＋本季 RAPM）進攻：在場時球隊每 100 回合多得幾分（控制隊友與對手，對聯盟平均）')}${
     chip('防守影響', m.d, '2026-27 自製 EPM 式（本季數據表＋生涯 RAPM 打底＋本季 RAPM）防守：在場時對手每 100 回合少得幾分（正值＝少失分）')}${
     chip('淨影響', m.o + m.d, '2026-27 自製 EPM 式淨值＝進攻＋防守（本季數據表＋生涯 RAPM 打底＋本季 RAPM）')}${
-    (() => { const v = r.sd ? r.sd.gc : null, b = r.gc ? r.gc.b : null;
-      const tip = GC_DEF + '。本季每場評分平均' + (b == null ? '；沒有上季紀錄，顏色和聯盟平均 5.8 比' : '；上季 ' + gcS(b) + '，顏色＝和自己上季比');
-      return `<span class="chip" title="${tip}">場均評分<i class="${v == null ? 'flat' : gcCls(v - (b == null ? 5.8 : b), GC_CUT5)}">${v == null ? '—' : gcS(v)}</i></span>`; })()}</div>`;
+    (() => { const v = r.sd ? r.sd.gc : null;
+      if (v == null) return `<span class="chip" title="本季尚未出賽">場均評分<i class="flat">—</i></span>`;
+      if (!window.GC_POOL) window.GC_POOL = Object.values(REAL).filter(x => x.gp > 0 && x.mpg >= 15 && x.sd && x.sd.gc != null).map(x => x.sd.gc);
+      const pool = window.GC_POOL, rk = pool.filter(x => x > v).length + 1, inPool = r.mpg >= 15, f = (rk - 1) / pool.length;
+      const cl = f < 0.2 ? 'c5a' : f < 0.4 ? 'c5b' : f < 0.6 ? 'c5c' : f < 0.8 ? 'c5d' : 'c5f';
+      const tip = GC_DEF + '。本季每場評分平均；顏色＝全聯盟名次五等分（綠高、灰中、紅低），名次人群＝場均 ≥15 分鐘共 ' + pool.length + ' 人' + (inPool ? '' : '；他場均不到 15 分鐘，不列名次') + (r.gc && r.gc.b != null ? '。上季 ' + gcS(r.gc.b) : '');
+      return `<span class="chip" title="${tip}">場均評分<i class="${cl}">${gcS(v)}</i>${inPool ? `<small class="rk5">#${rk}</small>` : ''}</span>`; })()}</div>`;
 }
 // 手機位置下拉：按鈕顯示目前位置，點了才展開位置列（#posSeg 每次 render 重建，用 observer 同步）
 (() => {
