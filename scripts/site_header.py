@@ -22,7 +22,7 @@ SEASON = {'inseason': '2026-27', 'card': '2025-26'}
 CSS = """<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Righteous&display=swap">
 <style>
 body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰力排行兩頁之間會上下左右跳 */
-.mast{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 78%,transparent);
+.mast{--mbg:#030406;position:sticky;top:0;z-index:50;background:rgba(3,4,6,.94);  /* 使用者 2026-11-03：眉頭用更深的黑 */
   -webkit-backdrop-filter:saturate(180%) blur(14px);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line);transition:box-shadow .25s,border-color .25s}
 .mast.scrolled{border-bottom-color:transparent;box-shadow:0 6px 22px -10px rgba(0,0,0,.6)}
 .mast-in{display:flex;align-items:center;gap:16px;height:56px;max-width:1360px;margin:0 auto;box-sizing:border-box;
@@ -71,11 +71,14 @@ body[data-view="rank"] .mtabs #teamPick.on summary{color:var(--muted);background
 .mpop{position:relative}
 .mpop>summary{list-style:none}
 .mpop>summary::-webkit-details-marker{display:none}
-.micon{position:relative;display:inline-flex;align-items:center;gap:6px;height:34px;box-sizing:border-box;padding:0 11px;background:transparent;color:var(--muted);
-  border:1px solid var(--line);border-radius:6px;font:600 .85rem var(--f-body);cursor:pointer;white-space:nowrap;transition:color .12s,border-color .12s,background-color .12s}
-.micon:hover,.mpop[open]>.micon{color:var(--fg);border-color:var(--muted);background:var(--panel)}
+/* 使用者 2026-11-03：圖示用更飽和的純白，不要外框、不要文字說明 */
+.micon{position:relative;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;box-sizing:border-box;padding:0;background:transparent;color:#fff;
+  border:0;border-radius:8px;cursor:pointer;transition:background-color .12s}
+.micon>span{display:none}
+.micon svg{width:21px;height:21px;stroke-width:2.2}
+.micon:hover,.mpop[open]>.micon{background:rgba(255,255,255,.12)}
 .micon:active{transform:scale(.96)}
-.micon.dot::after{content:"";position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 2px var(--bg)}
+.micon.dot::after{content:"";position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 2px var(--mbg)}
 .mpanel{position:absolute;right:0;top:calc(100% + 8px);z-index:20;min-width:220px;box-sizing:border-box;padding:12px;background:var(--panel-2);
   border:1px solid var(--line);border-radius:8px;box-shadow:0 14px 36px rgba(0,0,0,.6);display:grid;gap:12px}
 .mrow{display:grid;gap:6px}
@@ -89,12 +92,12 @@ body[data-view="rank"] .mtabs #teamPick.on summary{color:var(--muted);background
 .mrow .pnote summary{height:32px;box-sizing:border-box;padding:0 12px}
 .mast .pn{position:fixed;left:auto;right:max(16px,calc((100vw - 1360px)/2 + 16px));top:calc(var(--mh,57px) + 8px);width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 80px)}
 .msearch{position:relative;display:flex;align-items:center}
-.msearch .sbtn{display:none}
-.msearch .sbox{position:relative;display:flex;align-items:center}
-.msearch .sbox>svg{position:absolute;left:10px;color:var(--muted);pointer-events:none}
-.msearch #q{width:200px;height:34px;box-sizing:border-box;padding:0 10px 0 32px;background:var(--panel);border:1px solid var(--line);color:var(--fg);
+.msearch .sbox{display:none;position:absolute;right:0;top:calc(100% + 8px);z-index:20;width:300px;box-sizing:border-box;padding:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;box-shadow:0 14px 36px rgba(0,0,0,.6);align-items:center}
+.msearch.open .sbox{display:flex}
+.msearch .sbox>svg{position:absolute;left:20px;color:var(--muted);pointer-events:none}
+.msearch #q{width:100%;height:36px;box-sizing:border-box;padding:0 10px 0 32px;background:var(--panel);border:1px solid var(--line);color:var(--fg);
   border-radius:6px;font:500 .88rem var(--f-body);transition:width .2s,border-color .12s}
-.msearch #q:focus{outline:0;border-color:var(--gold);width:240px}
+.msearch #q:focus{outline:0;border-color:var(--gold)}
 .wrap>.top,.wrap>.ctrl{display:none}
 @media (min-width:641px){.wrap{padding-top:10px}}
 @media (max-width:640px){
@@ -106,18 +109,13 @@ body[data-view="rank"] .mtabs #teamPick.on summary{color:var(--muted);background
   .mtab,.mtabs .tpick summary{height:40px;padding:0 11px;font-size:15px}
   .mbrand{width:auto}
   .mtabs #teamPick:not(.on) summary::before{font-size:15px}
-  .micon{width:34px;padding:0;justify-content:center}
-  .micon>span{display:none}
   .mpanel{position:fixed;left:12px;right:12px;top:calc(var(--mh,96px) + 6px);min-width:0}
   /* 舊手機規則 #posSeg{display:none}（位置要點 .pbtn 才展開）在位置列搬進篩選面板後仍生效 → 面板開了卻空的（使用者 2026-11-02） */
   #mPos #posSeg{display:flex;position:static;box-shadow:none}
   #mPos #posSeg button{height:36px;padding:0 13px}
   .mast .pn{top:calc(var(--mh,96px) + 6px);right:12px;width:calc(100vw - 24px)}
-  .msearch .sbtn{display:inline-flex}
-  .msearch .sbox{display:none;position:fixed;left:12px;right:12px;top:calc(var(--mh,96px) + 6px);z-index:20;padding:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;box-shadow:0 14px 36px rgba(0,0,0,.6)}
-  .msearch.open .sbox{display:flex}
-  .msearch .sbox>svg{left:20px}
-  .msearch #q,.msearch #q:focus{width:100%;height:40px;font-size:16px}
+  .msearch .sbox{position:fixed;width:auto;left:12px;right:12px;top:calc(var(--mh,96px) + 6px);z-index:20;padding:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;box-shadow:0 14px 36px rgba(0,0,0,.6)}
+  .msearch #q,.msearch #q:focus{height:40px;font-size:16px}
   .mtabs .tpick .tpop{position:fixed;left:12px!important;right:12px;top:calc(var(--mh,96px) + 6px);width:auto}
 }
 @media (prefers-reduced-motion:reduce){.mast.ready .mind,.msearch #q{transition:none}}
@@ -194,13 +192,13 @@ def header_html(current):
         '<span class="mind" aria-hidden="true"></span>'
         '<a class="mtab" id="mTeams" href="index.html#rank">戰力排行</a></nav>'
         '<div class="macts">'
-        f'<details class="mpop" id="mFilter"><summary class="micon" title="篩選" aria-label="篩選">{_svg("filter", 15)}<span>篩選</span></summary>'
+        f'<details class="mpop" id="mFilter"><summary class="micon" aria-label="篩選">{_svg("filter", 15)}</summary>'
         '<div class="mpanel"><div class="mrow"><b>位置</b><div id="mPos"></div></div></div></details>'
-        f'<details class="mpop" id="mSettings"><summary class="micon" title="設定" aria-label="設定">{_svg("gear")}<span>設定</span></summary>'
+        f'<details class="mpop" id="mSettings"><summary class="micon" aria-label="設定">{_svg("gear")}</summary>'
         '<div class="mpanel"><div class="mrow"><b>賽季</b><div id="mSeason"></div></div>'
         '<div class="mrow"><b>能力值顯示</b><div id="mMode"></div></div>'
         '<div class="mrow"><b>版本</b><div id="mNotes"></div></div></div></details>'
-        f'<div class="msearch"><button type="button" class="micon sbtn" title="搜尋" aria-label="搜尋">{_svg("search")}</button>'
+        f'<div class="msearch"><button type="button" class="micon sbtn" aria-label="搜尋">{_svg("search")}</button>'
         f'<div class="sbox">{_svg("search", 15)}</div></div>'
         '</div></div></header>'
     )
