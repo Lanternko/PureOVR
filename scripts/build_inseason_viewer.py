@@ -56,7 +56,7 @@ OVR_CSS = """
 .card .g5.hc{display:flex;flex-wrap:wrap;gap:12px;align-items:stretch;justify-self:stretch;overflow:visible;border:0;background:none}
 .card .g5.hc[hidden]{display:none}
 .g5.hc>.g5in{flex:0 1 auto;min-width:0;max-width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:3px;background:var(--panel-2);scrollbar-width:thin;scrollbar-color:#38424f transparent}
-.g5.hc>.ovc{flex:1 1 300px;min-width:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:3px;background:var(--panel-2);padding:6px 10px 4px}
+.g5.hc>.ovc{flex:1 1 240px;min-width:0;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:3px;background:var(--panel-2);padding:6px 10px 4px}
 .ovc .ovh{display:flex;justify-content:space-between;align-items:baseline;color:var(--muted);font:600 .7rem var(--f-disp);letter-spacing:.04em;padding-bottom:2px}
 .ovc .ovh b{color:var(--fg);font:700 .86rem var(--f-disp);font-variant-numeric:tabular-nums}
 .ovc svg{width:100%;height:auto;display:block;overflow:visible;margin:auto 0}
@@ -91,7 +91,7 @@ function ovrChart(p) {
   const xl = Math.max(1, Math.ceil(pts.length / 8));          // x 標籤太密就隔幾場標一次（最後一場一定標）
   const path = pts.map((q, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(q[1]).toFixed(1)).join('');
   const area = path + `L${x(pts.length - 1).toFixed(1)} ${H - B}L${x(0).toFixed(1)} ${H - B}Z`;
-  const last = vs[vs.length - 1], d = last - h.start;
+  const last = vs[vs.length - 1], d = typeof p.dovr === 'number' ? p.dovr : last - h.start;   // 差值和圓環同源（折線點只存到 0.1，相減會差 0.1）
   const tip = (q, i) => `${i ? q[0] : '開季起點'}　OVR ${q[1].toFixed(1)}`;
   return `<div class="ovc"><div class="ovh"><span>OVR 走勢 · 每場重算</span><span>開季 <b>${h.start.toFixed(1)}</b> → 現在 <b>${last.toFixed(1)}</b>` +
     ` <b class="${d >= 0.05 ? 'up' : d <= -0.05 ? 'dn' : ''}">${d > 0 ? '+' : ''}${d.toFixed(1)}</b></span></div>` +
