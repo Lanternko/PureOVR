@@ -48,6 +48,9 @@ body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰
 .mtabs #teamPick:not(.on) summary::before{content:"球隊";font-size:1.02rem;letter-spacing:.02em}
 /* 「球隊」格固定最小寬（最寬的 GSW＋隊徽約 104px），選哪隊後面的「戰力排行」都不會被推動 */
 .mtabs #teamPick summary,.mtab-pick{min-width:106px;justify-content:center}
+/* 使用者 2026-11-03：選完球隊不要下箭頭，格子也跟著縮窄（只剩隊徽＋隊名） */
+.mtabs #teamPick.on summary::after{display:none}
+.mtabs #teamPick.on summary{min-width:0}
 .mtabs .tpick.on summary{border:0;color:var(--mfg2)}
 .mtabs .tpick summary:focus-visible,.mtab:focus-visible,.micon:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .mind{position:absolute;bottom:0;left:var(--ix,0);width:var(--iw,0);height:3px;border-radius:3px 3px 0 0;background:var(--gold);
