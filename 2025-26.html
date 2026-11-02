@@ -143,24 +143,24 @@ th.noh{cursor:default}
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Righteous&display=swap">
 <style>
 body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰力排行兩頁之間會上下左右跳 */
-.mast{--mbg:#030406;position:sticky;top:0;z-index:50;background:rgba(3,4,6,.94);  /* 使用者 2026-11-03：眉頭用更深的黑 */
+.mast{--mbg:#030406;--mfg:#f3f5f8;--mfg2:#fff;position:sticky;top:0;z-index:50;background:rgba(3,4,6,.94);  /* 使用者 2026-11-03：眉頭用更深的黑 */
   -webkit-backdrop-filter:saturate(180%) blur(14px);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line);transition:box-shadow .25s,border-color .25s}
 .mast.scrolled{border-bottom-color:transparent;box-shadow:0 6px 22px -10px rgba(0,0,0,.6)}
 .mast-in{display:flex;align-items:center;gap:16px;height:56px;max-width:1360px;margin:0 auto;box-sizing:border-box;
   padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
 .mbrand{display:inline-flex;align-items:baseline;gap:8px;text-decoration:none;flex:none;width:168px}  /* 固定寬：Righteous 字型晚到時分頁不會被推動 */
 .mbrand b{font:400 1.6rem/1 "Righteous",var(--f-disp);letter-spacing:.02em;color:var(--fg)}
-.mbrand b span{color:var(--muted)}
+.mbrand b span{color:var(--mfg)}  /* 使用者 2026-11-03：眉頭文字換更白 */
 .mbrand b i{font-style:inherit;color:var(--gold)}
-.mbrand:hover b span{color:var(--fg)}
-.mbrand small{font:600 .78rem var(--f-disp);letter-spacing:.06em;color:var(--muted);font-variant-numeric:tabular-nums}
+.mbrand:hover b span{color:var(--mfg2)}
+.mbrand small{font:600 .78rem var(--f-disp);letter-spacing:.06em;color:#dfe4ea;font-variant-numeric:tabular-nums}
 .mtabs{position:relative;display:flex;align-items:center;gap:2px;margin:0 auto 0 8px}
-.mtab,.mtabs .tpick summary{appearance:none;box-sizing:border-box;margin:0;border:0;background:none;color:var(--muted);font:600 1.02rem/1 var(--f-body);letter-spacing:.02em;
+.mtab,.mtabs .tpick summary{appearance:none;box-sizing:border-box;margin:0;border:0;background:none;color:var(--mfg);font:600 1.02rem/1 var(--f-body);letter-spacing:.02em;
   height:36px;padding:0 14px;border-radius:8px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:color .14s,background-color .14s}
 .mtabs .tpick summary img{width:18px;height:18px;margin:0}
 .mtab{text-decoration:none}
-.mtab:hover,.mtabs .tpick summary:hover{color:var(--fg);background:color-mix(in srgb,var(--fg) 7%,transparent)}
-.mtab[aria-selected="true"],.mtabs .tpick.on summary{color:var(--fg);background:var(--panel)}
+.mtab:hover,.mtabs .tpick summary:hover{color:var(--mfg2);background:color-mix(in srgb,var(--fg) 7%,transparent)}
+.mtab[aria-selected="true"],.mtabs .tpick.on summary{color:var(--mfg2);background:var(--panel)}
 .mtabs .tpick summary{border:0}
 /* 選隊沿用 #teamPick 的舊規則（ID 選擇器，手機版會把「球隊」縮成 .85rem），這裡一律用 #teamPick 蓋回，選隊前後字級相同 */
 /* 使用者 2026-11-03：實心三角形 ▾ 太淡又偏左，改成清楚的細 V 形箭頭（邊框畫的，任何字型都一樣粗） */
@@ -169,7 +169,7 @@ body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰
 .mtabs #teamPick:not(.on) summary::before{content:"球隊";font-size:1.02rem;letter-spacing:.02em}
 /* 「球隊」格固定最小寬（最寬的 GSW＋隊徽約 104px），選哪隊後面的「戰力排行」都不會被推動 */
 .mtabs #teamPick summary,.mtab-pick{min-width:106px;justify-content:center}
-.mtabs .tpick.on summary{border:0;color:var(--fg)}
+.mtabs .tpick.on summary{border:0;color:var(--mfg2)}
 .mtabs .tpick summary:focus-visible,.mtab:focus-visible,.micon:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .mind{position:absolute;bottom:0;left:var(--ix,0);width:var(--iw,0);height:3px;border-radius:3px 3px 0 0;background:var(--gold);
   box-shadow:0 0 8px color-mix(in srgb,var(--gold) 50%,transparent);pointer-events:none}
@@ -177,7 +177,7 @@ html{scrollbar-gutter:stable}  /* 排行檢視比名單短，捲軸有無不同�
 body[data-view="rank"] .wrap{display:none}
 body:not([data-view="rank"]) #rankHost{display:none}
 body[data-view="rank"] #mFilter,body[data-view="rank"] .msearch{display:none}  /* 篩選、搜尋只對球員檢視有意義 */
-body[data-view="rank"] .mtabs #teamPick.on summary{color:var(--muted);background:none}
+body[data-view="rank"] .mtabs #teamPick.on summary{color:var(--mfg);background:none}
 .mtabs #teamPick[open] summary,body[data-view="rank"] .mtabs #teamPick[open].on summary{color:var(--gold-ink);background:var(--gold)}  /* 點開選隊：黃色高亮 */
 .mind{view-transition-name:tab-ind}  /* 只給底線命名；.wrap 整頁快照太大 */
 .mast.vt-running .mind{transition:none!important}  /* 切檢視時由 View Transition 負責滑動，不再疊 CSS 過渡 */
@@ -1276,19 +1276,22 @@ addEventListener('load', fitTable);
 document.fonts && document.fonts.ready.then(fitTable);
 // 欄寬照「全部球員」量一次就鎖住（table-layout:fixed）：自動排版會照這頁的內容算欄寬，
 // 換排序換到 7'4"、三位數三分的人，整張表寬度就跟著跳（使用者 2026-11-02）
+// 寬度鎖成欄寬總和（不是 min-width）：不然表格會跟著外框撐寬，外框又照表格寬算，越撐越寬。
+// 只動這幾個屬性、量時除掉 zoom：桌機縮放（enrich_roster_viewer）寫在同一個 style 上。
 function lockCols() {
-  const t = document.getElementById('tbl'), SZ = SIZE;
+  const t = document.getElementById('tbl'), SZ = SIZE, s = t.style, z = parseFloat(s.zoom) || 1;
   t.querySelector('colgroup')?.remove();
-  t.style.cssText = 'width:min-content;min-width:0';
+  s.tableLayout = ''; s.width = 'min-content'; s.minWidth = '0';
   SIZE = 1e5; render(); SIZE = SZ;
   const ws = [...t.querySelectorAll('thead tr:last-child th')].filter(th => getComputedStyle(th).display !== 'none')
-    .map(th => Math.ceil(th.getBoundingClientRect().width));
+    .map(th => Math.ceil(th.getBoundingClientRect().width / z));
   t.insertAdjacentHTML('afterbegin', '<colgroup>' + ws.map(w => `<col style="width:${w}px">`).join('') + '</colgroup>');
-  t.style.cssText = `table-layout:fixed;min-width:${ws.reduce((a, b) => a + b, 0)}px`;
+  s.tableLayout = 'fixed'; s.width = ws.reduce((a, b) => a + b, 0) + 'px';
   render();
 }
-let lockT = 0;
-addEventListener('resize', () => { clearTimeout(lockT); lockT = setTimeout(lockCols, 200); });
+// 不在每次 resize 重鎖（使用者 2026-11-03：Ctrl+- 時整張先膨脹再收回、很卡＝拆掉欄寬重畫全部球員）。
+// 瀏覽器縮放時 CSS 欄寬不變；只有跨手機／桌機分界（欄位顯示不同）才要重量。
+matchMedia('(max-width:640px)').addEventListener('change', lockCols);
 (document.fonts ? document.fonts.ready : Promise.resolve()).then(lockCols);
 
 document.getElementById('q').oninput = e => { st.q = e.target.value; st.page = 0; st.extra = 0; render(); };
