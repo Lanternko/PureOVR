@@ -9,7 +9,7 @@ RECENT_BOOST（環境變數，預設 0＝關閉）：1＝開。RB_B（b，加成
 tov_live 的窗口分鐘占比、e175 u_sums）都以 `tab.agg(0, g, w=u)` 呼叫，在這裡統一乘上 factor。b=0 時 factor 是 1.0 整列，
 w×1.0 與原式逐位元相同。
 沒有逐場資料的本季累計表（rookie_defense／pres_drive 壓迫／gravity_live 的追蹤表）不在補丁範圍：沒有逐場列可加權，見 E-221 errata-1。
-install() 在 run_c4_live_rookie.py 載入時呼叫；重複呼叫無害。G、SLOTS 可用 RB_G 覆寫（回放不同季長度用）。
+install() 在 run_c4_live_rookie.py 載入時呼叫；重複呼叫無害。G 可用 RB_G 覆寫（回放不同季長度用）；SLOTS 固定 82（球隊場次換算）。
 """
 import os
 import sys

@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / 'scripts'))
 import team_ratings_daily as T  # noqa: E402
 import site_header  # noqa: E402
 import build_teams_page  # noqa: E402
+import rank_view  # noqa: E402
 
 # 一隊最近 3 場：1 號 40 分的球星、其餘輪替
 PRIOR = [[[1, 40], [2, 34], [3, 30], [4, 28], [5, 24], [6, 22], [7, 20], [8, 16], [9, 14], [10, 12]],
@@ -256,29 +257,39 @@ class MinutesReturn(unittest.TestCase):
         self.assertAlmostEqual(T.predict_wins(0, 0, [(0, 1)], {'0': 0.0, '1': 0.0}, '0')[0], T.predict_wins(0, 0, [(0, 1, 'x')], {'0': 0.0, '1': 0.0}, '0')[0])   # 舊的 2-tuple 仍可用
 
     def test_page_shows_switch_and_return(self):
-        html = build_teams_page.build({'season': '2026-27', 'teams': {}, 'injuries': {}, 'schedule': {}, 'version': 'inseason x', 'dataCutoff': 'd',
-                                       'generatedAt': 'g', 'engine': 'e', 'seeds': 1, 'H': 2.5, 'sigma': 12, 'lastN': 10})
+        html, js = rank_view.embed()                            # 排行已併進名單頁（rank_view），切換列與回歸日文字在嵌入的 HTML／腳本裡
         self.assertIn('id="viewSeg"', html)
         self.assertNotIn('class="ctrl"', html)                  # site_header 的 CSS 有 .wrap>.ctrl{display:none}，切換列放那個 class 會整列被藏起來（桌面手機都看不到）
-        self.assertIn('預計回', html)
-        self.assertIn('無回歸日，當整季缺陣', html)
+        self.assertIn('預計回', js)
+        self.assertIn('無回歸日，當整季缺陣', js)
 
 
 class Header(unittest.TestCase):
-    def test_header_has_team_link(self):
+    def test_header_has_rank_link(self):
         for cur in ('inseason', 'card'):
-            self.assertIn('href="teams.html"', site_header.header_html(cur))
-        css, hdr, js = site_header.teams_masthead()
-        self.assertIn('href="teams.html"', hdr)
-        self.assertIn('戰力排行', hdr)
-        self.assertIn('href="index.html#team"', hdr)
+            hdr = site_header.header_html(cur)
+            self.assertIn('href="./#rank"', hdr)                # 戰力排行已併進名單頁，眉頭連到 ./#rank（不再有獨立 teams.html）
+            self.assertIn('戰力排行', hdr)
+            self.assertNotIn('href="teams.html"', hdr)
 
-    def test_page_builds(self):
+    def test_rank_view_embedded_in_roster_page(self):
+        html, js = rank_view.embed()
+        self.assertIn('id="rankHost"', html)
+        self.assertIn('id="rankTpl"', html)
+        self.assertIn('戰力排行', html)
+        self.assertIn('回測僅與上季淨效率打平', js)
+        self.assertIn("fetch('teams-data.json'", js)
+
+    def test_old_teams_url_redirects_and_data_written(self):
         doc = {'season': '2026-27', 'teams': {}, 'injuries': {}, 'schedule': {}, 'version': 'inseason x', 'dataCutoff': 'd', 'generatedAt': 'g',
                'engine': 'e', 'seeds': 1, 'H': 2.5, 'sigma': 12, 'lastN': 10}
-        html = build_teams_page.build(doc)
-        self.assertIn('id="data"', html)
-        self.assertIn('回測僅與上季淨效率打平', html)
+        with tempfile.TemporaryDirectory() as td:
+            src = Path(td) / 'in.json'
+            src.write_text(json.dumps(doc), encoding='utf-8')
+            out = Path(td) / 'site' / 'teams.html'
+            self.assertEqual(build_teams_page.main([str(out), str(src)]), 0)
+            self.assertIn("location.replace('./#rank'", out.read_text(encoding='utf-8'))      # 舊網址轉址頁
+            self.assertEqual(json.loads((out.parent / build_teams_page.DATA_NAME).read_text(encoding='utf-8')), doc)
 
 
 class BaseCards(unittest.TestCase):
