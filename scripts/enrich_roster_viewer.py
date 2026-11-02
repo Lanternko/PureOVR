@@ -555,8 +555,9 @@ function impactChips(p) {
   // offsetWidth 是未縮放的整數自然寬度，不受 zoom 影響；--tw 也在這裡一起寫，值沒變就不寫。
   function run() {
     const w = tbl.offsetWidth, sb = box.offsetWidth - box.clientWidth;
+    if (!w) return;  // 切到戰力排行時名單是 display:none，量到 0；這時重畫表格不能把 --tw／zoom 清掉（切回來卡片會變超寬），等 ResizeObserver 在顯示後重算
     let z = '', bw = '', tw = '';
-    if (mq.matches && w > 0) {
+    if (mq.matches) {
       tw = (w + sb) + 'px';
       const avail = Math.min(de.clientWidth, 1360) - 32 - sb;
       if (w > avail && avail > 0) { z = (avail / w).toFixed(3); bw = '100%'; }
@@ -570,6 +571,7 @@ function impactChips(p) {
   addEventListener('resize', run); mq.addEventListener('change', run);
   new MutationObserver(run).observe(tbl.tBodies[0] || tbl, {childList: true});
   if (document.fonts) document.fonts.ready.then(run);  // 字型載入後自然寬度才定
+  if (window.ResizeObserver) new ResizeObserver(run).observe(tbl);  // 名單從 display:none 切回來（0→有寬度）時重算；值沒變 run 會直接略過，不會和 zoom 互相觸發
   run();
 })();
 // 手機表格手勢鎖方向（使用者 2026-10-29：往上滑時手會左右偏，表格跟著晃）：先移動 10px 才判方向，
