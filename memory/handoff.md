@@ -3,7 +3,7 @@
 只記「目前狀態」，每次收工整份覆寫，不往下追加日期段。每條最多兩行，細節寫進 findings／experiments／rulings 或報告檔，這裡只放 ID 與路徑。UI 小改不進本檔（看 git log）。舊版全文在 `archive/`（最近一份 `handoff-2026-11-01-full.md`）。
 **多個 session 同時改本檔與工作樹**：覆寫前先重讀一次，只改自己負責的條目。
 
-- **更新**：2026-11-02，球隊頁分鐘＋回歸日＋手機切換已上線 E-215
+- **更新**：2026-11-02，球隊頁補底卡 E-216
 
 ## 目前基準（線上）
 - **card／inseason 0.2.12**（R-139，E-203，11-02 上線，gh-pages 7fc64c4）：tovSkill 改看持球時間（0.5·z(−每持球分鐘失誤)＋0.5·z(持球分鐘/36)），其餘不動；每日抓 `possessions.json`；`TOV_POSS=0` 重現 0.2.11。正式卡 `reports/card-0.2.12-tov/`。
@@ -14,7 +14,7 @@
 - 新賽季頁版本由 `reports/ovr-inseason-2026-27/live/CURRENT.json` 決定，`test/live_current_gate.py` 掛在 npm test（L-090）；舊建構腳本放 `live/_retired/`。
 
 ## 進行中
-- **E-208／E-213 球隊評分**（11-02）：`teams.html` 上線；傷病 ESPN→官方PDF（E-214）。`reports/E208-team-rating/report-site.md`
+- **E-208／E-213 球隊評分**（11-02）：`teams.html` 上線；傷病 ESPN→官方PDF（E-214）；缺陣球員補底卡 E-216。`reports/E208-team-rating/report-missing-profiles.md`
 - **TO 觸球分母已做成 0.2.12c**（R-144，E-207，11-02 上線，commit e92fae6、gh-pages 0540dcd）：tovSkill 的 r 分母持球分鐘→觸球次數；`TOV_TOUCH=0` 重現 0.2.12b。池與係數已在 W246 重擬合（11-02，底 `reports/card-0.2.12c-w246/`，產物 `reports/card-0.2.12c/`；版號仍 0.2.12c）。
 - **遺忘調陡 W246 已做成 0.2.12b**（F-142、E-201、E-204、R-140，11-02）：四季窗口 328→246 格，兩頁（新賽季頁、2025-26 卡片頁）；`live/win_len.py`（`WIN_LEN=328` 重現 0.2.12a／card 0.2.12），卡片端 `reports/card-0.2.12b/`，報告 `reports/E204-window-246/report.md`。season_nav.py 更新說明、「四季」字樣、`OD_CARD`→card-0.2.12b 已補（11-02）。待辦：E-207 原預定 inseason 0.2.12b，撞號，要改 0.2.12c。
 - **0.2.10 待辦**（R-114）：獨立 role-audit 沒做（F-116：組合值評 foulDraw／pass 不過，使用者知情上線）；換季跳動對 0.2.9a 沒量；Porter Jr. 20→40；G5。

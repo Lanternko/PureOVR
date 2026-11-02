@@ -15,13 +15,18 @@ const seedOf = (s, key) => ((Math.imul(s + 1, 7919) + Math.imul(key + 1, 1000003
 
 const {x, xAvg} = await loadX(); const {run} = await makeRunner();
 const byId = new Map(x.players.map(p => [p.playerId, p]));
-const avg = xAvg.profiles[2], newSet = new Set(inp.newPlayers), missing = new Set(), cache = new Map();
+const avg = xAvg.profiles[2], newSet = new Set(inp.newPlayers), missing = new Set(), based = new Set(), cache = new Map(), baseOf = inp.base ?? {};
 const profile = pid => {
   if (cache.has(pid)) return cache.get(pid);
-  let p = byId.get(pid); const d = inp.deltas[pid];
+  let p = byId.get(pid); const d = inp.deltas[pid], b = baseOf[pid];
   if (newSet.has(pid) || !p) {
-    p = {...avg, playerId: pid, name: 'new' + pid}; missing.add(pid);
+    p = {...avg, playerId: pid, name: 'new' + pid};
     if (d) for (const a of inp.attrs) p[a] = clamp(avg[a] + d[a]);
+    if (b) {      // E-216：底卡（過去賽季）能力值＝聯盟平均 + 該卡內相對聯盟平均的差；有 live 列時 d 已含 live，與底卡 + (live − 底卡) 相同
+      based.add(pid);
+      if (!d) for (const a of inp.attrs) p[a] = clamp(avg[a] + b.off[a]);
+      p.pos = p.courtPosition = b.pos; p.heightInches = b.heightInches;
+    } else missing.add(pid);
   } else {
     p = {...p}; if (d) for (const a of inp.attrs) p[a] = clamp(p[a] + d[a]);
   }
@@ -50,5 +55,5 @@ inp.jobs.forEach((j, ji) => {
   }
   res.push(o);
 });
-fs.writeFileSync(outPath, JSON.stringify({shard: sh, N, S, missing: [...missing], res}));
+fs.writeFileSync(outPath, JSON.stringify({shard: sh, N, S, missing: [...missing], based: [...based], res}));
 console.log('done', sh, res.length);

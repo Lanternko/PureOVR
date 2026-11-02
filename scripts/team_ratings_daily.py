@@ -71,6 +71,11 @@ RETURN_MIN = 15.0                                         # 最近 10 場沒出�
 OUT_STATUS = {'out', 'doubtful', 'suspension'}            # 今日陣容拿掉的狀態（小寫）
 ESPN_ABBR = {'GS': 'GSW', 'NO': 'NOP', 'NY': 'NYK', 'SA': 'SAS', 'WSH': 'WAS', 'UTAH': 'UTA', 'PHO': 'PHX', 'BRK': 'BKN', 'CHO': 'CHA'}
 CREATE_NO_WINDOW = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
+# 底卡（E-216）：引擎（2025-26 卡）和 live 排名都沒有的非新秀（上季整季缺陣的人，例如 Kyrie、Lillard、Haliburton、VanVleet）。
+# 選擇規則（寫死、不看結果挑）：依賽季由近到遠，取「有這個人的最近一張」賽季卡；目前最近的是 2024-25 卡（v5 -min 主答案卡，§R.7），
+# 其次 2023-24 卡。都沒有的人（沒有任何歷史卡的新人）維持聯盟平均 profile 並列進 missingProfiles。不做年齡衰退調整。
+BASE_CARDS = [('24-25 卡', 'reports/ovr-inseason-2026-27/v5/cards/2024-25-v5-min.csv'),
+              ('23-24 卡', 'reports/ovr-inseason-2026-27/v5/cards/2023-24-v5-min.csv')]
 ATTRS = ['long', 'mid', 'short', 'ft', 'drive', 'tovSkill', 'pass', 'rebound', 'physique', 'onBall', 'help', 'stamina']
 
 log = logging.getLogger('daily_inseason.team_ratings')
@@ -436,8 +441,38 @@ def node_exe() -> str:
     raise RuntimeError('找不到 node')
 
 
-def engine_inputs(rows: list, card_rows: list) -> dict:
-    """引擎端的屬性差：live − 卡片（同 E-208 prep_forward）；卡片裡沒有或引擎沒有的人（新秀）用 live − 卡片聯盟分鐘加權平均。"""
+def load_base_cards(cards=None) -> list:
+    """[(標籤, {pid: 列}, {attr: 該卡分鐘加權聯盟平均})]，由近到遠。檔案不存在就略過（不擋評分）。"""
+    out = []
+    for label, rel in (cards if cards is not None else BASE_CARDS):
+        f = Path(rel) if Path(rel).is_absolute() else ROOT / rel
+        if not f.exists():
+            log.warning('底卡 %s 不存在，略過：%s', label, f)
+            continue
+        rows = read_csv(f)
+        W = sum(float(r['MIN_season']) for r in rows)
+        out.append((label, {int(r['playerId']): r for r in rows}, {a: sum(float(r[a]) * float(r['MIN_season']) for r in rows) / W for a in ATTRS}))
+    return out
+
+
+def base_profiles(pids, base_cards: list) -> dict:
+    """pid → {src, ovr, pos, heightInches, off{attr}}：每人取最近一張有他的底卡；off＝該卡能力值 − 該卡自己的聯盟平均
+    （相對自己那季的聯盟，不受卡片版本差影響），引擎端加在聯盟平均 profile 上。沒有任何底卡的人不在回傳裡。"""
+    res = {}
+    for pid in pids:
+        for label, rows, mean in base_cards:
+            r = rows.get(pid)
+            if r is not None:
+                res[pid] = {'src': label, 'ovr': float(r['ovr']), 'pos': r['pos'], 'heightInches': float(r['heightInches']),
+                            'off': {a: float(r[a]) - mean[a] for a in ATTRS}}
+                break
+    return res
+
+
+def engine_inputs(rows: list, card_rows: list, base: dict | None = None) -> dict:
+    """引擎端的屬性差：live − 卡片（同 E-208 prep_forward）；卡片裡沒有或引擎沒有的人（新秀）用 live − 卡片聯盟分鐘加權平均。
+    base（E-216）：沒有引擎 profile、也沒有 live 列的非新秀，改用底卡（見 BASE_CARDS）；有 live 列的人 底卡 + (live − 底卡) 等於
+    原本的 live − 卡片聯盟平均，行為不變。"""
     xids = {int(k) for k in json.load(open(E208 / 'players-attrs.json', encoding='utf-8'))['players']}
     cardN = {nn(r['name']): r for r in card_rows}
     W = sum(float(r['MIN']) for r in card_rows)
@@ -449,7 +484,8 @@ def engine_inputs(rows: list, card_rows: list) -> dict:
             deltas[pid] = {a: float(r[a]) - float(c[a]) for a in ATTRS}
         else:
             new.append(pid); deltas[pid] = {a: float(r[a]) - cmean[a] for a in ATTRS}
-    return {'attrs': ATTRS, 'deltas': {str(k): v for k, v in deltas.items()}, 'newPlayers': new}
+    return {'attrs': ATTRS, 'deltas': {str(k): v for k, v in deltas.items()}, 'newPlayers': new,
+            'base': {str(k): v for k, v in (base or {}).items() if k not in deltas and k not in xids}}
 
 
 def run_sim(inp: dict, seeds: int, workers: int) -> dict:
@@ -464,13 +500,13 @@ def run_sim(inp: dict, seeds: int, workers: int) -> dict:
             out, err = p.communicate(timeout=1500)
             if p.returncode != 0:
                 raise RuntimeError(f'team_ratings_sim exit={p.returncode}：{(err or out).strip()[-400:]}')
-        res, missing = {}, set()
+        res, missing, based = {}, set(), set()
         for s in range(workers):
             d = json.load(open(tmp / f'out-{s}.json', encoding='utf-8'))
-            missing |= set(d['missing'])
+            missing |= set(d['missing']); based |= set(d.get('based', []))
             for o in d['res']:
                 res[(str(o['team']), o['ver'])] = o
-        return {'res': res, 'missing': sorted(missing)}
+        return {'res': res, 'missing': sorted(missing), 'based': sorted(based)}
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -569,7 +605,12 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
                 v = by_roster[k]
             state_ver[tid][stt] = v
         final_ver[tid] = state_ver[tid][lineup_out(outs, far, today)]
-    inp = {**engine_inputs(rows, card_rows), 'jobs': jobs, 'teamIds': tids}
+    live_pids = {int(r['playerId']) for r in rows}
+    need = {p for j in jobs for p, _ in j['roster']} - live_pids
+    inp = {**engine_inputs(rows, card_rows, base_profiles(need, load_base_cards())), 'jobs': jobs, 'teamIds': tids}
+    base_used = {int(k): v for k, v in inp['base'].items()}
+    ovr_src = {p: v['src'] for p, v in base_used.items()}
+    ovr.update({p: v['ovr'] for p, v in base_used.items()})       # 底卡 OVR 只補 live 沒有的人（頁面上標來源）
     workers = max(1, min(workers, len(jobs)))
     sim = run_sim(inp, seeds, workers)
     log.info('球隊評分模擬：%d 份名單 × %d 場，%d 個 worker，%.0f 秒', len(jobs), seeds, workers, time.time() - t0)
@@ -605,7 +646,7 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
                 pw, ng, nr = predict_wins(W, W + L, rem_by[tid], margin_dated, tid, tids)
             rec[v] = {'ortg': s_['ortg'] - mo, 'drtg': s_['drtg'] - md, 'net': (s_['ortg'] - mo) - (s_['drtg'] - md), 'margin': s_['margin'],
                       'predWins': pw, 'schedGames': ng, 'poolGames': nr,
-                      'rotation': [{'pid': p, 'name': pname.get(p, str(p)), 'min': m, 'ovr': ovr.get(p)} for p, m in rosters[tid][v]]}
+                      'rotation': [{'pid': p, 'name': pname.get(p, str(p)), 'min': m, 'ovr': ovr.get(p), **({'ovrSrc': ovr_src[p]} if p in ovr_src else {})} for p, m in rosters[tid][v]]}
         # 舊算法（傷兵整季缺陣）的預測勝場，只供對照
         rec['today']['predWinsAllSeason'] = predict_wins(W, W + L, rem_by[tid], {t: st['today'][t]['margin'] for t in tids}, tid)[0]
         rec['today']['lineupStates'] = len({state_ver[tid][lineup_out(outs_of[tid], g[2], today)] for g in rem_by[tid]})
@@ -618,7 +659,9 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
            'gamesPlayed': len(lg), 'injuries': {**{k: inj.get(k) for k in ('fetchedAt', 'source', 'espnTimestamp', 'reportTime', 'pdfUrl', 'stale', 'unmatched')}, 'outNoReturnDate': n_noret},
            'today': today, 'returnMin': RETURN_MIN,
            'schedule': {'fetchedAt': sch.get('fetchedAt'), 'source': sch.get('source'), 'remainingGames': len(remaining)},
-           'missingProfiles': sim['missing'], 'elapsedSec': round(time.time() - t0, 1), 'teams': out_teams}
+           'missingProfiles': sim['missing'],
+           'baseProfiles': [{'pid': p, 'name': pname.get(p, str(p)), 'team': next((tri.get(j['team']) or teams[j['team']]['abbr'] for j in jobs if p in {q for q, _ in j['roster']}), ''), 'src': v['src'], 'ovr': v['ovr']}
+                            for p, v in sorted(base_used.items()) if p in set(sim['based'])], 'elapsedSec': round(time.time() - t0, 1), 'teams': out_teams}
     RATINGS.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
     return doc
 

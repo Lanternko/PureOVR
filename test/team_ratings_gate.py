@@ -280,6 +280,56 @@ class Header(unittest.TestCase):
         self.assertIn('回測僅與上季淨效率打平', html)
 
 
+class BaseCards(unittest.TestCase):
+    """E-216：上季缺陣的非新秀改用最近一張底卡；新秀照舊；找不到底卡退回聯盟平均。"""
+    HEAD = 'playerId,name,pos,ovr,MIN_season,heightInches,' + ','.join(T.ATTRS)
+
+    def card(self, d, name, people):
+        f = Path(d) / name
+        lines = [self.HEAD]
+        for pid, nm, ovr, minutes, v in people:       # v＝12 個能力值全設同一數字，聯盟平均好算
+            lines.append(','.join([str(pid), nm, 'PG', str(ovr), str(minutes), '75'] + [str(v)] * len(T.ATTRS)))
+        f.write_text(chr(10).join(lines) + chr(10), encoding='utf-8')
+        return str(f)
+
+    def cards(self, d):
+        c25 = self.card(d, 'c25.csv', [(1, 'Near', 80, 1000, 80), (2, 'Base', 60, 1000, 60)])             # 聯盟平均 70
+        c24 = self.card(d, 'c24.csv', [(1, 'Near', 99, 1000, 90), (3, 'Old', 70, 500, 90), (4, 'Pad', 50, 500, 50)])
+        return T.load_base_cards([('24-25 卡', c25), ('23-24 卡', c24)])
+
+    def test_nearest_card_wins_then_older_then_none(self):
+        with tempfile.TemporaryDirectory() as d:
+            b = T.base_profiles([1, 3, 99], self.cards(d))
+        self.assertEqual(b[1]['src'], '24-25 卡')               # 兩張都有 → 取較近的
+        self.assertEqual(b[1]['ovr'], 80.0)
+        self.assertAlmostEqual(b[1]['off']['long'], 80 - 70)     # 相對那張卡自己的聯盟平均
+        self.assertEqual(b[3]['src'], '23-24 卡')               # 只有舊卡有
+        self.assertAlmostEqual(b[3]['off']['mid'], 90 - 80)     # 23-24 卡聯盟平均＝(90*1000+90*500+50*500)/2000 = 80
+        self.assertNotIn(99, b)                                  # 都沒有 → 不在回傳裡（引擎端退回平均）
+
+    def test_engine_inputs_skip_rookies_live_rows_and_engine_players(self):
+        xid = int(next(iter(json.load(open(T.E208 / 'players-attrs.json', encoding='utf-8'))['players'])))
+        live = [{'playerId': '2', 'name': 'Rookie', **{a: '70' for a in T.ATTRS}}]       # 有 live 列但不在引擎／卡片裡＝新秀
+        card = [{'name': 'Someone', 'MIN': '100', **{a: '70' for a in T.ATTRS}}]
+        with tempfile.TemporaryDirectory() as d:
+            b = T.base_profiles([1, 2, xid], self.cards(d))
+        b[xid] = b[1]
+        inp = T.engine_inputs(live, card, b)
+        self.assertIn(2, inp['newPlayers'])
+        self.assertEqual(set(inp['base']), {'1'})              # 2 有 live 列（新秀照舊）、xid 有引擎 profile，都不用底卡
+        self.assertEqual(T.engine_inputs(live, card)['base'], {})
+
+    def test_sim_uses_base_and_falls_back_to_average(self):
+        attrs = json.load(open(T.E208 / 'players-attrs.json', encoding='utf-8'))['players']
+        eng = [int(k) for k in list(attrs)[:8]]
+        jobs = [{'team': '1', 'ver': 'c', 'roster': [[p, 24.0] for p in eng] + [[900001, 24.0], [900002, 24.0]]}]
+        base = {'900001': {'src': '24-25 卡', 'ovr': 80.0, 'pos': 'PG', 'heightInches': 75.0, 'off': {a: 10.0 for a in T.ATTRS}}}
+        inp = {'attrs': T.ATTRS, 'deltas': {}, 'newPlayers': [], 'base': base, 'jobs': jobs, 'teamIds': ['1']}
+        out = T.run_sim(inp, 2, 1)
+        self.assertEqual(out['based'], [900001])               # 有底卡的人用底卡
+        self.assertEqual(out['missing'], [900002])             # 沒有底卡的人仍是聯盟平均
+
+
 class Product(unittest.TestCase):
     def test_product_invariants(self):
         p = T.RATINGS

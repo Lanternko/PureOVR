@@ -2135,3 +2135,11 @@
 - 狀態：完成（2026-11-02）。切換列原本被 site_header 的 `.wrap>.ctrl{display:none}` 藏起來（桌面手機都看不到）。15 分鐘門檻今天補回 0 人（賽季才 7–8 場）；回歸日讓 POR 52.4→41.9、DET 46.4→54.1 等（POR 是引擎認為 Morant＋Sharpe 缺陣反而較強）。每日 161–173 秒（舊 104 秒）。網站規則修改，未做樣本外檢驗。
 - 相關：E-213、E-214、L-115
 - 報告：`reports/E208-team-rating/report-minutes-return.md`
+
+### E-216
+- 日期：2026-11-02
+- 問題：（E-213 追加）上季整季缺陣、引擎卡和 live 排名都沒有的非新秀（Kyrie、Lillard、Haliburton、VanVleet 等）在球隊評分被當成平均球員。
+- 做法：`scripts/team_ratings_daily.py`（`BASE_CARDS`／`load_base_cards`／`base_profiles`，`engine_inputs` 加 `base`）、`scripts/team_ratings_sim.mjs`、`scripts/build_teams_page.py`；底卡＝最近一張有他的賽季卡（2024-25 v5 -min → 2023-24），能力值相對該卡聯盟平均加在平均 profile 上，不做年齡調整；測試 `BaseCards`；不改 src／卡片／凍結檔。
+- 狀態：完成（2026-11-02）。補 6 人（Kyrie、Lillard、Haliburton、VanVleet、Lyles、Niang），Hezonja 等無任何歷史卡仍為平均。DAL −5.8→−7.6、POR +4.1→+1.4、HOU +1.6→+0.4（今日 Net）。POR「拿掉 Morant 反而變好」仍成立：Morant 單人邊際 −4.3，與控球後場重疊只解釋約 1–2 分，交 lead。
+- 相關：E-213、E-215、L-115
+- 報告：`reports/E208-team-rating/report-missing-profiles.md`
