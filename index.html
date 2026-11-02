@@ -714,6 +714,23 @@ div.tbox{background:#1b232d}
   .ctrl.popen #posSeg{display:flex;position:absolute;left:0;top:calc(100% + 6px);z-index:20;box-shadow:0 12px 32px rgba(0,0,0,.55)}
   .ctrl.popen #posSeg button{height:38px;padding:0 13px}
 }
+/* 玻璃卡片（使用者 2026-11-02：類似 iOS 27 的玻璃特效）：卡底放隊色光暈當背景，數字格／圖表／OVR 圈改成半透明＋模糊＋高光邊 */
+.card{position:relative;border-radius:14px;border:1px solid rgba(255,255,255,.14);
+  background:
+    radial-gradient(60% 160% at 30% -20%,color-mix(in srgb,var(--card,#2b3d5c) 85%,transparent),transparent 70%),
+    radial-gradient(45% 140% at 92% 120%,color-mix(in srgb,var(--tc,var(--card,#3a4a6a)) 70%,transparent),transparent 72%),
+    linear-gradient(135deg,#1a2430,#0f1419);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.24),inset 0 -1px 0 rgba(255,255,255,.05),0 12px 32px rgba(0,0,0,.5)}
+.card .chip,.card .real .st,.card .g5,.card .g5.hc>.g5in,.card .g5.hc>.ovc{
+  background:linear-gradient(150deg,rgba(255,255,255,.15),rgba(255,255,255,.04) 55%,rgba(255,255,255,.08));
+  -webkit-backdrop-filter:blur(14px) saturate(1.7);backdrop-filter:blur(14px) saturate(1.7);
+  border:1px solid rgba(255,255,255,.17);border-radius:10px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 -1px 0 rgba(0,0,0,.25),0 4px 14px rgba(0,0,0,.22)}
+.card .g5.hc{background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+.card .ring svg circle:first-child{fill:rgba(8,11,15,.42);stroke:rgba(255,255,255,.16)}
+.card .ring svg{filter:drop-shadow(0 6px 14px rgba(0,0,0,.45));
+  background:radial-gradient(circle at 32% 24%,rgba(255,255,255,.22),transparent 42%);border-radius:50%;
+  -webkit-backdrop-filter:blur(10px) saturate(1.6);backdrop-filter:blur(10px) saturate(1.6)}
 
 .card .g5.hc{display:flex;flex-wrap:wrap;gap:12px;align-items:stretch;justify-self:stretch;overflow:visible;border:0;background:none}
 .card .g5.hc[hidden]{display:none}
@@ -1111,6 +1128,7 @@ function card(p) {
   const C = 2 * Math.PI * 48, f = Math.max(0, Math.min(1, (p.ovr - 40) / (OVR_TOP - 40)));
   const col = p.ovr >= 90 ? 'var(--g-a)' : p.ovr >= 80 ? 'var(--g-b)' : p.ovr >= 70 ? 'var(--g-c)' : p.ovr >= 60 ? 'var(--g-d)' : 'var(--g-f)';
   const chip = (lab, v, dim) => `<span class="chip${dim ? ' dim' : ''}">${lab}<i class="${gcls(grade(v))}">${grade(v)} ${Math.round(v)}</i></span>`;
+  document.getElementById('card').style.cssText = teamVars(p.team);
   document.getElementById('card').innerHTML = `
     <div class="tag" style="${teamVars(p.team)}">${headshot(p)}<div class="tnm"><span>${esc(first)}</span>${esc(last)}</div><span class="tht">${ht(p.ht)}${bioTag(p)}</span><span class="pos">${p.pos}</span><span class="rk"><small>#</small>${p.rank}</span></div>
     <div class="who">
