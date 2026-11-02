@@ -220,7 +220,9 @@ def add_masthead(html_str, current):
         import rank_view
         rank_html, rank_js = rank_view.embed()
         rank_html += "<script>if(/^#rank/.test(location.hash))document.body.dataset.view='rank'</script>"
-    s = s.replace('<div class="wrap">', CSS + header_html(current) + '\n' + rank_html + '<div class="wrap">', 1)
+    # 刷新時眉頭不跳（使用者 2026-11-03）：--tw 要等表格畫好、字型載完才量得準，首格先套上次存下的值（enrich_roster_viewer 寫入）
+    tw0 = "<script>try{const w=localStorage.getItem('bbac.tw:'+location.pathname);if(w)document.documentElement.style.setProperty('--tw',w)}catch(e){}</script>"
+    s = s.replace('<div class="wrap">', CSS + tw0 + header_html(current) + '\n' + rank_html + '<div class="wrap">', 1)
     i = s.rfind('</body>')
     tail = rank_js + JS
     return s[:i] + tail + s[i:] if i >= 0 else s + tail
