@@ -309,7 +309,7 @@ def main():
     epm_imp = {r['playerId']: {k: v for k, v in (('o', r['O']), ('d', r['D'])) if v is not None}
                for r in epm_rows}
     # 場均評分格沿用近 5 場表的五色（原本只掛在 .g5 底下）
-    er.CSS += '.chip small.rk5{font:600 .72rem var(--f-disp);color:var(--muted);margin-top:1px}.chip i.c5a{color:var(--g-a)}.chip i.c5b{color:var(--g-b)}.chip i.c5c{color:#a3abb5}.chip i.c5d{color:#f09a8c}.chip i.c5f{color:var(--g-f)}\n'
+    er.CSS += '.chip .gv{display:flex;align-items:baseline;gap:4px}.strong .chip .gv i{margin:0}.strong .chip:not(.dim) .gv{margin-top:2px}.chip small.rk5{font:600 .72rem var(--f-disp);color:var(--muted)}.chip i.c5a{color:var(--g-a)}.chip i.c5b{color:var(--g-b)}.chip i.c5c{color:#a3abb5}.chip i.c5d{color:#f09a8c}.chip i.c5f{color:var(--g-f)}\n'
     er.IMPACT_LOADER = lambda: {pid: {k: round(v, 2) for k, v in d.items()} for pid, d in epm_imp.items()}
     add_ovr_chart(live)
     for a, b in [
@@ -327,7 +327,7 @@ def main():
          "      const pool = window.GC_POOL, rk = pool.filter(x => x > v).length + 1, inPool = r.mpg >= %d, f = (rk - 1) / pool.length;\n"
          "      const cl = f < 0.2 ? 'c5a' : f < 0.4 ? 'c5b' : f < 0.6 ? 'c5c' : f < 0.8 ? 'c5d' : 'c5f';\n"
          "      const tip = GC_DEF + '。本季每場評分平均；顏色＝全聯盟名次五等分（綠高、灰中、紅低），名次人群＝場均 ≥%d 分鐘共 ' + pool.length + ' 人' + (inPool ? '' : '；他場均不到 %d 分鐘，不列名次') + (r.gc && r.gc.b != null ? '。上季 ' + gcS(r.gc.b) : '');\n"
-         "      return `<span class=\"chip\" title=\"${tip}\">場均評分<i class=\"${cl}\">${gcS(v)}</i>${inPool ? `<small class=\"rk5\">#${rk}</small>` : ''}</span>`; })()}" % (sn.POOL_MPG, sn.POOL_MPG, sn.POOL_MPG, sn.POOL_MPG)),
+         "      return `<span class=\"chip\" title=\"${tip}\">場均評分<span class=\"gv\"><i class=\"${cl}\">${gcS(v)}</i>${inPool ? `<small class=\"rk5\">#${rk}</small>` : ''}</span></span>`; })()}" % (sn.POOL_MPG, sn.POOL_MPG, sn.POOL_MPG, sn.POOL_MPG)),
         ("'在場增益'", "'場均評分'"),
     ]:
         assert er.JS.count(a) >= 1, a
