@@ -107,7 +107,7 @@ const D=JSON.parse(document.getElementById('data').textContent),T=Object.entries
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let view=(()=>{try{return localStorage.getItem('bbac.teamsView')==='c'?'c':'today'}catch(e){return 'today'}})(),sk='net',sd=-1,open=T.some(t=>t.abbr===location.hash.slice(1))?location.hash.slice(1):null;
 const CDN='https://cdn.nba.com/';
-const logo=id=>id?'<img class="lg" alt="" loading="lazy" src="'+CDN+'logos/nba/'+id+'/global/D/logo.svg" onerror="this.style.visibility='hidden'">':'<span class="lg"></span>';
+const logo=id=>id?'<img class="lg" alt="" loading="lazy" src="'+CDN+'logos/nba/'+id+'/global/D/logo.svg" onerror="this.style.visibility=\'hidden\'">':'<span class="lg"></span>';
 const av=pid=>'<span class="av">'+(pid?'<img alt="" loading="lazy" src="'+CDN+'headshots/nba/latest/260x190/'+pid+'.png" onerror="this.remove()">':'')+'</span>';
 const f1=v=>(v>=0?'+':'')+v.toFixed(1),f0=v=>v.toFixed(1);
 const cls=v=>v>=0?'pos':'neg';
