@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 
 # 標籤用年份（使用者 2026-10-29）：2027 beta＝2026-27 賽中，2026＝2025-26 正式卡
-PAGES = [('inseason', '2027 beta', 'index.html'), ('card', '2026', '2025-26.html')]
+PAGES = [('inseason', '2027 beta', './'), ('card', '2026', '2025-26.html')]
 # icon＝金色籃球（使用者 2026-10-30 從四個方向選 A）；favicon 用同一顆球、底色換頁面底色
 BALL = ('<circle cx="32" cy="32" r="22" fill="#f2c230"/><g fill="none" stroke="#1a1405" stroke-width="{w}">'
         '<path d="M10 32h44M32 10v44M17 16c8 8 8 24 0 32M47 16c-8 8-8 24 0 32"/></g>')

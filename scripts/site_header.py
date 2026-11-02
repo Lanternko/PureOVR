@@ -185,12 +185,12 @@ const sc=()=>mast.classList.toggle('scrolled',scrollY>4);addEventListener('scrol
 def header_html(current):
     return (
         '<header class="mast"><div class="mast-in">'
-        f'<a class="mbrand" href="index.html" aria-label="PureOVR 首頁"><b><span>Pure</span><i>OVR</i></b><small>{SEASON[current]}</small></a>'
+        f'<a class="mbrand" href="./" aria-label="PureOVR 首頁"><b><span>Pure</span><i>OVR</i></b><small>{SEASON[current]}</small></a>'
         '<nav class="mtabs" aria-label="主要分頁">'
         '<button type="button" class="mtab" id="mPlayers" aria-selected="true">球員</button>'
         '<span class="mtab mtab-pick" id="mPickPh">球隊</span>'
         '<span class="mind" aria-hidden="true"></span>'
-        '<a class="mtab" id="mTeams" href="index.html#rank">戰力排行</a></nav>'
+        '<a class="mtab" id="mTeams" href="./#rank">戰力排行</a></nav>'
         '<div class="macts">'
         f'<details class="mpop" id="mFilter"><summary class="micon" aria-label="篩選">{_svg("filter", 15)}</summary>'
         '<div class="mpanel"><div class="mrow"><b>位置</b><div id="mPos"></div></div></div></details>'
