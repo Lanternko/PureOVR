@@ -727,9 +727,9 @@ div.tbox{background:#1b232d}
   border:1px solid rgba(255,255,255,.17);border-radius:10px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 -1px 0 rgba(0,0,0,.25),0 4px 14px rgba(0,0,0,.22)}
 .card .g5.hc{background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
-.card .ring svg circle:first-child{fill:rgba(255,255,255,.08);stroke:rgba(255,255,255,.2)}
-.card .ring svg circle:nth-child(2){stroke-opacity:.82;filter:saturate(.8) brightness(1.1)}
-.card .ring svg{filter:drop-shadow(0 0 12px rgba(0,0,0,.32))}
+.card .ring svg{background:radial-gradient(circle closest-side,rgba(255,255,255,.08) 74%,transparent 74.6%)}
+.card .ring svg circle:first-child{fill:none;stroke:rgba(255,255,255,.2)}
+.card .ring svg circle:nth-child(2){stroke-opacity:.82;filter:saturate(.8) brightness(1.1) drop-shadow(0 0 6px rgba(0,0,0,.3))}
 /* 桌機卡片與頁首寬度跟著表格（使用者 2026-11-02）：--tw 由 JS 量 #tbl 的自然寬度，兩側各留 16px 內距 */
 @media (min-width:641px){
   html[style*="--tw"] .wrap,html[style*="--tw"] .mast-in{max-width:min(1360px,calc(var(--tw) + 32px))}
