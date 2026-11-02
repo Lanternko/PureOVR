@@ -173,6 +173,15 @@ body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰
 .mtabs .tpick summary:focus-visible,.mtab:focus-visible,.micon:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .mind{position:absolute;bottom:0;left:var(--ix,0);width:var(--iw,0);height:3px;border-radius:3px 3px 0 0;background:var(--gold);
   box-shadow:0 0 8px color-mix(in srgb,var(--gold) 50%,transparent);pointer-events:none}
+html{scrollbar-gutter:stable}  /* 排行檢視比名單短，捲軸有無不同會讓眉頭橫向位移 */
+body[data-view="rank"] .wrap{display:none}
+body:not([data-view="rank"]) #rankHost{display:none}
+body[data-view="rank"] #mFilter,body[data-view="rank"] .msearch{display:none}  /* 篩選、搜尋只對球員檢視有意義 */
+body[data-view="rank"] .mtabs #teamPick.on summary{color:var(--muted);background:none}
+.mind{view-transition-name:tab-ind}  /* 只給底線命名；.wrap 整頁快照太大 */
+.mast.vt-running .mind{transition:none!important}  /* 切檢視時由 View Transition 負責滑動，不再疊 CSS 過渡 */
+::view-transition-group(tab-ind){animation-duration:.22s;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.12s}
 .mast:not(.ready) .mind{visibility:hidden}
 .mast:not(.ready) .mtab[aria-selected="true"]{position:relative}
 .mast:not(.ready) .mtab[aria-selected="true"]::before{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:3px 3px 0 0;background:var(--gold);
@@ -232,8 +241,92 @@ body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰
   .mtabs .tpick .tpop{position:fixed;left:12px!important;right:12px;top:calc(var(--mh,96px) + 6px);width:auto}
 }
 @media (prefers-reduced-motion:reduce){.mast.ready .mind,.msearch #q{transition:none}}
-</style><header class="mast"><div class="mast-in"><a class="mbrand" href="index.html" aria-label="PureOVR 首頁"><b><span>Pure</span><i>OVR</i></b><small>2026-27</small></a><nav class="mtabs" aria-label="主要分頁"><button type="button" class="mtab" id="mPlayers" aria-selected="true">球員</button><span class="mtab mtab-pick" id="mPickPh">球隊</span><span class="mind" aria-hidden="true"></span><a class="mtab" id="mTeams" href="teams.html">戰力排行</a></nav><div class="macts"><details class="mpop" id="mFilter"><summary class="micon" title="篩選" aria-label="篩選"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.2 4h15.6a1 1 0 0 1 .78 1.63L14.5 13.2v5.3a1 1 0 0 1-.55.9l-3 1.5A1 1 0 0 1 9.5 20v-6.8L3.42 5.63A1 1 0 0 1 4.2 4z" fill="currentColor" stroke="none"/></svg><span>篩選</span></summary><div class="mpanel"><div class="mrow"><b>位置</b><div id="mPos"></div></div></div></details><details class="mpop" id="mSettings"><summary class="micon" title="設定" aria-label="設定"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>設定</span></summary><div class="mpanel"><div class="mrow"><b>賽季</b><div id="mSeason"></div></div><div class="mrow"><b>能力值顯示</b><div id="mMode"></div></div><div class="mrow"><b>版本</b><div id="mNotes"></div></div></div></details><div class="msearch"><button type="button" class="micon sbtn" title="搜尋" aria-label="搜尋"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button><div class="sbox"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div></div></div></div></header>
-<div class="wrap">
+</style><header class="mast"><div class="mast-in"><a class="mbrand" href="index.html" aria-label="PureOVR 首頁"><b><span>Pure</span><i>OVR</i></b><small>2026-27</small></a><nav class="mtabs" aria-label="主要分頁"><button type="button" class="mtab" id="mPlayers" aria-selected="true">球員</button><span class="mtab mtab-pick" id="mPickPh">球隊</span><span class="mind" aria-hidden="true"></span><a class="mtab" id="mTeams" href="index.html#rank">戰力排行</a></nav><div class="macts"><details class="mpop" id="mFilter"><summary class="micon" title="篩選" aria-label="篩選"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.2 4h15.6a1 1 0 0 1 .78 1.63L14.5 13.2v5.3a1 1 0 0 1-.55.9l-3 1.5A1 1 0 0 1 9.5 20v-6.8L3.42 5.63A1 1 0 0 1 4.2 4z" fill="currentColor" stroke="none"/></svg><span>篩選</span></summary><div class="mpanel"><div class="mrow"><b>位置</b><div id="mPos"></div></div></div></details><details class="mpop" id="mSettings"><summary class="micon" title="設定" aria-label="設定"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>設定</span></summary><div class="mpanel"><div class="mrow"><b>賽季</b><div id="mSeason"></div></div><div class="mrow"><b>能力值顯示</b><div id="mMode"></div></div><div class="mrow"><b>版本</b><div id="mNotes"></div></div></div></details><div class="msearch"><button type="button" class="micon sbtn" title="搜尋" aria-label="搜尋"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button><div class="sbox"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div></div></div></div></header>
+<div id="rankHost"></div><template id="rankTpl"><style>*{box-sizing:border-box}
+:host{display:block}
+.rkroot{color:var(--fg);font-family:var(--f-body);font-size:14px}
+.rkw{max-width:1360px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:12px}
+h1{font:800 1.9rem var(--f-disp);font-style:italic;margin:0;letter-spacing:.01em}
+h1 small{font:500 .85rem var(--f-body);font-style:normal;color:var(--muted);margin-left:10px;letter-spacing:0}
+.meta{color:var(--muted);font-size:.82rem;line-height:1.5}
+.meta b{color:var(--fg);font-weight:600}
+.warn{color:var(--gold)}
+.vctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.seg{display:flex;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.seg button{background:var(--panel);color:var(--muted);border:0;border-right:1px solid var(--line);font:600 .95rem var(--f-disp);letter-spacing:.04em;padding:7px 14px;cursor:pointer}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--gold);color:var(--gold-ink)}
+.hint{color:var(--muted);font-size:.78rem}
+button:focus-visible,th:focus-visible,tr.row:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.tbox{overflow:auto;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+thead th{background:#0a0d10;color:var(--muted);font:600 .85rem var(--f-disp);letter-spacing:.04em;padding:8px 8px;text-align:right;cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+thead th.l,td.l{text-align:left}
+thead th .zh{display:block;font:500 .68rem var(--f-body);opacity:.75}
+thead th[aria-sort]::after{content:" ▾";color:var(--gold)}
+thead th[aria-sort="ascending"]::after{content:" ▴"}
+td{padding:8px 8px;text-align:right;border-bottom:1px solid #1d242c;white-space:nowrap}
+tr.row{cursor:pointer}
+tr.row:hover td{background:#1a2128}
+tr.row.open td{background:#1d252d}
+td.rk{color:var(--muted);width:34px;text-align:center}
+td.tm{font:700 1.05rem var(--f-disp);letter-spacing:.02em}
+td.tm .tmw{display:flex;align-items:center;gap:9px}
+td.tm .lg{width:26px;height:26px;flex:none;object-fit:contain}
+td.tm .tt{min-width:0}
+td.tm small{display:block;font:500 .7rem var(--f-body);color:var(--muted);letter-spacing:0}
+td.net{font:800 1.15rem var(--f-disp)}
+.pos{color:var(--g-a)}.neg{color:var(--g-f)}
+.nb{display:inline-block;height:6px;border-radius:3px;vertical-align:middle;margin-left:8px;min-width:2px}
+.inj{color:var(--gold)}
+.det td{padding:0;background:#10151a;white-space:normal;text-align:left}
+.dg{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;padding:12px 16px 16px}
+.dg h3{margin:0 0 6px;font:700 .85rem var(--f-disp);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.dg table{font-size:.88rem}
+.dg td{padding:4px 6px;border-bottom:1px solid #1a2128;white-space:normal}
+.dg td.n{min-width:0;overflow-wrap:anywhere}
+.dg td.n{text-align:left}
+.pn{display:flex;align-items:center;gap:9px;min-width:0}
+.av{flex:none;width:34px;height:34px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line);overflow:hidden;display:block}
+.av img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 12%}
+.pn>span:last-child{min-width:0}
+.sum{grid-column:1/-1;color:var(--muted);font-size:.8rem}
+.sum b{color:var(--fg)}
+.cm{color:var(--muted);font-size:.74rem;display:block;white-space:normal;max-width:46ch}
+.cm.rt{color:var(--gold)}
+.note{color:var(--muted);font-size:.8rem;line-height:1.6;border-top:1px solid var(--line);padding-top:10px}
+@media (max-width:760px){.dg{grid-template-columns:minmax(0,1fr)}.cm{max-width:none}}
+@media (max-width:640px){
+  .rkroot{font-size:13px}
+  h1{font-size:1.5rem}
+  .hide-m,thead th .zh{display:none}
+  .dg td:not(:first-child){white-space:nowrap;font-size:.8rem}
+  .rkw{gap:10px}
+  td,thead th{padding:7px 5px}
+  td.tm{font-size:.98rem}
+  td.tm small{display:none}
+  td.tm .tmw{gap:6px}
+  td.tm .lg{width:22px;height:22px}
+  .av{width:30px;height:30px}
+  .pn{gap:7px}
+  td.net{font-size:1.05rem}
+  .nb{display:none}
+  .seg button{padding:9px 16px}
+  .vctl{gap:6px}
+}
+.msg{color:var(--muted);padding:40px 16px;text-align:center}</style><div class="rkroot"><div class="msg" id="msg">載入中…</div>
+<div class="rkw" id="rkw" hidden>
+<div><h1>戰力排行<small id="stamp"></small></h1></div>
+<div class="meta" id="meta"></div>
+<div class="vctl"><div class="seg" id="viewSeg" role="group" aria-label="名單版本"><button type="button" data-v="today" aria-pressed="true">可用</button><button type="button" data-v="c" aria-pressed="false">全員</button></div>
+<span class="hint" id="viewHint"></span></div>
+<div class="tbox"><table id="tbl"><thead><tr>
+<th data-k="rank" class="rk">#</th><th data-k="name" class="l">球隊</th><th data-k="net" aria-sort="descending">Net<span class="zh">淨效率</span></th>
+<th data-k="ortg" class="hide-m">ORtg<span class="zh">進攻</span></th><th data-k="drtg" class="hide-m">DRtg<span class="zh">防守</span></th>
+<th data-k="wpct">戰績<span class="zh">W-L</span></th><th data-k="pred">預測勝場<span class="zh">全季</span></th><th data-k="nOut">傷兵<span class="zh">Out／Doubtful</span></th>
+</tr></thead><tbody id="tb"></tbody></table></div>
+<div class="note" id="note"></div>
+</div></div></template><script>if(/^#rank/.test(location.hash))document.body.dataset.view='rank'</script><div class="wrap">
   <div class="top">
     <div class="brand"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect x="1" y="1" width="62" height="62" rx="14" fill="var(--panel)" stroke="var(--line)" stroke-width="2"/><circle cx="32" cy="32" r="22" fill="#f2c230"/><g fill="none" stroke="#1a1405" stroke-width="3.5"><path d="M10 32h44M32 10v44M17 16c8 8 8 24 0 32M47 16c-8 8-8 24 0 32"/></g></svg><h1>2026-27 <span>OVR</span> 名單</h1></div>
     
@@ -1326,6 +1419,70 @@ document.getElementById('q').oninput = e => { st.q = e.target.value; st.page = 0
 render();
 </script>
 <script>(()=>{
+const host=document.getElementById('rankHost'),tpl=document.getElementById('rankTpl');if(!host||!tpl)return;
+const root=host.attachShadow({mode:'open'});root.append(tpl.content.cloneNode(true));
+let D=null,T=[],loading=null;
+const $=s=>root.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let view=(()=>{try{return localStorage.getItem('bbac.teamsView')==='c'?'c':'today'}catch(e){return 'today'}})(),sk='net',sd=-1,open=null;
+const CDN='https://cdn.nba.com/';
+const logo=id=>id?'<img class="lg" alt="" loading="lazy" src="'+CDN+'logos/nba/'+id+'/global/D/logo.svg" onerror="this.style.visibility=\'hidden\'">':'<span class="lg"></span>';
+const av=pid=>'<span class="av">'+(pid?'<img alt="" loading="lazy" src="'+CDN+'headshots/nba/latest/260x190/'+pid+'.png" onerror="this.remove()">':'')+'</span>';
+const f1=v=>(v>=0?'+':'')+v.toFixed(1),f0=v=>v.toFixed(1);
+const cls=v=>v>=0?'pos':'neg';
+const d10=s=>s?String(s).slice(0,10):'';
+const ret=x=>{const out=x.missGames!=null,g=out?'（缺 '+x.missGames+' 場）':'';return x.returnDate?'<br><span class="cm rt">預計回 '+esc(String(x.returnDate).slice(0,10))+g+'</span>':(out?'<br><span class="cm rt">無回歸日，當整季缺陣'+g+'</span>':'')};
+function info(){
+  const i=D.injuries||{},ts=i.espnTimestamp||i.reportTime||i.fetchedAt;
+  $('#stamp').textContent='數據至 '+D.dataCutoff+'・'+D.version.replace('inseason ','');
+  $('#meta').innerHTML='傷病資料日期 <b>'+esc(ts?String(ts).slice(0,16).replace('T',' ')+(String(ts).endsWith('Z')?' UTC':''):'—')+'</b>'+(i.source?'（'+esc(i.source.toUpperCase())+'）':'')
+   +(i.stale?' <span class="warn">　今天抓不到傷病名單，沿用前一份。</span>':'')
+   +'　評分更新 <b>'+esc(D.generatedAt.slice(0,16).replace('T',' '))+'</b>'
+   +'　剩餘賽程 '+(D.schedule&&D.schedule.remainingGames?'逐場計算（NBA.com 賽程）':'<span class="warn">抓不到賽程，剩餘場次以對全聯盟平均勝率計</span>');
+  $('#viewHint').textContent=view==='today'?'排除 Out／Doubtful；依回歸日逐場模擬。':'不扣傷兵；陣容全程不變。';
+  $('#note').innerHTML='模擬評分（引擎 '+esc(D.engine)+'，名單對聯盟平均隊各打 '+D.seeds+' 場；ORtg／DRtg／Net 已扣聯盟平均）。<b>回測僅與上季淨效率打平，弱隊容易高估，僅供參考。</b>'
+   +'<br>分鐘規則：每位現役球員取他自己最近 '+D.lastN+' 場「有出場」的平均分鐘（沒上場的比賽不算，不管當時在哪隊）；候選人是該隊最近 '+D.lastN+' 場出場過的人，加上最近沒出場但自己平均 ≥'+(D.returnMin||15)+' 分鐘的人（視為傷缺復出）；前 10 人、總和 240、單人上限 48。「可用」先拿掉 Out／Doubtful（含停賽），Questionable／Day-To-Day 保留。'
+   +((D.baseProfiles||[]).length?'<br>上季整季缺陣、今年還沒有排名的人（'+D.baseProfiles.map(x=>esc(x.name)).join('、')+'）：模擬用他最近一張賽季卡的能力值（不做年齡調整），OVR 欄標「24-25 卡」等來源；沒有任何歷史卡的新人仍當聯盟平均球員。':'')
+   +'<br>預測勝場＝目前勝場＋剩餘賽程逐場勝率（主場 +'+D.H+' 分、σ='+D.sigma+'）。「可用」版依 ESPN 預計回歸日逐場換陣容：比賽日期早於回歸日就缺陣，之後回來；'
+   +((D.injuries&&D.injuries.outNoReturnDate)?'<span class="warn">目前有 '+D.injuries.outNoReturnDate+' 位缺陣者沒有回歸日（官方 PDF 備援不提供），當整季缺陣。</span>':'沒有回歸日的缺陣者當整季缺陣。')+'「全員」版不扣人、陣容全程不變。主表的 Net 是今天的陣容。';
+}
+function rows(){
+  const R=T.map(t=>({t,v:t[view]})).sort((a,b)=>b.v.net-a.v.net).map((o,i)=>({...o,rank:i+1}));
+  const val={rank:o=>o.rank,name:o=>o.t.name,net:o=>o.v.net,ortg:o=>o.v.ortg,drtg:o=>-o.v.drtg,wpct:o=>(o.t.W+o.t.L)?o.t.W/(o.t.W+o.t.L):0,pred:o=>o.v.predWins,nOut:o=>o.t.nOut};
+  R.sort((a,b)=>{const x=val[sk](a),y=val[sk](b);return (x<y?-1:x>y?1:0)*sd||a.rank-b.rank});
+  return R;
+}
+function detail(o){
+  const t=o.t,v=o.v,back=new Set((t.restored||[]).map(x=>x.pid)),rot=v.rotation.map(r=>'<tr><td class="n"><div class="pn">'+av(r.pid)+'<span>'+esc(r.name)+(back.has(r.pid)?'<span class="cm">傷缺復出：最近 10 場沒出場，自己平均 ≥'+(D.returnMin||15)+' 分</span>':'')+'</span></div></td><td>'+r.min.toFixed(1)+'</td><td>'+(r.ovr==null?'—':Math.round(r.ovr)+(r.ovrSrc?'<span class="cm">'+esc(r.ovrSrc)+'</span>':''))+'</td></tr>').join('');
+  const inj=t.injured.length?t.injured.map(x=>'<tr><td class="n"><div class="pn">'+av(x.playerId)+'<span>'+esc(x.name)+'<span class="cm">'+esc(x.comment)+'</span></span></div></td><td class="n">'+esc(x.status)+'</td><td>'+esc(d10(x.date))+ret(x)+'</td></tr>').join(''):'<tr><td class="n" colspan="3">傷病名單沒有這隊的人</td></tr>';
+  return '<div class="dg"><div class="sum"><b>'+esc(t.name)+'</b>　ORtg '+f1(v.ortg)+'・DRtg '+f1(v.drtg)+'・Net '+f1(v.net)+'・對平均隊每場 '+f1(v.margin)+' 分　剩餘賽程 '+v.schedGames+' 場逐場計算'+(v.poolGames?'、'+v.poolGames+' 場以平均勝率補':'')+(view==='today'&&v.lineupStates>1?'　傷兵回歸讓陣容分 '+v.lineupStates+' 種狀態':'')+'</div>'
+   +'<div><h3>'+(view==='today'?'可用輪替':'全員輪替')+'（分鐘／OVR）</h3><table><tbody>'+rot+'</tbody></table></div>'
+   +'<div><h3>傷病名單（狀態／資料日期／預計回歸）</h3><table><tbody>'+inj+'</tbody></table></div></div>';
+}
+function render(){
+  const R=rows(),mx=Math.max(...T.map(t=>Math.abs(t[view].net)));
+  $('#tb').innerHTML=R.map(o=>{const t=o.t,v=o.v,w=Math.round(Math.abs(v.net)/mx*46);
+    return '<tr class="row'+(open===t.abbr?' open':'')+'" data-a="'+t.abbr+'" tabindex="0"><td class="rk">'+o.rank+'</td><td class="tm l"><div class="tmw">'+logo(t.id)+'<div class="tt">'+esc(t.abbr)+'<small>'+esc(t.name)+'</small></div></div></td>'
+     +'<td class="net '+cls(v.net)+'">'+f1(v.net)+'<span class="nb" style="width:'+w+'px;background:var(--'+(v.net>=0?'g-a':'g-f')+')"></span></td>'
+     +'<td class="hide-m">'+f1(v.ortg)+'</td><td class="hide-m">'+f1(v.drtg)+'</td><td>'+t.W+'-'+t.L+'</td><td>'+f0(v.predWins)+'</td><td class="'+(t.nOut?'inj':'')+'">'+(t.nOut||'')+'</td></tr>'
+     +(open===t.abbr?'<tr class="det"><td colspan="8">'+detail(o)+'</td></tr>':'');}).join('');
+  root.querySelectorAll('#viewSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===view)));
+  root.querySelectorAll('thead th').forEach(h=>{if(h.dataset.k===sk)h.setAttribute('aria-sort',sd<0?'descending':'ascending');else h.removeAttribute('aria-sort');});
+  info();
+}
+$('#tb').addEventListener('click',e=>{const r=e.target.closest('tr.row');if(!r)return;toggle(r.dataset.a);});
+$('#tb').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){const r=e.target.closest('tr.row');if(r){e.preventDefault();toggle(r.dataset.a);$('#tb tr[data-a="'+r.dataset.a+'"]')?.focus();}}});
+$('thead').addEventListener('click',e=>{const h=e.target.closest('th');if(!h)return;const k=h.dataset.k;if(k===sk)sd=-sd;else{sk=k;sd=(k==='name'||k==='rank')?1:-1;}render();});
+$('#viewSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;view=b.dataset.v;try{localStorage.setItem('bbac.teamsView',view)}catch(_){}render();});
+
+function toggle(a){open=open===a?null:a;render();if(/^#rank/.test(location.hash))history.replaceState(null,'','#rank'+(open?'/'+open:''));}
+function ensure(){
+  if(!loading)loading=fetch('teams-data.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{
+    D=d;T=Object.entries(D.teams).map(([id,t])=>({...t,id}));$('#msg').hidden=true;$('#rkw').hidden=false;render();
+  }).catch(()=>{loading=null;$('#msg').textContent='戰力排行載入失敗，重新整理再試一次。';});
+  return loading;
+}
+window.PureRank={ensure,open(a){open=a||null;if(D)render();}};
+})()</script><script>(()=>{
 const $=s=>document.querySelector(s),mast=$('.mast');if(!mast)return;
 const tabs=$('.mtabs'),ind=$('.mind'),tp=$('#teamPick'),pos=$('#posSeg'),fb=$('#mFilter>summary');
 if(tp){$('#mPickPh').replaceWith(tp);if(location.hash==='#team'){history.replaceState(null,'',location.pathname+location.search);setTimeout(()=>tp.open=true);}}
@@ -1334,14 +1491,35 @@ const season=$('.snav .seg');if(season)$('#mSeason').append(season);
 const mode=$('#modeSeg');if(mode)$('#mMode').append(mode);
 const pn=$('.snav .pnote');if(pn)$('#mNotes').append(pn);else $('#mNotes').closest('.mrow').remove();
 const q=$('#q');if(q){$('.msearch .sbox').append(q);q.placeholder='搜尋球員或球隊';}
-const pl=$('#mPlayers');
+const pl=$('#mPlayers'),tr=$('#mTeams'),PR=window.PureRank,T0=document.title,sy={},reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const parseHash=()=>{const m=/^#rank(?:[/]([A-Za-z]{2,4}))?$/.exec(location.hash);return m?{rank:true,abbr:m[1]?m[1].toUpperCase():null}:{rank:false}};
+let view=PR&&parseHash().rank?'rank':'players';
 const sync=()=>{
-  const on=tp&&tp.classList.contains('on');pl.setAttribute('aria-selected',String(!on));
-  const t=on?tp.querySelector('summary'):pl,a=tabs.getBoundingClientRect(),r=t.getBoundingClientRect();
+  const on=tp&&tp.classList.contains('on'),rk=view==='rank';pl.setAttribute('aria-selected',String(!on&&!rk));tr.setAttribute('aria-selected',String(rk));
+  const t=rk?tr:on?tp.querySelector('summary'):pl,a=tabs.getBoundingClientRect(),r=t.getBoundingClientRect();
   ind.style.setProperty('--ix',(r.left-a.left)+'px');ind.style.setProperty('--iw',r.width+'px');mast.style.setProperty('--mh',mast.offsetHeight+'px');
   const b=pos&&pos.querySelector('[aria-pressed="true"]');fb.classList.toggle('dot',!!b&&b!==pos.firstElementChild);
 };
-pl.onclick=()=>{const b=$('#teamGrid [data-t="ALL"]');if(b&&tp.classList.contains('on'))b.click();};
+pl.onclick=()=>{const b=$('#teamGrid [data-t="ALL"]');if(b&&tp&&tp.classList.contains('on'))b.click();if(PR)go('players',true);};
+function show(v,abbr){
+  if(v==='rank'){if(abbr!==undefined)PR.open(abbr);PR.ensure();}
+  if(v===view)return;
+  sy[view]=scrollY;view=v;document.body.dataset.view=v;document.title=v==='rank'?'戰力排行 · PureOVR':T0;sync();scrollTo(0,sy[v]||0);
+}
+function go(v,push,abbr){
+  if(push&&v!==view)history.pushState(null,'',v==='rank'?'#rank':location.pathname+location.search);
+  if(v===view||!document.startViewTransition||reduce)return show(v,abbr);
+  mast.classList.add('vt-running');
+  const t=document.startViewTransition(()=>show(v,abbr));
+  t.ready.catch(()=>{});t.finished.catch(()=>{}).finally(()=>mast.classList.remove('vt-running'));
+}
+if(PR){
+  tr.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button)return;e.preventDefault();go('rank',true,null);});
+  if(tp)tp.addEventListener('click',e=>{if(view==='rank'&&e.target.closest('summary'))go('players',true);},true);
+  addEventListener('popstate',()=>{const h=parseHash();go(h.rank?'rank':'players',false,h.rank?h.abbr:undefined);});
+  document.body.dataset.view=view;if(view==='rank')document.title='戰力排行 · PureOVR';
+  const h0=parseHash();if(h0.rank){PR.open(h0.abbr);PR.ensure();}else(window.requestIdleCallback||setTimeout)(()=>PR.ensure());
+}
 const mo=new MutationObserver(sync);
 if(tp)mo.observe(tp,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
 if(pos)mo.observe(pos,{childList:true,subtree:true,attributes:true});
