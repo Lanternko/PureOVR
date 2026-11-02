@@ -546,6 +546,25 @@ function impactChips(p) {
   const q = document.getElementById('q');
   if (q && matchMedia('(max-width:640px)').matches) q.placeholder = '搜尋';
 })();
+// 桌機表格不左右捲（使用者 2026-11-03）：視窗放不下整張表時整張等比縮小（zoom），不裁掉欄位；換頁／排序重畫後重算。
+(() => {
+  const box = document.querySelector('.tbox'), tbl = document.getElementById('tbl'); if (!box || !tbl) return;
+  const mq = matchMedia('(min-width:641px)'); let busy = false;
+  function fit() {
+    if (busy) return; busy = true;
+    tbl.style.zoom = '';
+    if (mq.matches) {
+      const p = box.parentElement, cs = getComputedStyle(p);
+      box.style.width = '';
+      const avail = p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 24, w = tbl.offsetWidth;
+      if (w > avail && avail > 0) { tbl.style.zoom = (avail / w).toFixed(4); box.style.width = '100%'; }
+    } else box.style.width = '';
+    busy = false;
+  }
+  addEventListener('resize', fit); mq.addEventListener('change', fit);
+  new MutationObserver(fit).observe(tbl, {childList: true, subtree: true});
+  fit();
+})();
 // 手機表格手勢鎖方向（使用者 2026-10-29：往上滑時手會左右偏，表格跟著晃）：先移動 10px 才判方向，
 // 水平量要大於垂直 1.5 倍才算左右捲，判定後整段手勢只動那一軸。放手後照速度慣性滑行。
 // 表格自己捲只從數值格啟動（使用者 2026-10-30）：從表頭或 #／名字／OVR 欄開始的手勢上下捲整頁，不捲表格。
@@ -592,7 +611,7 @@ function impactChips(p) {
 (() => {
   const t = document.getElementById('tbl'); if (!t || !window.ResizeObserver) return;
   const de = document.documentElement;
-  const sync = () => { const w = Math.round(t.getBoundingClientRect().width); if (w > 0) de.style.setProperty('--tw', w + 'px'); };
+  const sync = () => { const w = Math.round(t.getBoundingClientRect().width / (parseFloat(t.style.zoom) || 1)); if (w > 0) de.style.setProperty('--tw', w + 'px'); };
   new ResizeObserver(sync).observe(t); sync();
 })();
 """
