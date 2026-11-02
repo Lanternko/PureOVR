@@ -158,7 +158,7 @@ td.net{font:800 1.15rem var(--f-disp)}
 <div class="wrap">
 <div><h1>球隊評分<small id="stamp"></small></h1></div>
 <div class="meta" id="meta"></div>
-<div class="vctl"><div class="seg" id="viewSeg" role="group" aria-label="名單版本"><button type="button" data-v="today" aria-pressed="true">今日陣容</button><button type="button" data-v="c" aria-pressed="false">近況</button></div>
+<div class="vctl"><div class="seg" id="viewSeg" role="group" aria-label="名單版本"><button type="button" data-v="today" aria-pressed="true">可用</button><button type="button" data-v="c" aria-pressed="false">全員</button></div>
 <span class="hint" id="viewHint"></span></div>
 <div class="tbox"><table id="tbl"><thead><tr>
 <th data-k="rank" class="rk">#</th><th data-k="name" class="l">球隊</th><th data-k="net" aria-sort="descending">Net<span class="zh">淨效率</span></th>
@@ -184,12 +184,12 @@ function info(){
    +(i.stale?' <span class="warn">　今天抓不到傷病名單，沿用前一份。</span>':'')
    +'　評分更新 <b>'+esc(D.generatedAt.slice(0,16).replace('T',' '))+'</b>'
    +'　剩餘賽程 '+(D.schedule&&D.schedule.remainingGames?'逐場計算（NBA.com 賽程）':'<span class="warn">抓不到賽程，剩餘場次以對全聯盟平均勝率計</span>');
-  $('#viewHint').textContent=view==='today'?'拿掉 Out／Doubtful 的人；預測勝場依傷兵回歸日逐場換陣容。':'不扣傷兵（含剛復出的人）；預測勝場陣容全程不變。';
+  $('#viewHint').textContent=view==='today'?'排除 Out／Doubtful；依回歸日逐場模擬。':'不扣傷兵；陣容全程不變。';
   $('#note').innerHTML='模擬評分（引擎 '+esc(D.engine)+'，名單對聯盟平均隊各打 '+D.seeds+' 場；ORtg／DRtg／Net 已扣聯盟平均）。<b>回測僅與上季淨效率打平，弱隊容易高估，僅供參考。</b>'
-   +'<br>分鐘規則：每位現役球員取他自己最近 '+D.lastN+' 場「有出場」的平均分鐘（沒上場的比賽不算，不管當時在哪隊）；候選人是該隊最近 '+D.lastN+' 場出場過的人，加上最近沒出場但自己平均 ≥'+(D.returnMin||15)+' 分鐘的人（視為傷缺復出）；前 10 人、總和 240、單人上限 48。今日陣容先拿掉 Out／Doubtful（含停賽），Questionable／Day-To-Day 保留。'
+   +'<br>分鐘規則：每位現役球員取他自己最近 '+D.lastN+' 場「有出場」的平均分鐘（沒上場的比賽不算，不管當時在哪隊）；候選人是該隊最近 '+D.lastN+' 場出場過的人，加上最近沒出場但自己平均 ≥'+(D.returnMin||15)+' 分鐘的人（視為傷缺復出）；前 10 人、總和 240、單人上限 48。「可用」先拿掉 Out／Doubtful（含停賽），Questionable／Day-To-Day 保留。'
    +((D.baseProfiles||[]).length?'<br>上季整季缺陣、今年還沒有排名的人（'+D.baseProfiles.map(x=>esc(x.name)).join('、')+'）：模擬用他最近一張賽季卡的能力值（不做年齡調整），OVR 欄標「24-25 卡」等來源；沒有任何歷史卡的新人仍當聯盟平均球員。':'')
-   +'<br>預測勝場＝目前勝場＋剩餘賽程逐場勝率（主場 +'+D.H+' 分、σ='+D.sigma+'）。「今日陣容」版依 ESPN 預計回歸日逐場換陣容：比賽日期早於回歸日就缺陣，之後回來；'
-   +((D.injuries&&D.injuries.outNoReturnDate)?'<span class="warn">目前有 '+D.injuries.outNoReturnDate+' 位缺陣者沒有回歸日（官方 PDF 備援不提供），當整季缺陣。</span>':'沒有回歸日的缺陣者當整季缺陣。')+'「近況」版不扣人、陣容全程不變。主表的 Net 是今天的陣容。';
+   +'<br>預測勝場＝目前勝場＋剩餘賽程逐場勝率（主場 +'+D.H+' 分、σ='+D.sigma+'）。「可用」版依 ESPN 預計回歸日逐場換陣容：比賽日期早於回歸日就缺陣，之後回來；'
+   +((D.injuries&&D.injuries.outNoReturnDate)?'<span class="warn">目前有 '+D.injuries.outNoReturnDate+' 位缺陣者沒有回歸日（官方 PDF 備援不提供），當整季缺陣。</span>':'沒有回歸日的缺陣者當整季缺陣。')+'「全員」版不扣人、陣容全程不變。主表的 Net 是今天的陣容。';
 }
 function rows(){
   const R=T.map(t=>({t,v:t[view]})).sort((a,b)=>b.v.net-a.v.net).map((o,i)=>({...o,rank:i+1}));
@@ -201,7 +201,7 @@ function detail(o){
   const t=o.t,v=o.v,back=new Set((t.restored||[]).map(x=>x.pid)),rot=v.rotation.map(r=>'<tr><td class="n"><div class="pn">'+av(r.pid)+'<span>'+esc(r.name)+(back.has(r.pid)?'<span class="cm">傷缺復出：最近 10 場沒出場，自己平均 ≥'+(D.returnMin||15)+' 分</span>':'')+'</span></div></td><td>'+r.min.toFixed(1)+'</td><td>'+(r.ovr==null?'—':Math.round(r.ovr)+(r.ovrSrc?'<span class="cm">'+esc(r.ovrSrc)+'</span>':''))+'</td></tr>').join('');
   const inj=t.injured.length?t.injured.map(x=>'<tr><td class="n"><div class="pn">'+av(x.playerId)+'<span>'+esc(x.name)+'<span class="cm">'+esc(x.comment)+'</span></span></div></td><td class="n">'+esc(x.status)+'</td><td>'+esc(d10(x.date))+ret(x)+'</td></tr>').join(''):'<tr><td class="n" colspan="3">傷病名單沒有這隊的人</td></tr>';
   return '<div class="dg"><div class="sum"><b>'+esc(t.name)+'</b>　ORtg '+f1(v.ortg)+'・DRtg '+f1(v.drtg)+'・Net '+f1(v.net)+'・對平均隊每場 '+f1(v.margin)+' 分　剩餘賽程 '+v.schedGames+' 場逐場計算'+(v.poolGames?'、'+v.poolGames+' 場以平均勝率補':'')+(view==='today'&&v.lineupStates>1?'　傷兵回歸讓陣容分 '+v.lineupStates+' 種狀態':'')+'</div>'
-   +'<div><h3>'+(view==='today'?'今日輪替':'近況輪替')+'（分鐘／OVR）</h3><table><tbody>'+rot+'</tbody></table></div>'
+   +'<div><h3>'+(view==='today'?'可用輪替':'全員輪替')+'（分鐘／OVR）</h3><table><tbody>'+rot+'</tbody></table></div>'
    +'<div><h3>傷病名單（狀態／資料日期／預計回歸）</h3><table><tbody>'+inj+'</tbody></table></div></div>';
 }
 function render(){
