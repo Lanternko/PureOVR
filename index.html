@@ -208,6 +208,9 @@ th.noh{cursor:default}
   .micon{width:34px;padding:0;justify-content:center}
   .micon>span{display:none}
   .mpanel{position:fixed;left:12px;right:12px;top:calc(var(--mh,96px) + 6px);min-width:0}
+  /* 舊手機規則 #posSeg{display:none}（位置要點 .pbtn 才展開）在位置列搬進篩選面板後仍生效 → 面板開了卻空的（使用者 2026-11-02） */
+  #mPos #posSeg{display:flex;position:static;box-shadow:none}
+  #mPos #posSeg button{height:36px;padding:0 13px}
   .mast .pn{top:calc(var(--mh,96px) + 6px);right:12px;width:calc(100vw - 24px)}
   .msearch .sbtn{display:inline-flex}
   .msearch .sbox{display:none;position:fixed;left:12px;right:12px;top:calc(var(--mh,96px) + 6px);z-index:20;padding:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;box-shadow:0 14px 36px rgba(0,0,0,.6)}
