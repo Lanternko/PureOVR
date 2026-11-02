@@ -26,7 +26,7 @@ h1 small{font:500 .85rem var(--f-body);font-style:normal;color:var(--muted);marg
 .meta{color:var(--muted);font-size:.82rem;line-height:1.5}
 .meta b{color:var(--fg);font-weight:600}
 .warn{color:var(--gold)}
-.ctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.vctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .seg{display:flex;border:1px solid var(--line);border-radius:3px;overflow:hidden}
 .seg button{background:var(--panel);color:var(--muted);border:0;border-right:1px solid var(--line);font:600 .95rem var(--f-disp);letter-spacing:.04em;padding:7px 14px;cursor:pointer}
 .seg button:last-child{border-right:0}
@@ -68,6 +68,7 @@ td.net{font:800 1.15rem var(--f-disp)}
 .sum{grid-column:1/-1;color:var(--muted);font-size:.8rem}
 .sum b{color:var(--fg)}
 .cm{color:var(--muted);font-size:.74rem;display:block;white-space:normal;max-width:46ch}
+.cm.rt{color:var(--gold)}
 .note{color:var(--muted);font-size:.8rem;line-height:1.6;border-top:1px solid var(--line);padding-top:10px}
 @media (max-width:760px){.dg{grid-template-columns:minmax(0,1fr)}.cm{max-width:none}}
 @media (max-width:640px){
@@ -85,14 +86,15 @@ td.net{font:800 1.15rem var(--f-disp)}
   .pn{gap:7px}
   td.net{font-size:1.05rem}
   .nb{display:none}
-  .seg button{padding:8px 12px}
+  .seg button{padding:9px 16px}
+  .vctl{gap:6px}
 }
 </style>"""
 
 BODY = """<div class="wrap">
 <div><h1>球隊評分<small id="stamp"></small></h1></div>
 <div class="meta" id="meta"></div>
-<div class="ctrl"><div class="seg" id="viewSeg" role="group" aria-label="名單版本"><button type="button" data-v="today" aria-pressed="true">今日陣容</button><button type="button" data-v="c" aria-pressed="false">近況</button></div>
+<div class="vctl"><div class="seg" id="viewSeg" role="group" aria-label="名單版本"><button type="button" data-v="today" aria-pressed="true">今日陣容</button><button type="button" data-v="c" aria-pressed="false">近況</button></div>
 <span class="hint" id="viewHint"></span></div>
 <div class="tbox"><table id="tbl"><thead><tr>
 <th data-k="rank" class="rk">#</th><th data-k="name" class="l">球隊</th><th data-k="net" aria-sort="descending">Net<span class="zh">淨效率</span></th>
@@ -112,6 +114,7 @@ const av=pid=>'<span class="av">'+(pid?'<img alt="" loading="lazy" src="'+CDN+'h
 const f1=v=>(v>=0?'+':'')+v.toFixed(1),f0=v=>v.toFixed(1);
 const cls=v=>v>=0?'pos':'neg';
 const d10=s=>s?String(s).slice(0,10):'';
+const ret=x=>{const out=x.missGames!=null,g=out?'（缺 '+x.missGames+' 場）':'';return x.returnDate?'<br><span class="cm rt">預計回 '+esc(String(x.returnDate).slice(0,10))+g+'</span>':(out?'<br><span class="cm rt">無回歸日，當整季缺陣'+g+'</span>':'')};
 function info(){
   const i=D.injuries||{},ts=i.espnTimestamp||i.reportTime||i.fetchedAt;
   $('#stamp').textContent='數據至 '+D.dataCutoff+'・'+D.version.replace('inseason ','');
@@ -119,10 +122,11 @@ function info(){
    +(i.stale?' <span class="warn">　今天抓不到傷病名單，沿用前一份。</span>':'')
    +'　評分更新 <b>'+esc(D.generatedAt.slice(0,16).replace('T',' '))+'</b>'
    +'　剩餘賽程 '+(D.schedule&&D.schedule.remainingGames?'逐場計算（NBA.com 賽程）':'<span class="warn">抓不到賽程，剩餘場次以對全聯盟平均勝率計</span>');
-  $('#viewHint').textContent=view==='today'?'拿掉 Out／Doubtful 的人，剩下的最近 10 場平均分鐘重新分配到 240。':'最近 10 場實際用人，不扣傷兵。';
+  $('#viewHint').textContent=view==='today'?'拿掉 Out／Doubtful 的人；預測勝場依傷兵回歸日逐場換陣容。':'不扣傷兵（含剛復出的人）；預測勝場陣容全程不變。';
   $('#note').innerHTML='模擬評分（引擎 '+esc(D.engine)+'，名單對聯盟平均隊各打 '+D.seeds+' 場；ORtg／DRtg／Net 已扣聯盟平均）。<b>回測僅與上季淨效率打平，弱隊容易高估，僅供參考。</b>'
-   +'<br>分鐘規則：取該隊最近 '+D.lastN+' 場實際分鐘平均，前 10 人、總和 240、單人上限 48；今日陣容先拿掉 Out／Doubtful（含停賽），Questionable／Day-To-Day 保留。'
-   +'預測勝場＝目前勝場＋剩餘賽程逐場勝率（主場 +'+D.H+' 分、σ='+D.sigma+'）；今日陣容版假設傷兵整季缺陣，所以傷兵多的隊偏低。';
+   +'<br>分鐘規則：每位現役球員取他自己最近 '+D.lastN+' 場「有出場」的平均分鐘（沒上場的比賽不算，不管當時在哪隊）；候選人是該隊最近 '+D.lastN+' 場出場過的人，加上最近沒出場但自己平均 ≥'+(D.returnMin||15)+' 分鐘的人（視為傷缺復出）；前 10 人、總和 240、單人上限 48。今日陣容先拿掉 Out／Doubtful（含停賽），Questionable／Day-To-Day 保留。'
+   +'<br>預測勝場＝目前勝場＋剩餘賽程逐場勝率（主場 +'+D.H+' 分、σ='+D.sigma+'）。「今日陣容」版依 ESPN 預計回歸日逐場換陣容：比賽日期早於回歸日就缺陣，之後回來；'
+   +((D.injuries&&D.injuries.outNoReturnDate)?'<span class="warn">目前有 '+D.injuries.outNoReturnDate+' 位缺陣者沒有回歸日（官方 PDF 備援不提供），當整季缺陣。</span>':'沒有回歸日的缺陣者當整季缺陣。')+'「近況」版不扣人、陣容全程不變。主表的 Net 是今天的陣容。';
 }
 function rows(){
   const R=T.map(t=>({t,v:t[view]})).sort((a,b)=>b.v.net-a.v.net).map((o,i)=>({...o,rank:i+1}));
@@ -131,11 +135,11 @@ function rows(){
   return R;
 }
 function detail(o){
-  const t=o.t,v=o.v,rot=v.rotation.map(r=>'<tr><td class="n"><div class="pn">'+av(r.pid)+'<span>'+esc(r.name)+'</span></div></td><td>'+r.min.toFixed(1)+'</td><td>'+(r.ovr==null?'—':Math.round(r.ovr))+'</td></tr>').join('');
-  const inj=t.injured.length?t.injured.map(x=>'<tr><td class="n"><div class="pn">'+av(x.playerId)+'<span>'+esc(x.name)+'<span class="cm">'+esc(x.comment)+'</span></span></div></td><td class="n">'+esc(x.status)+'</td><td>'+esc(d10(x.date))+(x.returnDate?'<br><span class="cm">預計回 '+esc(x.returnDate)+'</span>':'')+'</td></tr>').join(''):'<tr><td class="n" colspan="3">傷病名單沒有這隊的人</td></tr>';
-  return '<div class="dg"><div class="sum"><b>'+esc(t.name)+'</b>　ORtg '+f1(v.ortg)+'・DRtg '+f1(v.drtg)+'・Net '+f1(v.net)+'・對平均隊每場 '+f1(v.margin)+' 分　剩餘賽程 '+v.schedGames+' 場逐場計算'+(v.poolGames?'、'+v.poolGames+' 場以平均勝率補':'')+'</div>'
+  const t=o.t,v=o.v,back=new Set((t.restored||[]).map(x=>x.pid)),rot=v.rotation.map(r=>'<tr><td class="n"><div class="pn">'+av(r.pid)+'<span>'+esc(r.name)+(back.has(r.pid)?'<span class="cm">傷缺復出：最近 10 場沒出場，自己平均 ≥'+(D.returnMin||15)+' 分</span>':'')+'</span></div></td><td>'+r.min.toFixed(1)+'</td><td>'+(r.ovr==null?'—':Math.round(r.ovr))+'</td></tr>').join('');
+  const inj=t.injured.length?t.injured.map(x=>'<tr><td class="n"><div class="pn">'+av(x.playerId)+'<span>'+esc(x.name)+'<span class="cm">'+esc(x.comment)+'</span></span></div></td><td class="n">'+esc(x.status)+'</td><td>'+esc(d10(x.date))+ret(x)+'</td></tr>').join(''):'<tr><td class="n" colspan="3">傷病名單沒有這隊的人</td></tr>';
+  return '<div class="dg"><div class="sum"><b>'+esc(t.name)+'</b>　ORtg '+f1(v.ortg)+'・DRtg '+f1(v.drtg)+'・Net '+f1(v.net)+'・對平均隊每場 '+f1(v.margin)+' 分　剩餘賽程 '+v.schedGames+' 場逐場計算'+(v.poolGames?'、'+v.poolGames+' 場以平均勝率補':'')+(view==='today'&&v.lineupStates>1?'　傷兵回歸讓陣容分 '+v.lineupStates+' 種狀態':'')+'</div>'
    +'<div><h3>'+(view==='today'?'今日輪替':'近況輪替')+'（分鐘／OVR）</h3><table><tbody>'+rot+'</tbody></table></div>'
-   +'<div><h3>傷病名單（狀態／資料日期）</h3><table><tbody>'+inj+'</tbody></table></div></div>';
+   +'<div><h3>傷病名單（狀態／資料日期／預計回歸）</h3><table><tbody>'+inj+'</tbody></table></div></div>';
 }
 function render(){
   const R=rows(),mx=Math.max(...T.map(t=>Math.abs(t[view].net)));

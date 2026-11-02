@@ -2127,3 +2127,11 @@
 - 狀態：完成（2026-11-02）。`--injury-source pdf` 實測成功（04:15 ET 那份，83 人，同名球員隊伍與 ESPN 零不一致）；PDF 有 8 隊 NOT YET SUBMITTED、缺陣人數比 ESPN 少，只當備援不取代 ESPN。偏離：解析用 `-raw` 不是 `-layout`（-layout 會把列錯位）。
 - 相關：E-213、L-115
 - 報告：`reports/E208-team-rating/report-pdf-fallback.md`
+
+### E-215
+- 日期：2026-11-02
+- 問題：（E-213 追加）球隊評分分鐘只平均球員有出場的比賽、最近沒出場的現役主力（自己平均 ≥15 分）補回、預測勝場依 ESPN 回歸日逐場換陣容；手機版看不到版本切換。
+- 做法：`scripts/team_ratings_daily.py`（`own_avg`／`candidate_minutes`／`lineup_out`、逐場陣容狀態各模擬一次）、`scripts/build_teams_page.py`（切換列改 class `vctl`，傷兵顯示回歸日）、測試 `MinutesReturn`；不改 src／卡片／凍結檔／E-208 回測檔。
+- 狀態：完成（2026-11-02）。切換列原本被 site_header 的 `.wrap>.ctrl{display:none}` 藏起來（桌面手機都看不到）。15 分鐘門檻今天補回 0 人（賽季才 7–8 場）；回歸日讓 POR 52.4→41.9、DET 46.4→54.1 等（POR 是引擎認為 Morant＋Sharpe 缺陣反而較強）。每日 161–173 秒（舊 104 秒）。網站規則修改，未做樣本外檢驗。
+- 相關：E-213、E-214、L-115
+- 報告：`reports/E208-team-rating/report-minutes-return.md`

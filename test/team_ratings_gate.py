@@ -200,6 +200,70 @@ class Predict(unittest.TestCase):
         self.assertGreater(T.predict_wins(0, 0, [], margin, '0')[0], 41)
 
 
+class MinutesReturn(unittest.TestCase):
+    """spec-minutes-return：分鐘只平均有出場的比賽、15 分鐘門檻補回傷癒者、回歸日逐場切換陣容。"""
+
+    def test_only_games_played_count(self):
+        self.assertEqual(T.own_avg([0, 30, 0, 20, 0]), 25.0)             # 0 分鐘的場次不算進分母
+        self.assertIsNone(T.own_avg([0, 0]))
+        self.assertAlmostEqual(T.own_avg([48] * 5 + [10] * 10), 10.0)    # 只看最近 10 場有出場的
+        prior = [[[1, 30], [2, 20]], [[1, 0], [2, 20]], [[2, 20], [3, 10]]]
+        got, restored = T.candidate_minutes(prior)
+        self.assertEqual(got, {1: 30.0, 2: 20.0, 3: 10.0})              # 1 號缺一場、3 號只打一場，都不被 0 拉低
+        self.assertEqual(restored, set())
+
+    def test_own_log_across_teams(self):
+        prior = [[[1, 20], [2, 20]]]
+        got, _ = T.candidate_minutes(prior, logs={1: [30, 30, 20], 2: [20]})   # 1 號之前在別隊打過 → 用自己的紀錄
+        self.assertAlmostEqual(got[1], 80 / 3)
+        self.assertEqual(got[2], 20.0)
+
+    def test_return_threshold_restores_injured(self):
+        prior = [[[1, 30], [2, 20]]] * 3
+        logs = {1: [30] * 3, 2: [20] * 3, 7: [0, 28, 30], 8: [14.9, 12], 9: []}
+        roster = {1, 2, 7, 8, 9}
+        got, restored = T.candidate_minutes(prior, logs, roster)
+        self.assertEqual(restored, {7})                                  # 7 號最近沒出場但自己平均 29 ≥ 15 → 補回；8 號 13.45 不夠；9 號本季沒出場
+        self.assertAlmostEqual(got[7], 29.0)
+        self.assertNotIn(8, got); self.assertNotIn(9, got)
+        self.assertEqual(T.candidate_minutes(prior, logs, None)[1], set())   # 沒給名單就不補人
+        rot = dict(T.rotation(prior, FALLBACK, logs=logs, roster=roster))
+        self.assertIn(7, rot)
+        self.assertNotIn(7, dict(T.rotation(prior, FALLBACK, excluded={7}, logs=logs, roster=roster)))   # 今日陣容版仍可扣掉（傷兵還沒回）
+
+    def test_lineup_switches_at_return_date(self):
+        outs = [(1, '2026-11-04'), (2, '2026-11-10'), (3, None)]
+        f = lambda d: T.lineup_out(outs, d, '2026-11-02')
+        self.assertEqual(f('2026-11-03'), {1, 2, 3})                    # 回歸日前：全缺
+        self.assertEqual(f('2026-11-04'), {2, 3})                       # 回歸日當天就回來
+        self.assertEqual(f('2026-11-09'), {2, 3})
+        self.assertEqual(f('2026-11-10'), {3})
+        self.assertEqual(f('2027-04-01'), {3})                          # 沒有回歸日＝整季缺陣
+        self.assertEqual(T.lineup_out([(4, '2026-10-30')], '2026-11-02', '2026-11-02'), {4})   # ESPN 日期過期但今天仍列 Out：今天還是缺
+        self.assertEqual(T.lineup_out([(4, '2026-10-30')], '2026-11-03', '2026-11-02'), set())
+
+    def test_predict_wins_follows_lineup_by_date(self):
+        tids = ['0', '1']
+        def mg(t, d):
+            return 10.0 if (t == '0' and d is not None and d >= '2026-11-10') else 0.0     # 0 隊 11/10 起回來變強
+        rem = [(0, 1, '2026-11-03'), (0, 1, '2026-11-12')]
+        w, ng, nr = T.predict_wins(0, 0, rem, mg, '0', tids)
+        self.assertEqual((ng, nr), (2, 80))
+        early = T.margin_win_prob(0.0, True); late = T.margin_win_prob(10.0, True)
+        pool = 0.5 * (T.margin_win_prob(0.0, True) + T.margin_win_prob(0.0, False))        # 補的場次用最後狀態（d=None → 沒回來 → 0）
+        self.assertAlmostEqual(w, early + late + 80 * pool, places=9)
+        self.assertGreater(w, T.predict_wins(0, 0, rem, {'0': 0.0, '1': 0.0}, '0')[0])      # 比整季缺陣高
+        self.assertAlmostEqual(T.predict_wins(0, 0, [(0, 1)], {'0': 0.0, '1': 0.0}, '0')[0], T.predict_wins(0, 0, [(0, 1, 'x')], {'0': 0.0, '1': 0.0}, '0')[0])   # 舊的 2-tuple 仍可用
+
+    def test_page_shows_switch_and_return(self):
+        html = build_teams_page.build({'season': '2026-27', 'teams': {}, 'injuries': {}, 'schedule': {}, 'version': 'inseason x', 'dataCutoff': 'd',
+                                       'generatedAt': 'g', 'engine': 'e', 'seeds': 1, 'H': 2.5, 'sigma': 12, 'lastN': 10})
+        self.assertIn('id="viewSeg"', html)
+        self.assertNotIn('class="ctrl"', html)                  # site_header 的 CSS 有 .wrap>.ctrl{display:none}，切換列放那個 class 會整列被藏起來（桌面手機都看不到）
+        self.assertIn('預計回', html)
+        self.assertIn('無回歸日，當整季缺陣', html)
+
+
 class Header(unittest.TestCase):
     def test_header_has_team_link(self):
         for cur in ('inseason', 'card'):
@@ -230,6 +294,11 @@ class Product(unittest.TestCase):
                 self.assertAlmostEqual(sum(r['min'] for r in rot), 240.0, places=3, msg=t['name'])
                 self.assertLessEqual(max(r['min'] for r in rot), 48.0 + 1e-6)
             self.assertFalse({r['pid'] for r in t['today']['rotation']} & outs, t['name'])
+            if 'lineupStates' in t['today']:
+                self.assertGreaterEqual(t['today']['lineupStates'], 1)
+                for x in t['injured']:
+                    if 'missGames' in x:
+                        self.assertGreaterEqual(x['missGames'], 0)
 
 
 if __name__ == '__main__':
