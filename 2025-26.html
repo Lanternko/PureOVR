@@ -550,6 +550,7 @@ div.tbox{background:#1b232d}
 }
 /* team colors + headshot */
 .card .tag{background:var(--card,var(--red));box-shadow:inset 0 -7px 0 var(--tc,transparent);position:relative;min-width:230px}
+.card .tag::before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.1) 38%,transparent 39%),radial-gradient(90% 50% at 20% 0%,rgba(255,255,255,.28),transparent 70%);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.4),inset 0 3px 6px rgba(255,255,255,.35),inset 0 -14px 24px rgba(0,0,0,.28)}  /* 玻璃質感：斜向反光＋亮色內緣＋底部壓暗，白/黑/任何隊色都靠透明度疊加 */
 .tag .pos{background:var(--tc,#fff);color:#fff;position:relative;z-index:1}
 .tag .rk{position:relative;z-index:1;color:var(--ink,#fff);text-shadow:0 0 8px var(--card,#000)}
 .tag .logo{position:absolute;right:30px;top:50%;transform:translateY(-50%);height:150px;width:150px;object-fit:contain;opacity:.9;pointer-events:none}
@@ -955,7 +956,7 @@ function impactChips(p) {
     if (mq.matches) {
       const p = box.parentElement, cs = getComputedStyle(p);
       box.style.width = '';
-      const avail = p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 24, w = tbl.offsetWidth;
+      const avail = p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - (box.offsetWidth - box.clientWidth) - 2, w = tbl.offsetWidth;
       if (w > avail && avail > 0) { tbl.style.zoom = (avail / w).toFixed(4); box.style.width = '100%'; }
     } else box.style.width = '';
     busy = false;

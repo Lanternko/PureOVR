@@ -1057,7 +1057,7 @@ function impactChips(p) {
     if (mq.matches) {
       const p = box.parentElement, cs = getComputedStyle(p);
       box.style.width = '';
-      const avail = p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 24, w = tbl.offsetWidth;
+      const avail = p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - (box.offsetWidth - box.clientWidth) - 2, w = tbl.offsetWidth;
       if (w > avail && avail > 0) { tbl.style.zoom = (avail / w).toFixed(4); box.style.width = '100%'; }
     } else box.style.width = '';
     busy = false;
