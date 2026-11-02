@@ -3,12 +3,18 @@
 資料放獨立的 teams-data.json（build_teams_page.py 產生），第一次進排行（或閒置時預載）才 fetch，每日只更新傷病時不用重建 2.3 MB 的名單頁。
 網址：#rank＝排行；#rank/LAL＝展開某隊。對外 API：window.PureRank = {ensure(), open(abbr)}，檢視切換由 site_header.JS 負責。"""
 
-STYLE = """*{box-sizing:border-box}
+STYLE = """@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,700;1,800&family=Barlow+Condensed:wght@600;700&display=swap");
+*{box-sizing:border-box}
+:host{--nf:"Barlow Condensed","Arial Narrow",Impact,sans-serif}
 :host{display:block}
 .rkroot{color:var(--fg);font-family:var(--f-body);font-size:14px}
 .rkw{max-width:1360px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:12px}
-h1{font:800 1.9rem var(--f-disp);font-style:italic;margin:0;letter-spacing:.01em}
-h1 small{font:500 .85rem var(--f-body);font-style:normal;color:var(--muted);margin-left:10px;letter-spacing:0}
+@media (min-width:641px){.rkw{max-width:min(1360px,calc(var(--tw,1328px) + 32px))}}
+.hd{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:3px solid var(--fg);padding-bottom:10px}
+h1{font:italic 800 4.2rem/.85 var(--nf);text-transform:uppercase;margin:0;letter-spacing:-.01em}
+h1 span{display:block;font:600 1rem var(--f-body);font-style:normal;letter-spacing:.3em;color:var(--muted);margin-top:8px;text-transform:none}
+.stamp{white-space:nowrap;font:700 1.15rem/1.2 var(--nf);text-transform:uppercase;letter-spacing:.06em;text-align:right;color:var(--muted)}
+.stamp b{display:block;color:var(--fg);font-size:1.9rem;font-style:italic;font-weight:800}
 .meta{color:var(--muted);font-size:.82rem;line-height:1.5}
 .meta b{color:var(--fg);font-weight:600}
 .warn{color:var(--gold)}
@@ -19,32 +25,33 @@ h1 small{font:500 .85rem var(--f-body);font-style:normal;color:var(--muted);marg
 .seg button[aria-pressed="true"]{background:var(--gold);color:var(--gold-ink)}
 .hint{color:var(--muted);font-size:.78rem}
 button:focus-visible,th:focus-visible,tr.row:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
-.tbox{overflow:auto;border:1px solid var(--line);border-radius:4px;background:var(--panel)}
+.tbox{overflow:auto}
 table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
-thead th{background:#0a0d10;color:var(--muted);font:600 .85rem var(--f-disp);letter-spacing:.04em;padding:8px 8px;text-align:right;cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+thead th{background:var(--bg,#0d1014);color:var(--muted);font:600 .95rem var(--nf);text-transform:uppercase;letter-spacing:.1em;padding:10px 8px;text-align:right;cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
 thead th.l,td.l{text-align:left}
 thead th .zh{display:block;font:500 .68rem var(--f-body);opacity:.75}
-thead th[aria-sort]::after{content:" ▾";color:var(--gold)}
+thead th[aria-sort]{color:var(--fg)}
+thead th[aria-sort]::after{content:" ▾";color:var(--fg)}
 thead th[aria-sort="ascending"]::after{content:" ▴"}
-td{padding:8px 8px;text-align:right;border-bottom:1px solid #1d242c;white-space:nowrap}
+td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;font:600 1.15rem var(--nf);letter-spacing:.02em}
 tr.row{cursor:pointer}
 tr.row:hover td{background:#1a2128}
 tr.row.open td{background:#1d252d}
-td.rk{color:var(--muted);width:34px;text-align:center}
-td.tm{font:700 1.05rem var(--f-disp);letter-spacing:.02em}
+td.rk{width:84px;text-align:right;padding-right:14px;font:italic 800 3rem/1 var(--nf);letter-spacing:-.02em}
+td.tm{font:italic 800 1.9rem/1 var(--nf);text-transform:uppercase;letter-spacing:.01em}
 td.tm .tmw{display:flex;align-items:center;gap:9px}
-td.tm .lg{width:26px;height:26px;flex:none;object-fit:contain}
+td.tm .lg{width:40px;height:40px;flex:none;object-fit:contain}
 td.tm .tt{min-width:0}
-td.tm small{display:block;font:500 .7rem var(--f-body);color:var(--muted);letter-spacing:0}
-td.net{font:800 1.15rem var(--f-disp)}
+td.tm small{display:block;font:500 .74rem var(--f-body);font-style:normal;text-transform:none;color:var(--muted);letter-spacing:.04em;margin-top:3px}
+td.net{font:italic 800 2.3rem/1 var(--nf);letter-spacing:-.01em}
 .pos{color:var(--g-a)}.neg{color:var(--g-f)}
-.nb{display:inline-block;height:6px;border-radius:3px;vertical-align:middle;margin-left:8px;min-width:2px}
-.inj{color:var(--gold)}
+.inj{color:var(--g-f)}
+tbody tr.row td:not(.rk):not(.net):not(.tm){color:var(--muted)}
 .det td{padding:0;background:#10151a;white-space:normal;text-align:left}
 .dg{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;padding:12px 16px 16px}
 .dg h3{margin:0 0 6px;font:700 .85rem var(--f-disp);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .dg table{font-size:.88rem}
-.dg td{padding:4px 6px;border-bottom:1px solid #1a2128;white-space:normal}
+.dg td{padding:4px 6px;border-bottom:1px solid #1a2128;white-space:normal;font:500 .9rem var(--f-body);letter-spacing:0}
 .dg td.n{min-width:0;overflow-wrap:anywhere}
 .dg td.n{text-align:left}
 .pn{display:flex;align-items:center;gap:9px;min-width:0}
@@ -56,22 +63,25 @@ td.net{font:800 1.15rem var(--f-disp)}
 .cm{color:var(--muted);font-size:.74rem;display:block;white-space:normal;max-width:46ch}
 .cm.rt{color:var(--gold)}
 .note{color:var(--muted);font-size:.8rem;line-height:1.6;border-top:1px solid var(--line);padding-top:10px}
+@media (max-width:900px){.hide-m{display:none}}
 @media (max-width:760px){.dg{grid-template-columns:minmax(0,1fr)}.cm{max-width:none}}
 @media (max-width:640px){
   .rkroot{font-size:13px}
-  h1{font-size:1.5rem}
+  h1{font-size:2.6rem}
+  .stamp{font-size:.9rem}.stamp b{font-size:1.1rem}
+  td.rk{width:46px;font-size:2rem;padding-right:8px}
+  td.tm{font-size:1.4rem}
   .hide-m,thead th .zh{display:none}
   .dg td:not(:first-child){white-space:nowrap;font-size:.8rem}
   .rkw{gap:10px}
-  td,thead th{padding:7px 5px}
-  td.tm{font-size:.98rem}
+  td,thead th{padding:7px 4px}
+  thead th{font-size:.8rem;letter-spacing:.02em}
   td.tm small{display:none}
   td.tm .tmw{gap:6px}
-  td.tm .lg{width:22px;height:22px}
+  td.tm .lg{width:28px;height:28px}
   .av{width:30px;height:30px}
   .pn{gap:7px}
-  td.net{font-size:1.05rem}
-  .nb{display:none}
+  td.net{font-size:1.6rem}
   .seg button{padding:9px 16px}
   .vctl{gap:6px}
 }
@@ -79,7 +89,7 @@ td.net{font:800 1.15rem var(--f-disp)}
 
 BODY = """<div class="rkroot"><div class="msg" id="msg">載入中…</div>
 <div class="rkw" id="rkw" hidden>
-<div><h1>戰力排行<small id="stamp"></small></h1></div>
+<div class="hd"><h1>Power Ranking<span>戰力排行</span></h1><div class="stamp" id="stamp"></div></div>
 <div class="meta" id="meta"></div>
 <div class="vctl"><div class="seg" id="viewSeg" role="group" aria-label="名單版本"><button type="button" data-v="today" aria-pressed="true">可用</button><button type="button" data-v="c" aria-pressed="false">全員</button></div>
 <span class="hint" id="viewHint"></span></div>
@@ -106,7 +116,7 @@ const d10=s=>s?String(s).slice(0,10):'';
 const ret=x=>{const out=x.missGames!=null,g=out?'（缺 '+x.missGames+' 場）':'';return x.returnDate?'<br><span class="cm rt">預計回 '+esc(String(x.returnDate).slice(0,10))+g+'</span>':(out?'<br><span class="cm rt">無回歸日，當整季缺陣'+g+'</span>':'')};
 function info(){
   const i=D.injuries||{},ts=i.espnTimestamp||i.reportTime||i.fetchedAt;
-  $('#stamp').textContent='數據至 '+D.dataCutoff+'・'+D.version.replace('inseason ','');
+  $('#stamp').innerHTML='<b>'+esc(D.dataCutoff)+'</b>'+esc(D.version.replace('inseason ',''));
   $('#meta').innerHTML='傷病資料日期 <b>'+esc(ts?String(ts).slice(0,16).replace('T',' ')+(String(ts).endsWith('Z')?' UTC':''):'—')+'</b>'+(i.source?'（'+esc(i.source.toUpperCase())+'）':'')
    +(i.stale?' <span class="warn">　今天抓不到傷病名單，沿用前一份。</span>':'')
    +'　評分更新 <b>'+esc(D.generatedAt.slice(0,16).replace('T',' '))+'</b>'
@@ -132,10 +142,10 @@ function detail(o){
    +'<div><h3>傷病名單（狀態／資料日期／預計回歸）</h3><table><tbody>'+inj+'</tbody></table></div></div>';
 }
 function render(){
-  const R=rows(),mx=Math.max(...T.map(t=>Math.abs(t[view].net)));
-  $('#tb').innerHTML=R.map(o=>{const t=o.t,v=o.v,w=Math.round(Math.abs(v.net)/mx*46);
+  const R=rows();
+  $('#tb').innerHTML=R.map(o=>{const t=o.t,v=o.v;
     return '<tr class="row'+(open===t.abbr?' open':'')+'" data-a="'+t.abbr+'" tabindex="0"><td class="rk">'+o.rank+'</td><td class="tm l"><div class="tmw">'+logo(t.id)+'<div class="tt">'+esc(t.abbr)+'<small>'+esc(t.name)+'</small></div></div></td>'
-     +'<td class="net '+cls(v.net)+'">'+f1(v.net)+'<span class="nb" style="width:'+w+'px;background:var(--'+(v.net>=0?'g-a':'g-f')+')"></span></td>'
+     +'<td class="net '+cls(v.net)+'">'+f1(v.net)+'</td>'
      +'<td class="hide-m">'+f1(v.ortg)+'</td><td class="hide-m">'+f1(v.drtg)+'</td><td>'+t.W+'-'+t.L+'</td><td>'+f0(v.predWins)+'</td><td class="'+(t.nOut?'inj':'')+'">'+(t.nOut||'')+'</td></tr>'
      +(open===t.abbr?'<tr class="det"><td colspan="8">'+detail(o)+'</td></tr>':'');}).join('');
   root.querySelectorAll('#viewSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===view)));
