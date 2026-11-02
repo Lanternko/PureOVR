@@ -73,7 +73,7 @@ td.ovr .ob::before{content:"";position:absolute;inset:0;border-radius:inherit;pa
 }
 /* 能力值欄一樣寬（使用者 2026-10-29）：原本被中文副標長短撐開 35–67px；副標縮小讓四字（製造犯規）也放得下一行 */
 #tbl thead tr:last-child th[data-k]:not([data-k=name],[data-k=pos],[data-k=team],[data-k=ht],[data-k=ovr],[data-k=min],[data-k=gp],[data-k=dovr]){
-  width:48px;min-width:48px;box-sizing:border-box}
+  width:44px;min-width:44px;box-sizing:border-box;padding-left:2px;padding-right:2px}   /* 48→44（使用者 2026-11-02：能力值欄太寬）；四字副標 .62rem 約 40px */
 /* 分鐘／場數／較開季也固定寬（使用者 2026-10-30：表格 min-width 1060 多出來的寬度原本都分給這幾欄） */
 #tbl thead tr:last-child th:is([data-k=min],[data-k=gp]){width:46px;box-sizing:border-box}
 #tbl thead tr:last-child th[data-k=dovr]{width:54px;box-sizing:border-box}
@@ -82,7 +82,17 @@ td.ovr .ob::before{content:"";position:absolute;inset:0;border-radius:inherit;pa
 #tbl thead tr:last-child th[data-k]:not([data-k=name],[data-k=pos],[data-k=team],[data-k=ht],[data-k=ovr],[data-k=min],[data-k=gp],[data-k=dovr]) .zh{font-size:.62rem}
 /* 名字欄不再整條金底（使用者 2026-10-29：醜、被列線切得斷裂）；改深色底，只有選中列金色 */
 #tbl th.nm{background:#0a0d10;color:var(--muted)}
-#tbl td.nm{background:var(--panel);color:var(--fg);box-shadow:inset -1px 0 0 var(--line)}
+/* 球員、總評兩欄底色改成和表頭一樣黑（使用者 2026-11-02：像 x 軸標題） */
+#tbl td.nm{background:#0a0d10;color:var(--fg);box-shadow:inset -1px 0 0 var(--line)}
+#tbl tbody td.ovr{background:#0a0d10}
+/* 左邊釘住的 # 球員 總評全黑，右邊能力值格子拉淺，一黑一淺才看得出哪邊能滑（使用者 2026-11-02） */
+#tbl tbody td.no{background:#0a0d10}
+/* 選中列總評格跟名字一起變金，但紅／金框裡面維持黑（使用者 2026-11-02） */
+#tbl tbody tr.sel td.ovr,#tbl tbody tr.sel:hover td.ovr{background:var(--gold)}
+#tbl tbody tr.sel td.ovr .ob{background:#0a0d10}
+div.tbox{background:#1b232d}
+#tbl tbody td.ovr.sortcol{background:#0a0d10}
+#tbl tbody tr:hover td.ovr{background:var(--panel-2)}
 #tbl tbody tr:hover td.nm{background:var(--panel-2)}
 #tbl tbody tr.sel td.nm{background:var(--gold);color:var(--gold-ink)}
 /* 桌機名字欄固定寬（使用者 2026-11-01：表格只畫目前這頁的人，換排序時名字欄跟著當頁最長名字變寬變窄）；
@@ -111,15 +121,14 @@ td.ovr .ob::before{content:"";position:absolute;inset:0;border-radius:inherit;pa
 /* 手機表格（使用者 2026-10-29：很難用）：名字欄變窄可換行、列變矮；OVR 往右滑時釘在名字旁邊，長按不選字 */
 @media (max-width:640px){
   #tbl td{padding:5px 3px;font-size:.92rem}
-  #tbl th.nm,#tbl td.nm{width:88px;min-width:88px;max-width:88px;box-sizing:border-box;padding-left:6px}
+  #tbl th.nm,#tbl td.nm{width:76px;min-width:76px;max-width:76px;box-sizing:border-box;padding-left:6px}
   #tbl td.nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1;font-size:.86rem}
   #tbl td.no{width:28px;font-size:.78rem}
-  #tbl th[data-k="ovr"],#tbl td.ovr{position:sticky;left:88px;z-index:1;box-shadow:6px 0 6px -5px rgba(0,0,0,.7)}
+  #tbl th[data-k="ovr"],#tbl td.ovr{position:sticky;left:76px;z-index:1;box-shadow:6px 0 6px -5px rgba(0,0,0,.7)}
   #tbl th[data-k="ovr"]{z-index:2}
-  #tbl tbody td.ovr{background:var(--panel);font-size:1rem}
-  #tbl tbody td.ovr.sortcol{background:linear-gradient(rgba(255,255,255,.035),rgba(255,255,255,.035)) var(--panel)}
+  #tbl tbody td.ovr{background:#0a0d10;font-size:1rem}
+  #tbl tbody td.ovr.sortcol{background:#0a0d10}
   #tbl tbody tr:hover td.ovr{background:var(--panel-2)}
-  #tbl tbody tr.sel td.ovr{background:#253040}
   #tbl tbody{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 }
 /* team colors + headshot */

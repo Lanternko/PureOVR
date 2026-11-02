@@ -22,7 +22,7 @@ CSS = """<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=R
 .mast{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 78%,transparent);
   -webkit-backdrop-filter:saturate(180%) blur(14px);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line);transition:box-shadow .25s,border-color .25s}
 .mast.scrolled{border-bottom-color:transparent;box-shadow:0 6px 22px -10px rgba(0,0,0,.6)}
-.mast-in{display:flex;align-items:center;gap:16px;height:56px;max-width:1280px;margin:0 auto;box-sizing:border-box;
+.mast-in{display:flex;align-items:center;gap:16px;height:56px;max-width:1360px;margin:0 auto;box-sizing:border-box;
   padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
 .mbrand{display:inline-flex;align-items:baseline;gap:8px;text-decoration:none;flex:none}
 .mbrand b{font:400 1.6rem/1 "Righteous",var(--f-disp);letter-spacing:.02em;color:var(--fg)}
@@ -65,7 +65,7 @@ CSS = """<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=R
 .mrow .seg{flex:none;width:max-content}
 .mrow .seg button{height:32px;padding:0 12px;white-space:nowrap}
 .mrow .pnote summary{height:32px;box-sizing:border-box;padding:0 12px}
-.mast .pn{position:fixed;left:auto;right:max(16px,calc((100vw - 1280px)/2 + 16px));top:calc(var(--mh,57px) + 8px);width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 80px)}
+.mast .pn{position:fixed;left:auto;right:max(16px,calc((100vw - 1360px)/2 + 16px));top:calc(var(--mh,57px) + 8px);width:min(560px,calc(100vw - 32px));max-height:calc(100vh - 80px)}
 .msearch{position:relative;display:flex;align-items:center}
 .msearch .sbtn{display:none}
 .msearch .sbox{position:relative;display:flex;align-items:center}
@@ -85,6 +85,9 @@ CSS = """<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=R
   .micon{width:34px;padding:0;justify-content:center}
   .micon>span{display:none}
   .mpanel{position:fixed;left:12px;right:12px;top:calc(var(--mh,96px) + 6px);min-width:0}
+  /* 舊手機規則 #posSeg{display:none}（位置要點 .pbtn 才展開）在位置列搬進篩選面板後仍生效 → 面板開了卻空的（使用者 2026-11-02） */
+  #mPos #posSeg{display:flex;position:static;box-shadow:none}
+  #mPos #posSeg button{height:36px;padding:0 13px}
   .mast .pn{top:calc(var(--mh,96px) + 6px);right:12px;width:calc(100vw - 24px)}
   .msearch .sbtn{display:inline-flex}
   .msearch .sbox{display:none;position:fixed;left:12px;right:12px;top:calc(var(--mh,96px) + 6px);z-index:20;padding:10px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;box-shadow:0 14px 36px rgba(0,0,0,.6)}

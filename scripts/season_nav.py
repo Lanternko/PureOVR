@@ -636,7 +636,7 @@ COMMON_REPLACEMENTS = [
     ('.tbox{overflow-x:auto;', '.tbox{overflow:auto;max-height:70vh;overscroll-behavior:contain;'),
     # top:-1px：border-collapse 的半像素邊框會在表頭上緣留一條縫，捲過的列從縫裡露出來
     ('@media (prefers-reduced-motion', '''#tbl thead{position:sticky;top:-1px;z-index:3}
-@media (max-width:640px){.tbox{overscroll-behavior:none}}
+@media (max-width:640px){.tbox{overscroll-behavior:auto}}
 @media (prefers-reduced-motion'''),
     ('  card(P.find(p => p.name === st.sel) || P[0]);', '''  const lk = [st.sort, st.asc, st.pos, st.team, st.rk, st.q, st.page].join('|');
   if (lk !== listKey) { listKey = lk; document.querySelector('.tbox').scrollTop = 0; }
@@ -659,6 +659,25 @@ function tboxEdges() {
   t.classList.toggle('below', t.scrollTop + t.clientHeight < t.scrollHeight - 2);
 }
 document.querySelector('.tbox').addEventListener('scroll', tboxEdges, { passive: true });
+// 手機：同一次滑動把表格捲到頂／底時不接著帶動整頁（iOS 會接著捲）；放開後「下一次」滑動若一開始就在頂／底，才讓整頁捲（使用者 2026-11-02）
+(function () {
+  const t = document.querySelector('.tbox');
+  let y0 = 0, x0 = 0, startTop = false, startBot = false;
+  const edges = () => [t.scrollTop <= 0, t.scrollTop + t.clientHeight >= t.scrollHeight - 1];
+  t.addEventListener('touchstart', e => {
+    y0 = e.touches[0].clientY; x0 = e.touches[0].clientX;
+    [startTop, startBot] = edges();
+  }, { passive: true });
+  t.addEventListener('touchmove', e => {
+    if (innerWidth > 640 || t.classList.contains('grow') || !e.cancelable) return;
+    const dy = e.touches[0].clientY - y0, dx = e.touches[0].clientX - x0;
+    if (Math.abs(dx) > Math.abs(dy)) return;
+    const [top, bot] = edges();
+    // 這次滑動開始時已在頂／底且往外拉 → 放行給整頁
+    if ((dy > 0 && startTop) || (dy < 0 && startBot)) return;
+    if ((dy > 0 && top) || (dy < 0 && bot)) e.preventDefault();
+  }, { passive: false });
+})();
 addEventListener('resize', fitTable);
 addEventListener('load', fitTable);
 document.fonts && document.fonts.ready.then(fitTable);
