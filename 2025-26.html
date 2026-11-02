@@ -475,15 +475,13 @@ td.ovr .ob::before{content:"";position:absolute;inset:0;border-radius:inherit;pa
 #tbl th.nm{background:#0a0d10;color:var(--muted)}
 /* 球員、總評兩欄底色改成和表頭一樣黑（使用者 2026-11-02：像 x 軸標題） */
 #tbl td.nm{background:#0a0d10;color:var(--fg);box-shadow:inset -1px 0 0 var(--line)}
-#tbl tbody td.ovr{background:#0a0d10}
+/* 總評格本身不塗黑（桌機；使用者 2026-11-02：黑底蓋住金框）；手機總評格要釘住，底色在下面手機區塊 */
 /* 左邊釘住的 # 球員 總評全黑，右邊能力值格子拉淺，一黑一淺才看得出哪邊能滑（使用者 2026-11-02） */
 #tbl tbody td.no{background:#0a0d10}
 /* 選中列總評格跟名字一起變金，但紅／金框裡面維持黑（使用者 2026-11-02） */
 #tbl tbody tr.sel td.ovr,#tbl tbody tr.sel:hover td.ovr{background:var(--gold)}
 #tbl tbody tr.sel td.ovr .ob{background:#0a0d10}
 div.tbox{background:#1b232d}
-#tbl tbody td.ovr.sortcol{background:#0a0d10}
-#tbl tbody tr:hover td.ovr{background:var(--panel-2)}
 #tbl tbody tr:hover td.nm{background:var(--panel-2)}
 #tbl tbody tr.sel td.nm{background:var(--gold);color:var(--gold-ink)}
 /* 桌機名字欄固定寬（使用者 2026-11-01：表格只畫目前這頁的人，換排序時名字欄跟著當頁最長名字變寬變窄）；
@@ -491,6 +489,10 @@ div.tbox{background:#1b232d}
 @media (min-width:641px){
   #tbl th.nm,#tbl td.nm{width:200px;min-width:200px;max-width:200px;box-sizing:border-box}
   #tbl td.nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* 桌機總評左邊的位置／球隊／身高也跟 # 球員一樣黑（使用者 2026-11-02） */
+  #tbl tbody td:is(:nth-child(3),:nth-child(4),:nth-child(5)):not([colspan]){background:#0a0d10}
+  #tbl tbody tr:hover td:is(:nth-child(3),:nth-child(4),:nth-child(5)):not([colspan]){background:var(--panel-2)}
+  #tbl tbody tr.sel td:is(:nth-child(3),:nth-child(4),:nth-child(5)):not([colspan]){background:var(--gold);color:var(--gold-ink)}
 }
 /* 手機表格（使用者 2026-10-29）：拿掉 OVR 左邊的位置／球隊／身高；表格手勢由 JS 鎖方向（偏垂直就整段只上下捲，手抖不左右晃）；表頭與名字／OVR 欄的手勢捲整頁（2026-10-30） */
 @media (max-width:640px){
