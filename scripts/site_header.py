@@ -25,7 +25,7 @@ body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰
 .mast.scrolled{border-bottom-color:transparent;box-shadow:0 6px 22px -10px rgba(0,0,0,.6)}
 .mast-in{display:flex;align-items:center;gap:16px;height:56px;max-width:1360px;margin:0 auto;box-sizing:border-box;
   padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
-.mbrand{display:inline-flex;align-items:baseline;gap:8px;text-decoration:none;flex:none}
+.mbrand{display:inline-flex;align-items:baseline;gap:8px;text-decoration:none;flex:none;width:168px}  /* 固定寬：Righteous 字型晚到時分頁不會被推動 */
 .mbrand b{font:400 1.6rem/1 "Righteous",var(--f-disp);letter-spacing:.02em;color:var(--fg)}
 .mbrand b span{color:var(--muted)}
 .mbrand b i{font-style:inherit;color:var(--gold)}
@@ -39,14 +39,21 @@ body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰
 .mtab:hover,.mtabs .tpick summary:hover{color:var(--fg);background:color-mix(in srgb,var(--fg) 7%,transparent)}
 .mtab[aria-selected="true"],.mtabs .tpick.on summary{color:var(--fg);background:var(--panel)}
 .mtabs .tpick summary{border:0}
-.mtabs .tpick summary::after,.mtab-pick::after{content:"▾";font-size:.75em;opacity:.7}
-.mtabs .tpick:not(.on) summary{font-size:0;gap:0}
-.mtabs .tpick:not(.on) summary::before{content:"球隊";font-size:1.02rem}
-.mtabs .tpick:not(.on) summary::after{font-size:.78rem;margin-left:6px}
+/* 選隊沿用 #teamPick 的舊規則（ID 選擇器，手機版會把「球隊」縮成 .85rem），這裡一律用 #teamPick 蓋回，選隊前後字級相同 */
+.mtabs #teamPick summary::after,.mtab-pick::after{content:"▾";font-size:.75rem;letter-spacing:.02em;opacity:.7;margin:0}
+.mtabs #teamPick:not(.on) summary{font-size:0;gap:0}
+.mtabs #teamPick:not(.on) summary::before{content:"球隊";font-size:1.02rem;letter-spacing:.02em}
+/* 「球隊」格固定最小寬（最寬的 GSW＋隊徽約 104px），選哪隊後面的「戰力排行」都不會被推動 */
+.mtabs #teamPick summary,.mtab-pick{min-width:106px;justify-content:center}
+.mtabs #teamPick:not(.on) summary::after{margin-left:6px}
 .mtabs .tpick.on summary{border:0;color:var(--fg)}
 .mtabs .tpick summary:focus-visible,.mtab:focus-visible,.micon:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .mind{position:absolute;bottom:0;left:var(--ix,0);width:var(--iw,0);height:3px;border-radius:3px 3px 0 0;background:var(--gold);
   box-shadow:0 0 8px color-mix(in srgb,var(--gold) 50%,transparent);pointer-events:none}
+.mast:not(.ready) .mind{visibility:hidden}
+.mast:not(.ready) .mtab[aria-selected="true"]{position:relative}
+.mast:not(.ready) .mtab[aria-selected="true"]::before{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:3px 3px 0 0;background:var(--gold);
+  box-shadow:0 0 8px color-mix(in srgb,var(--gold) 50%,transparent)}
 .mast.ready .mind{transition:left .22s cubic-bezier(.2,.7,.2,1),width .22s cubic-bezier(.2,.7,.2,1)}
 .macts{display:flex;align-items:center;gap:8px;flex:none}
 .mpop{position:relative}
@@ -85,7 +92,8 @@ body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰
   .macts{margin-left:auto;gap:6px}
   .mtabs{order:10;flex-basis:100%;margin:4px 0 0}
   .mtab,.mtabs .tpick summary{height:40px;padding:0 11px;font-size:15px}
-  .mtabs .tpick:not(.on) summary::before{font-size:15px}
+  .mbrand{width:auto}
+  .mtabs #teamPick:not(.on) summary::before{font-size:15px}
   .micon{width:34px;padding:0;justify-content:center}
   .micon>span{display:none}
   .mpanel{position:fixed;left:12px;right:12px;top:calc(var(--mh,96px) + 6px);min-width:0}
@@ -107,7 +115,7 @@ body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰
 JS = """<script>(()=>{
 const $=s=>document.querySelector(s),mast=$('.mast');if(!mast)return;
 const tabs=$('.mtabs'),ind=$('.mind'),tp=$('#teamPick'),pos=$('#posSeg'),fb=$('#mFilter>summary');
-if(tp){tabs.insertBefore(tp,ind);if(location.hash==='#team'){history.replaceState(null,'',location.pathname+location.search);setTimeout(()=>tp.open=true);}}
+if(tp){$('#mPickPh').replaceWith(tp);if(location.hash==='#team'){history.replaceState(null,'',location.pathname+location.search);setTimeout(()=>tp.open=true);}}
 if(pos)$('#mPos').append(pos);
 const season=$('.snav .seg');if(season)$('#mSeason').append(season);
 const mode=$('#modeSeg');if(mode)$('#mMode').append(mode);
@@ -147,6 +155,7 @@ def header_html(current):
         f'<a class="mbrand" href="index.html" aria-label="PureOVR 首頁"><b><span>Pure</span><i>OVR</i></b><small>{SEASON[current]}</small></a>'
         '<nav class="mtabs" aria-label="主要分頁">'
         '<button type="button" class="mtab" id="mPlayers" aria-selected="true">球員</button>'
+        '<span class="mtab mtab-pick" id="mPickPh">球隊</span>'
         '<span class="mind" aria-hidden="true"></span>'
         '<a class="mtab" id="mTeams" href="teams.html">戰力排行</a></nav>'
         '<div class="macts">'
