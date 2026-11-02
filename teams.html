@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>球隊評分 · PureOVR</title><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d1014'/%3E%3Ccircle cx='32' cy='32' r='22' fill='%23f2c230'/%3E%3C/svg%3E"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap"><style>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>戰力排行 · PureOVR</title><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d1014'/%3E%3Ccircle cx='32' cy='32' r='22' fill='%23f2c230'/%3E%3C/svg%3E"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap"><style>
 :root{--bg:#0d1014;--panel:#151a20;--panel-2:#1c222a;--line:#29313b;--fg:#e8edf3;--muted:#8d9bad;--gold:#f2c230;--gold-ink:#1a1405;--red:#d8343c;
   --g-a:#5ad37f;--g-f:#e0585a;--f-disp:"Barlow Condensed","Noto Sans TC","Arial Narrow",sans-serif;--f-body:"Barlow","Noto Sans TC",system-ui,sans-serif;color-scheme:dark}
 *{box-sizing:border-box}
@@ -75,6 +75,7 @@ td.net{font:800 1.15rem var(--f-disp)}
 }
 </style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Righteous&display=swap">
 <style>
+body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰力排行兩頁之間會上下左右跳 */
 .mast{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 78%,transparent);
   -webkit-backdrop-filter:saturate(180%) blur(14px);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line);transition:box-shadow .25s,border-color .25s}
 .mast.scrolled{border-bottom-color:transparent;box-shadow:0 6px 22px -10px rgba(0,0,0,.6)}
@@ -87,13 +88,14 @@ td.net{font:800 1.15rem var(--f-disp)}
 .mbrand:hover b span{color:var(--fg)}
 .mbrand small{font:600 .78rem var(--f-disp);letter-spacing:.06em;color:var(--muted);font-variant-numeric:tabular-nums}
 .mtabs{position:relative;display:flex;align-items:center;gap:2px;margin:0 auto 0 8px}
-.mtab,.mtabs .tpick summary{appearance:none;border:0;background:none;color:var(--muted);font:600 1.02rem var(--f-body);letter-spacing:.02em;
-  padding:7px 14px;border-radius:8px;cursor:pointer;white-space:nowrap;height:auto;display:flex;align-items:center;gap:6px;transition:color .14s,background-color .14s}
+.mtab,.mtabs .tpick summary{appearance:none;box-sizing:border-box;margin:0;border:0;background:none;color:var(--muted);font:600 1.02rem/1 var(--f-body);letter-spacing:.02em;
+  height:36px;padding:0 14px;border-radius:8px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:color .14s,background-color .14s}
+.mtabs .tpick summary img{width:18px;height:18px;margin:0}
 .mtab{text-decoration:none}
 .mtab:hover,.mtabs .tpick summary:hover{color:var(--fg);background:color-mix(in srgb,var(--fg) 7%,transparent)}
 .mtab[aria-selected="true"],.mtabs .tpick.on summary{color:var(--fg);background:var(--panel)}
 .mtabs .tpick summary{border:0}
-.mtabs .tpick summary::after{content:"▾";font-size:.75em;opacity:.7}
+.mtabs .tpick summary::after,.mtab-pick::after{content:"▾";font-size:.75em;opacity:.7}
 .mtabs .tpick:not(.on) summary{font-size:0;gap:0}
 .mtabs .tpick:not(.on) summary::before{content:"球隊";font-size:1.02rem}
 .mtabs .tpick:not(.on) summary::after{font-size:.78rem;margin-left:6px}
@@ -135,9 +137,10 @@ td.net{font:800 1.15rem var(--f-disp)}
 @media (max-width:640px){
   .mast-in{flex-wrap:wrap;height:auto;padding-top:8px;padding-bottom:0;gap:0 10px}
   .mbrand b{font-size:1.4rem}
+  .mbrand{min-height:34px}  /* 和 .micon 同高：沒有右側按鈕的戰力排行頁，分頁列才不會比首頁高 */
   .macts{margin-left:auto;gap:6px}
   .mtabs{order:10;flex-basis:100%;margin:4px 0 0}
-  .mtab,.mtabs .tpick summary{padding:9px 11px 10px;font-size:15px}
+  .mtab,.mtabs .tpick summary{height:40px;padding:0 11px;font-size:15px}
   .mtabs .tpick:not(.on) summary::before{font-size:15px}
   .micon{width:34px;padding:0;justify-content:center}
   .micon>span{display:none}
@@ -154,9 +157,9 @@ td.net{font:800 1.15rem var(--f-disp)}
   .mtabs .tpick .tpop{position:fixed;left:12px!important;right:12px;top:calc(var(--mh,96px) + 6px);width:auto}
 }
 @media (prefers-reduced-motion:reduce){.mast.ready .mind,.msearch #q{transition:none}}
-</style></head><body><header class="mast"><div class="mast-in"><a class="mbrand" href="index.html" aria-label="PureOVR 首頁"><b><span>Pure</span><i>OVR</i></b><small>2026-27</small></a><nav class="mtabs" aria-label="主要分頁"><a class="mtab" id="mPlayers" href="index.html">球員</a><span class="mind" aria-hidden="true"></span><a class="mtab" id="mTeams" href="teams.html" aria-selected="true">球隊評分</a></nav></div></header>
+</style></head><body><header class="mast"><div class="mast-in"><a class="mbrand" href="index.html" aria-label="PureOVR 首頁"><b><span>Pure</span><i>OVR</i></b><small>2026-27</small></a><nav class="mtabs" aria-label="主要分頁"><a class="mtab" id="mPlayers" href="index.html">球員</a><a class="mtab mtab-pick" href="index.html#team">球隊</a><span class="mind" aria-hidden="true"></span><a class="mtab" id="mTeams" href="teams.html" aria-selected="true">戰力排行</a></nav></div></header>
 <div class="wrap">
-<div><h1>球隊評分<small id="stamp"></small></h1></div>
+<div><h1>戰力排行<small id="stamp"></small></h1></div>
 <div class="meta" id="meta"></div>
 <div class="vctl"><div class="seg" id="viewSeg" role="group" aria-label="名單版本"><button type="button" data-v="today" aria-pressed="true">可用</button><button type="button" data-v="c" aria-pressed="false">全員</button></div>
 <span class="hint" id="viewHint"></span></div>
