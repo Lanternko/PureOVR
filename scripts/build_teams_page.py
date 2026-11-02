@@ -1,5 +1,5 @@
 """球隊評分頁 teams.html（E-208 第二階段）。讀 data/season-source-2026-27/team-ratings.json（scripts/team_ratings_daily.py 產生），
-輸出單檔 HTML（資料內嵌，不連外取資料；只有 Google Fonts 字型）。眉頭用 site_header.teams_masthead，樣式沿用名單頁的色票。
+輸出單檔 HTML（資料內嵌，不連外取資料；只有 Google Fonts 字型與 NBA CDN 的隊徽、球員頭像，失敗時隱藏）。眉頭用 site_header.teams_masthead，樣式沿用名單頁的色票。
 
 用法：python -I -X utf8 scripts/build_teams_page.py <out.html> [team-ratings.json]
 """
@@ -46,6 +46,9 @@ tr.row:hover td{background:#1a2128}
 tr.row.open td{background:#1d252d}
 td.rk{color:var(--muted);width:34px;text-align:center}
 td.tm{font:700 1.05rem var(--f-disp);letter-spacing:.02em}
+td.tm .tmw{display:flex;align-items:center;gap:9px}
+td.tm .lg{width:26px;height:26px;flex:none;object-fit:contain}
+td.tm .tt{min-width:0}
 td.tm small{display:block;font:500 .7rem var(--f-body);color:var(--muted);letter-spacing:0}
 td.net{font:800 1.15rem var(--f-disp)}
 .pos{color:var(--g-a)}.neg{color:var(--g-f)}
@@ -58,6 +61,10 @@ td.net{font:800 1.15rem var(--f-disp)}
 .dg td{padding:4px 6px;border-bottom:1px solid #1a2128;white-space:normal}
 .dg td.n{min-width:0;overflow-wrap:anywhere}
 .dg td.n{text-align:left}
+.pn{display:flex;align-items:center;gap:9px;min-width:0}
+.av{flex:none;width:34px;height:34px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line);overflow:hidden;display:block}
+.av img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 12%}
+.pn>span:last-child{min-width:0}
 .sum{grid-column:1/-1;color:var(--muted);font-size:.8rem}
 .sum b{color:var(--fg)}
 .cm{color:var(--muted);font-size:.74rem;display:block;white-space:normal;max-width:46ch}
@@ -72,6 +79,10 @@ td.net{font:800 1.15rem var(--f-disp)}
   td,thead th{padding:7px 5px}
   td.tm{font-size:.98rem}
   td.tm small{display:none}
+  td.tm .tmw{gap:6px}
+  td.tm .lg{width:22px;height:22px}
+  .av{width:30px;height:30px}
+  .pn{gap:7px}
   td.net{font-size:1.05rem}
   .nb{display:none}
   .seg button{padding:8px 12px}
@@ -92,9 +103,12 @@ BODY = """<div class="wrap">
 </div>"""
 
 JS = r"""<script>(()=>{
-const D=JSON.parse(document.getElementById('data').textContent),T=Object.values(D.teams);
+const D=JSON.parse(document.getElementById('data').textContent),T=Object.entries(D.teams).map(([id,t])=>({...t,id}));
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 let view=(()=>{try{return localStorage.getItem('bbac.teamsView')==='c'?'c':'today'}catch(e){return 'today'}})(),sk='net',sd=-1,open=T.some(t=>t.abbr===location.hash.slice(1))?location.hash.slice(1):null;
+const CDN='https://cdn.nba.com/';
+const logo=id=>id?'<img class="lg" alt="" loading="lazy" src="'+CDN+'logos/nba/'+id+'/global/D/logo.svg" onerror="this.style.visibility='hidden'">':'<span class="lg"></span>';
+const av=pid=>'<span class="av">'+(pid?'<img alt="" loading="lazy" src="'+CDN+'headshots/nba/latest/260x190/'+pid+'.png" onerror="this.remove()">':'')+'</span>';
 const f1=v=>(v>=0?'+':'')+v.toFixed(1),f0=v=>v.toFixed(1);
 const cls=v=>v>=0?'pos':'neg';
 const d10=s=>s?String(s).slice(0,10):'';
@@ -117,8 +131,8 @@ function rows(){
   return R;
 }
 function detail(o){
-  const t=o.t,v=o.v,rot=v.rotation.map(r=>'<tr><td class="n">'+esc(r.name)+'</td><td>'+r.min.toFixed(1)+'</td><td>'+(r.ovr==null?'—':Math.round(r.ovr))+'</td></tr>').join('');
-  const inj=t.injured.length?t.injured.map(x=>'<tr><td class="n">'+esc(x.name)+'<span class="cm">'+esc(x.comment)+'</span></td><td class="n">'+esc(x.status)+'</td><td>'+esc(d10(x.date))+(x.returnDate?'<br><span class="cm">預計回 '+esc(x.returnDate)+'</span>':'')+'</td></tr>').join(''):'<tr><td class="n" colspan="3">傷病名單沒有這隊的人</td></tr>';
+  const t=o.t,v=o.v,rot=v.rotation.map(r=>'<tr><td class="n"><div class="pn">'+av(r.pid)+'<span>'+esc(r.name)+'</span></div></td><td>'+r.min.toFixed(1)+'</td><td>'+(r.ovr==null?'—':Math.round(r.ovr))+'</td></tr>').join('');
+  const inj=t.injured.length?t.injured.map(x=>'<tr><td class="n"><div class="pn">'+av(x.playerId)+'<span>'+esc(x.name)+'<span class="cm">'+esc(x.comment)+'</span></span></div></td><td class="n">'+esc(x.status)+'</td><td>'+esc(d10(x.date))+(x.returnDate?'<br><span class="cm">預計回 '+esc(x.returnDate)+'</span>':'')+'</td></tr>').join(''):'<tr><td class="n" colspan="3">傷病名單沒有這隊的人</td></tr>';
   return '<div class="dg"><div class="sum"><b>'+esc(t.name)+'</b>　ORtg '+f1(v.ortg)+'・DRtg '+f1(v.drtg)+'・Net '+f1(v.net)+'・對平均隊每場 '+f1(v.margin)+' 分　剩餘賽程 '+v.schedGames+' 場逐場計算'+(v.poolGames?'、'+v.poolGames+' 場以平均勝率補':'')+'</div>'
    +'<div><h3>'+(view==='today'?'今日輪替':'近況輪替')+'（分鐘／OVR）</h3><table><tbody>'+rot+'</tbody></table></div>'
    +'<div><h3>傷病名單（狀態／資料日期）</h3><table><tbody>'+inj+'</tbody></table></div></div>';
@@ -126,7 +140,7 @@ function detail(o){
 function render(){
   const R=rows(),mx=Math.max(...T.map(t=>Math.abs(t[view].net)));
   $('#tb').innerHTML=R.map(o=>{const t=o.t,v=o.v,w=Math.round(Math.abs(v.net)/mx*46);
-    return '<tr class="row'+(open===t.abbr?' open':'')+'" data-a="'+t.abbr+'" tabindex="0"><td class="rk">'+o.rank+'</td><td class="tm l">'+esc(t.abbr)+'<small>'+esc(t.name)+'</small></td>'
+    return '<tr class="row'+(open===t.abbr?' open':'')+'" data-a="'+t.abbr+'" tabindex="0"><td class="rk">'+o.rank+'</td><td class="tm l"><div class="tmw">'+logo(t.id)+'<div class="tt">'+esc(t.abbr)+'<small>'+esc(t.name)+'</small></div></div></td>'
      +'<td class="net '+cls(v.net)+'">'+f1(v.net)+'<span class="nb" style="width:'+w+'px;background:var(--'+(v.net>=0?'g-a':'g-f')+')"></span></td>'
      +'<td class="hide-m">'+f1(v.ortg)+'</td><td class="hide-m">'+f1(v.drtg)+'</td><td>'+t.W+'-'+t.L+'</td><td>'+f0(v.predWins)+'</td><td class="'+(t.nOut?'inj':'')+'">'+(t.nOut||'')+'</td></tr>'
      +(open===t.abbr?'<tr class="det"><td colspan="8">'+detail(o)+'</td></tr>':'');}).join('');
