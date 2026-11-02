@@ -1,9 +1,12 @@
 """球隊評分（E-208 第二階段）：分鐘規則、傷兵移除、姓名對應、預測勝場、頁面表頭。npm test 會跑；不跑模擬（輕量）。
 若本機有 data/season-source-2026-27/team-ratings.json，另外檢查成品：每隊兩版輪替 240 分鐘、單人 ≤48、Out／Doubtful 不在今日輪替。"""
+import datetime as dt
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
@@ -16,6 +19,7 @@ PRIOR = [[[1, 40], [2, 34], [3, 30], [4, 28], [5, 24], [6, 22], [7, 20], [8, 16]
          [[1, 38], [2, 33], [3, 31], [4, 27], [5, 25], [6, 21], [7, 19], [8, 17], [9, 15], [11, 14]],
          [[2, 35], [3, 32], [4, 29], [5, 26], [6, 23], [7, 21], [8, 18], [9, 16], [10, 13], [11, 12]]]
 FALLBACK = [[i, 20.0] for i in range(1, 15)]
+PDF_TXT = (ROOT / 'test/fixtures/injury-report-2026-11-02_04_15AM.txt').read_text(encoding='utf-8')   # 真實報告的 pdftotext -raw 輸出（6 頁）
 
 
 class Rotation(unittest.TestCase):
@@ -72,6 +76,118 @@ class Injuries(unittest.TestCase):
         m, un = T.attach_ids(items, idx)
         self.assertEqual([x['playerId'] for x in m], [203999, 1, 11, None, None])     # 同名多人對不到隊就不猜
         self.assertEqual(un, ['Jaylin Williams', 'Nobody Here'])
+
+
+class OfficialPdf(unittest.TestCase):
+    def test_name_conversion(self):
+        f = T.pdf_name_to_first_last
+        self.assertEqual(f('Holmgren, Chet'), 'Chet Holmgren')
+        self.assertEqual(f('Udeh, Jr., Ernest'), 'Ernest Udeh Jr.')
+        self.assertEqual(f('Murphy III, Trey'), 'Trey Murphy III')
+        self.assertEqual(f('de Larrea, Sergio'), 'Sergio de Larrea')
+
+    def test_parse_fixture(self):
+        d = T.parse_injury_text(PDF_TXT)
+        by = {i['name']: i for i in d['items']}
+        self.assertEqual(len(d['items']), 83)
+        self.assertEqual(d['reportTime'], '11/02/26 04:15 AM')
+        self.assertEqual(set(d['notSubmitted']), {'IND', 'BKN', 'ORL', 'BOS', 'LAL', 'GSW', 'TOR', 'LAC'})   # NOT YET SUBMITTED 的隊不產生球員
+        self.assertFalse({i['team'] for i in d['items']} & set(d['notSubmitted']))
+        self.assertEqual((by['Alex Caruso']['team'], by['Alex Caruso']['status']), ('OKC', 'Out'))
+        self.assertEqual((by['Ernest Udeh Jr.']['team'], by['Ernest Udeh Jr.']['status']), ('CLE', 'Out'))      # 後綴＋同隊沿用
+        self.assertEqual((by['Nic Claxton']['team'], by['Nic Claxton']['status']), ('CHI', 'Doubtful'))
+        self.assertEqual((by['Tim Hardaway Jr.']['team'], by['Tim Hardaway Jr.']['status']), ('MIA', 'Questionable'))
+        self.assertEqual((by['Trey Murphy III']['team'], by['Trey Murphy III']['status']), ('NOP', 'Probable'))
+        self.assertEqual(by['Caleb Martin']['status'], 'Available')
+        # 跨頁沿用隊名：第 2 頁開頭的 Veesaar、Wilson 屬於第 1 頁最後的 ATL；第 3 頁開頭的 Grant Williams 屬於第 2 頁最後的 CHA
+        self.assertEqual((by['Henri Veesaar']['team'], by['Jalen Wilson']['team']), ('ATL', 'ATL'))
+        self.assertEqual(by['Grant Williams']['team'], 'CHA')
+        self.assertEqual(by['Quinten Post']['team'], 'MEM')
+        self.assertEqual(by['Chet Holmgren']['comment'], 'Injury/Illness - Right Knee/ Injury Recovery')       # 折行的原因接回去
+        self.assertEqual(by['Jalen Williams']['team'], 'OKC')                                                 # 三個 Williams 各歸各隊
+        self.assertEqual(by['Mark Williams']['team'], 'PHX')
+        self.assertTrue(T.is_out('Doubtful') and not T.is_out(by['Caleb Martin']['status']) and not T.is_out('Probable'))
+
+    def test_eastern_time_and_urls(self):
+        utc = dt.timezone.utc
+        et = T.et_from_utc(dt.datetime(2026, 11, 2, 9, 19, tzinfo=utc))
+        self.assertEqual((et.hour, et.minute, et.utcoffset()), (4, 19, dt.timedelta(hours=-5)))
+        for args, hrs in (((2026, 7, 1, 12, 0), -4), ((2026, 11, 1, 5, 59), -4), ((2026, 11, 1, 6, 0), -5),
+                          ((2026, 3, 8, 6, 59), -5), ((2026, 3, 8, 7, 0), -4)):                              # 夏令時間兩個交界
+            self.assertEqual(T.et_from_utc(dt.datetime(*args, tzinfo=utc)).utcoffset(), dt.timedelta(hours=hrs), args)
+        urls = T.pdf_urls(et)
+        self.assertTrue(urls[0][0].endswith('/Injury-Report_2026-11-02_04_15AM.pdf'))
+        self.assertTrue(urls[1][0].endswith('_04_00AM.pdf'))
+        self.assertTrue(urls[5][0].endswith('Injury-Report_2026-11-02_03_00AM.pdf'))
+        self.assertTrue(urls[-1][0].endswith('Injury-Report_2026-10-31_04_15PM.pdf'))                       # 36 小時前、PM 格式
+        self.assertEqual(len(urls), 36 * 4 + 1)
+
+    def test_fetch_latest_walks_back_and_gives_up(self):
+        et = dt.datetime(2026, 11, 2, 4, 19, tzinfo=dt.timezone(dt.timedelta(hours=-5)))
+        calls = []
+        def fetch(url):
+            calls.append(url)
+            return b'%PDF-1.4 x' if len(calls) == 3 else None                                              # 前兩個時段 404
+        url, slot, data = T.fetch_latest_pdf(et, fetch)
+        self.assertTrue(url.endswith('_03_45AM.pdf') and data.startswith(b'%PDF'))
+        def boom(url):
+            calls.append(url)
+            raise OSError('network down')
+        calls.clear()
+        with self.assertRaises(RuntimeError):
+            T.fetch_latest_pdf(et, boom)
+        self.assertEqual(len(calls), 3)                                                                     # 連線掛掉不會把 144 個時段都試完
+        with self.assertRaises(RuntimeError):
+            T.fetch_latest_pdf(et, lambda u: None)
+
+    def run_load(self, espn, pdf_ok=True, source='auto', prev=None):
+        idx = {T.nn('Alex Caruso'): [(1, 'OKC')]}
+        with tempfile.TemporaryDirectory() as td:
+            inj = Path(td) / 'injuries.json'
+            if prev:
+                inj.write_text(json.dumps(prev), encoding='utf-8')
+            pdf_calls = []
+            def fake_pdf(now_et):
+                pdf_calls.append(1)
+                if not pdf_ok:
+                    raise RuntimeError('no pdf')
+                return 'https://x/Injury-Report_2026-11-02_04_15AM.pdf', now_et, b'%PDF'
+            with mock.patch.object(T, 'INJURIES', inj), mock.patch.object(T, 'fetch_json', espn), \
+                    mock.patch.object(T, 'fetch_latest_pdf', fake_pdf), mock.patch.object(T, 'pdf_to_text', lambda b: PDF_TXT):
+                doc = T.load_injuries(idx, True, source)
+            return doc, len(pdf_calls), json.loads(inj.read_text(encoding='utf-8')) if inj.exists() else None
+
+    def test_espn_ok_skips_pdf(self):
+        raw = {'timestamp': 't', 'injuries': [{'displayName': 'Oklahoma City Thunder', 'injuries': [
+            {'status': 'Out', 'athlete': {'displayName': 'Alex Caruso', 'team': {'abbreviation': 'OKC'}}}]}]}
+        doc, n_pdf, _ = self.run_load(lambda url: raw)
+        self.assertEqual((doc['source'], n_pdf), ('espn', 0))
+
+    def test_espn_failure_falls_back_to_pdf(self):
+        def bad(url):
+            raise OSError('espn down')
+        doc, n_pdf, saved = self.run_load(bad)
+        self.assertEqual((doc['source'], doc['stale'], n_pdf), ('nba-official-pdf', False, 1))
+        self.assertEqual(len(doc['items']), 83)
+        self.assertTrue(doc['pdfUrl'].endswith('04_15AM.pdf') and doc['reportTime'])
+        self.assertEqual(saved['source'], 'nba-official-pdf')
+        self.assertEqual([i['playerId'] for i in doc['items'] if i['name'] == 'Alex Caruso'], [1])          # 走同一個 attach_ids
+        self.assertEqual(len(doc['unmatched']), 82)
+        doc2, n2, _ = self.run_load(lambda url: {'injuries': []})                                           # 空的 ESPN 回應也算失敗
+        self.assertEqual((doc2['source'], n2), ('nba-official-pdf', 1))
+
+    def test_forced_pdf_skips_espn(self):
+        def must_not_call(url):
+            raise AssertionError('不該碰 ESPN')
+        doc, n_pdf, _ = self.run_load(must_not_call, source='pdf')
+        self.assertEqual((doc['source'], n_pdf), ('nba-official-pdf', 1))
+
+    def test_both_fail_reuses_previous(self):
+        def bad(url):
+            raise OSError('down')
+        prev = {'fetchedAt': 'old', 'source': 'espn', 'stale': False, 'items': [{'name': 'A'}], 'unmatched': []}
+        doc, n_pdf, _ = self.run_load(bad, pdf_ok=False, prev=prev)
+        self.assertEqual((doc['source'], doc['stale'], doc['fetchedAt'], n_pdf), ('espn', True, 'old', 1))
 
 
 class Predict(unittest.TestCase):

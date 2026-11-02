@@ -99,7 +99,7 @@ const f1=v=>(v>=0?'+':'')+v.toFixed(1),f0=v=>v.toFixed(1);
 const cls=v=>v>=0?'pos':'neg';
 const d10=s=>s?String(s).slice(0,10):'';
 function info(){
-  const i=D.injuries||{},ts=i.espnTimestamp||i.fetchedAt;
+  const i=D.injuries||{},ts=i.espnTimestamp||i.reportTime||i.fetchedAt;
   $('#stamp').textContent='數據至 '+D.dataCutoff+'・'+D.version.replace('inseason ','');
   $('#meta').innerHTML='傷病資料日期 <b>'+esc(ts?String(ts).slice(0,16).replace('T',' ')+(String(ts).endsWith('Z')?' UTC':''):'—')+'</b>'+(i.source?'（'+esc(i.source.toUpperCase())+'）':'')
    +(i.stale?' <span class="warn">　今天抓不到傷病名單，沿用前一份。</span>':'')

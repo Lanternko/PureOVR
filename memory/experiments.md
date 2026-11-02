@@ -2119,3 +2119,11 @@
 - 狀態：完成（2026-11-02），已發布到 gh-pages（teams.html）。每日計算 104 秒。評分仍是模擬值，E-208 回測僅與上季淨效率打平，頁面已標「僅供參考」；未做新的樣本外檢驗。偏離：官方 PDF 後備未做（沿用上次檔並標日期）。
 - 相關：E-208、E-212、R-113、L-115、L-116
 - 報告：`reports/E208-team-rating/report-site.md`
+
+### E-214
+- 日期：2026-11-02
+- 問題：（E-213 追加）ESPN 傷病名單失敗時，改用 NBA 官方傷病報告 PDF，而不是直接沿用前一份。
+- 做法：`scripts/team_ratings_daily.py` 加官方 PDF 備援（順序 ESPN → 官方 PDF → 沿用前一份；`pdftotext -raw` 解析；`--injury-source auto|espn|pdf`）；`build_teams_page.py` 傷病日期優先顯示報告時間；測試 `test/team_ratings_gate.py`＋`test/fixtures/injury-report-2026-11-02_04_15AM.txt`。不改 src／卡片／凍結檔，不新增排程。
+- 狀態：完成（2026-11-02）。`--injury-source pdf` 實測成功（04:15 ET 那份，83 人，同名球員隊伍與 ESPN 零不一致）；PDF 有 8 隊 NOT YET SUBMITTED、缺陣人數比 ESPN 少，只當備援不取代 ESPN。偏離：解析用 `-raw` 不是 `-layout`（-layout 會把列錯位）。
+- 相關：E-213、L-115
+- 報告：`reports/E208-team-rating/report-pdf-fallback.md`

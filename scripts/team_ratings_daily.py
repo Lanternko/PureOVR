@@ -1,6 +1,6 @@
 """每日傷病名單＋球隊評分（E-208 第二階段，spec: reports/E208-team-rating/spec-site.md）。
 
-流程：抓 ESPN 傷病 → 抓 NBA.com 賽程 → 組兩份分鐘（近況／今日陣容）→ 模擬（scripts/team_ratings_sim.mjs，引擎 sim 0.1.4）→ 預測勝場
+流程：抓傷病（ESPN → 官方傷病報告 PDF → 沿用前一份）→ 抓 NBA.com 賽程 → 組兩份分鐘（近況／今日陣容）→ 模擬（scripts/team_ratings_sim.mjs，引擎 sim 0.1.4）→ 預測勝場
 → 寫 data/season-source-2026-27/team-ratings.json 與 injuries.json。網頁由 build_teams_page.py 讀 team-ratings.json 建成 teams.html。
 
 分鐘規則（E-208 (c)，reports/E208-team-rating/minutes_rules.py 的 norm）：
@@ -11,7 +11,7 @@
 預測勝場＝目前勝 + 剩餘賽程逐場 Φ((marginA − marginB ± H) / σ)；H=2.5、σ=12（同 E-208）。賽程抓不到時，剩餘場次用對其他 29 隊的平均勝率。
 子程序一律 CREATE_NO_WINDOW。失敗由呼叫端（daily_inseason_update）降級成 WARNING，不擋球員頁發布。
 
-用法：python -I -X utf8 scripts/team_ratings_daily.py [live_dir] [--seeds N] [--workers N] [--no-fetch]
+用法：python -I -X utf8 scripts/team_ratings_daily.py [live_dir] [--seeds N] [--workers N] [--no-fetch] [--injury-source auto|espn|pdf]
   live_dir 預設＝publish_state.json 最後發布那天的夾（內含 ranking.csv、meta.json）。
 """
 from __future__ import annotations
@@ -31,6 +31,7 @@ import sys
 import tempfile
 import time
 import unicodedata
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -49,6 +50,18 @@ LEAGUE = ROOT / f'data/defense-seventh/{SEASON}/league.json'
 LIVE = ROOT / 'reports/ovr-inseason-2026-27/live'
 SIM = ROOT / 'scripts/team_ratings_sim.mjs'
 ESPN_URL = 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/injuries'
+# 官方傷病報告 PDF：每 15 分鐘一份，檔名 Injury-Report_<YYYY-MM-DD>_<HH_MM><AM|PM>.pdf（美東時間、12 小時制；2026-11-02 實測 04_15AM、04_00AM、03_45AM… 都在）。
+PDF_URL = 'https://ak-static.cms.nba.com/referee/injury/Injury-Report_{d}_{t}.pdf'
+PDF_LOOKBACK_H = 36
+PDFTOTEXT_FALLBACK = r'C:\Program Files\Git\mingw64\bin\pdftotext.exe'
+PDF_STATUS = ('Out', 'Doubtful', 'Questionable', 'Probable', 'Available')
+NBA_TEAMS = {'Atlanta Hawks': 'ATL', 'Boston Celtics': 'BOS', 'Brooklyn Nets': 'BKN', 'Charlotte Hornets': 'CHA', 'Chicago Bulls': 'CHI',
+             'Cleveland Cavaliers': 'CLE', 'Dallas Mavericks': 'DAL', 'Denver Nuggets': 'DEN', 'Detroit Pistons': 'DET', 'Golden State Warriors': 'GSW',
+             'Houston Rockets': 'HOU', 'Indiana Pacers': 'IND', 'LA Clippers': 'LAC', 'Los Angeles Clippers': 'LAC', 'Los Angeles Lakers': 'LAL',
+             'Memphis Grizzlies': 'MEM', 'Miami Heat': 'MIA', 'Milwaukee Bucks': 'MIL', 'Minnesota Timberwolves': 'MIN', 'New Orleans Pelicans': 'NOP',
+             'New York Knicks': 'NYK', 'Oklahoma City Thunder': 'OKC', 'Orlando Magic': 'ORL', 'Philadelphia 76ers': 'PHI', 'Phoenix Suns': 'PHX',
+             'Portland Trail Blazers': 'POR', 'Sacramento Kings': 'SAC', 'San Antonio Spurs': 'SAS', 'Toronto Raptors': 'TOR', 'Utah Jazz': 'UTA',
+             'Washington Wizards': 'WAS'}
 H, SIGMA, SEEDS, GAMES, LAST_N = 2.5, 12.0, 200, 82, 10   # H、σ 同 E-208 預註冊
 OUT_STATUS = {'out', 'doubtful', 'suspension'}            # 今日陣容拿掉的狀態（小寫）
 ESPN_ABBR = {'GS': 'GSW', 'NO': 'NOP', 'NY': 'NYK', 'SA': 'SAS', 'WSH': 'WAS', 'UTAH': 'UTA', 'PHO': 'PHX', 'BRK': 'BKN', 'CHO': 'CHA'}
@@ -150,6 +163,86 @@ def attach_ids(items: list, index: dict) -> tuple:
     return matched, unmatched
 
 
+def et_from_utc(u: dt.datetime) -> dt.datetime:
+    """UTC（aware）→ 美東時間（aware，固定偏移）。Windows 沒有 tzdata，自己算美國夏令：3 月第二個週日 02:00 起、11 月第一個週日 02:00 止。"""
+    def nth_sunday(y, m, n):
+        d = dt.date(y, m, 1)
+        return d + dt.timedelta(days=(6 - d.weekday()) % 7 + 7 * (n - 1))
+    y = u.year
+    start = dt.datetime.combine(nth_sunday(y, 3, 2), dt.time(7), dt.timezone.utc)      # 02:00 EST ＝ 07:00 UTC
+    end = dt.datetime.combine(nth_sunday(y, 11, 1), dt.time(6), dt.timezone.utc)       # 02:00 EDT ＝ 06:00 UTC
+    off = dt.timedelta(hours=-4 if start <= u < end else -5)
+    return u.astimezone(dt.timezone(off))
+
+
+def pdf_urls(now_et: dt.datetime, hours: int = PDF_LOOKBACK_H) -> list:
+    """從 now_et 往回、每 15 分鐘一個時段，最多 hours 小時。回傳 [(url, 該時段的 aware 時間), …]（新→舊）。"""
+    t = now_et.replace(minute=now_et.minute // 15 * 15, second=0, microsecond=0)
+    out = []
+    for k in range(hours * 4 + 1):
+        s = t - dt.timedelta(minutes=15 * k)
+        out.append((PDF_URL.format(d=s.strftime('%Y-%m-%d'), t=s.strftime('%I_%M%p')), s))
+    return out
+
+
+def pdf_name_to_first_last(s: str) -> str:
+    """官方 'Last, First'（含 'Udeh, Jr., Ernest'、'Murphy III, Trey'）→ 'First Last'（'Ernest Udeh Jr.'）。"""
+    parts = [x.strip() for x in s.split(',') if x.strip()]
+    if len(parts) < 2:
+        return s.strip()
+    return f"{parts[-1]} {' '.join(parts[:-1])}"
+
+
+_PDF_SKIP = re.compile(r'^(Injury Report:|Page \d+ of \d+|Game Date\b)')
+_PDF_PLAYER = re.compile(r'^(?P<name>[^,/]+(?:, [^,/]+)+?)\s+(?P<status>' + '|'.join(PDF_STATUS) + r')\b\s*(?P<reason>.*)$')
+_PDF_PREFIX = ((r'\d\d/\d\d/\d{4}', 'd'), (r'\d\d:\d\d \(ET\)', 't'), (r'[A-Z]{2,4}@[A-Z]{2,4}', 'm'))
+
+
+def parse_injury_text(text: str) -> dict:
+    """官方傷病報告 pdftotext -raw 輸出 → {'reportTime': 'MM/DD/YY HH:MM AM'|None, 'items': […], 'notSubmitted': [tricode…]}。
+    -raw 依內容串流順序輸出：隊名在該隊第一列（接在日期／時間／對戰之後）；後面的列隊名欄是空的，沿用上一個隊名，跨頁也一樣。
+    原因會折行（沒有球員名＋狀態的列）→ 接到上一位球員的原因。items 格式同 parse_espn：name（First Last）, team, teamName, status, comment…"""
+    items, not_sub, report_time = [], [], None
+    team = team_name = game_date = game_time = matchup = None
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+        m = re.match(r'Injury Report:\s*(.+)$', line)
+        if m:
+            report_time = report_time or m.group(1).strip()
+        if _PDF_SKIP.match(line):
+            continue
+        for pat, key in _PDF_PREFIX:
+            m = re.match(r'(' + pat + r')(\s+|$)', line)
+            if m:
+                v = m.group(1)
+                if key == 'd': game_date = v
+                elif key == 't': game_time = v
+                else: matchup = v
+                line = line[m.end():].strip()
+        for nm in sorted(NBA_TEAMS, key=len, reverse=True):
+            if line.startswith(nm) and (len(line) == len(nm) or line[len(nm)] == ' '):
+                team, team_name = NBA_TEAMS[nm], nm
+                line = line[len(nm):].strip()
+                break
+        if not line:
+            continue
+        if line.upper() == 'NOT YET SUBMITTED':
+            if team and team not in not_sub:
+                not_sub.append(team)
+            continue
+        m = _PDF_PLAYER.match(line)
+        if m and team:
+            items.append({'name': pdf_name_to_first_last(m.group('name')), 'team': team, 'teamName': team_name, 'status': m.group('status'),
+                          'date': game_date, 'gameTime': game_time, 'matchup': matchup, 'comment': m.group('reason').strip()})
+        elif items:
+            items[-1]['comment'] = (items[-1]['comment'] + ' ' + line).strip()
+    for it in items:
+        it['comment'] = it['comment'][:240]
+    return {'reportTime': report_time, 'items': items, 'notSubmitted': not_sub}
+
+
 # ----------------------------------------------------------------- 資料
 def mins(s: str) -> float:
     m = re.fullmatch(r'PT(\d+)M([\d.]+)S', s or '')
@@ -185,29 +278,96 @@ def fetch_json(url: str, timeout: int = 30) -> dict:
         return json.loads(r.read().decode('utf-8'))
 
 
-def load_injuries(index: dict, fetch: bool = True) -> dict:
-    """抓 ESPN 傷病並存 injuries.json。失敗：沿用上一份、標 stale。官方傷病報告 PDF 後備沒做（沒有 PDF 解析套件），見報告。"""
+def fetch_pdf(url: str, timeout: int = 20):
+    """GET 官方報告 PDF。404（該時段沒出報告）回 None；其他錯誤照丟。"""
+    req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return r.read()
+    except urllib.error.HTTPError as e:
+        if e.code in (403, 404):
+            return None
+        raise
+
+
+def fetch_latest_pdf(now_et: dt.datetime, fetch=None) -> tuple:
+    """往回找最近一份存在的報告 → (url, 時段時間, bytes)。連續 3 次非 404 的錯誤（網路不通）就放棄，不把 144 個時段都試完。"""
+    fetch = fetch or fetch_pdf
+    errs = 0
+    for url, slot in pdf_urls(now_et):
+        try:
+            data = fetch(url)
+        except Exception as e:  # noqa: BLE001
+            errs += 1
+            log.debug('PDF %s：%s', url, e)
+            if errs >= 3:
+                raise RuntimeError(f'官方 PDF 連續 {errs} 次連線失敗（{e}）') from e
+            continue
+        errs = 0
+        if data and data[:4] == b'%PDF':
+            return url, slot, data
+    raise RuntimeError(f'往回 {PDF_LOOKBACK_H} 小時找不到官方傷病報告 PDF')
+
+
+def pdftotext_exe() -> str:
+    for c in (shutil.which('pdftotext'), PDFTOTEXT_FALLBACK):
+        if c and Path(c).exists():
+            return c
+    raise RuntimeError('找不到 pdftotext')
+
+
+def pdf_to_text(data: bytes) -> str:
+    with tempfile.TemporaryDirectory() as td:
+        src = Path(td) / 'r.pdf'
+        src.write_bytes(data)
+        r = subprocess.run([pdftotext_exe(), '-raw', '-enc', 'UTF-8', str(src), '-'], capture_output=True, timeout=60,
+                           creationflags=CREATE_NO_WINDOW, stdin=subprocess.DEVNULL)
+        if r.returncode != 0:
+            raise RuntimeError(f'pdftotext exit={r.returncode}：{r.stderr.decode("utf-8", "replace").strip()[-200:]}')
+        return r.stdout.decode('utf-8', 'replace')
+
+
+def load_injuries(index: dict, fetch: bool = True, source: str = 'auto') -> dict:
+    """傷病名單並存 injuries.json。順序：ESPN → 官方傷病報告 PDF → 沿用前一份（標 stale）。
+    ESPN 成功時不抓 PDF。source＝'pdf' 強制只走 PDF（驗證用）、'espn' 只走 ESPN。"""
     prev = {}
     try:
         prev = json.loads(INJURIES.read_text(encoding='utf-8'))
     except Exception:
         pass
     now = dt.datetime.now().astimezone().isoformat(timespec='seconds')
-    if fetch:
+
+    def save(doc):
+        INJURIES.parent.mkdir(parents=True, exist_ok=True)
+        INJURIES.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+        if doc['unmatched']:
+            log.info('傷病名單 %d 人對不上球員（多半本季還沒上場）：%s', len(doc['unmatched']), '、'.join(doc['unmatched'][:30]))
+        return doc
+
+    if fetch and source in ('auto', 'espn'):
         try:
             raw = fetch_json(ESPN_URL)
             items = parse_espn(raw)
             if not items:
                 raise RuntimeError('ESPN 傷病名單是空的')
             matched, unmatched = attach_ids(items, index)
-            doc = {'fetchedAt': now, 'source': 'espn', 'espnTimestamp': raw.get('timestamp'), 'stale': False, 'items': matched, 'unmatched': unmatched}
-            INJURIES.parent.mkdir(parents=True, exist_ok=True)
-            INJURIES.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
-            if unmatched:
-                log.info('傷病名單 %d 人對不上球員（多半本季還沒上場）：%s', len(unmatched), '、'.join(unmatched[:30]))
-            return doc
+            return save({'fetchedAt': now, 'source': 'espn', 'espnTimestamp': raw.get('timestamp'), 'stale': False, 'items': matched, 'unmatched': unmatched})
         except Exception as e:  # noqa: BLE001
-            log.warning('ESPN 傷病抓取失敗（%s）；沿用前一份', e)
+            log.warning('ESPN 傷病抓取失敗（%s）%s', e, '；改用官方傷病報告 PDF' if source == 'auto' else '')
+    if fetch and source in ('auto', 'pdf'):
+        try:
+            url, slot, data = fetch_latest_pdf(et_from_utc(dt.datetime.now(dt.timezone.utc)))
+            parsed = parse_injury_text(pdf_to_text(data))
+            if not parsed['items']:
+                raise RuntimeError('官方 PDF 解析不出任何球員')
+            matched, unmatched = attach_ids(parsed['items'], index)
+            if parsed['notSubmitted']:
+                log.info('官方報告尚未提交的球隊：%s', '、'.join(parsed['notSubmitted']))
+            return save({'fetchedAt': now, 'source': 'nba-official-pdf', 'espnTimestamp': None, 'stale': False, 'pdfUrl': url,
+                         'reportTime': slot.isoformat(timespec='seconds'), 'reportHeader': parsed['reportTime'], 'notSubmitted': parsed['notSubmitted'],
+                         'items': matched, 'unmatched': unmatched})
+        except Exception as e:  # noqa: BLE001
+            log.warning('官方傷病報告 PDF 失敗（%s）；沿用前一份', e)
     if prev.get('items') is not None:
         prev['stale'] = True
         return prev
@@ -282,7 +442,7 @@ def read_csv(p: Path) -> list:
     return list(csv.DictReader(open(p, encoding='utf-8')))
 
 
-def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = True) -> dict:
+def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = True, injury_source: str = 'auto') -> dict:
     t0 = time.time()
     meta = json.loads((live_dir / 'meta.json').read_text(encoding='utf-8'))
     rows = read_csv(live_dir / 'ranking.csv')
@@ -303,7 +463,7 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
     index: dict = collections.defaultdict(list)
     for pid, nm in pname.items():
         index[nn(nm)].append((pid, tri.get(live_team.get(pid) or '', '')))
-    inj = load_injuries(index, fetch)
+    inj = load_injuries(index, fetch, injury_source)
     out_pids = collections.defaultdict(set); all_inj = collections.defaultdict(list)
     for it in inj['items']:
         tid = tri2tid.get(it['team'])
@@ -370,7 +530,7 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
         out_teams[tid] = rec
     doc = {'generatedAt': dt.datetime.now().astimezone().isoformat(timespec='seconds'), 'season': SEASON, 'version': meta.get('version'),
            'dataCutoff': meta.get('dataCutoff'), 'engine': 'sim 0.1.4', 'seeds': seeds, 'H': H, 'sigma': SIGMA, 'lastN': LAST_N,
-           'gamesPlayed': len(lg), 'injuries': {k: inj.get(k) for k in ('fetchedAt', 'source', 'espnTimestamp', 'stale', 'unmatched')},
+           'gamesPlayed': len(lg), 'injuries': {k: inj.get(k) for k in ('fetchedAt', 'source', 'espnTimestamp', 'reportTime', 'pdfUrl', 'stale', 'unmatched')},
            'schedule': {'fetchedAt': sch.get('fetchedAt'), 'source': sch.get('source'), 'remainingGames': len(remaining)},
            'missingProfiles': sim['missing'], 'elapsedSec': round(time.time() - t0, 1), 'teams': out_teams}
     RATINGS.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
@@ -388,10 +548,11 @@ def main(argv=None) -> int:
     ap.add_argument('--seeds', type=int, default=SEEDS)
     ap.add_argument('--workers', type=int, default=8)
     ap.add_argument('--no-fetch', action='store_true')
+    ap.add_argument('--injury-source', choices=('auto', 'espn', 'pdf'), default='auto', help='auto＝ESPN→官方 PDF→沿用前一份；pdf＝強制只走官方 PDF（驗證用）')
     a = ap.parse_args(argv)
     if not log.handlers:
         logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
-    d = compute(Path(a.live_dir) if a.live_dir else default_live_dir(), a.seeds, a.workers, not a.no_fetch)
+    d = compute(Path(a.live_dir) if a.live_dir else default_live_dir(), a.seeds, a.workers, not a.no_fetch, a.injury_source)
     print(f"done {d['elapsedSec']}s, teams={len(d['teams'])}")
     return 0
 
