@@ -471,9 +471,9 @@ const sg1 = v => (v > 0 ? '+' : '') + v.toFixed(1);
 const gcS = v => Math.max(0, v).toFixed(1); // Z1（E-169，M6 加分改 S 形）：資料端已是 0–10 評分
 const GC_DEF = '評分 0–10（M6 S 形）：整場貢獻：box score＋防守對位＋在場正負值＋扛出手量加分（比平均多投又維持效率會加分，扛越多及格線越低，效率越接近及格線加分越平滑地變多）；上場越久影響越大；上場很短時往聯盟平均拉回。5.8＝聯盟平均單場，10 約是單場前 6%。正負值會沾到隊友與對手的運氣';
 const gcCls = (d, [a, b]) => d >= b ? 'c5a' : d >= a ? 'c5b' : d > -a ? 'c5c' : d > -b ? 'c5d' : 'c5f';
-function gcCell(v, b, cut, fb) {
+function gcCell(v, b, cut, fb, tip) {
   if (v == null) return '<td>—</td>';
-  return `<td${fb ? ' title="這場抓不到防守對位資料，只用 box score 算"' : ''}><span class="${b == null ? '' : gcCls(v - b, cut)}">${gcS(v)}${fb ? '*' : ''}</span></td>`;
+  return `<td${tip ? ` title="${tip}"` : fb ? ' title="這場抓不到防守對位資料，只用 box score 算"' : ''}><span class="${b == null ? '' : gcCls(v - b, cut)}">${gcS(v)}${fb ? '*' : ''}</span></td>`;
 }
 function gcNote(r, p, n) {
   const c = r.gc;
@@ -484,13 +484,30 @@ function gcNote(r, p, n) {
   return `<div class="gcn" title="${GC_DEF}。顏色＝和自己 2025-26 平均比，照所有人的起伏五等分">` +
     `${n} 場平均評分 <b class="${cls}">${gcS(c.r)}</b>　上季 <b>${gcS(c.b)}</b></div>`;
 }
+// 近 5 場逐項上色（使用者 2026-11-03）：每格看它替評分加了／扣了幾點，≥ +0.75 綠、≤ −0.75 紅，其間維持原色（只三色）。分項在 g[19]，順序同 Python ITEM_ORDER
+const ITEM_CUT = 0.75;
+const ITEM_LAB = ['基準', '得分', '籃板', '助攻', '抄截', '阻攻', '失誤', '防守追蹤', '正負值'];
+const ITEM_COL = {4: 1, 5: 2, 6: 3, 7: 4, 8: 5, 9: 6, 16: 8}; // 表格欄 index → 分項 index
+const itemSg = v => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(1);
+function itemTd(g, i, txt) {
+  const it = g[19] && g[19][ITEM_COL[i]];
+  if (it == null) return `<td>${txt}</td>`;
+  const c = it >= ITEM_CUT ? ' class="up"' : it <= -ITEM_CUT ? ' class="dn"' : '';
+  return c ? `<td${c} title="這項 ${itemSg(it)} 分">${txt}</td>` : `<td>${txt}</td>`;
+}
+function scoreTip(g) {
+  const it = g[19], fb = g[18] ? '這場抓不到防守對位資料，只用 box score 算。' : '';
+  if (!it) return fb;
+  const tot = it.reduce((s, v) => s + v, 0);
+  return fb + it.map((v, k) => `${ITEM_LAB[k]} ${itemSg(v)}`).join('、') + `；合計 ${tot.toFixed(1)}` + (tot < 0 ? '（負值顯示 0.0）' : '');
+}
 function gameLog(r, p) {
   const gs = r.g5;
-  const pm = v => `<span class="${v > 0 ? 'up' : v < 0 ? 'dn' : ''}">${v > 0 ? '+' : ''}${v}</span>`;
+  const pm = v => (v > 0 ? '+' : '') + v;
   const ma = (m, a) => `${m}-${a}`;
   const row = g => `<td>${g[0]}</td><td>${g[1]}</td><td><span class="${g[2] === 'W' ? 'w' : 'l'}">${g[2] === 'W' ? '勝' : '負'}</span></td>` +
-    gcCell(g[17], r.gc.b, GC_CUT1, g[18]) + [4, 5, 6, 7, 8, 9].map(i => `<td>${g[i]}</td>`).join('') +
-    `<td>${ma(g[10], g[11])}</td><td>${ma(g[12], g[13])}</td><td>${ma(g[14], g[15])}</td><td>${pm(g[16])}</td><td>${g[3]}</td>`;
+    gcCell(g[17], r.gc.b, GC_CUT1, g[18], scoreTip(g)) + [4, 5, 6, 7, 8, 9].map(i => itemTd(g, i, g[i])).join('') +
+    `<td>${ma(g[10], g[11])}</td><td>${ma(g[12], g[13])}</td><td>${ma(g[14], g[15])}</td>${itemTd(g, 16, pm(g[16]))}<td>${g[3]}</td>`;
   const n = gs.length, sum = i => gs.reduce((s, g) => s + g[i], 0), avg = i => (sum(i) / n).toFixed(1);
   // 平均列的投籃／三分／罰球改顯示 N 場合計命中率（使用者 2026-10-30），滑過看合計進球-出手
   const pct = (m, a) => `<td title="合計 ${sum(m)}-${sum(a)}">${sum(a) ? (sum(m) / sum(a) * 100).toFixed(1) + '%' : '—'}</td>`;
@@ -664,6 +681,10 @@ def aggregate():
     m6 = rating_m10.Scorer(season_, 'Z1')
     rater = rating_m2.Rater('2025-26' if SRC.parent.name == 'season-source' else SRC.parent.name.removeprefix('season-source-'))
     box = lambda r: m6.score(r[h['GAME_ID']], r[h['PLAYER_ID']])  # Z1 單場評分（0–10 尺度）
+    pr = json.loads((rating_m10.OUT / 'params.json').read_text(encoding='utf-8'))['prod']
+    assert pr['P4']['K'] == 0, '分項拆解假設 P4 沒有收縮（K=0）'
+    bgc = rating_m10.bonus(m6.tab, pr['Z1'], *rating_m10.ARMS['Z1'])[1] * pr['Z1']['c']  # 扛量加分換成評分點數（逐列對應 m6.tab）
+    parts = lambda r: item_parts(r, h, rater, pr, bgc[m6.idx[(r[h['GAME_ID']], r[h['PLAYER_ID']])]])
     out = {}
     for name, a in acc.items():
         n = a['gp']
@@ -680,7 +701,8 @@ def aggregate():
             'fg': pct(a['FGM'], a['FGA']), 'fg3': pct(a['FG3M'], a['FG3A']), 'ft': pct(a['FTM'], a['FTA']),
             'ts': pct(a['PTS'], tsa),
             # 每列最後兩格＝該場貢獻值（每 36 分鐘，沒上場為 null）、1＝該場沒有對位資料改用 M0
-            'g5': [game_row(r, h, log_keys) + ([round(box(r), 2), m6.fallback(r[h['GAME_ID']], r[h['PLAYER_ID']])] if r[h['MIN']] else [None, 0])
+            # index 19＝評分分項（評分點數，順序見 ITEM_ORDER；加總＝截 0 前的評分）
+            'g5': [game_row(r, h, log_keys) + ([round(box(r), 2), m6.fallback(r[h['GAME_ID']], r[h['PLAYER_ID']]), parts(r)] if r[h['MIN']] else [None, 0, None])
                    for r in last],
             # 貢獻值：r＝近 N 場合計換算每 36 分鐘，b＝2025-26 整季（沒有 2025-26 紀錄＝null）
             'gc': {'r': round(sum(box(r) for r in last if r[h['MIN']]) / sum(1 for r in last if r[h['MIN']]), 2) if rm else None,
@@ -690,6 +712,26 @@ def aggregate():
                   | {'gc': round(sum(box(r) for r in games[name] if r[h['MIN']]) / sum(1 for r in games[name] if r[h['MIN']]), 2) if a['MIN'] else None},
         }
     return out
+
+
+ITEM_ORDER = ['base', 'pts', 'reb', 'ast', 'stl', 'blk', 'tov', 'def', 'pm']  # 要和 JS 的 ITEM_LAB 同序
+ITEM_GROUP = {'PTS': 'pts', 'FGA': 'pts', 'FTA': 'pts', 'FG3M': 'pts', 'OREB': 'reb', 'DREB': 'reb', 'AST': 'ast', 'STL': 'stl', 'BLK': 'blk', 'TOV': 'tov'}  # 其餘（PF、追蹤欄）→ def
+
+
+def item_parts(r, h, rater, pr, bonus_pts):
+    """一場評分拆成各項的評分點數（c·權重·次數；MIN 在 G=(x−R)·MIN/36 裡消掉），順序同 ITEM_ORDER，加總＝截 0 前的評分。
+    得分＝PTS／FGA／FTA／FG3M 加扛量加分；防守＝PF＋追蹤欄；沒有對位資料的場次用 M0 權重（防守＝PF）。"""
+    P, C = pr['P4'], pr['Z1']
+    e = rater.extra(r[h['GAME_ID']])
+    w, intercept = (rater.w['per36'], rater.w['intercept']) if e is not None else (rater.m0['per36'], rater.m0['intercept'])
+    x = e.get(r[h['PLAYER_ID']], {}) if e is not None else {}
+    out = dict.fromkeys(ITEM_ORDER, 0.0)
+    out['base'] = C['a'] + C['c'] * (intercept - P['R']) * r[h['MIN']] / 36
+    for k, b in w.items():
+        out[ITEM_GROUP.get(k, 'def')] += C['c'] * b * ((r[h[k]] or 0) if k in h else x.get(k, 0))
+    out['pts'] += float(bonus_pts)
+    out['pm'] = C['c'] * P['bq'] * (r[h['PLUS_MINUS']] or 0)
+    return [round(out[k], 3) for k in ITEM_ORDER]
 
 
 def game_row(r, h, keys):
