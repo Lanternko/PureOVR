@@ -683,19 +683,22 @@ addEventListener('load', fitTable);
 document.fonts && document.fonts.ready.then(fitTable);
 // 欄寬照「全部球員」量一次就鎖住（table-layout:fixed）：自動排版會照這頁的內容算欄寬，
 // 換排序換到 7'4"、三位數三分的人，整張表寬度就跟著跳（使用者 2026-11-02）
+// 寬度鎖成欄寬總和（不是 min-width）：不然表格會跟著外框撐寬，外框又照表格寬算，越撐越寬。
+// 只動這幾個屬性、量時除掉 zoom：桌機縮放（enrich_roster_viewer）寫在同一個 style 上。
 function lockCols() {
-  const t = document.getElementById('tbl'), SZ = SIZE;
+  const t = document.getElementById('tbl'), SZ = SIZE, s = t.style, z = parseFloat(s.zoom) || 1;
   t.querySelector('colgroup')?.remove();
-  t.style.cssText = 'width:min-content;min-width:0';
+  s.tableLayout = ''; s.width = 'min-content'; s.minWidth = '0';
   SIZE = 1e5; render(); SIZE = SZ;
   const ws = [...t.querySelectorAll('thead tr:last-child th')].filter(th => getComputedStyle(th).display !== 'none')
-    .map(th => Math.ceil(th.getBoundingClientRect().width));
+    .map(th => Math.ceil(th.getBoundingClientRect().width / z));
   t.insertAdjacentHTML('afterbegin', '<colgroup>' + ws.map(w => `<col style="width:${w}px">`).join('') + '</colgroup>');
-  t.style.cssText = `table-layout:fixed;min-width:${ws.reduce((a, b) => a + b, 0)}px`;
+  s.tableLayout = 'fixed'; s.width = ws.reduce((a, b) => a + b, 0) + 'px';
   render();
 }
-let lockT = 0;
-addEventListener('resize', () => { clearTimeout(lockT); lockT = setTimeout(lockCols, 200); });
+// 不在每次 resize 重鎖（使用者 2026-11-03：Ctrl+- 時整張先膨脹再收回、很卡＝拆掉欄寬重畫全部球員）。
+// 瀏覽器縮放時 CSS 欄寬不變；只有跨手機／桌機分界（欄位顯示不同）才要重量。
+matchMedia('(max-width:640px)').addEventListener('change', lockCols);
 (document.fonts ? document.fonts.ready : Promise.resolve()).then(lockCols);
 
 document.getElementById('q').oninput'''),

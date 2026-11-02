@@ -550,24 +550,27 @@ function impactChips(p) {
 // 桌機表格不左右捲（使用者 2026-11-03）：視窗放不下整張表時整張等比縮小（zoom），不裁掉欄位；換頁／排序重畫後重算。
 (() => {
   const box = document.querySelector('.tbox'), tbl = document.getElementById('tbl'); if (!box || !tbl) return;
-  const mq = matchMedia('(min-width:641px)'); let raf = 0, last = '';
-  // 不先清掉 zoom 再量（會整張先膨脹再收回，Ctrl+- 時很卡）：offsetWidth 是未縮放的自然寬度，直接算，值沒變就不寫
+  const mq = matchMedia('(min-width:641px)'), de = document.documentElement; let last = '';
+  // 可用寬度只看視窗寬（不看 .wrap：.wrap 寬度又由 --tw 決定，互相回饋會在 Ctrl+-／非整數縮放時來回抖）。
+  // offsetWidth 是未縮放的整數自然寬度，不受 zoom 影響；--tw 也在這裡一起寫，值沒變就不寫。
   function run() {
-    raf = 0;
-    let z = '', bw = '';
-    if (mq.matches) {
-      const p = box.parentElement, cs = getComputedStyle(p);
-      const avail = p.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - (box.offsetWidth - box.clientWidth) - 2, w = tbl.offsetWidth;
+    const w = tbl.offsetWidth, sb = box.offsetWidth - box.clientWidth;
+    let z = '', bw = '', tw = '';
+    if (mq.matches && w > 0) {
+      tw = (w + sb) + 'px';
+      const avail = Math.min(de.clientWidth, 1360) - 32 - sb;
       if (w > avail && avail > 0) { z = (avail / w).toFixed(3); bw = '100%'; }
     }
-    if (z + bw === last) return;
-    last = z + bw; tbl.style.zoom = z; box.style.width = bw;
+    const key = z + '|' + bw + '|' + tw;
+    if (key === last) return;
+    last = key; tbl.style.zoom = z; box.style.width = bw;
+    if (tw) de.style.setProperty('--tw', tw); else de.style.removeProperty('--tw');
   }
-  const fit = () => { if (!raf) raf = requestAnimationFrame(run); };
-  addEventListener('resize', run); mq.addEventListener('change', run);  // resize／RO 在繪製前觸發，同步算才不會多閃一格舊尺寸（rAF 會晚一格＝膨脹再收回）
-  new MutationObserver(fit).observe(tbl.tBodies[0] || tbl, {childList: true});
-  if (window.ResizeObserver) { const ro = new ResizeObserver(run); ro.observe(box.parentElement); ro.observe(tbl); }  // 字型載入、視窗／縮放改變後版面才定，要重算
-  fit();
+  // 全部同步算（MutationObserver 是 microtask，仍在繪製前）；rAF 會晚一格，背景分頁還會整個停掉
+  addEventListener('resize', run); mq.addEventListener('change', run);
+  new MutationObserver(run).observe(tbl.tBodies[0] || tbl, {childList: true});
+  if (document.fonts) document.fonts.ready.then(run);  // 字型載入後自然寬度才定
+  run();
 })();
 // 手機表格手勢鎖方向（使用者 2026-10-29：往上滑時手會左右偏，表格跟著晃）：先移動 10px 才判方向，
 // 水平量要大於垂直 1.5 倍才算左右捲，判定後整段手勢只動那一軸。放手後照速度慣性滑行。
@@ -611,12 +614,6 @@ function impactChips(p) {
   };
   box.addEventListener('touchend', end);
   box.addEventListener('touchcancel', () => { s = null; });
-})();
-(() => {
-  const t = document.getElementById('tbl'); if (!t || !window.ResizeObserver) return;
-  const de = document.documentElement;
-  const sync = () => { const w = Math.round(t.getBoundingClientRect().width / (parseFloat(t.style.zoom) || 1)); if (w > 0) de.style.setProperty('--tw', w + 'px'); };
-  new ResizeObserver(sync).observe(t); sync();
 })();
 """
 
