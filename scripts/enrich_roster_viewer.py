@@ -484,16 +484,15 @@ function gcNote(r, p, n) {
   return `<div class="gcn" title="${GC_DEF}。顏色＝和自己 2025-26 平均比，照所有人的起伏五等分">` +
     `${n} 場平均評分 <b class="${cls}">${gcS(c.r)}</b>　上季 <b>${gcS(c.b)}</b></div>`;
 }
-// 近 5 場逐項上色（使用者 2026-11-03）：每格看它替評分加了／扣了幾點，≥ +0.75 綠、≤ −0.75 紅，其間維持原色（只三色）。分項在 g[19]，順序同 Python ITEM_ORDER
-const ITEM_CUT = 0.75;
+// 近 5 場逐項上色（使用者 2026-11-03）：五色，每項照它在 2025-26 單場分布的百分位（g[20]，Python item_cls；難拿的項目如阻攻 1 次就算高），中間 50% 灰。分項在 g[19]，順序同 Python ITEM_ORDER
+const ITEM_C5 = {'-2': 'c5f', '-1': 'c5d', 0: 'c5c', 1: 'c5b', 2: 'c5a'};
 const ITEM_LAB = ['基準', '得分', '籃板', '助攻', '抄截', '阻攻', '失誤', '防守追蹤', '正負值'];
 const ITEM_COL = {4: 1, 5: 2, 6: 3, 7: 4, 8: 5, 9: 6, 16: 8}; // 表格欄 index → 分項 index
 const itemSg = v => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(1);
 function itemTd(g, i, txt) {
   const it = g[19] && g[19][ITEM_COL[i]];
   if (it == null) return `<td>${txt}</td>`;
-  const c = it >= ITEM_CUT ? ' class="up"' : it <= -ITEM_CUT ? ' class="dn"' : '';
-  return c ? `<td${c} title="這項 ${itemSg(it)} 分">${txt}</td>` : `<td>${txt}</td>`;
+  return `<td class="${ITEM_C5[g[20][ITEM_COL[i]]]}" title="這項 ${itemSg(it)} 分（顏色照 2025-26 單場這一項的分布）">${txt}</td>`;
 }
 function scoreTip(g) {
   const it = g[19], fb = g[18] ? '這場抓不到防守對位資料，只用 box score 算。' : '';
@@ -685,6 +684,8 @@ def aggregate():
     assert pr['P4']['K'] == 0, '分項拆解假設 P4 沒有收縮（K=0）'
     bgc = rating_m10.bonus(m6.tab, pr['Z1'], *rating_m10.ARMS['Z1'])[1] * pr['Z1']['c']  # 扛量加分換成評分點數（逐列對應 m6.tab）
     parts = lambda r: item_parts(r, h, rater, pr, bgc[m6.idx[(r[h['GAME_ID']], r[h['PLAYER_ID']])]])
+    ref = item_ref(pr)
+    parts_cls = lambda r: (lambda p: [p, item_cls(p, ref)])(parts(r))
     out = {}
     for name, a in acc.items():
         n = a['gp']
@@ -701,8 +702,8 @@ def aggregate():
             'fg': pct(a['FGM'], a['FGA']), 'fg3': pct(a['FG3M'], a['FG3A']), 'ft': pct(a['FTM'], a['FTA']),
             'ts': pct(a['PTS'], tsa),
             # 每列最後兩格＝該場貢獻值（每 36 分鐘，沒上場為 null）、1＝該場沒有對位資料改用 M0
-            # index 19＝評分分項（評分點數，順序見 ITEM_ORDER；加總＝截 0 前的評分）
-            'g5': [game_row(r, h, log_keys) + ([round(box(r), 2), m6.fallback(r[h['GAME_ID']], r[h['PLAYER_ID']]), parts(r)] if r[h['MIN']] else [None, 0, None])
+            # index 19＝評分分項（評分點數，順序見 ITEM_ORDER；加總＝截 0 前的評分）、20＝各分項五色等級（−2..2，見 item_cls）
+            'g5': [game_row(r, h, log_keys) + ([round(box(r), 2), m6.fallback(r[h['GAME_ID']], r[h['PLAYER_ID']]), *parts_cls(r)] if r[h['MIN']] else [None, 0, None, None])
                    for r in last],
             # 貢獻值：r＝近 N 場合計換算每 36 分鐘，b＝2025-26 整季（沒有 2025-26 紀錄＝null）
             'gc': {'r': round(sum(box(r) for r in last if r[h['MIN']]) / sum(1 for r in last if r[h['MIN']]), 2) if rm else None,
@@ -732,6 +733,36 @@ def item_parts(r, h, rater, pr, bonus_pts):
     out['pts'] += float(bonus_pts)
     out['pm'] = C['c'] * P['bq'] * (r[h['PLUS_MINUS']] or 0)
     return [round(out[k], 3) for k in ITEM_ORDER]
+
+
+ITEM_REF_MIN = 15  # 分項難度的參考分布：2025-26 上場 ≥ 15 分鐘的單場
+ITEM_PCT = (0.10, 0.25, 0.75, 0.90)  # 五色切點（百分位）：中間 50% 灰，兩側各 15% 淺色、10% 深色（使用者 2026-11-03：依各項難易度、灰色區放大）
+
+
+def item_ref(pr):
+    """各分項在 2025-26（≥ ITEM_REF_MIN 分鐘）單場的評分點數，排序後的陣列，給 item_cls 查百分位。"""
+    import numpy as np
+    rs = json.loads((ROOT / 'data' / 'season-source' / 'player-games.json').read_text(encoding='utf-8'))['data']['resultSets'][0]
+    h = {k: i for i, k in enumerate(rs['headers'])}
+    sc, rater = rating_m10.Scorer('2025-26', 'Z1'), rating_m2.Rater('2025-26')
+    bgc = rating_m10.bonus(sc.tab, pr['Z1'], *rating_m10.ARMS['Z1'])[1] * pr['Z1']['c']
+    rows = [item_parts(r, h, rater, pr, bgc[sc.idx[k]]) for r in rs['rowSet']
+            if (r[h['MIN']] or 0) >= ITEM_REF_MIN and (k := (r[h['GAME_ID']], r[h['PLAYER_ID']])) in sc.idx]
+    return np.sort(np.array(rows), axis=0).T
+
+
+def item_cls(parts, ref):
+    """每個分項依它在參考分布的百分位（同值取中位名次，離散項目如抄截、阻攻不會被並列拉偏）分五級 −2..2；
+    評分點數＝0（沒加也沒扣）一律 0。"""
+    import numpy as np
+    out = []
+    for v, col in zip(parts, ref):
+        if v == 0:
+            out.append(0)
+            continue
+        q = (np.searchsorted(col, v - 1e-6) + np.searchsorted(col, v + 1e-6)) / 2 / len(col)
+        out.append(-2 if q <= ITEM_PCT[0] else -1 if q <= ITEM_PCT[1] else 2 if q >= ITEM_PCT[3] else 1 if q >= ITEM_PCT[2] else 0)
+    return out
 
 
 def game_row(r, h, keys):
