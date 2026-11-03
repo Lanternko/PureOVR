@@ -443,8 +443,8 @@ body[data-view="rank"] .mtabs #teamPick.on summary,body[data-view="games"] .mtab
   </div>
   <div class="legend">
     <span>等第：<b class="gA">A</b> ≥82 · <b class="gB">B</b> ≥68 · <b class="gC">C</b> ≥56 · <b class="gD">D</b> ≥44 · <b class="gF">F</b> &lt;44</span>
-    <button type="button" class="ovr-t" aria-expanded="false" onclick="const b=this.nextElementSibling,o=b.hidden;b.hidden=!o;this.setAttribute('aria-expanded',o)">OVR：由<b>傳統數據 ＋ 防守影響力 ＋ 上場時間</b>算出每場比賽影響力 <i>▼</i></button>
-    <div class="ovr-how" hidden><div><span class="oh-t">1. 傳統與對位數據（13 項能力）</span>結合傳統 Box Score（得分、籃板、助攻、抄阻、失誤）、逐球紀錄（<b>自己創造</b> vs 被餵球、切入）與官方對位追蹤（外線干擾三分、對位主將球權、籃下護框降命中率、干擾傳球），換算成 0–99 的單項能力。</div><div><span class="oh-t">2. 防守影響力（DIQ 防守意識）</span>用多年加權的<b>防守 RAPM</b>（在場正負值扣除隊友與對手強弱）比同位置平均高多少，補上傳統數據抓不到的無球輪轉、站位與協防。</div><div><span class="oh-t">3. 上場時間與教練用人</span>結合<b>場均分鐘</b>與<b>出賽率</b>（區分輪休與被冷凍 DNP）。同效率下，能扛越多上場時間的人單場價值越高（邊際遞減）。</div><div><span class="oh-t">4. 怎麼合成 OVR（與 EPM 的關係）</span>不直接拿單一進階數據當 OVR，而是把上述三塊合成、權重對齊進階指標 <b>DARKO＋BPM</b>，衡量「每場能幫球隊多贏幾分」。球員卡右側的 <b>RAPM／EPM</b> 是獨立列出來對照的實際場上影響力；2027 頁以 2026 卡為底（新秀看順位），隨本季表現逐場更新。</div></div>
+    <button type="button" class="ovr-t" aria-expanded="false" onclick="const b=this.nextElementSibling,o=b.hidden;b.hidden=!o;this.setAttribute('aria-expanded',o)">OVR：綜合<b>場上能力 ＋ 防守意識 ＋ 上場時間</b>的每場比賽影響力 <i>▼</i></button>
+    <div class="ovr-how" hidden><div><span class="oh-t">1. 場上能力（14 項）</span>整合傳統數據、逐球紀錄與官方追蹤，拆成投籃（三分、中距離、近框、罰球）、進攻（<b>無球引力</b>、造犯規、傳球、自主創造、切入）、球權（籃板、<b>觸球少失誤</b>、壓迫）與對位防守（單防、護框）；頂尖表現可突破 99。</div><div><span class="oh-t">2. 防守意識（DIQ）</span>以跨季加權的<b>防守 RAPM</b>（扣除隊友與對手強弱後的在場失分影響）對比同位置平均，補齊數據抓不到的無球輪轉、站位與協防。</div><div><span class="oh-t">3. 上場時間與用人</span>結合<b>場均分鐘</b>與<b>出賽率</b>（區分正常輪休與被棄用 DNP）。同效率下，能扛越多上場時間的人單場價值越高（邊際遞減）。</div><div><span class="oh-t">4. 合成 OVR 與即時更新</span>將上述三項對齊進階指標 <b>DARKO＋BPM</b> 校準權重，衡量「每場能幫球隊多贏幾分」；球員卡右側另列實際在場影響與單場評分供對照。全站採<b>近三季滑動窗口</b>隨比賽逐場更新，並加重近期表現（新秀以選秀順位為起點）。</div></div>
   </div>
 </div>
 <!-- real-stats:begin -->
@@ -862,6 +862,27 @@ function toggleG5(b) {
   document.querySelector('.card .g5').hidden = !G5_OPEN;
   if (typeof fitTable === 'function') fitTable();
 }
+// 整條都能點（使用者 2026-11-04）：桌機卡片「▼ 近 N 場比賽」那一整排（含中間空白與右邊「N 場 · 分鐘」）點了都展開；
+// 手機的 ▼ 是角落小按鈕，改成點兩組四格也展開。排除連結、按鈕、表格
+function g5Hit(e) {
+  const c = e.target.closest && e.target.closest('.card');
+  if (!c || e.target.closest('a,button,.g5')) return null;
+  const b = c.querySelector('.g5t');
+  if (!b || b.getAttribute('aria-hidden')) return null;
+  // 手機（使用者 2026-11-04）：得分／籃板／助攻／正負值四格與影響力四格也能點
+  if (innerWidth < 641) return e.target.closest('.rmain,.strong') ? b : null;
+  if (e.target.closest('.strong')) return null;
+  const r = b.getBoundingClientRect(), cr = c.getBoundingClientRect(), h = c.querySelector('.real-h');
+  const hr = h && h.getBoundingClientRect();
+  const inBand = e.clientY >= r.top && e.clientY <= (G5_OPEN ? r.bottom : cr.bottom) && e.clientX >= cr.left && e.clientX <= cr.right;
+  const inH = hr && e.clientX >= hr.left && e.clientX <= hr.right && e.clientY >= hr.top && e.clientY <= hr.bottom;
+  return inBand || inH ? b : null;
+}
+document.addEventListener('click', e => { const b = g5Hit(e); if (b) toggleG5(b); });
+document.addEventListener('mousemove', e => {
+  const c = e.target.closest && e.target.closest('.card');
+  if (c) c.style.cursor = g5Hit(e) ? 'pointer' : '';
+});
 // 貢獻值（使用者 2026-10-30 選 A）：box score＋hustle＋防守對位換算的每 36 分鐘淨影響（M2，R-066；權重擬合 2025-26 RAPM），和 2025-26 整季比；
 // OVR 傾向＝把差值當成 pred 的變動，照正式卡（card 0.2.7c）的錨點與分鐘權重 W(MPG) 換算（只顯示，不改 OVR）
 // 數字寫絕對值，顏色看和自己平均的差（使用者 2026-10-30：同樣 +3，替補是進步、SGA 是退步）：
@@ -1307,8 +1328,12 @@ let listKey = '';
 function fitTable() {
   // 手機以「卡片頂端貼齊視窗頂」為準：卡片＋篩選列以下的空間都給表格。
   // 桌機有固定眉頭（2026-11-02），改以頁面頂端為準：不捲頁面就看得到表格底，20 人在表格裡捲完（使用者 2026-11-02）
-  const t = document.querySelector('.tbox'), tt = t.getBoundingClientRect().top;
+  // 近 N 場展開不壓縮表格（使用者 2026-11-04）：量位置時暫時收起，高度照收起時算，展開只把表格往下推
+  const t = document.querySelector('.tbox'), g = document.querySelector('.card .g5'), gOpen = g && !g.hidden;
+  if (gOpen) g.hidden = true;
+  const tt = t.getBoundingClientRect().top;
   const above = innerWidth <= 640 ? tt - document.getElementById('card').getBoundingClientRect().top : tt + scrollY;
+  if (gOpen) g.hidden = false;
   const h = Math.max(innerWidth <= 640 ? 240 : 300, innerHeight - above - 12);
   t.style.maxHeight = Math.round(h) + 'px';
   tboxEdges();
