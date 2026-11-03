@@ -172,15 +172,21 @@ if(PR||PG){
   /* 排行／賽程檢視下點「球隊」：先黃色高亮並展開選隊，選完才跳到球隊名單（使用者 2026-11-03） */
   const tg=$('#teamGrid');
   if(tg)tg.addEventListener('click',e=>{if(view!=='players'&&e.target.closest('button[data-t]')){sy.players=0;go('players',true);}});
-  /* 已選過球隊：從排行／賽程點「球隊」先回到上次的球隊名單，再點一次才展開選隊切換（使用者 2026-11-03） */
-  const ts=tp&&tp.querySelector('summary');
-  if(ts)ts.addEventListener('click',e=>{if(view!=='players'&&tp.classList.contains('on')){e.preventDefault();tp.open=false;go('players',true);}});
   addEventListener('popstate',()=>{const h=parseHash(),v=avail(h.v)?h.v:'players';go(v,false,h);});
   document.body.dataset.view=view;if(TITLE[view])document.title=TITLE[view];
   const h0=parseHash();
   if(h0.v==='rank'&&PR){PR.open(h0.arg);PR.ensure();}
   else if(h0.v==='games'&&PG){PG.open(h0.arg,h0.gid);PG.ensure();}
   else(window.requestIdleCallback||setTimeout)(()=>{PR&&PR.ensure();PG&&PG.ensure();});
+/* 點「球隊」：正在看某隊／新秀 → 展開選隊；在其他檢視（球員、排行、賽程）→ 回到上次選的球隊，沒選過才展開（使用者 2026-11-03、11-04） */
+const ts=tp&&tp.querySelector('summary');
+if(ts)ts.addEventListener('click',e=>{
+  const on=tp.classList.contains('on');
+  if(view==='players'&&on)return;
+  if(on){e.preventDefault();tp.open=false;go('players',true);return;}
+  const b=tp.dataset.last&&$(`#teamGrid [data-t="${tp.dataset.last}"]`);
+  if(b){e.preventDefault();tp.open=false;b.click();}
+});
 }
 const mo=new MutationObserver(sync);
 if(tp)mo.observe(tp,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});

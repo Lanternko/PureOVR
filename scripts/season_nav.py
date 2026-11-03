@@ -754,6 +754,8 @@ function teamFromPath() {
 const teamPath = cur => location.pathname.replace(/[^/]*$/, '') + (cur === 'ALL' ? '' : cur === 'ROOKIE' ? 'rookies' : TSLUG[cur]);
 function setTeam(cur) {
   st.rk = cur === 'ROOKIE'; st.team = st.rk ? 'ALL' : cur; st.page = 0; st.extra = 0;
+  // 記住上次選的球隊／新秀：在其他檢視點眉頭「球隊」時回到這隊（site_header）
+  if (cur !== 'ALL') document.getElementById('teamPick').dataset.last = cur;
   // 選隊後球員卡顯示該隊（或新秀）依目前排序欄位排第一的人：預設排序＝OVR 最高（使用者 2026-11-03）
   if (st.rk || st.team !== 'ALL') {
     const top = list()[0];
