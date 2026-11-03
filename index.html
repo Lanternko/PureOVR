@@ -393,7 +393,8 @@ button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{ou
 .bt .ts{font:700 2.4rem/1 var(--nf);color:#7c858f;font-variant-numeric:tabular-nums}
 .bt.win .tn,.bt.win .ts{color:var(--fg)}
 .bt.win .tn{border-left-color:var(--blue)}
-.tbox{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbox{overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scroll-padding-left:130px}  /* 捲動停在整欄邊界，不留半截欄位 */
+th:not(.l){scroll-snap-align:start}
 table{border-collapse:collapse;table-layout:fixed;width:100%;min-width:850px;font-variant-numeric:tabular-nums}  /* 固定欄寬：兩隊的表欄位對齊 */
 th{color:var(--muted);font:600 .78rem var(--f-body);letter-spacing:.08em;padding:6px 4px;text-align:center;white-space:nowrap;width:48px}
 th:nth-child(4),th:nth-child(5),th:nth-child(6){width:64px}
@@ -426,7 +427,7 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
   .sc{font-size:2.3rem}
   .mid{font-size:.85rem}
   .bxw{padding:4px 10px 12px}
-  th.l{width:104px}table{min-width:824px}
+  th.l{width:104px}.tbox{scroll-padding-left:104px}table{min-width:824px}
   .bt .tn{font-size:1.05rem}.bt .ts{font-size:1.8rem}
 }
 .msg{color:var(--muted);padding:40px 16px;text-align:center}</style><div class="gwroot"><div class="msg" id="msg">載入中…</div>
