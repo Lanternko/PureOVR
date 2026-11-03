@@ -1690,7 +1690,7 @@ const boxes={},ERR={err:true};   // 月份 → 'loading'｜{doc}｜ERR
 const COLS=[["MIN", "min"], ["PTS", "pts"], ["REB", "reb"], ["AST", "ast"], ["FG", "fg"], ["3PT", "tp"], ["FT", "ft"], ["STL", "stl"], ["BLK", "blk"], ["TO", "tov"], ["OREB", "oreb"], ["DREB", "dreb"], ["PF", "pf"], ["+/-", "pm"], ["\u8a55\u5206", "rt"]];
 const $=s=>root.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const CDN='https://cdn.nba.com/';
-const logo=a=>'<img class="lg" alt="" loading="lazy" src="'+CDN+'logos/nba/'+D.teams[a].id+'/global/D/logo.svg" onerror="this.style.visibility=\'hidden\'">';
+const logo=a=>'<img class="lg" alt="" loading="lazy" src="'+CDN+'logos/nba/'+D.teams[a].id+'/primary/L/logo.svg" onerror="this.style.visibility=\'hidden\'">';
 // 球隊主色（官方主色；深色隊在深色底看不出來，改用提亮版或辨識度高的副色），給賽程卡片漸層用，格式 "r,g,b"
 const TC={ATL:'#E03A3E',BOS:'#1E9B4F',BKN:'#9AA0A6',CHA:'#00A3B8',CHI:'#CE1141',CLE:'#A8174F',DAL:'#1E73BE',DEN:'#2D5DA8',DET:'#C8102E',GSW:'#2F63C0',
   HOU:'#CE1141',IND:'#2A5CA8',LAC:'#C8102E',LAL:'#7A45B8',MEM:'#5D76A9',MIA:'#B5123F',MIL:'#1B8A45',MIN:'#2B6AA8',NOP:'#2D5A9A',NYK:'#006BB6',
@@ -1729,7 +1729,7 @@ function card(g){
   const mid=fin?'<div class="mid"><span class="tri '+(w==='away'?'l':'r')+'"></span></div>'
     :'<div class="mid">'+tipHtml(g)+'</div>';
   return '<div class="gm'+(op?' open':'')+'" data-id="'+g.id+'" style="--c1:'+tcol(g.away)+';--c2:'+tcol(g.home)+'"><div class="gh" role="button" tabindex="0" aria-expanded="'+op+'">'+tm('away')+sc('away')+mid+sc('home')+tm('home')+'</div>'
-   +(fin?'<div class="bh"><span>'+(g.ot?(g.ot>1?g.ot:'')+'OT · ':'')+(op?'收起 box score':'box score')+'<i>'+(op?'▴':'▾')+'</i></span></div>':'')+(op&&fin?boxHtml(g):'')+'</div>';
+   +(fin?'<div class="bh"><span>'+(g.ot?(g.ot>1?g.ot:'')+'OT ':'')+'<i>'+(op?'▴':'▾')+'</i></span></div>':'')+(op&&fin?boxHtml(g):'')+'</div>';
 }
 function build(){
   built=true;
