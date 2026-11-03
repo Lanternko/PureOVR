@@ -1314,3 +1314,10 @@
 - 證據：`reports/E223-team-rating/report.md`、`work/eval-2526-fwd.json`、預註冊 commit 66335fd。
 - 狀態：開放（2026-11-03）；硬條件未過，待使用者裁定；建議等 2026-27 live OVR 做乾淨前瞻比較
 - 相關：E-223、R-152、E-208、R-151、L-041
+
+### F-156
+- 日期：2026-11-04
+- 發現：能力值 stamina 就是場均分鐘百分位（`reports/ovr-inseason-2026-27/v4/tools/season_attrs_v4.py` 第 211、229 行），等於上場時間代理；E-227 R2-stats 的排列重要性第一就是它，且同季屬性含測試季場次。拿掉 stamina 重算價值，排名 Spearman 0.944：Scottie Barnes 7→16、Kevin Porter Jr. 17→37、Mitchell Robinson 19→9。stamina 與 2025-26 總分鐘 Spearman 0.704。
+- 證據：`reports/E227-lineup-transformer-r2/audit/`（a1–a5、audit.md），commit dffeac3
+- 狀態：開放（2026-11-04）；E-227 主結論不受影響（稽核 4/5 站得住），價值排名要讀成「含上場時間」
+- 相關：E-227、R-157、R-159
