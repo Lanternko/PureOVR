@@ -755,7 +755,10 @@ const teamPath = cur => location.pathname.replace(/[^/]*$/, '') + (cur === 'ALL'
 function setTeam(cur) {
   st.rk = cur === 'ROOKIE'; st.team = st.rk ? 'ALL' : cur; st.page = 0; st.extra = 0;
   // 記住上次選的球隊／新秀：在其他檢視點眉頭「球隊」時回到這隊（site_header）
-  if (cur !== 'ALL') document.getElementById('teamPick').dataset.last = cur;
+  if (cur !== 'ALL') {
+    document.getElementById('teamPick').dataset.last = cur;
+    try { localStorage.setItem('bbac.lastTeam', cur); } catch (e) {}
+  }
   // 選隊後球員卡顯示該隊（或新秀）依目前排序欄位排第一的人：預設排序＝OVR 最高（使用者 2026-11-03）
   if (st.rk || st.team !== 'ALL') {
     const top = list()[0];
@@ -784,6 +787,10 @@ function teamPick() {
       }
       render();
     };
+    try {
+      const l = localStorage.getItem('bbac.lastTeam');  // 兩個賽季頁共用；這頁沒有的（2027 頁的新秀）不用
+      if (l && grid.querySelector(`[data-t="${CSS.escape(l)}"]`) && l !== 'ALL') d.dataset.last = l;
+    } catch (e) {}
     if (TROUTE) {
       const t0 = teamFromPath();
       if (t0 !== 'ALL') setTeam(t0);
@@ -805,8 +812,11 @@ function teamPick() {
     d.addEventListener('keydown', e => { if (e.key === 'Escape') { d.open = false; d.querySelector('summary').focus(); } });
   }
   const cur = st.rk ? 'ROOKIE' : st.team;
-  d.querySelector('summary').innerHTML = cur === 'ALL' ? '全部' : cur === 'ROOKIE' ? '新秀' : logo(cur) + cur;
+  // 回到全部球員時按鈕仍顯示上次選的球隊（不反白），存在瀏覽器裡下次開頁也記得（使用者 2026-11-04）
+  const last = cur === 'ALL' && d.dataset.last, shown = last || cur;
+  d.querySelector('summary').innerHTML = shown === 'ALL' ? '全部' : shown === 'ROOKIE' ? '新秀' : logo(shown) + shown;
   d.classList.toggle('on', cur !== 'ALL');
+  d.classList.toggle('last', !!last);
   grid.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.t === cur)));
 }
 

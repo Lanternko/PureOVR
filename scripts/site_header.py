@@ -51,6 +51,10 @@ body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰
 .mtabs #teamPick summary,.mtab-pick{min-width:106px;justify-content:center}
 /* 使用者 2026-11-03：選完球隊不要下箭頭，格子也跟著縮窄（只剩隊徽＋隊名） */
 .mtabs #teamPick.on summary::after{display:none}
+/* 使用者 2026-11-04：回到全部球員時仍顯示上次的球隊（隊徽＋隊名，不反白、不加箭頭），點了回到那隊 */
+.mtabs #teamPick.last:not(.on) summary{font-size:1.02rem;gap:6px}
+.mtabs #teamPick.last:not(.on) summary::before{content:none}
+.mtabs #teamPick.last summary::after{display:none}
 .mtabs #teamPick.on summary{min-width:0}
 .mtabs .tpick.on summary{border:0;color:var(--mfg2)}
 .mtabs .tpick summary:focus-visible,.mtab:focus-visible,.micon:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
@@ -112,7 +116,7 @@ body[data-view="rank"] .mtabs #teamPick.on summary,body[data-view="games"] .mtab
   .mtabs{order:10;flex-basis:100%;margin:4px 0 0}
   .mtab,.mtabs .tpick summary{height:40px;padding:0 11px;font-size:15px}
   .mbrand{width:auto}
-  .mtabs #teamPick:not(.on) summary::before{font-size:15px}
+  .mtabs #teamPick:not(.on) summary::before,.mtabs #teamPick.last:not(.on) summary{font-size:15px}
   .mpanel{position:fixed;left:12px;right:12px;top:calc(var(--mh,96px) + 6px);min-width:0}
   /* 舊手機規則 #posSeg{display:none}（位置要點 .pbtn 才展開）在位置列搬進篩選面板後仍生效 → 面板開了卻空的（使用者 2026-11-02） */
   #mPos #posSeg{display:flex;position:static;box-shadow:none}
@@ -178,6 +182,7 @@ if(PR||PG){
   if(h0.v==='rank'&&PR){PR.open(h0.arg);PR.ensure();}
   else if(h0.v==='games'&&PG){PG.open(h0.arg,h0.gid);PG.ensure();}
   else(window.requestIdleCallback||setTimeout)(()=>{PR&&PR.ensure();PG&&PG.ensure();});
+}
 /* 點「球隊」：正在看某隊／新秀 → 展開選隊；在其他檢視（球員、排行、賽程）→ 回到上次選的球隊，沒選過才展開（使用者 2026-11-03、11-04） */
 const ts=tp&&tp.querySelector('summary');
 if(ts)ts.addEventListener('click',e=>{
@@ -187,7 +192,6 @@ if(ts)ts.addEventListener('click',e=>{
   const b=tp.dataset.last&&$(`#teamGrid [data-t="${tp.dataset.last}"]`);
   if(b){e.preventDefault();tp.open=false;b.click();}
 });
-}
 const mo=new MutationObserver(sync);
 if(tp)mo.observe(tp,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
 if(pos)mo.observe(pos,{childList:true,subtree:true,attributes:true});
