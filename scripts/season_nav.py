@@ -4,8 +4,8 @@ import json
 import re
 from pathlib import Path
 
-# 標籤用年份（使用者 2026-10-29）：2027 beta＝2026-27 賽中，2026＝2025-26 正式卡
-PAGES = [('inseason', '2027 beta', '/'), ('card', '2026', '/2025-26.html')]
+# 標籤用年份（使用者 2026-10-29；11-04 拿掉 beta）：2027＝2026-27 賽中，2026＝2025-26 正式卡
+PAGES = [('inseason', '2027', '/'), ('card', '2026', '/2025-26.html')]
 # icon＝五格評分環、亮四格薄荷綠（使用者 2026-11-04 選 E4，取代 10-30 的金色籃球）；favicon 與版標同一張
 # 眉頭只用環（RING，不帶外框，使用者 2026-11-04「外面的框好醜」）；favicon 仍帶深底方框，在分頁列上才看得清楚
 RING = ('<g fill="none" stroke-width="9" transform="rotate(-86 32 32)">'

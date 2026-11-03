@@ -63,7 +63,7 @@ body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰
 html{scrollbar-gutter:stable}  /* 排行檢視比名單短，捲軸有無不同會讓眉頭橫向位移 */
 body[data-view="rank"] .wrap,body[data-view="games"] .wrap{display:none}
 body:not([data-view="rank"]) #rankHost,body:not([data-view="games"]) #gamesHost{display:none}
-body[data-view="rank"] #mFilter,body[data-view="rank"] .msearch,body[data-view="games"] #mFilter,body[data-view="games"] .msearch{display:none}  /* 篩選、搜尋只對球員檢視有意義 */
+body[data-view="rank"] #mPosRow,body[data-view="rank"] .msearch,body[data-view="games"] #mPosRow,body[data-view="games"] .msearch{display:none}  /* 位置、搜尋只對球員檢視有意義；賽季切換在篩選裡，各檢視都留著 */
 body[data-view="rank"] .mtabs #teamPick.on summary,body[data-view="games"] .mtabs #teamPick.on summary{color:var(--mfg);background:none}
 .mtabs #teamPick[open] summary,body[data-view="rank"] .mtabs #teamPick[open].on summary,body[data-view="games"] .mtabs #teamPick[open].on summary{color:var(--gold-ink);background:var(--gold)}  /* 點開選隊：黃色高亮 */
 .mind{view-transition-name:tab-ind}  /* 只給底線命名；.wrap 整頁快照太大 */
@@ -225,10 +225,10 @@ def header_html(current):
         '<a class="mtab" id="mGames" href="/games/">賽程</a></nav>'
         '<div class="macts">'
         f'<details class="mpop" id="mFilter"><summary class="micon" aria-label="篩選">{_svg("filter", 15)}</summary>'
-        '<div class="mpanel"><div class="mrow"><b>位置</b><div id="mPos"></div></div></div></details>'
-        f'<details class="mpop" id="mSettings"><summary class="micon" aria-label="設定">{_svg("gear")}</summary>'
         '<div class="mpanel"><div class="mrow"><b>賽季</b><div id="mSeason"></div></div>'
-        '<div class="mrow"><b>能力值顯示</b><div id="mMode"></div></div>'
+        '<div class="mrow" id="mPosRow"><b>位置</b><div id="mPos"></div></div></div></details>'
+        f'<details class="mpop" id="mSettings"><summary class="micon" aria-label="設定">{_svg("gear")}</summary>'
+        '<div class="mpanel"><div class="mrow"><b>能力值顯示</b><div id="mMode"></div></div>'
         '<div class="mrow"><b>版本</b><div id="mNotes"></div></div></div></details>'
         f'<div class="msearch"><button type="button" class="micon sbtn" aria-label="搜尋">{_svg("search")}</button>'
         f'<div class="sbox">{_svg("search", 15)}</div></div>'
