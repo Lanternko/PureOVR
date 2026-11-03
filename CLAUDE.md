@@ -7,7 +7,7 @@ NBA 球員數值模型＋自走棋原型。對使用者用繁體中文。
 2. `memory/digest.md`：lessons（踩過的坑，每條都是硬規則）與 rulings（使用者裁定）的一行一條摘要表。不進 git，**開工先跑 `python memory/build_digest.py` 重產再讀**。
 3. 其他（`lessons.md`、`rulings.md` 全文、`findings.md`、`experiments.md`、`references.md`）用 grep 查 ID 或關鍵字，不要整份讀。
 
-寫入規則見 `memory/README.md`：ID 只追加不刪；改狀態只改狀態欄並註明日期；樣本內結果不算證據（R-007）；被抓到的錯一律寫成 lesson；收工整份覆寫 `handoff.md`。
+新的 E／F／L／R 編號一律先跑 `python memory/claim_id.py <E|F|L|R> "短名"` 領號上鎖，不准自己 +1（R-155）。寫入規則見 `memory/README.md`：ID 只追加不刪；改狀態只改狀態欄並註明日期；樣本內結果不算證據（R-007）；被抓到的錯一律寫成 lesson；收工整份覆寫 `handoff.md`。
 
 ## 角色
 | 角色 | skill | 做什麼 |
