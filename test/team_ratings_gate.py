@@ -1,5 +1,5 @@
-"""球隊評分（E-208 第二階段）：分鐘規則、傷兵移除、姓名對應、預測勝場、頁面表頭。npm test 會跑；不跑模擬（輕量）。
-若本機有 data/season-source-2026-27/team-ratings.json，另外檢查成品：每隊兩版輪替 240 分鐘、單人 ≤48、Out／Doubtful 不在今日輪替。"""
+"""球隊評分（E-208 第二階段）：R-151 分鐘表、傷兵移除、姓名對應、預測勝場、頁面表頭。npm test 會跑；不跑模擬（輕量）。
+若本機有 data/season-source-2026-27/team-ratings.json，另外檢查成品：每隊兩版輪替 240 分鐘、人數 ≥9 時單人 ≤36、Out／Doubtful／Questionable／Day-To-Day 不在今日輪替。"""
 import datetime as dt
 import json
 import sys
@@ -24,37 +24,69 @@ PDF_TXT = (ROOT / 'test/fixtures/injury-report-2026-11-02_04_15AM.txt').read_tex
 
 
 class Rotation(unittest.TestCase):
+    """R-151：焦灼比賽分鐘表 36、36、34、32、30、26、22、14、10；順序照教練最近上場時間。"""
+    TABLE = [36, 36, 34, 32, 30, 26, 22, 14, 10]
+
     def check(self, rot, out=()):
-        self.assertLessEqual(len(rot), 10)
+        self.assertLessEqual(len(rot), 9)
         self.assertAlmostEqual(sum(m for _, m in rot), 240.0, places=4)
-        self.assertLessEqual(max(m for _, m in rot), 48.0 + 1e-9)
+        if len(rot) >= 9:
+            self.assertLessEqual(max(m for _, m in rot), 36.0 + 1e-9)
+        else:
+            self.assertLessEqual(max(m for _, m in rot), T.MAX_SHORT + 1e-9) if len(rot) >= 6 else None
         self.assertFalse({p for p, _ in rot} & set(out))
 
-    def test_recent_sums_240_cap_48(self):
-        self.check(T.rotation(PRIOR, FALLBACK))
+    def test_table_constants(self):
+        self.assertEqual(list(T.MINUTE_TABLE), self.TABLE)
+        self.assertEqual((sum(T.MINUTE_TABLE), max(T.MINUTE_TABLE), T.MAX_SHORT), (240, 36, 40))
 
-    def test_out_removed_and_redistributed(self):
+    def test_recent_follows_coach_order_not_ovr(self):
+        rot = T.rotation(PRIOR, FALLBACK)
+        self.check(rot)
+        self.assertEqual([m for _, m in rot], self.TABLE)                        # 1~11 號都夠 9 人 → 剛好一張表
+        got = T.candidate_minutes(PRIOR)[0]
+        self.assertEqual([p for p, _ in rot], sorted(got, key=lambda p: (-got[p], p))[:9])    # 順序＝近況平均分鐘由多到少
+        ovr = {p: 100.0 - p for p in range(1, 12)}
+        ovr[9] = 999.0                                                           # OVR 再高也不改變排序（只用來排同分）
+        self.assertEqual(T.rotation(PRIOR, FALLBACK, ovr=ovr), rot)
+
+    def test_ties_broken_by_ovr_then_pid(self):
+        prior = [[[1, 20], [2, 20], [3, 20], [4, 20], [5, 20], [6, 20], [7, 20], [8, 20], [9, 20]]]
+        self.assertEqual([p for p, _ in T.rotation(prior, FALLBACK)], [1, 2, 3, 4, 5, 6, 7, 8, 9])       # 全同分 → pid
+        self.assertEqual([p for p, _ in T.rotation(prior, FALLBACK, ovr={9: 80.0, 8: 70.0})][:3], [9, 8, 1])
+
+    def test_out_removed_next_man_up(self):
         rot = T.rotation(PRIOR, FALLBACK, excluded={1, 2})
         self.check(rot, out={1, 2})
-        self.assertEqual(len(rot), 9)                        # 近況名單只剩 9 人，不為了湊 10 人亂補
-        base = dict(T.rotation(PRIOR, FALLBACK))
-        self.assertGreater(dict(rot)[3], base[3])             # 剩下的人分到更多分鐘
+        self.assertEqual([m for _, m in rot], self.TABLE)                        # 還有 9 人（3~11）→ 仍是完整一張表，不會被放大
+        self.assertEqual(rot[0][0], 3)
+
+    def test_fewer_than_nine_adds_missing_minutes_to_front(self):
+        rot = T.norm_table([[p, 30.0 - p] for p in range(1, 9)])                  # 8 人：表缺 10 分 → 第一人 +4、第二人 +4、第三人 +2
+        self.assertEqual([m for _, m in rot], [40, 40, 36, 32, 30, 26, 22, 14])
+        self.check(rot)
+        rot7 = T.norm_table([[p, 30.0 - p] for p in range(1, 8)])                 # 7 人：缺 24 → 由前面的人依序補到 40
+        self.assertAlmostEqual(sum(m for _, m in rot7), 240.0)
+        self.assertLessEqual(max(m for _, m in rot7), 40.0)
+        self.assertEqual([m for _, m in rot7][:3], [40, 40, 40])
+        five = T.norm_table([[p, 30.0 - p] for p in range(1, 6)])                 # 5 人：就算每人 40 也只有 200 → 240 平均攤
+        self.assertEqual([m for _, m in five], [48.0] * 5)
+        self.assertEqual(T.norm_table([]), [])
 
     def test_cap_binds_with_few_players(self):
-        rot = T.rotation(PRIOR, FALLBACK + [[i, 10.0] for i in range(15, 21)], excluded=set(range(1, 9)))   # 近況只剩 3 人 → 由季前名單補到 8 人以上
+        rot = T.rotation(PRIOR, FALLBACK + [[i, 10.0] for i in range(15, 21)], excluded=set(range(1, 9)))   # 近況只剩 3 人 → 由季前名單補到 8 人
         self.check(rot, out=set(range(1, 9)))
         self.assertGreaterEqual(len(rot), 8)
-        thin = T.norm([[1, 30], [2, 30], [3, 30], [4, 30], [5, 30]])
-        self.check(thin)                                      # 5 人×48＝240，上限剛好
 
     def test_no_prior_uses_fallback(self):
         self.check(T.rotation([], FALLBACK, excluded={1}), out={1})
 
     def test_out_statuses(self):
-        for s in ('Out', 'out', 'Doubtful', 'Suspension'):
+        for s in ('Out', 'out', 'Doubtful', 'Questionable', 'Day-To-Day', 'Suspension'):
             self.assertTrue(T.is_out(s), s)
-        for s in ('Day-To-Day', 'Questionable', 'Probable', ''):
+        for s in ('Probable', 'Available', ''):
             self.assertFalse(T.is_out(s), s)
+        self.assertTrue(T.is_long_out('Out') and T.is_long_out('Suspension') and not T.is_long_out('Questionable') and not T.is_long_out('Day-To-Day'))
 
 
 class Injuries(unittest.TestCase):
@@ -67,7 +99,7 @@ class Injuries(unittest.TestCase):
         it = T.parse_espn(raw)
         self.assertEqual([i['status'] for i in it], ['Doubtful', 'Day-To-Day', 'Out'])
         self.assertEqual(it[0]['team'], 'GSW')
-        self.assertTrue(T.is_out(it[0]['status']) and not T.is_out(it[1]['status']))
+        self.assertTrue(T.is_out(it[0]['status']) and T.is_out(it[1]['status']))      # R-151：Day-To-Day 也預先排除
 
     def test_name_matching(self):
         idx = {T.nn('Nikola Jokić'): [(203999, 'DEN')], T.nn('Tim Hardaway Jr.'): [(1, 'DAL')],
@@ -107,7 +139,7 @@ class OfficialPdf(unittest.TestCase):
         self.assertEqual(by['Chet Holmgren']['comment'], 'Injury/Illness - Right Knee/ Injury Recovery')       # 折行的原因接回去
         self.assertEqual(by['Jalen Williams']['team'], 'OKC')                                                 # 三個 Williams 各歸各隊
         self.assertEqual(by['Mark Williams']['team'], 'PHX')
-        self.assertTrue(T.is_out('Doubtful') and not T.is_out(by['Caleb Martin']['status']) and not T.is_out('Probable'))
+        self.assertTrue(T.is_out('Doubtful') and T.is_out('Questionable') and not T.is_out(by['Caleb Martin']['status']) and not T.is_out('Probable'))   # 官方 PDF 的 Questionable 也排除，Probable／Available 不排
 
     def test_eastern_time_and_urls(self):
         utc = dt.timezone.utc
@@ -182,6 +214,20 @@ class OfficialPdf(unittest.TestCase):
             raise AssertionError('不該碰 ESPN')
         doc, n_pdf, _ = self.run_load(must_not_call, source='pdf')
         self.assertEqual((doc['source'], n_pdf), ('nba-official-pdf', 1))
+
+    def test_snapshot_saved_after_fetch(self):
+        raw = {'timestamp': 't', 'injuries': [{'displayName': 'Oklahoma City Thunder', 'injuries': [
+            {'status': 'Out', 'athlete': {'displayName': 'Alex Caruso', 'team': {'abbreviation': 'OKC'}}}]}]}
+        idx = {T.nn('Alex Caruso'): [(1, 'OKC')]}
+        with tempfile.TemporaryDirectory() as td:
+            inj = Path(td) / 'injuries.json'
+            with mock.patch.object(T, 'INJURIES', inj), mock.patch.object(T, 'fetch_json', lambda u: raw):
+                doc = T.load_injuries(idx, True, 'espn')
+            snaps = list((Path(td) / 'injury-snapshots').glob('*.json'))
+            self.assertEqual(len(snaps), 1)
+            self.assertRegex(snaps[0].name, r'^\d{8}T\d{6}Z\.json$')
+            self.assertEqual(json.loads(snaps[0].read_text(encoding='utf-8')), json.loads(inj.read_text(encoding='utf-8')))
+            self.assertEqual(json.loads(snaps[0].read_text(encoding='utf-8'))['items'][0]['playerId'], 1)
 
     def test_both_fail_reuses_previous(self):
         def bad(url):
@@ -354,7 +400,8 @@ class Product(unittest.TestCase):
             for v in ('c', 'today'):
                 rot = t[v]['rotation']
                 self.assertAlmostEqual(sum(r['min'] for r in rot), 240.0, places=3, msg=t['name'])
-                self.assertLessEqual(max(r['min'] for r in rot), 48.0 + 1e-6)
+                if len(rot) >= 9:
+                    self.assertLessEqual(max(r['min'] for r in rot), 36.0 + 1e-6)
             self.assertFalse({r['pid'] for r in t['today']['rotation']} & outs, t['name'])
             if 'lineupStates' in t['today']:
                 self.assertGreaterEqual(t['today']['lineupStates'], 1)

@@ -1,21 +1,21 @@
 {
- "generatedAt": "2026-11-02T19:08:44+08:00",
+ "generatedAt": "2026-11-03T16:51:46+08:00",
  "season": "2026-27",
  "version": "inseason 0.2.12c",
- "dataCutoff": "2026-11-01",
+ "dataCutoff": "2026-11-02",
  "engine": "sim 0.1.4",
  "seeds": 200,
  "H": 2.5,
  "sigma": 12.0,
  "lastN": 10,
- "gamesPlayed": 92,
+ "gamesPlayed": 107,
  "injuries": {
-  "fetchedAt": "2026-11-02T18:52:00+08:00",
+  "fetchedAt": "2026-11-03T16:48:12+08:00",
   "source": "espn",
-  "espnTimestamp": "2026-11-02T10:51:59Z",
+  "espnTimestamp": "2026-11-03T08:48:09Z",
   "reportTime": null,
   "pdfUrl": null,
-  "stale": true,
+  "stale": false,
   "unmatched": [
    "Henri Veesaar",
    "Tyler Bilodeau",
@@ -28,16 +28,15 @@
   ],
   "outNoReturnDate": 0
  },
- "today": "2026-11-02",
+ "today": "2026-11-03",
  "returnMin": 15.0,
  "schedule": {
-  "fetchedAt": "2026-11-02T10:52:02.013Z",
+  "fetchedAt": "2026-11-03T08:48:13.577Z",
   "source": "cdn.nba.com scheduleLeagueV2",
-  "remainingGames": 1108
+  "remainingGames": 1093
  },
  "missingProfiles": [
   1626209,
-  1642284,
   1642350,
   1642394,
   1642865,
@@ -51,16 +50,13 @@
   1643413,
   1643414,
   1643415,
-  1643417,
   1643509,
   1643512,
-  1643515,
   1643516,
   1643530,
-  1643544,
+  1643552,
   1643567,
   1643624,
-  1643633,
   1643717,
   1643813
  ],
@@ -108,39 +104,31 @@
    "ovr": 84.7156
   }
  ],
- "elapsedSec": 154.5,
+ "elapsedSec": 213.9,
  "teams": {
   "1610612737": {
    "name": "Atlanta Hawks",
    "abbr": "ATL",
-   "W": 3,
+   "W": 4,
    "L": 4,
    "injured": [
     {
-     "name": "Kingston Flemings",
-     "status": "Suspension",
-     "date": "2026-11-02T02:02Z",
-     "comment": "Flemings (suspension) won't play in Monday's game against Indiana, Andrew Schlecht of The Athletic reports.",
+     "name": "Jock Landale",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T05:48Z",
+     "comment": "Landale (hip) has been ruled out for Monday's game against Indiana.",
      "returnDate": "2026-11-04",
-     "playerId": 1643412,
-     "missGames": 1
+     "playerId": 1629111,
+     "missGames": 0
     },
     {
      "name": "Jalen Johnson",
      "status": "Day-To-Day",
-     "date": "2026-11-01T22:28Z",
-     "comment": "Johnson (ankle) is questionable to play Monday against the Pacers.",
-     "returnDate": "2026-11-02",
-     "playerId": 1630552
-    },
-    {
-     "name": "Jock Landale",
-     "status": "Out",
-     "date": "2026-11-01T22:22Z",
-     "comment": "Landale (hip) has been ruled out for Monday's game against Indiana.",
+     "date": "2026-11-03T05:48Z",
+     "comment": "Johnson (ankle) has been ruled out for Monday's game versus Indiana.",
      "returnDate": "2026-11-04",
-     "playerId": 1629111,
-     "missGames": 1
+     "playerId": 1630552,
+     "missGames": 0
     },
     {
      "name": "Mouhamed Gueye",
@@ -149,7 +137,7 @@
      "comment": "Gueye underwent surgery Tuesday to repair a fractured left foot that he suffered during a workout last week, Brad Rowland of the Locked On Podcast Network reports.",
      "returnDate": "2026-11-20",
      "playerId": 1631243,
-     "missGames": 8
+     "missGames": 7
     },
     {
      "name": "Henri Veesaar",
@@ -161,148 +149,136 @@
     }
    ],
    "c": {
-    "ortg": -2.3609392697703555,
-    "drtg": 0.0014599444300671394,
-    "net": -2.3623992142004226,
-    "margin": 5.785,
-    "predWins": 35.64662005615138,
-    "schedGames": 73,
+    "ortg": -2.8239211923529695,
+    "drtg": -1.5704238516229054,
+    "net": -1.253497340730064,
+    "margin": 7.195,
+    "predWins": 38.95292315957187,
+    "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630552,
       "name": "Jalen Johnson",
-      "min": 32.613984,
-      "ovr": 89.6
+      "min": 36.0,
+      "ovr": 88.1
      },
      {
       "pid": 1629638,
       "name": "Nickeil Alexander-Walker",
-      "min": 30.10887,
-      "ovr": 81.3
+      "min": 36.0,
+      "ovr": 80.2
      },
      {
       "pid": 1630700,
       "name": "Dyson Daniels",
-      "min": 28.896796,
-      "ovr": 79.2
+      "min": 34.0,
+      "ovr": 78.3
      },
      {
       "pid": 1630168,
       "name": "Onyeka Okongwu",
-      "min": 28.215688,
-      "ovr": 76.4
+      "min": 32.0,
+      "ovr": 74.4
      },
      {
       "pid": 203468,
       "name": "CJ McCollum",
-      "min": 25.886843,
-      "ovr": 66.9
+      "min": 30.0,
+      "ovr": 65.7
      },
      {
       "pid": 1630598,
       "name": "Aaron Wiggins",
-      "min": 25.589177,
-      "ovr": 74.8
+      "min": 26.0,
+      "ovr": 74.2
      },
      {
       "pid": 1629652,
       "name": "Luguentz Dort",
-      "min": 23.710252,
-      "ovr": 64.1
+      "min": 22.0,
+      "ovr": 62.3
      },
      {
       "pid": 1643412,
       "name": "Kingston Flemings",
-      "min": 20.309708,
-      "ovr": 75.6
+      "min": 14.0,
+      "ovr": 75.7
      },
      {
       "pid": 1629111,
       "name": "Jock Landale",
-      "min": 15.257059,
-      "ovr": 59.3
-     },
-     {
-      "pid": 1642854,
-      "name": "Asa Newell",
-      "min": 9.411624,
-      "ovr": 52.6
+      "min": 10.0,
+      "ovr": 57.8
      }
     ]
    },
    "today": {
-    "ortg": -2.936100327292678,
-    "drtg": -0.9453786617863358,
-    "net": -1.9907216655063422,
-    "margin": 6.215,
-    "predWins": 36.15097935785591,
-    "schedGames": 73,
+    "ortg": -4.068068505200614,
+    "drtg": -0.8734867045012038,
+    "net": -3.1945818006994102,
+    "margin": 5.13,
+    "predWins": 38.86784394038825,
+    "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
-      "pid": 1630552,
-      "name": "Jalen Johnson",
-      "min": 36.510849,
-      "ovr": 89.6
-     },
-     {
       "pid": 1629638,
       "name": "Nickeil Alexander-Walker",
-      "min": 33.706413,
-      "ovr": 81.3
+      "min": 36.0,
+      "ovr": 80.2
      },
      {
       "pid": 1630700,
       "name": "Dyson Daniels",
-      "min": 32.349515,
-      "ovr": 79.2
+      "min": 36.0,
+      "ovr": 78.3
      },
      {
       "pid": 1630168,
       "name": "Onyeka Okongwu",
-      "min": 31.587025,
-      "ovr": 76.4
+      "min": 34.0,
+      "ovr": 74.4
      },
      {
       "pid": 203468,
       "name": "CJ McCollum",
-      "min": 28.979919,
-      "ovr": 66.9
+      "min": 32.0,
+      "ovr": 65.7
      },
      {
       "pid": 1630598,
       "name": "Aaron Wiggins",
-      "min": 28.646686,
-      "ovr": 74.8
+      "min": 30.0,
+      "ovr": 74.2
      },
      {
       "pid": 1629652,
       "name": "Luguentz Dort",
-      "min": 26.54326,
-      "ovr": 64.1
+      "min": 26.0,
+      "ovr": 62.3
+     },
+     {
+      "pid": 1643412,
+      "name": "Kingston Flemings",
+      "min": 22.0,
+      "ovr": 75.7
      },
      {
       "pid": 1642854,
       "name": "Asa Newell",
-      "min": 10.536167,
-      "ovr": 52.6
+      "min": 14.0,
+      "ovr": 49.5
      },
      {
       "pid": 1630557,
       "name": "Corey Kispert",
-      "min": 5.821905,
-      "ovr": 60.9
-     },
-     {
-      "pid": 1643544,
-      "name": "Zuby Ejiofor",
-      "min": 5.318261,
-      "ovr": 53.0
+      "min": 10.0,
+      "ovr": 59.2
      }
     ],
-    "predWinsAllSeason": 37.775846597787016,
-    "lineupStates": 2
+    "predWinsAllSeason": 35.88964758465225,
+    "lineupStates": 1
    },
    "restored": [],
    "nOut": 3
@@ -311,16 +287,16 @@
    "name": "Boston Celtics",
    "abbr": "BOS",
    "W": 5,
-   "L": 1,
+   "L": 2,
    "injured": [
     {
-     "name": "Mitchell Robinson",
-     "status": "Out",
-     "date": "2026-11-01T15:05Z",
-     "comment": "Robinson (rest) has been ruled out for Sunday's game against the Magic.",
-     "returnDate": "2026-11-02",
-     "playerId": 1629011,
-     "missGames": 1
+     "name": "Paul George",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T06:08Z",
+     "comment": "George will be rested Monday against Houston.",
+     "returnDate": "2026-11-04",
+     "playerId": 202331,
+     "missGames": 0
     },
     {
      "name": "Devin Carter",
@@ -329,152 +305,140 @@
      "comment": "Carter has been diagnosed with mononucleosis and is without a timetable for a return, Gary Washburn of The Boston Globe reports.",
      "returnDate": "2026-11-08",
      "playerId": 1642269,
-     "missGames": 3
+     "missGames": 2
     }
    ],
    "c": {
-    "ortg": 1.229591508547088,
-    "drtg": -4.783839755639875,
-    "net": 6.013431264186963,
-    "margin": 14.485,
-    "predWins": 57.50034843994564,
-    "schedGames": 74,
+    "ortg": 1.9901912047744617,
+    "drtg": -4.538869918318326,
+    "net": 6.529061123092788,
+    "margin": 15.335,
+    "predWins": 58.16393932404633,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1628369,
       "name": "Jayson Tatum",
-      "min": 36.670049,
-      "ovr": 94.9
+      "min": 36.0,
+      "ovr": 94.3
      },
      {
       "pid": 202331,
       "name": "Paul George",
-      "min": 31.900206,
-      "ovr": 90.7
+      "min": 36.0,
+      "ovr": 91.8
      },
      {
       "pid": 1628401,
       "name": "Derrick White",
-      "min": 30.905718,
-      "ovr": 88.0
+      "min": 34.0,
+      "ovr": 87.8
      },
      {
       "pid": 1630202,
       "name": "Payton Pritchard",
-      "min": 28.631173,
-      "ovr": 86.6
+      "min": 32.0,
+      "ovr": 84.6
      },
      {
       "pid": 1629674,
       "name": "Neemias Queta",
-      "min": 21.775655,
+      "min": 30.0,
       "ovr": 80.5
+     },
+     {
+      "pid": 1631248,
+      "name": "Baylor Scheierman",
+      "min": 26.0,
+      "ovr": 69.5
      },
      {
       "pid": 1630573,
       "name": "Sam Hauser",
-      "min": 20.696515,
-      "ovr": 73.6
+      "min": 22.0,
+      "ovr": 74.8
      },
      {
       "pid": 1629011,
       "name": "Mitchell Robinson",
-      "min": 20.580857,
-      "ovr": 72.9
-     },
-     {
-      "pid": 1631248,
-      "name": "Baylor Scheierman",
-      "min": 19.33134,
-      "ovr": 68.6
+      "min": 14.0,
+      "ovr": 72.0
      },
      {
       "pid": 1641775,
       "name": "Jordan Walsh",
-      "min": 16.983116,
-      "ovr": 61.4
-     },
-     {
-      "pid": 1642864,
-      "name": "Hugo González",
-      "min": 12.52537,
-      "ovr": 64.2
+      "min": 10.0,
+      "ovr": 60.2
      }
     ]
    },
    "today": {
-    "ortg": 2.560371161207769,
-    "drtg": -3.6108065013632427,
-    "net": 6.1711776625710115,
-    "margin": 14.605,
-    "predWins": 57.76971301741394,
-    "schedGames": 74,
+    "ortg": 5.389807841872326,
+    "drtg": -4.414139842050432,
+    "net": 9.803947683922758,
+    "margin": 18.51,
+    "predWins": 58.17264527860113,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1628369,
       "name": "Jayson Tatum",
-      "min": 38.171982,
-      "ovr": 94.9
-     },
-     {
-      "pid": 202331,
-      "name": "Paul George",
-      "min": 33.206776,
-      "ovr": 90.7
+      "min": 36.0,
+      "ovr": 94.3
      },
      {
       "pid": 1628401,
       "name": "Derrick White",
-      "min": 32.171556,
-      "ovr": 88.0
+      "min": 36.0,
+      "ovr": 87.8
      },
      {
       "pid": 1630202,
       "name": "Payton Pritchard",
-      "min": 29.80385,
-      "ovr": 86.6
+      "min": 34.0,
+      "ovr": 84.6
      },
      {
       "pid": 1629674,
       "name": "Neemias Queta",
-      "min": 22.667543,
+      "min": 32.0,
       "ovr": 80.5
-     },
-     {
-      "pid": 1630573,
-      "name": "Sam Hauser",
-      "min": 21.544204,
-      "ovr": 73.6
      },
      {
       "pid": 1631248,
       "name": "Baylor Scheierman",
-      "min": 20.123114,
-      "ovr": 68.6
+      "min": 30.0,
+      "ovr": 69.5
+     },
+     {
+      "pid": 1630573,
+      "name": "Sam Hauser",
+      "min": 26.0,
+      "ovr": 74.8
+     },
+     {
+      "pid": 1629011,
+      "name": "Mitchell Robinson",
+      "min": 22.0,
+      "ovr": 72.0
      },
      {
       "pid": 1641775,
       "name": "Jordan Walsh",
-      "min": 17.678711,
-      "ovr": 61.4
+      "min": 14.0,
+      "ovr": 60.2
      },
      {
       "pid": 1642864,
       "name": "Hugo González",
-      "min": 13.038385,
-      "ovr": 64.2
-     },
-     {
-      "pid": 1630568,
-      "name": "Luka Garza",
-      "min": 11.593878,
-      "ovr": 66.4
+      "min": 10.0,
+      "ovr": 63.5
      }
     ],
-    "predWinsAllSeason": 58.735926575337665,
-    "lineupStates": 2
+    "predWinsAllSeason": 65.18087766892242,
+    "lineupStates": 1
    },
    "restored": [],
    "nOut": 2
@@ -483,186 +447,176 @@
    "name": "Cleveland Cavaliers",
    "abbr": "CLE",
    "W": 4,
-   "L": 2,
+   "L": 3,
    "injured": [
     {
      "name": "Peyton Watson",
      "status": "Day-To-Day",
-     "date": "2026-11-01T21:57Z",
-     "comment": "Watson (hamstring) is questionable to play in Monday's game against Oklahoma City.",
-     "returnDate": "2026-11-02",
-     "playerId": 1631212
+     "date": "2026-11-03T05:29Z",
+     "comment": "Watson (hamstring) is out for Monday's game against the Thunder, Chris Fedor of The Cleveland Plain Dealer reports.",
+     "returnDate": "2026-11-04",
+     "playerId": 1631212,
+     "missGames": 0
     },
     {
      "name": "Jaylon Tyson",
-     "status": "Out",
-     "date": "2026-11-01T21:50Z",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T05:29Z",
      "comment": "Tyson (ankle) has been ruled out for Monday's game against Oklahoma City.",
      "returnDate": "2026-11-04",
      "playerId": 1642281,
-     "missGames": 1
+     "missGames": 0
     }
    ],
    "c": {
-    "ortg": 4.517089459260248,
-    "drtg": -0.054130914940742514,
-    "net": 4.5712203742009905,
-    "margin": 12.67,
-    "predWins": 52.61793897495385,
-    "schedGames": 74,
+    "ortg": 6.358315618861226,
+    "drtg": -2.6365833027827676,
+    "net": 8.994898921643994,
+    "margin": 17.445,
+    "predWins": 61.04884832626987,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 201935,
       "name": "James Harden",
-      "min": 32.161598,
-      "ovr": 78.5
+      "min": 36.0,
+      "ovr": 77.5
      },
      {
       "pid": 1628378,
       "name": "Donovan Mitchell",
-      "min": 31.510373,
-      "ovr": 96.7
+      "min": 36.0,
+      "ovr": 96.2
      },
      {
       "pid": 1630596,
       "name": "Evan Mobley",
-      "min": 31.35167,
+      "min": 34.0,
       "ovr": 92.7
      },
      {
       "pid": 1631212,
       "name": "Peyton Watson",
-      "min": 27.267527,
-      "ovr": 67.3
+      "min": 32.0,
+      "ovr": 63.2
      },
      {
       "pid": 1628386,
       "name": "Jarrett Allen",
-      "min": 26.715292,
-      "ovr": 85.6
+      "min": 30.0,
+      "ovr": 88.3
      },
      {
       "pid": 1630241,
       "name": "Sam Merrill",
-      "min": 22.664812,
-      "ovr": 81.9
+      "min": 26.0,
+      "ovr": 82.6
+     },
+     {
+      "pid": 1643509,
+      "name": "Meleek Thomas",
+      "min": 22.0,
+      "ovr": 62.6
      },
      {
       "pid": 1642281,
       "name": "Jaylon Tyson",
-      "min": 19.806277,
-      "ovr": 66.2
-     },
-     {
-      "pid": 1643509,
-      "name": "Meleek Thomas",
-      "min": 19.680302,
-      "ovr": 59.0
+      "min": 14.0,
+      "ovr": 66.8
      },
      {
       "pid": 1626209,
       "name": "Mario Hezonja",
-      "min": 17.2316,
+      "min": 10.0,
       "ovr": null
-     },
-     {
-      "pid": 1642878,
-      "name": "Tyrese Proctor",
-      "min": 11.610549,
-      "ovr": 64.0
      }
     ]
    },
    "today": {
-    "ortg": 5.611363425389115,
-    "drtg": -1.855143908553032,
-    "net": 7.466507333942147,
-    "margin": 15.79,
-    "predWins": 53.11921232164121,
-    "schedGames": 74,
+    "ortg": 7.406134978647302,
+    "drtg": 1.2552830587835615,
+    "net": 6.15085191986374,
+    "margin": 14.705,
+    "predWins": 61.027583252887425,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 201935,
       "name": "James Harden",
-      "min": 33.450832,
-      "ovr": 78.5
+      "min": 36.0,
+      "ovr": 77.5
      },
      {
       "pid": 1628378,
       "name": "Donovan Mitchell",
-      "min": 32.773503,
-      "ovr": 96.7
+      "min": 36.0,
+      "ovr": 96.2
      },
      {
       "pid": 1630596,
       "name": "Evan Mobley",
-      "min": 32.608438,
+      "min": 34.0,
       "ovr": 92.7
-     },
-     {
-      "pid": 1631212,
-      "name": "Peyton Watson",
-      "min": 28.360577,
-      "ovr": 67.3
      },
      {
       "pid": 1628386,
       "name": "Jarrett Allen",
-      "min": 27.786205,
-      "ovr": 85.6
+      "min": 32.0,
+      "ovr": 88.3
      },
      {
       "pid": 1630241,
       "name": "Sam Merrill",
-      "min": 23.573357,
-      "ovr": 81.9
+      "min": 30.0,
+      "ovr": 82.6
      },
      {
       "pid": 1643509,
       "name": "Meleek Thomas",
-      "min": 20.46921,
-      "ovr": 59.0
+      "min": 26.0,
+      "ovr": 62.6
      },
      {
       "pid": 1626209,
       "name": "Mario Hezonja",
-      "min": 17.922349,
+      "min": 22.0,
       "ovr": null
      },
      {
       "pid": 1642878,
       "name": "Tyrese Proctor",
-      "min": 12.075971,
-      "ovr": 64.0
+      "min": 14.0,
+      "ovr": 70.5
      },
      {
-      "pid": 1628418,
-      "name": "Thomas Bryant",
-      "min": 10.979558,
-      "ovr": 60.2
+      "pid": 1641854,
+      "name": "Craig Porter Jr.",
+      "min": 10.0,
+      "ovr": 66.3
      }
     ],
-    "predWinsAllSeason": 60.32799537504558,
-    "lineupStates": 2
+    "predWinsAllSeason": 57.080389680771916,
+    "lineupStates": 1
    },
    "restored": [],
-   "nOut": 1
+   "nOut": 2
   },
   "1610612740": {
    "name": "New Orleans Pelicans",
    "abbr": "NOP",
-   "W": 2,
+   "W": 3,
    "L": 4,
    "injured": [
     {
-     "name": "Trey Murphy III",
-     "status": "Day-To-Day",
-     "date": "2026-11-01T20:19Z",
-     "comment": "Murphy (knee) is listed as probable for Monday's game against the Grizzlies.",
-     "returnDate": "2026-11-02",
-     "playerId": 1630530
+     "name": "Dejounte Murray",
+     "status": "Out",
+     "date": "2026-11-02T22:33Z",
+     "comment": "Murray (personal) is out for Monday's game against the Grizzlies.",
+     "returnDate": "2026-11-04",
+     "playerId": 1627749,
+     "missGames": 0
     },
     {
      "name": "Jordan Poole",
@@ -671,7 +625,7 @@
      "comment": "Poole (ankle) has been ruled out for Monday's game against the Grizzlies.",
      "returnDate": "2026-11-04",
      "playerId": 1629673,
-     "missGames": 1
+     "missGames": 0
     },
     {
      "name": "Yves Missi",
@@ -680,338 +634,290 @@
      "comment": "Missi (knee) won't play in Saturday's game against Atlanta.",
      "returnDate": "2026-11-08",
      "playerId": 1642274,
-     "missGames": 3
+     "missGames": 2
     }
    ],
    "c": {
-    "ortg": -3.1778517577962475,
-    "drtg": 0.7844064838407832,
-    "net": -3.9622582416370307,
-    "margin": 4.18,
-    "predWins": 29.629605414389026,
-    "schedGames": 74,
+    "ortg": -0.9737644812648227,
+    "drtg": 0.10570310900480706,
+    "net": -1.0794675902696298,
+    "margin": 7.46,
+    "predWins": 36.90997643780353,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
-      "pid": 1627749,
-      "name": "Dejounte Murray",
-      "min": 31.321481,
-      "ovr": 80.4
-     },
-     {
       "pid": 1630530,
       "name": "Trey Murphy III",
-      "min": 31.073106,
-      "ovr": 88.5
+      "min": 36.0,
+      "ovr": 87.3
+     },
+     {
+      "pid": 1627749,
+      "name": "Dejounte Murray",
+      "min": 36.0,
+      "ovr": 79.7
      },
      {
       "pid": 1629627,
       "name": "Zion Williamson",
-      "min": 30.989992,
-      "ovr": 86.8
+      "min": 34.0,
+      "ovr": 88.0
      },
      {
       "pid": 1642847,
       "name": "Jeremiah Fears",
-      "min": 24.76984,
-      "ovr": 54.9
+      "min": 32.0,
+      "ovr": 49.5
      },
      {
       "pid": 1630180,
       "name": "Saddiq Bey",
-      "min": 23.968258,
-      "ovr": 72.5
+      "min": 30.0,
+      "ovr": 74.5
      },
      {
       "pid": 1642852,
       "name": "Derik Queen",
-      "min": 23.083342,
-      "ovr": 58.4
+      "min": 26.0,
+      "ovr": 60.8
      },
      {
       "pid": 1630529,
       "name": "Herbert Jones",
-      "min": 20.726526,
-      "ovr": 74.9
+      "min": 22.0,
+      "ovr": 74.5
      },
      {
       "pid": 1642274,
       "name": "Yves Missi",
-      "min": 19.482098,
-      "ovr": 54.9
-     },
-     {
-      "pid": 1630570,
-      "name": "Trendon Watford",
-      "min": 17.493841,
-      "ovr": 64.2
-     },
-     {
-      "pid": 1631097,
-      "name": "Bennedict Mathurin",
-      "min": 17.091516,
-      "ovr": 67.2
-     }
-    ]
-   },
-   "today": {
-    "ortg": -2.815807690845176,
-    "drtg": 0.08101610726751574,
-    "net": -2.896823798112692,
-    "margin": 5.31,
-    "predWins": 29.9964127809751,
-    "schedGames": 74,
-    "poolGames": 2,
-    "rotation": [
-     {
-      "pid": 1627749,
-      "name": "Dejounte Murray",
-      "min": 31.807613,
-      "ovr": 80.4
-     },
-     {
-      "pid": 1630530,
-      "name": "Trey Murphy III",
-      "min": 31.555383,
-      "ovr": 88.5
-     },
-     {
-      "pid": 1629627,
-      "name": "Zion Williamson",
-      "min": 31.470978,
-      "ovr": 86.8
-     },
-     {
-      "pid": 1642847,
-      "name": "Jeremiah Fears",
-      "min": 25.154285,
-      "ovr": 54.9
-     },
-     {
-      "pid": 1630180,
-      "name": "Saddiq Bey",
-      "min": 24.340262,
-      "ovr": 72.5
-     },
-     {
-      "pid": 1642852,
-      "name": "Derik Queen",
-      "min": 23.441611,
-      "ovr": 58.4
-     },
-     {
-      "pid": 1630529,
-      "name": "Herbert Jones",
-      "min": 21.048216,
-      "ovr": 74.9
-     },
-     {
-      "pid": 1630570,
-      "name": "Trendon Watford",
-      "min": 17.765358,
-      "ovr": 64.2
-     },
-     {
-      "pid": 1631097,
-      "name": "Bennedict Mathurin",
-      "min": 17.356788,
-      "ovr": 67.2
+      "min": 14.0,
+      "ovr": 56.4
      },
      {
       "pid": 1631255,
       "name": "Karlo Matković",
-      "min": 16.059507,
-      "ovr": 66.5
+      "min": 10.0,
+      "ovr": 67.5
+     }
+    ]
+   },
+   "today": {
+    "ortg": -2.827019200860974,
+    "drtg": 0.53824236174205,
+    "net": -3.365261562603024,
+    "margin": 5.285,
+    "predWins": 36.67413152703502,
+    "schedGames": 73,
+    "poolGames": 2,
+    "rotation": [
+     {
+      "pid": 1630530,
+      "name": "Trey Murphy III",
+      "min": 36.0,
+      "ovr": 87.3
+     },
+     {
+      "pid": 1629627,
+      "name": "Zion Williamson",
+      "min": 36.0,
+      "ovr": 88.0
+     },
+     {
+      "pid": 1642847,
+      "name": "Jeremiah Fears",
+      "min": 34.0,
+      "ovr": 49.5
+     },
+     {
+      "pid": 1630180,
+      "name": "Saddiq Bey",
+      "min": 32.0,
+      "ovr": 74.5
+     },
+     {
+      "pid": 1642852,
+      "name": "Derik Queen",
+      "min": 30.0,
+      "ovr": 60.8
+     },
+     {
+      "pid": 1630529,
+      "name": "Herbert Jones",
+      "min": 26.0,
+      "ovr": 74.5
+     },
+     {
+      "pid": 1631255,
+      "name": "Karlo Matković",
+      "min": 22.0,
+      "ovr": 67.5
+     },
+     {
+      "pid": 1631097,
+      "name": "Bennedict Mathurin",
+      "min": 14.0,
+      "ovr": 65.2
+     },
+     {
+      "pid": 1630570,
+      "name": "Trendon Watford",
+      "min": 10.0,
+      "ovr": 62.2
      }
     ],
-    "predWinsAllSeason": 33.094191701249876,
+    "predWinsAllSeason": 33.68619345128934,
     "lineupStates": 2
    },
    "restored": [],
-   "nOut": 2
+   "nOut": 3
   },
   "1610612741": {
    "name": "Chicago Bulls",
    "abbr": "CHI",
    "W": 1,
-   "L": 5,
+   "L": 6,
    "injured": [
-    {
-     "name": "Jalen Smith",
-     "status": "Day-To-Day",
-     "date": "2026-11-01T21:40Z",
-     "comment": "Smith (finger) is listed as probable for Monday's game against Philadelphia.",
-     "returnDate": "2026-11-02",
-     "playerId": 1630188
-    },
-    {
-     "name": "Tobe Awaka",
-     "status": "Day-To-Day",
-     "date": "2026-11-01T21:17Z",
-     "comment": "Awaka (ankle) is probable for Monday's game against Philadelphia.",
-     "returnDate": "2026-11-02",
-     "playerId": 1643591
-    },
     {
      "name": "Nic Claxton",
      "status": "Out",
-     "date": "2026-11-01T21:08Z",
-     "comment": "Claxton (hamstring) is listed as doubtful for Monday's game against Philadelphia.",
+     "date": "2026-11-02T22:47Z",
+     "comment": "Claxton (hamstring) is out for Monday's game against the 76ers.",
      "returnDate": "2026-11-04",
      "playerId": 1629651,
-     "missGames": 1
-    },
-    {
-     "name": "Dailyn Swain",
-     "status": "Day-To-Day",
-     "date": "2026-10-31T04:59Z",
-     "comment": "Swain (back) has been ruled out for Friday's game against Boston.",
-     "returnDate": "2026-11-02",
-     "playerId": 1643517
+     "missGames": 0
     }
    ],
    "c": {
-    "ortg": -3.699517316412795,
-    "drtg": 2.493753451565695,
-    "net": -6.19327076797849,
-    "margin": 2.035,
-    "predWins": 25.590950117145045,
-    "schedGames": 74,
+    "ortg": -3.6256727210327,
+    "drtg": 1.055102896637635,
+    "net": -4.680775617670335,
+    "margin": 3.705,
+    "predWins": 28.376229241099274,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1643410,
       "name": "Caleb Wilson",
-      "min": 36.825477,
-      "ovr": 78.8
+      "min": 36.0,
+      "ovr": 81.2
      },
      {
       "pid": 1626181,
       "name": "Norman Powell",
-      "min": 32.234443,
-      "ovr": 78.4
+      "min": 36.0,
+      "ovr": 76.6
      },
      {
       "pid": 1630581,
       "name": "Josh Giddey",
-      "min": 28.450959,
-      "ovr": 78.1
+      "min": 34.0,
+      "ovr": 73.4
      },
      {
       "pid": 1641824,
       "name": "Matas Buzelis",
-      "min": 27.373861,
-      "ovr": 67.3
+      "min": 32.0,
+      "ovr": 66.4
      },
      {
       "pid": 1630188,
       "name": "Jalen Smith",
-      "min": 26.077413,
-      "ovr": 74.8
-     },
-     {
-      "pid": 1631159,
-      "name": "Leonard Miller",
-      "min": 20.202538,
-      "ovr": 51.4
-     },
-     {
-      "pid": 1630200,
-      "name": "Tre Jones",
-      "min": 19.551291,
-      "ovr": 83.2
+      "min": 30.0,
+      "ovr": 75.2
      },
      {
       "pid": 1630171,
       "name": "Isaac Okoro",
-      "min": 19.179108,
-      "ovr": 60.0
+      "min": 26.0,
+      "ovr": 57.6
+     },
+     {
+      "pid": 1630200,
+      "name": "Tre Jones",
+      "min": 22.0,
+      "ovr": 81.9
+     },
+     {
+      "pid": 1631159,
+      "name": "Leonard Miller",
+      "min": 14.0,
+      "ovr": 50.7
      },
      {
       "pid": 1642855,
       "name": "Noa Essengue",
-      "min": 15.054267,
-      "ovr": 50.5
-     },
-     {
-      "pid": 1627741,
-      "name": "Buddy Hield",
-      "min": 15.050644,
-      "ovr": 67.3
+      "min": 10.0,
+      "ovr": 52.7
      }
     ]
    },
    "today": {
-    "ortg": -3.699517316412795,
-    "drtg": 2.493753451565695,
-    "net": -6.19327076797849,
-    "margin": 2.035,
-    "predWins": 25.73689288533902,
-    "schedGames": 74,
+    "ortg": -3.6256727210327,
+    "drtg": 1.055102896637635,
+    "net": -4.680775617670335,
+    "margin": 3.705,
+    "predWins": 28.28109829884206,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1643410,
       "name": "Caleb Wilson",
-      "min": 36.825477,
-      "ovr": 78.8
+      "min": 36.0,
+      "ovr": 81.2
      },
      {
       "pid": 1626181,
       "name": "Norman Powell",
-      "min": 32.234443,
-      "ovr": 78.4
+      "min": 36.0,
+      "ovr": 76.6
      },
      {
       "pid": 1630581,
       "name": "Josh Giddey",
-      "min": 28.450959,
-      "ovr": 78.1
+      "min": 34.0,
+      "ovr": 73.4
      },
      {
       "pid": 1641824,
       "name": "Matas Buzelis",
-      "min": 27.373861,
-      "ovr": 67.3
+      "min": 32.0,
+      "ovr": 66.4
      },
      {
       "pid": 1630188,
       "name": "Jalen Smith",
-      "min": 26.077413,
-      "ovr": 74.8
-     },
-     {
-      "pid": 1631159,
-      "name": "Leonard Miller",
-      "min": 20.202538,
-      "ovr": 51.4
-     },
-     {
-      "pid": 1630200,
-      "name": "Tre Jones",
-      "min": 19.551291,
-      "ovr": 83.2
+      "min": 30.0,
+      "ovr": 75.2
      },
      {
       "pid": 1630171,
       "name": "Isaac Okoro",
-      "min": 19.179108,
-      "ovr": 60.0
+      "min": 26.0,
+      "ovr": 57.6
+     },
+     {
+      "pid": 1630200,
+      "name": "Tre Jones",
+      "min": 22.0,
+      "ovr": 81.9
+     },
+     {
+      "pid": 1631159,
+      "name": "Leonard Miller",
+      "min": 14.0,
+      "ovr": 50.7
      },
      {
       "pid": 1642855,
       "name": "Noa Essengue",
-      "min": 15.054267,
-      "ovr": 50.5
-     },
-     {
-      "pid": 1627741,
-      "name": "Buddy Hield",
-      "min": 15.050644,
-      "ovr": 67.3
+      "min": 10.0,
+      "ovr": 52.7
      }
     ],
-    "predWinsAllSeason": 26.316124098173052,
+    "predWinsAllSeason": 29.98438041647237,
     "lineupStates": 1
    },
    "restored": [],
@@ -1021,8 +927,35 @@
    "name": "Dallas Mavericks",
    "abbr": "DAL",
    "W": 4,
-   "L": 2,
+   "L": 3,
    "injured": [
+    {
+     "name": "Kyrie Irving",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T06:03Z",
+     "comment": "Irving (knee) has been ruled out for Monday's game against the Kings.",
+     "returnDate": "2026-11-04",
+     "playerId": 202681,
+     "missGames": 0
+    },
+    {
+     "name": "Max Christie",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T02:30Z",
+     "comment": "Christie has been ruled out for the rest of Monday's game against the Kings due to a right hip injury, Mike Curtis of The Dallas Morning News reports. He'll end the night with no points (0-5 FG, 0-5 3Pt), two rebounds and one steal in eight",
+     "returnDate": "2026-11-04",
+     "playerId": 1631108,
+     "missGames": 0
+    },
+    {
+     "name": "Santi Aldama",
+     "status": "Out",
+     "date": "2026-11-02T23:12Z",
+     "comment": "Aldama (knee) has been ruled out for Monday's matchup with Sacramento.",
+     "returnDate": "2026-11-04",
+     "playerId": 1630583,
+     "missGames": 0
+    },
     {
      "name": "Tarik Biberovic",
      "status": "Out",
@@ -1038,24 +971,7 @@
      "comment": "Lively (foot) is listed as out for Monday's game against the Kings.",
      "returnDate": "2026-11-12",
      "playerId": 1641726,
-     "missGames": 5
-    },
-    {
-     "name": "Kyrie Irving",
-     "status": "Day-To-Day",
-     "date": "2026-11-01T22:57Z",
-     "comment": "Irving (knee) is questionable to play Monday against the Kings.",
-     "returnDate": "2026-11-02",
-     "playerId": 202681
-    },
-    {
-     "name": "Santi Aldama",
-     "status": "Out",
-     "date": "2026-11-01T22:51Z",
-     "comment": "Aldama (knee) is listed as doubtful for Monday's game against the Kings.",
-     "returnDate": "2026-11-04",
-     "playerId": 1630583,
-     "missGames": 1
+     "missGames": 4
     },
     {
      "name": "Sergio de Larrea",
@@ -1064,163 +980,150 @@
      "comment": "Head coach Dusty May said Friday that de Larrea (knee) will be re-evaluated next week, Noah Weber of TheSmokingCuban.com reports.",
      "returnDate": "2026-11-04",
      "playerId": 1643547,
-     "missGames": 1
+     "missGames": 0
     }
    ],
    "c": {
-    "ortg": -5.745324688177973,
-    "drtg": 1.89721812738469,
-    "net": -7.642542815562663,
-    "margin": 0.605,
-    "predWins": 25.34134206502191,
-    "schedGames": 74,
+    "ortg": -6.342710504659337,
+    "drtg": 1.1613699057026423,
+    "net": -7.504080410361979,
+    "margin": 0.865,
+    "predWins": 24.134281934991158,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1629023,
       "name": "P.J. Washington",
-      "min": 31.483515,
-      "ovr": 66.0
+      "min": 36.0,
+      "ovr": 65.3
      },
      {
       "pid": 1642843,
       "name": "Cooper Flagg",
-      "min": 30.382265,
-      "ovr": 82.6
-     },
-     {
-      "pid": 1642258,
-      "name": "Zaccharie Risacher",
-      "min": 27.702484,
-      "ovr": 56.1
+      "min": 36.0,
+      "ovr": 81.6
      },
      {
       "pid": 202681,
       "name": "Kyrie Irving",
-      "min": 26.936533,
+      "min": 34.0,
       "ovr": 90.2599,
       "ovrSrc": "24-25 卡"
      },
      {
-      "pid": 1630230,
-      "name": "Naji Marshall",
-      "min": 26.023346,
-      "ovr": 67.7
+      "pid": 1642258,
+      "name": "Zaccharie Risacher",
+      "min": 32.0,
+      "ovr": 54.6
      },
      {
-      "pid": 1631108,
-      "name": "Max Christie",
-      "min": 24.776001,
-      "ovr": 61.9
+      "pid": 1630230,
+      "name": "Naji Marshall",
+      "min": 30.0,
+      "ovr": 62.3
      },
      {
       "pid": 1629655,
       "name": "Daniel Gafford",
-      "min": 22.020995,
-      "ovr": 77.4
+      "min": 26.0,
+      "ovr": 80.6
+     },
+     {
+      "pid": 1631108,
+      "name": "Max Christie",
+      "min": 22.0,
+      "ovr": 59.5
      },
      {
       "pid": 1628997,
       "name": "Caleb Martin",
-      "min": 18.257745,
-      "ovr": 62.3
+      "min": 14.0,
+      "ovr": 62.9
      },
      {
       "pid": 1631204,
       "name": "Marcus Sasser",
-      "min": 17.887736,
-      "ovr": 64.7
-     },
-     {
-      "pid": 1643516,
-      "name": "Morez Johnson Jr.",
-      "min": 14.529381,
-      "ovr": 59.2
+      "min": 10.0,
+      "ovr": 66.8
      }
     ]
    },
    "today": {
-    "ortg": -5.745324688177973,
-    "drtg": 1.89721812738469,
-    "net": -7.642542815562663,
-    "margin": 0.605,
-    "predWins": 25.515839986668365,
-    "schedGames": 74,
+    "ortg": -8.107698246247622,
+    "drtg": -0.5259798037930494,
+    "net": -7.581718442454573,
+    "margin": 0.905,
+    "predWins": 24.324389501676283,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1629023,
       "name": "P.J. Washington",
-      "min": 31.483515,
-      "ovr": 66.0
+      "min": 36.0,
+      "ovr": 65.3
      },
      {
       "pid": 1642843,
       "name": "Cooper Flagg",
-      "min": 30.382265,
-      "ovr": 82.6
+      "min": 36.0,
+      "ovr": 81.6
      },
      {
       "pid": 1642258,
       "name": "Zaccharie Risacher",
-      "min": 27.702484,
-      "ovr": 56.1
-     },
-     {
-      "pid": 202681,
-      "name": "Kyrie Irving",
-      "min": 26.936533,
-      "ovr": 90.2599,
-      "ovrSrc": "24-25 卡"
+      "min": 34.0,
+      "ovr": 54.6
      },
      {
       "pid": 1630230,
       "name": "Naji Marshall",
-      "min": 26.023346,
-      "ovr": 67.7
-     },
-     {
-      "pid": 1631108,
-      "name": "Max Christie",
-      "min": 24.776001,
-      "ovr": 61.9
+      "min": 32.0,
+      "ovr": 62.3
      },
      {
       "pid": 1629655,
       "name": "Daniel Gafford",
-      "min": 22.020995,
-      "ovr": 77.4
+      "min": 30.0,
+      "ovr": 80.6
      },
      {
       "pid": 1628997,
       "name": "Caleb Martin",
-      "min": 18.257745,
-      "ovr": 62.3
+      "min": 26.0,
+      "ovr": 62.9
      },
      {
       "pid": 1631204,
       "name": "Marcus Sasser",
-      "min": 17.887736,
-      "ovr": 64.7
+      "min": 22.0,
+      "ovr": 66.8
      },
      {
       "pid": 1643516,
       "name": "Morez Johnson Jr.",
-      "min": 14.529381,
-      "ovr": 59.2
+      "min": 14.0,
+      "ovr": 63.1
+     },
+     {
+      "pid": 1642383,
+      "name": "Walter Clayton Jr.",
+      "min": 10.0,
+      "ovr": 57.0
      }
     ],
-    "predWinsAllSeason": 25.89787356244165,
+    "predWinsAllSeason": 25.66828870835604,
     "lineupStates": 1
    },
    "restored": [],
-   "nOut": 3
+   "nOut": 5
   },
   "1610612743": {
    "name": "Denver Nuggets",
    "abbr": "DEN",
    "W": 3,
-   "L": 2,
+   "L": 3,
    "injured": [
     {
      "name": "Spencer Jones",
@@ -1229,16 +1132,7 @@
      "comment": "Jones (hamstring) is listed as out for Monday's game against the Trail Blazers.",
      "returnDate": "2026-11-04",
      "playerId": 1642461,
-     "missGames": 1
-    },
-    {
-     "name": "Alpha Diallo",
-     "status": "Out",
-     "date": "2026-11-01T23:52Z",
-     "comment": "Diallo (wrist) is listed as questionable for Monday's game versus Portland.",
-     "returnDate": "2026-11-02",
-     "playerId": 1643813,
-     "missGames": 1
+     "missGames": 0
     },
     {
      "name": "Julian Strawther",
@@ -1247,187 +1141,176 @@
      "comment": "Strawther (knee) was diagnosed with a left knee sprain Friday and will be re-evaluated in six weeks, Vinny Benedetto of The Denver Gazette reports.",
      "returnDate": "2026-11-29",
      "playerId": 1631124,
-     "missGames": 12
+     "missGames": 11
     }
    ],
    "c": {
-    "ortg": 7.409037727929416,
-    "drtg": 2.687788306185837,
-    "net": 4.721249421743579,
-    "margin": 12.88,
-    "predWins": 51.56412320638008,
-    "schedGames": 75,
+    "ortg": 6.651094862240143,
+    "drtg": 4.991568993891789,
+    "net": 1.6595258683483536,
+    "margin": 10.215,
+    "predWins": 44.07215131511595,
+    "schedGames": 74,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1627750,
       "name": "Jamal Murray",
-      "min": 34.602535,
-      "ovr": 92.8
+      "min": 36.0,
+      "ovr": 93.2
      },
      {
       "pid": 203999,
       "name": "Nikola Jokić",
-      "min": 33.651915,
-      "ovr": 104.4
+      "min": 36.0,
+      "ovr": 101.6
      },
      {
       "pid": 1631128,
       "name": "Christian Braun",
-      "min": 32.735305,
-      "ovr": 79.2
+      "min": 34.0,
+      "ovr": 82.0
      },
      {
       "pid": 203932,
       "name": "Aaron Gordon",
-      "min": 27.396538,
-      "ovr": 85.5
-     },
-     {
-      "pid": 201942,
-      "name": "DeMar DeRozan",
-      "min": 23.707064,
-      "ovr": 79.1
+      "min": 32.0,
+      "ovr": 83.8
      },
      {
       "pid": 1629661,
       "name": "Cameron Johnson",
-      "min": 20.866696,
-      "ovr": 82.9
+      "min": 30.0,
+      "ovr": 79.7
+     },
+     {
+      "pid": 201942,
+      "name": "DeMar DeRozan",
+      "min": 26.0,
+      "ovr": 77.1
      },
      {
       "pid": 1642350,
       "name": "Trevon Brazile",
-      "min": 20.605721,
-      "ovr": 55.3
+      "min": 22.0,
+      "ovr": 58.8
+     },
+     {
+      "pid": 1643624,
+      "name": "Bryce Hopkins",
+      "min": 14.0,
+      "ovr": 48.3
      },
      {
       "pid": 1643813,
       "name": "Alpha Diallo",
-      "min": 20.591026,
+      "min": 10.0,
       "ovr": null
-     },
-     {
-      "pid": 1643624,
-      "name": "Bryce Hopkins",
-      "min": 14.847511,
-      "ovr": 49.9
-     },
-     {
-      "pid": 1628963,
-      "name": "Marvin Bagley III",
-      "min": 10.995689,
-      "ovr": 67.9
      }
     ]
    },
    "today": {
-    "ortg": 7.007733489153395,
-    "drtg": 4.692322324981504,
-    "net": 2.3154111641718913,
-    "margin": 10.785,
-    "predWins": 51.83324504834966,
-    "schedGames": 75,
+    "ortg": 6.651094862240143,
+    "drtg": 4.991568993891789,
+    "net": 1.6595258683483536,
+    "margin": 10.215,
+    "predWins": 44.282524974357145,
+    "schedGames": 74,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1627750,
       "name": "Jamal Murray",
-      "min": 36.351918,
-      "ovr": 92.8
+      "min": 36.0,
+      "ovr": 93.2
      },
      {
       "pid": 203999,
       "name": "Nikola Jokić",
-      "min": 35.353239,
-      "ovr": 104.4
+      "min": 36.0,
+      "ovr": 101.6
      },
      {
       "pid": 1631128,
       "name": "Christian Braun",
-      "min": 34.390288,
-      "ovr": 79.2
+      "min": 34.0,
+      "ovr": 82.0
      },
      {
       "pid": 203932,
       "name": "Aaron Gordon",
-      "min": 28.781611,
-      "ovr": 85.5
-     },
-     {
-      "pid": 201942,
-      "name": "DeMar DeRozan",
-      "min": 24.905611,
-      "ovr": 79.1
+      "min": 32.0,
+      "ovr": 83.8
      },
      {
       "pid": 1629661,
       "name": "Cameron Johnson",
-      "min": 21.921644,
-      "ovr": 82.9
+      "min": 30.0,
+      "ovr": 79.7
+     },
+     {
+      "pid": 201942,
+      "name": "DeMar DeRozan",
+      "min": 26.0,
+      "ovr": 77.1
      },
      {
       "pid": 1642350,
       "name": "Trevon Brazile",
-      "min": 21.647474,
-      "ovr": 55.3
+      "min": 22.0,
+      "ovr": 58.8
      },
      {
       "pid": 1643624,
       "name": "Bryce Hopkins",
-      "min": 15.59815,
-      "ovr": 49.9
+      "min": 14.0,
+      "ovr": 48.3
      },
      {
-      "pid": 1628963,
-      "name": "Marvin Bagley III",
-      "min": 11.551592,
-      "ovr": 67.9
-     },
-     {
-      "pid": 1626145,
-      "name": "Tyus Jones",
-      "min": 9.498473,
-      "ovr": 49.9
+      "pid": 1643813,
+      "name": "Alpha Diallo",
+      "min": 10.0,
+      "ovr": null
      }
     ],
-    "predWinsAllSeason": 47.893675388259375,
-    "lineupStates": 2
+    "predWinsAllSeason": 45.509667167467384,
+    "lineupStates": 1
    },
    "restored": [],
-   "nOut": 3
+   "nOut": 2
   },
   "1610612744": {
    "name": "Golden State Warriors",
    "abbr": "GSW",
-   "W": 4,
+   "W": 5,
    "L": 3,
    "injured": [
     {
+     "name": "Brandon Williams",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T06:12Z",
+     "comment": "Williams (quadriceps) has been ruled out for Monday's game against the Suns.",
+     "returnDate": "2026-11-05",
+     "playerId": 1630314,
+     "missGames": 0
+    },
+    {
      "name": "Gui Santos",
      "status": "Day-To-Day",
-     "date": "2026-11-02T04:49Z",
+     "date": "2026-11-03T06:12Z",
      "comment": "Santos did not play in the second half of Sunday's 124-112 win over the Clippers due to a knee injury and will not play against the Suns on Monday, Danny Emerman of SFStandard.com reports.",
      "returnDate": "2026-11-05",
-     "playerId": 1630611
+     "playerId": 1630611,
+     "missGames": 0
     },
     {
-     "name": "Draymond Green",
-     "status": "Out",
-     "date": "2026-10-31T19:51Z",
-     "comment": "Green (back) is out for Sunday's game against the Clippers.",
-     "returnDate": "2026-11-02",
-     "playerId": 203110,
-     "missGames": 1
-    },
-    {
-     "name": "Stephen Curry",
-     "status": "Out",
-     "date": "2026-10-31T19:48Z",
-     "comment": "Curry (rest) won't play Sunday against the Clippers, Brett Siegel of ClutchPoints.com reports.",
-     "returnDate": "2026-11-02",
-     "playerId": 201939,
-     "missGames": 1
+     "name": "Al Horford",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T06:11Z",
+     "comment": "Horford will be rested Monday against the Suns.",
+     "returnDate": "2026-11-05",
+     "playerId": 201143,
+     "missGames": 0
     },
     {
      "name": "Kristaps Porzingis",
@@ -1436,7 +1319,7 @@
      "comment": "The Warriors are exploring potential trades involving Porzingis (personal), who remains away from the team indefinitely while dealing with ongoing health concerns, Anthony Slater of ESPN.com reports.",
      "returnDate": "2026-12-01",
      "playerId": 204001,
-     "missGames": 13
+     "missGames": 12
     },
     {
      "name": "Moses Moody",
@@ -1445,7 +1328,7 @@
      "comment": "Moody (knee) is progressing toward a potential return between December and January after rupturing his left patellar tendon in March, Anthony Slater of ESPN reports.",
      "returnDate": "2026-12-01",
      "playerId": 1630541,
-     "missGames": 13
+     "missGames": 12
     },
     {
      "name": "Jimmy Butler III",
@@ -1454,179 +1337,160 @@
      "comment": "Butler (knee) could return sometime between January and February as he continues recovering from a torn right ACL, Anthony Slater of ESPN reports.",
      "returnDate": "2027-01-02",
      "playerId": 202710,
-     "missGames": 25
+     "missGames": 24
     }
    ],
    "c": {
-    "ortg": -1.9398820708276219,
-    "drtg": 0.37764359306714823,
-    "net": -2.31752566389477,
-    "margin": 5.96,
-    "predWins": 37.30625612757656,
-    "schedGames": 73,
+    "ortg": -0.5796443362552566,
+    "drtg": 0.4332735739775728,
+    "net": -1.0129179102328294,
+    "margin": 7.635,
+    "predWins": 40.31206555061686,
+    "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1641764,
       "name": "Brandin Podziemski",
-      "min": 34.017183,
-      "ovr": 87.0
+      "min": 36.0,
+      "ovr": 88.1
      },
      {
       "pid": 1642865,
       "name": "Yaxel Lendeborg",
-      "min": 32.70593,
-      "ovr": 84.2
-     },
-     {
-      "pid": 203110,
-      "name": "Draymond Green",
-      "min": 28.887853,
-      "ovr": 76.0
+      "min": 36.0,
+      "ovr": 83.6
      },
      {
       "pid": 201939,
       "name": "Stephen Curry",
-      "min": 28.364647,
-      "ovr": 96.0
+      "min": 34.0,
+      "ovr": 96.7
+     },
+     {
+      "pid": 203110,
+      "name": "Draymond Green",
+      "min": 32.0,
+      "ovr": 74.6
      },
      {
       "pid": 1629001,
       "name": "De'Anthony Melton",
-      "min": 22.56222,
-      "ovr": 77.2
+      "min": 30.0,
+      "ovr": 80.9
      },
      {
       "pid": 1630611,
       "name": "Gui Santos",
-      "min": 20.3512,
-      "ovr": 70.8
+      "min": 26.0,
+      "ovr": 71.9
      },
      {
       "pid": 1627777,
       "name": "Georges Niang",
-      "min": 19.811357,
+      "min": 22.0,
       "ovr": 60.367,
       "ovrSrc": "24-25 卡"
      },
      {
       "pid": 201143,
       "name": "Al Horford",
-      "min": 18.950286,
-      "ovr": 66.4
-     },
-     {
-      "pid": 1630314,
-      "name": "Brandon Williams",
-      "min": 17.568795,
-      "ovr": 62.7
+      "min": 14.0,
+      "ovr": 64.8
      },
      {
       "pid": 1642954,
       "name": "Will Richard",
-      "min": 16.780528,
-      "ovr": 66.3
+      "min": 10.0,
+      "ovr": 63.0
      }
     ]
    },
    "today": {
-    "ortg": -4.036679675234794,
-    "drtg": 0.4421474396624063,
-    "net": -4.4788271148972,
-    "margin": 3.71,
-    "predWins": 37.24033084104782,
-    "schedGames": 73,
+    "ortg": -0.9339479533909412,
+    "drtg": 1.2106733275204675,
+    "net": -2.1446212809114087,
+    "margin": 6.365,
+    "predWins": 40.39915314070056,
+    "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1641764,
       "name": "Brandin Podziemski",
-      "min": 39.27682,
-      "ovr": 87.0
+      "min": 36.0,
+      "ovr": 88.1
      },
      {
       "pid": 1642865,
       "name": "Yaxel Lendeborg",
-      "min": 37.762825,
-      "ovr": 84.2
+      "min": 36.0,
+      "ovr": 83.6
+     },
+     {
+      "pid": 201939,
+      "name": "Stephen Curry",
+      "min": 34.0,
+      "ovr": 96.7
+     },
+     {
+      "pid": 203110,
+      "name": "Draymond Green",
+      "min": 32.0,
+      "ovr": 74.6
      },
      {
       "pid": 1629001,
       "name": "De'Anthony Melton",
-      "min": 26.050725,
-      "ovr": 77.2
-     },
-     {
-      "pid": 1630611,
-      "name": "Gui Santos",
-      "min": 23.497842,
-      "ovr": 70.8
+      "min": 30.0,
+      "ovr": 80.9
      },
      {
       "pid": 1627777,
       "name": "Georges Niang",
-      "min": 22.874531,
+      "min": 26.0,
       "ovr": 60.367,
       "ovrSrc": "24-25 卡"
      },
      {
-      "pid": 201143,
-      "name": "Al Horford",
-      "min": 21.880324,
-      "ovr": 66.4
-     },
-     {
-      "pid": 1630314,
-      "name": "Brandon Williams",
-      "min": 20.285231,
-      "ovr": 62.7
-     },
-     {
       "pid": 1642954,
       "name": "Will Richard",
-      "min": 19.375084,
-      "ovr": 66.3
+      "min": 22.0,
+      "ovr": 63.0
      },
      {
       "pid": 1627780,
       "name": "Gary Payton II",
-      "min": 15.121765,
-      "ovr": 73.8
+      "min": 14.0,
+      "ovr": 71.0
      },
      {
-      "pid": 1643633,
-      "name": "Graham Ike",
-      "min": 13.874853,
-      "ovr": null
+      "pid": 1629646,
+      "name": "Charles Bassey",
+      "min": 10.0,
+      "ovr": 61.5
      }
     ],
-    "predWinsAllSeason": 32.94427027353732,
-    "lineupStates": 2
+    "predWinsAllSeason": 39.025890590371546,
+    "lineupStates": 1
    },
    "restored": [],
-   "nOut": 5
+   "nOut": 6
   },
   "1610612745": {
    "name": "Houston Rockets",
    "abbr": "HOU",
-   "W": 6,
+   "W": 7,
    "L": 1,
    "injured": [
     {
      "name": "Clint Capela",
-     "status": "Day-To-Day",
-     "date": "2026-11-01T20:46Z",
-     "comment": "Capela (ankle) is questionable to play in Monday's game against the Celtics.",
-     "returnDate": "2026-11-02",
-     "playerId": 203991
-    },
-    {
-     "name": "Reed Sheppard",
-     "status": "Day-To-Day",
-     "date": "2026-11-01T20:41Z",
-     "comment": "Sheppard (back) is questionable for Monday's game against the Celtics.",
-     "returnDate": "2026-11-02",
-     "playerId": 1642263
+     "status": "Out",
+     "date": "2026-11-02T19:13Z",
+     "comment": "Capela (ankle) has been ruled out for Monday's game against the Celtics.",
+     "returnDate": "2026-11-04",
+     "playerId": 203991,
+     "missGames": 0
     },
     {
      "name": "Steven Adams",
@@ -1635,198 +1499,187 @@
      "comment": "Head coach Ime Udoka said Monday that Adams could be out \"a week or two\" due to his right soleus strain, Lachard Binkley of SI.com reports.",
      "returnDate": "2026-11-09",
      "playerId": 203500,
-     "missGames": 3
+     "missGames": 2
     }
    ],
    "c": {
-    "ortg": -1.4475042430245963,
-    "drtg": -1.864647316684426,
-    "net": 0.4171430736598296,
-    "margin": 8.805,
-    "predWins": 43.939339005956505,
-    "schedGames": 73,
+    "ortg": 0.2637983562165829,
+    "drtg": -2.2038084168831773,
+    "net": 2.46760677309976,
+    "margin": 11.125,
+    "predWins": 48.68251755491207,
+    "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1631095,
       "name": "Jabari Smith Jr.",
-      "min": 30.813547,
-      "ovr": 74.7
-     },
-     {
-      "pid": 1641708,
-      "name": "Amen Thompson",
-      "min": 30.422096,
-      "ovr": 89.2
-     },
-     {
-      "pid": 201142,
-      "name": "Kevin Durant",
-      "min": 30.266025,
-      "ovr": 94.7
+      "min": 36.0,
+      "ovr": 74.9
      },
      {
       "pid": 1630578,
       "name": "Alperen Sengun",
-      "min": 30.220925,
-      "ovr": 78.5
+      "min": 36.0,
+      "ovr": 82.0
+     },
+     {
+      "pid": 201142,
+      "name": "Kevin Durant",
+      "min": 34.0,
+      "ovr": 94.1
+     },
+     {
+      "pid": 1641708,
+      "name": "Amen Thompson",
+      "min": 32.0,
+      "ovr": 89.0
      },
      {
       "pid": 1627832,
       "name": "Fred VanVleet",
-      "min": 27.342862,
+      "min": 30.0,
       "ovr": 90.2599,
       "ovrSrc": "24-25 卡"
      },
      {
-      "pid": 203935,
-      "name": "Marcus Smart",
-      "min": 22.666489,
-      "ovr": 67.8
-     },
-     {
       "pid": 1631106,
       "name": "Tari Eason",
-      "min": 21.637381,
-      "ovr": 76.1
+      "min": 26.0,
+      "ovr": 77.1
+     },
+     {
+      "pid": 203935,
+      "name": "Marcus Smart",
+      "min": 22.0,
+      "ovr": 67.3
      },
      {
       "pid": 1642263,
       "name": "Reed Sheppard",
-      "min": 20.954738,
+      "min": 14.0,
       "ovr": 65.2
-     },
-     {
-      "pid": 203992,
-      "name": "Bogdan Bogdanović",
-      "min": 12.882382,
-      "ovr": 62.3
      },
      {
       "pid": 203991,
       "name": "Clint Capela",
-      "min": 12.793554,
-      "ovr": 66.0
+      "min": 10.0,
+      "ovr": 65.8
      }
     ]
    },
    "today": {
-    "ortg": -1.4475042430245963,
-    "drtg": -1.864647316684426,
-    "net": 0.4171430736598296,
-    "margin": 8.805,
-    "predWins": 44.317606251737175,
-    "schedGames": 73,
+    "ortg": -0.3187676668459858,
+    "drtg": -1.3062071651546177,
+    "net": 0.9874394983086319,
+    "margin": 9.63,
+    "predWins": 48.69928394516877,
+    "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1631095,
       "name": "Jabari Smith Jr.",
-      "min": 30.813547,
-      "ovr": 74.7
-     },
-     {
-      "pid": 1641708,
-      "name": "Amen Thompson",
-      "min": 30.422096,
-      "ovr": 89.2
-     },
-     {
-      "pid": 201142,
-      "name": "Kevin Durant",
-      "min": 30.266025,
-      "ovr": 94.7
+      "min": 36.0,
+      "ovr": 74.9
      },
      {
       "pid": 1630578,
       "name": "Alperen Sengun",
-      "min": 30.220925,
-      "ovr": 78.5
+      "min": 36.0,
+      "ovr": 82.0
+     },
+     {
+      "pid": 201142,
+      "name": "Kevin Durant",
+      "min": 34.0,
+      "ovr": 94.1
+     },
+     {
+      "pid": 1641708,
+      "name": "Amen Thompson",
+      "min": 32.0,
+      "ovr": 89.0
      },
      {
       "pid": 1627832,
       "name": "Fred VanVleet",
-      "min": 27.342862,
+      "min": 30.0,
       "ovr": 90.2599,
       "ovrSrc": "24-25 卡"
      },
      {
-      "pid": 203935,
-      "name": "Marcus Smart",
-      "min": 22.666489,
-      "ovr": 67.8
-     },
-     {
       "pid": 1631106,
       "name": "Tari Eason",
-      "min": 21.637381,
-      "ovr": 76.1
+      "min": 26.0,
+      "ovr": 77.1
+     },
+     {
+      "pid": 203935,
+      "name": "Marcus Smart",
+      "min": 22.0,
+      "ovr": 67.3
      },
      {
       "pid": 1642263,
       "name": "Reed Sheppard",
-      "min": 20.954738,
+      "min": 14.0,
       "ovr": 65.2
      },
      {
       "pid": 203992,
       "name": "Bogdan Bogdanović",
-      "min": 12.882382,
-      "ovr": 62.3
-     },
-     {
-      "pid": 203991,
-      "name": "Clint Capela",
-      "min": 12.793554,
-      "ovr": 66.0
+      "min": 10.0,
+      "ovr": 64.0
      }
     ],
-    "predWinsAllSeason": 45.035306501383445,
+    "predWinsAllSeason": 46.8080579857842,
     "lineupStates": 1
    },
    "restored": [],
-   "nOut": 1
+   "nOut": 2
   },
   "1610612746": {
    "name": "LA Clippers",
    "abbr": "LAC",
    "W": 1,
-   "L": 5,
+   "L": 6,
    "injured": [
     {
      "name": "Derrick Jones Jr.",
      "status": "Day-To-Day",
-     "date": "2026-11-02T03:47Z",
-     "comment": "Jones (right knee) has been ruled out for the rest of Sunday's game against the Clippers, Ohm Youngmisuk of ESPN.com reports.",
-     "returnDate": "2026-11-02",
-     "playerId": 1627884
+     "date": "2026-11-03T06:11Z",
+     "comment": "Jones (knee) has been ruled out for Monday's game against the Raptors.",
+     "returnDate": "2026-11-04",
+     "playerId": 1627884,
+     "missGames": 0
     },
     {
-     "name": "Max Strus",
-     "status": "Out",
-     "date": "2026-11-02T00:45Z",
-     "comment": "Strus (foot) practiced and participated in 5-on-5 with the San Diego Clippers on Saturday, Los Angeles Clippers sideline reporter/host Ohm Youngmisuk reports.",
-     "returnDate": "2026-11-08",
-     "playerId": 1629622,
-     "missGames": 2
+     "name": "Rui Hachimura",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T06:11Z",
+     "comment": "Hachimura (quadriceps) has been ruled out for Monday's game against the Raptors.",
+     "returnDate": "2026-11-04",
+     "playerId": 1629060,
+     "missGames": 0
     },
     {
      "name": "Yanic Konan Niederhauser",
      "status": "Out",
-     "date": "2026-11-01T20:17Z",
-     "comment": "Niederhauser (foot) had his third-year team option picked up Thursday by the Clippers, Ohm Youngmisuk of ESPN.com reports.",
+     "date": "2026-11-02T16:12Z",
+     "comment": "The Clippers recalled Niederhauser (foot) from the G League's San Diego Clippers on Sunday.",
      "returnDate": "2026-11-08",
      "playerId": 1642949,
-     "missGames": 2
+     "missGames": 1
     },
     {
      "name": "Brandon Ingram",
      "status": "Out",
-     "date": "2026-11-01T16:04Z",
-     "comment": "Los Angeles assigned Ingram (Achilles) to the G League's San Diego Clippers on Saturday.",
+     "date": "2026-11-02T16:01Z",
+     "comment": "The Clippers recalled Ingram (Achilles) from the G League's San Diego Clippers on Sunday.",
      "returnDate": "2026-11-08",
      "playerId": 1627742,
-     "missGames": 2
+     "missGames": 1
     },
     {
      "name": "Bradley Beal",
@@ -1835,7 +1688,7 @@
      "comment": "Beal (knee) will not be ready for the start of the regular season, NBA writer Justin Russo reports.",
      "returnDate": "2026-11-08",
      "playerId": 203078,
-     "missGames": 2
+     "missGames": 1
     },
     {
      "name": "Jordan Miller",
@@ -1844,485 +1697,431 @@
      "comment": "Miller underwent surgery Wednesday to repair a torn left rotator cuff and will be re-evaluated in six months, per Law Murray of The Athletic.",
      "returnDate": "2027-03-02",
      "playerId": 1641757,
-     "missGames": 52
+     "missGames": 51
     }
    ],
    "c": {
-    "ortg": -4.942943278154573,
-    "drtg": 2.826369900780989,
-    "net": -7.769313178935562,
-    "margin": 0.355,
-    "predWins": 21.604801360780183,
-    "schedGames": 74,
+    "ortg": -4.7864072341534865,
+    "drtg": 3.0994690119121344,
+    "net": -7.885876246065621,
+    "margin": 0.555,
+    "predWins": 21.185627583536,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1629636,
       "name": "Darius Garland",
-      "min": 33.196179,
-      "ovr": 80.9
+      "min": 36.0,
+      "ovr": 75.9
      },
      {
       "pid": 1629060,
       "name": "Rui Hachimura",
-      "min": 30.734152,
-      "ovr": 66.1
+      "min": 36.0,
+      "ovr": 61.3
      },
      {
       "pid": 1627739,
       "name": "Kris Dunn",
-      "min": 30.45666,
+      "min": 34.0,
       "ovr": 75.6
      },
      {
       "pid": 1627884,
       "name": "Derrick Jones Jr.",
-      "min": 29.387069,
-      "ovr": 79.0
-     },
-     {
-      "pid": 1643413,
-      "name": "Keaton Wagler",
-      "min": 25.654527,
-      "ovr": 76.2
+      "min": 32.0,
+      "ovr": 79.1
      },
      {
       "pid": 1642920,
       "name": "Kobe Sanders",
-      "min": 23.734189,
-      "ovr": 60.4
+      "min": 30.0,
+      "ovr": 63.8
      },
      {
-      "pid": 201572,
-      "name": "Brook Lopez",
-      "min": 22.439841,
-      "ovr": 68.2
+      "pid": 1643413,
+      "name": "Keaton Wagler",
+      "min": 26.0,
+      "ovr": 74.4
+     },
+     {
+      "pid": 1629622,
+      "name": "Max Strus",
+      "min": 22.0,
+      "ovr": 74.4
      },
      {
       "pid": 1630543,
       "name": "Isaiah Jackson",
-      "min": 22.033218,
-      "ovr": 64.6
+      "min": 14.0,
+      "ovr": 69.2
      },
      {
-      "pid": 1641711,
-      "name": "Gradey Dick",
-      "min": 14.113176,
-      "ovr": 56.4
-     },
-     {
-      "pid": 1642394,
-      "name": "Baba Miller",
-      "min": 8.250988,
-      "ovr": 57.8
+      "pid": 201572,
+      "name": "Brook Lopez",
+      "min": 10.0,
+      "ovr": 68.8
      }
     ]
    },
    "today": {
-    "ortg": -4.942943278154573,
-    "drtg": 2.826369900780989,
-    "net": -7.769313178935562,
-    "margin": 0.355,
-    "predWins": 22.012387126390966,
-    "schedGames": 74,
+    "ortg": -5.0001691341967955,
+    "drtg": 2.500283488366776,
+    "net": -7.5004526225635715,
+    "margin": 0.955,
+    "predWins": 21.232641338757713,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1629636,
       "name": "Darius Garland",
-      "min": 33.196179,
-      "ovr": 80.9
-     },
-     {
-      "pid": 1629060,
-      "name": "Rui Hachimura",
-      "min": 30.734152,
-      "ovr": 66.1
+      "min": 36.0,
+      "ovr": 75.9
      },
      {
       "pid": 1627739,
       "name": "Kris Dunn",
-      "min": 30.45666,
+      "min": 36.0,
       "ovr": 75.6
-     },
-     {
-      "pid": 1627884,
-      "name": "Derrick Jones Jr.",
-      "min": 29.387069,
-      "ovr": 79.0
-     },
-     {
-      "pid": 1643413,
-      "name": "Keaton Wagler",
-      "min": 25.654527,
-      "ovr": 76.2
      },
      {
       "pid": 1642920,
       "name": "Kobe Sanders",
-      "min": 23.734189,
-      "ovr": 60.4
+      "min": 34.0,
+      "ovr": 63.8
      },
      {
-      "pid": 201572,
-      "name": "Brook Lopez",
-      "min": 22.439841,
-      "ovr": 68.2
+      "pid": 1643413,
+      "name": "Keaton Wagler",
+      "min": 32.0,
+      "ovr": 74.4
+     },
+     {
+      "pid": 1629622,
+      "name": "Max Strus",
+      "min": 30.0,
+      "ovr": 74.4
      },
      {
       "pid": 1630543,
       "name": "Isaiah Jackson",
-      "min": 22.033218,
-      "ovr": 64.6
+      "min": 26.0,
+      "ovr": 69.2
+     },
+     {
+      "pid": 201572,
+      "name": "Brook Lopez",
+      "min": 22.0,
+      "ovr": 68.8
      },
      {
       "pid": 1641711,
       "name": "Gradey Dick",
-      "min": 14.113176,
+      "min": 14.0,
       "ovr": 56.4
      },
      {
       "pid": 1642394,
       "name": "Baba Miller",
-      "min": 8.250988,
-      "ovr": 57.8
+      "min": 10.0,
+      "ovr": 55.7
      }
     ],
-    "predWinsAllSeason": 22.397924740352114,
+    "predWinsAllSeason": 23.363844884041416,
     "lineupStates": 1
    },
    "restored": [],
-   "nOut": 5
+   "nOut": 6
   },
   "1610612747": {
    "name": "Los Angeles Lakers",
    "abbr": "LAL",
-   "W": 5,
+   "W": 6,
    "L": 2,
    "injured": [
     {
-     "name": "Ziaire Williams",
-     "status": "Out",
-     "date": "2026-11-01T21:04Z",
-     "comment": "Williams (foot) is out for Sunday's game against the Raptors.",
-     "returnDate": "2026-11-02",
-     "playerId": 1630533,
-     "missGames": 1
-    },
-    {
      "name": "Adou Thiero",
      "status": "Out",
-     "date": "2026-11-01T15:04Z",
-     "comment": "Thiero (knee) has been ruled out for Sunday's game against the Raptors.",
-     "returnDate": "2026-11-09",
+     "date": "2026-11-03T01:30Z",
+     "comment": "Head coach JJ Redick said Monday that Thiero (knee) has participated in live action, and the hope is that he'll be available by the end of the week, Khobi Price of The California Post reports.",
+     "returnDate": "2026-11-06",
      "playerId": 1642876,
-     "missGames": 4
+     "missGames": 1
     }
    ],
    "c": {
-    "ortg": 6.649896885168303,
-    "drtg": -3.7508116867404766,
-    "net": 10.40070857190878,
-    "margin": 18.965,
-    "predWins": 64.29559850119668,
-    "schedGames": 73,
+    "ortg": 7.1503722114221375,
+    "drtg": -2.3010283489803385,
+    "net": 9.451400560402476,
+    "margin": 18.485,
+    "predWins": 62.9371020992356,
+    "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630559,
       "name": "Austin Reaves",
-      "min": 32.911263,
-      "ovr": 93.8
+      "min": 36.0,
+      "ovr": 93.0
      },
      {
       "pid": 1629029,
       "name": "Luka Dončić",
-      "min": 32.68697,
-      "ovr": 101.8
+      "min": 36.0,
+      "ovr": 104.4
      },
      {
       "pid": 1631117,
       "name": "Walker Kessler",
-      "min": 27.954526,
-      "ovr": 74.0
+      "min": 34.0,
+      "ovr": 73.6
+     },
+     {
+      "pid": 1629656,
+      "name": "Quentin Grimes",
+      "min": 32.0,
+      "ovr": 73.2
      },
      {
       "pid": 1630533,
       "name": "Ziaire Williams",
-      "min": 25.948132,
-      "ovr": 68.3
-     },
-     {
-      "pid": 1629656,
-      "name": "Quentin Grimes",
-      "min": 24.444766,
-      "ovr": 75.2
+      "min": 30.0,
+      "ovr": 71.5
      },
      {
       "pid": 1629680,
       "name": "Matisse Thybulle",
-      "min": 23.036679,
-      "ovr": 82.4
+      "min": 26.0,
+      "ovr": 84.1
      },
      {
       "pid": 1630572,
       "name": "Sandro Mamukelashvili",
-      "min": 21.411483,
-      "ovr": 71.8
+      "min": 22.0,
+      "ovr": 71.5
      },
      {
       "pid": 1631222,
       "name": "Jake LaRavia",
-      "min": 21.392224,
-      "ovr": 65.2
+      "min": 14.0,
+      "ovr": 64.6
      },
      {
       "pid": 1629012,
       "name": "Collin Sexton",
-      "min": 16.170897,
-      "ovr": 77.3
-     },
-     {
-      "pid": 1629020,
-      "name": "Jarred Vanderbilt",
-      "min": 14.043062,
-      "ovr": 59.9
+      "min": 10.0,
+      "ovr": 74.9
      }
     ]
    },
    "today": {
-    "ortg": 7.035135512698062,
-    "drtg": -3.1886999542096106,
-    "net": 10.223835466907673,
-    "margin": 19.085,
-    "predWins": 64.51334059013463,
-    "schedGames": 73,
+    "ortg": 7.1503722114221375,
+    "drtg": -2.3010283489803385,
+    "net": 9.451400560402476,
+    "margin": 18.485,
+    "predWins": 63.012902065030374,
+    "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630559,
       "name": "Austin Reaves",
-      "min": 35.801563,
-      "ovr": 93.8
+      "min": 36.0,
+      "ovr": 93.0
      },
      {
       "pid": 1629029,
       "name": "Luka Dončić",
-      "min": 35.557573,
-      "ovr": 101.8
+      "min": 36.0,
+      "ovr": 104.4
      },
      {
       "pid": 1631117,
       "name": "Walker Kessler",
-      "min": 30.409521,
-      "ovr": 74.0
+      "min": 34.0,
+      "ovr": 73.6
      },
      {
       "pid": 1629656,
       "name": "Quentin Grimes",
-      "min": 26.59153,
-      "ovr": 75.2
+      "min": 32.0,
+      "ovr": 73.2
+     },
+     {
+      "pid": 1630533,
+      "name": "Ziaire Williams",
+      "min": 30.0,
+      "ovr": 71.5
      },
      {
       "pid": 1629680,
       "name": "Matisse Thybulle",
-      "min": 25.059784,
-      "ovr": 82.4
+      "min": 26.0,
+      "ovr": 84.1
      },
      {
       "pid": 1630572,
       "name": "Sandro Mamukelashvili",
-      "min": 23.291862,
-      "ovr": 71.8
+      "min": 22.0,
+      "ovr": 71.5
      },
      {
       "pid": 1631222,
       "name": "Jake LaRavia",
-      "min": 23.270911,
-      "ovr": 65.2
+      "min": 14.0,
+      "ovr": 64.6
      },
      {
       "pid": 1629012,
       "name": "Collin Sexton",
-      "min": 17.591041,
-      "ovr": 77.3
-     },
-     {
-      "pid": 1629020,
-      "name": "Jarred Vanderbilt",
-      "min": 15.276338,
-      "ovr": 59.9
-     },
-     {
-      "pid": 1626172,
-      "name": "Kevon Looney",
-      "min": 7.149878,
-      "ovr": 56.7
+      "min": 10.0,
+      "ovr": 74.9
      }
     ],
-    "predWinsAllSeason": 65.26631243892817,
-    "lineupStates": 2
+    "predWinsAllSeason": 63.86189011819531,
+    "lineupStates": 1
    },
    "restored": [],
-   "nOut": 2
+   "nOut": 1
   },
   "1610612748": {
    "name": "Miami Heat",
    "abbr": "MIA",
    "W": 2,
-   "L": 4,
-   "injured": [
-    {
-     "name": "Tim Hardaway Jr.",
-     "status": "Day-To-Day",
-     "date": "2026-11-02T00:24Z",
-     "comment": "Hardaway (personal) is listed as questionable for Monday's game against the Lakers.",
-     "returnDate": "2026-11-02",
-     "playerId": 203501
-    }
-   ],
+   "L": 5,
+   "injured": [],
    "c": {
-    "ortg": 1.5347974287241755,
-    "drtg": 1.3779492531645587,
-    "net": 0.15684817555961672,
-    "margin": 8.42,
-    "predWins": 40.89869494299312,
-    "schedGames": 74,
+    "ortg": 1.3202172619800905,
+    "drtg": 1.1556971440832626,
+    "net": 0.16452011789682786,
+    "margin": 8.555,
+    "predWins": 40.480017628618306,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630558,
       "name": "Davion Mitchell",
-      "min": 34.348691,
-      "ovr": 73.7
-     },
-     {
-      "pid": 1628389,
-      "name": "Bam Adebayo",
-      "min": 31.63783,
-      "ovr": 84.9
+      "min": 36.0,
+      "ovr": 76.5
      },
      {
       "pid": 203507,
       "name": "Giannis Antetokounmpo",
-      "min": 31.581912,
-      "ovr": 97.0
+      "min": 36.0,
+      "ovr": 95.3
+     },
+     {
+      "pid": 1628389,
+      "name": "Bam Adebayo",
+      "min": 34.0,
+      "ovr": 82.3
      },
      {
       "pid": 1641796,
       "name": "Pelle Larsson",
-      "min": 29.638971,
-      "ovr": 74.2
+      "min": 32.0,
+      "ovr": 75.8
      },
      {
       "pid": 203952,
       "name": "Andrew Wiggins",
-      "min": 27.4806,
-      "ovr": 71.5
+      "min": 30.0,
+      "ovr": 69.9
      },
      {
       "pid": 1626171,
       "name": "Bobby Portis Jr.",
-      "min": 22.924378,
-      "ovr": 69.6
+      "min": 26.0,
+      "ovr": 67.4
      },
      {
       "pid": 202691,
       "name": "Klay Thompson",
-      "min": 21.112155,
-      "ovr": 55.0
+      "min": 22.0,
+      "ovr": 56.7
      },
      {
       "pid": 203501,
       "name": "Tim Hardaway Jr.",
-      "min": 18.317774,
-      "ovr": 63.7
+      "min": 14.0,
+      "ovr": 61.0
      },
      {
       "pid": 1631107,
       "name": "Nikola Jović",
-      "min": 13.350444,
-      "ovr": 60.8
-     },
-     {
-      "pid": 1630696,
-      "name": "Dru Smith",
-      "min": 9.607246,
-      "ovr": 74.8
+      "min": 10.0,
+      "ovr": 57.9
      }
     ]
    },
    "today": {
-    "ortg": 1.5347974287241755,
-    "drtg": 1.3779492531645587,
-    "net": 0.15684817555961672,
-    "margin": 8.42,
-    "predWins": 41.44259472821341,
-    "schedGames": 74,
+    "ortg": 1.3202172619800905,
+    "drtg": 1.1556971440832626,
+    "net": 0.16452011789682786,
+    "margin": 8.555,
+    "predWins": 40.57761249741284,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630558,
       "name": "Davion Mitchell",
-      "min": 34.348691,
-      "ovr": 73.7
-     },
-     {
-      "pid": 1628389,
-      "name": "Bam Adebayo",
-      "min": 31.63783,
-      "ovr": 84.9
+      "min": 36.0,
+      "ovr": 76.5
      },
      {
       "pid": 203507,
       "name": "Giannis Antetokounmpo",
-      "min": 31.581912,
-      "ovr": 97.0
+      "min": 36.0,
+      "ovr": 95.3
+     },
+     {
+      "pid": 1628389,
+      "name": "Bam Adebayo",
+      "min": 34.0,
+      "ovr": 82.3
      },
      {
       "pid": 1641796,
       "name": "Pelle Larsson",
-      "min": 29.638971,
-      "ovr": 74.2
+      "min": 32.0,
+      "ovr": 75.8
      },
      {
       "pid": 203952,
       "name": "Andrew Wiggins",
-      "min": 27.4806,
-      "ovr": 71.5
+      "min": 30.0,
+      "ovr": 69.9
      },
      {
       "pid": 1626171,
       "name": "Bobby Portis Jr.",
-      "min": 22.924378,
-      "ovr": 69.6
+      "min": 26.0,
+      "ovr": 67.4
      },
      {
       "pid": 202691,
       "name": "Klay Thompson",
-      "min": 21.112155,
-      "ovr": 55.0
+      "min": 22.0,
+      "ovr": 56.7
      },
      {
       "pid": 203501,
       "name": "Tim Hardaway Jr.",
-      "min": 18.317774,
-      "ovr": 63.7
+      "min": 14.0,
+      "ovr": 61.0
      },
      {
       "pid": 1631107,
       "name": "Nikola Jović",
-      "min": 13.350444,
-      "ovr": 60.8
-     },
-     {
-      "pid": 1630696,
-      "name": "Dru Smith",
-      "min": 9.607246,
-      "ovr": 74.8
+      "min": 10.0,
+      "ovr": 57.9
      }
     ],
-    "predWinsAllSeason": 41.837046358708236,
+    "predWinsAllSeason": 42.30450594020666,
     "lineupStates": 1
    },
    "restored": [],
@@ -2332,150 +2131,138 @@
    "name": "Milwaukee Bucks",
    "abbr": "MIL",
    "W": 1,
-   "L": 5,
+   "L": 6,
    "injured": [],
    "c": {
-    "ortg": 0.1276190179392671,
-    "drtg": 2.1960563099103894,
-    "net": -2.0684372919711222,
-    "margin": 6.035,
-    "predWins": 34.01409048717641,
-    "schedGames": 74,
+    "ortg": -2.519951096740101,
+    "drtg": 4.615778251531751,
+    "net": -7.135729348271852,
+    "margin": 1.265,
+    "predWins": 22.98152083191962,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1629639,
       "name": "Tyler Herro",
-      "min": 31.455322,
-      "ovr": 87.8
+      "min": 36.0,
+      "ovr": 86.0
      },
      {
       "pid": 1631170,
       "name": "Jaime Jaquez Jr.",
-      "min": 29.297408,
-      "ovr": 73.8
-     },
-     {
-      "pid": 1628398,
-      "name": "Kyle Kuzma",
-      "min": 28.022082,
-      "ovr": 51.9
-     },
-     {
-      "pid": 1631157,
-      "name": "Ryan Rollins",
-      "min": 27.268938,
-      "ovr": 84.0
+      "min": 36.0,
+      "ovr": 73.9
      },
      {
       "pid": 1626167,
       "name": "Myles Turner",
-      "min": 27.177004,
-      "ovr": 73.6
+      "min": 34.0,
+      "ovr": 70.4
+     },
+     {
+      "pid": 1628398,
+      "name": "Kyle Kuzma",
+      "min": 32.0,
+      "ovr": 50.4
+     },
+     {
+      "pid": 1631157,
+      "name": "Ryan Rollins",
+      "min": 30.0,
+      "ovr": 76.4
      },
      {
       "pid": 1642857,
       "name": "Kasparas Jakučionis",
-      "min": 23.296516,
-      "ovr": 70.7
-     },
-     {
-      "pid": 1642276,
-      "name": "Kel'el Ware",
-      "min": 20.419698,
-      "ovr": 61.7
+      "min": 26.0,
+      "ovr": 70.3
      },
      {
       "pid": 1631260,
       "name": "AJ Green",
-      "min": 20.119921,
-      "ovr": 67.0
+      "min": 22.0,
+      "ovr": 68.1
+     },
+     {
+      "pid": 1642276,
+      "name": "Kel'el Ware",
+      "min": 14.0,
+      "ovr": 57.8
      },
      {
       "pid": 1643415,
       "name": "Brayden Burries",
-      "min": 16.490579,
-      "ovr": 67.0
-     },
-     {
-      "pid": 1643417,
-      "name": "Nate Ament",
-      "min": 16.452531,
-      "ovr": 59.6
+      "min": 10.0,
+      "ovr": 71.5
      }
     ]
    },
    "today": {
-    "ortg": 0.1276190179392671,
-    "drtg": 2.1960563099103894,
-    "net": -2.0684372919711222,
-    "margin": 6.035,
-    "predWins": 34.217102695344835,
-    "schedGames": 74,
+    "ortg": -2.519951096740101,
+    "drtg": 4.615778251531751,
+    "net": -7.135729348271852,
+    "margin": 1.265,
+    "predWins": 23.024054818830543,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1629639,
       "name": "Tyler Herro",
-      "min": 31.455322,
-      "ovr": 87.8
+      "min": 36.0,
+      "ovr": 86.0
      },
      {
       "pid": 1631170,
       "name": "Jaime Jaquez Jr.",
-      "min": 29.297408,
-      "ovr": 73.8
-     },
-     {
-      "pid": 1628398,
-      "name": "Kyle Kuzma",
-      "min": 28.022082,
-      "ovr": 51.9
-     },
-     {
-      "pid": 1631157,
-      "name": "Ryan Rollins",
-      "min": 27.268938,
-      "ovr": 84.0
+      "min": 36.0,
+      "ovr": 73.9
      },
      {
       "pid": 1626167,
       "name": "Myles Turner",
-      "min": 27.177004,
-      "ovr": 73.6
+      "min": 34.0,
+      "ovr": 70.4
+     },
+     {
+      "pid": 1628398,
+      "name": "Kyle Kuzma",
+      "min": 32.0,
+      "ovr": 50.4
+     },
+     {
+      "pid": 1631157,
+      "name": "Ryan Rollins",
+      "min": 30.0,
+      "ovr": 76.4
      },
      {
       "pid": 1642857,
       "name": "Kasparas Jakučionis",
-      "min": 23.296516,
-      "ovr": 70.7
-     },
-     {
-      "pid": 1642276,
-      "name": "Kel'el Ware",
-      "min": 20.419698,
-      "ovr": 61.7
+      "min": 26.0,
+      "ovr": 70.3
      },
      {
       "pid": 1631260,
       "name": "AJ Green",
-      "min": 20.119921,
-      "ovr": 67.0
+      "min": 22.0,
+      "ovr": 68.1
+     },
+     {
+      "pid": 1642276,
+      "name": "Kel'el Ware",
+      "min": 14.0,
+      "ovr": 57.8
      },
      {
       "pid": 1643415,
       "name": "Brayden Burries",
-      "min": 16.490579,
-      "ovr": 67.0
-     },
-     {
-      "pid": 1643417,
-      "name": "Nate Ament",
-      "min": 16.452531,
-      "ovr": 59.6
+      "min": 10.0,
+      "ovr": 71.5
      }
     ],
-    "predWinsAllSeason": 35.060270661999006,
+    "predWinsAllSeason": 24.481698968156184,
     "lineupStates": 1
    },
    "restored": [],
@@ -2484,9 +2271,18 @@
   "1610612750": {
    "name": "Minnesota Timberwolves",
    "abbr": "MIN",
-   "W": 4,
+   "W": 5,
    "L": 3,
    "injured": [
+    {
+     "name": "Terrence Shannon Jr.",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T05:52Z",
+     "comment": "Shannon (hip) has been ruled out for Monday's game against the Bucks, Jon Krawczynski of The Athletic reports.",
+     "returnDate": "2026-11-04",
+     "playerId": 1630545,
+     "missGames": 0
+    },
     {
      "name": "Anthony Edwards",
      "status": "Out",
@@ -2494,7 +2290,7 @@
      "comment": "Edwards underwent a successful arthroscopic procedure on his right knee Thursday, the Timberwolves announced.",
      "returnDate": "2026-12-21",
      "playerId": 1630162,
-     "missGames": 20
+     "missGames": 19
     },
     {
      "name": "Donte DiVincenzo",
@@ -2503,172 +2299,152 @@
      "comment": "DiVincenzo (Achilles) remains confident that he'll return during the 2026-27 season, Jon Krawczynski of The Athletic reports.",
      "returnDate": "2027-04-02",
      "playerId": 1628978,
-     "missGames": 67
+     "missGames": 66
     }
    ],
    "c": {
-    "ortg": 3.819677049614583,
-    "drtg": 0.40623755639258263,
-    "net": 3.4134394932220005,
-    "margin": 11.875,
-    "predWins": 48.60693218219322,
-    "schedGames": 73,
+    "ortg": 3.459529483374183,
+    "drtg": -0.9472412198360587,
+    "net": 4.406770703210242,
+    "margin": 13.15,
+    "predWins": 50.836042741112244,
+    "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
-      "pid": 1630183,
-      "name": "Jaden McDaniels",
-      "min": 31.991197,
-      "ovr": 82.3
-     },
-     {
       "pid": 1630162,
       "name": "Anthony Edwards",
-      "min": 31.890215,
-      "ovr": 94.6
+      "min": 36.0,
+      "ovr": 94.5
+     },
+     {
+      "pid": 1630183,
+      "name": "Jaden McDaniels",
+      "min": 36.0,
+      "ovr": 82.0
      },
      {
       "pid": 1630228,
       "name": "Jonathan Kuminga",
-      "min": 29.280804,
-      "ovr": 68.2
-     },
-     {
-      "pid": 203497,
-      "name": "Rudy Gobert",
-      "min": 28.64166,
-      "ovr": 84.3
+      "min": 34.0,
+      "ovr": 69.4
      },
      {
       "pid": 1630245,
       "name": "Ayo Dosunmu",
-      "min": 28.090348,
-      "ovr": 79.5
+      "min": 32.0,
+      "ovr": 81.3
+     },
+     {
+      "pid": 203497,
+      "name": "Rudy Gobert",
+      "min": 30.0,
+      "ovr": 84.2
      },
      {
       "pid": 1630163,
       "name": "LaMelo Ball",
-      "min": 24.135254,
-      "ovr": 75.3
+      "min": 26.0,
+      "ovr": 75.2
      },
      {
       "pid": 1630545,
       "name": "Terrence Shannon Jr",
-      "min": 21.141952,
-      "ovr": 60.3
+      "min": 22.0,
+      "ovr": 63.2
      },
      {
       "pid": 1642866,
       "name": "Joan Beringer",
-      "min": 18.005124,
-      "ovr": 54.8
+      "min": 14.0,
+      "ovr": 57.4
      },
      {
       "pid": 1626168,
       "name": "Trey Lyles",
-      "min": 15.477497,
+      "min": 10.0,
       "ovr": 63.7671,
       "ovrSrc": "24-25 卡"
-     },
-     {
-      "pid": 1630538,
-      "name": "Bones Hyland",
-      "min": 11.345949,
-      "ovr": 69.0
      }
     ]
    },
    "today": {
-    "ortg": 2.154264349553273,
-    "drtg": -1.6965213108008896,
-    "net": 3.8507856603541626,
-    "margin": 12.19,
-    "predWins": 49.0141811517432,
-    "schedGames": 73,
+    "ortg": 3.034012383315556,
+    "drtg": -3.631538566624684,
+    "net": 6.66555094994024,
+    "margin": 15.285,
+    "predWins": 50.91903545508487,
+    "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630183,
       "name": "Jaden McDaniels",
-      "min": 35.347286,
-      "ovr": 82.3
+      "min": 36.0,
+      "ovr": 82.0
      },
      {
       "pid": 1630228,
       "name": "Jonathan Kuminga",
-      "min": 32.352554,
-      "ovr": 68.2
-     },
-     {
-      "pid": 203497,
-      "name": "Rudy Gobert",
-      "min": 31.64636,
-      "ovr": 84.3
+      "min": 36.0,
+      "ovr": 69.4
      },
      {
       "pid": 1630245,
       "name": "Ayo Dosunmu",
-      "min": 31.037211,
-      "ovr": 79.5
+      "min": 34.0,
+      "ovr": 81.3
+     },
+     {
+      "pid": 203497,
+      "name": "Rudy Gobert",
+      "min": 32.0,
+      "ovr": 84.2
      },
      {
       "pid": 1630163,
       "name": "LaMelo Ball",
-      "min": 26.667202,
-      "ovr": 75.3
-     },
-     {
-      "pid": 1630545,
-      "name": "Terrence Shannon Jr",
-      "min": 23.359883,
-      "ovr": 60.3
+      "min": 30.0,
+      "ovr": 75.2
      },
      {
       "pid": 1642866,
       "name": "Joan Beringer",
-      "min": 19.893981,
-      "ovr": 54.8
+      "min": 26.0,
+      "ovr": 57.4
      },
      {
       "pid": 1626168,
       "name": "Trey Lyles",
-      "min": 17.101189,
+      "min": 22.0,
       "ovr": 63.7671,
       "ovrSrc": "24-25 卡"
      },
      {
       "pid": 1630538,
       "name": "Bones Hyland",
-      "min": 12.536215,
-      "ovr": 69.0
+      "min": 14.0,
+      "ovr": 69.2
      },
      {
       "pid": 1641740,
       "name": "Jaylen Clark",
-      "min": 10.058117,
-      "ovr": 55.1
+      "min": 10.0,
+      "ovr": 56.0
      }
     ],
-    "predWinsAllSeason": 50.6250657236175,
+    "predWinsAllSeason": 56.65570535511532,
     "lineupStates": 2
    },
    "restored": [],
-   "nOut": 2
+   "nOut": 3
   },
   "1610612751": {
    "name": "Brooklyn Nets",
    "abbr": "BKN",
    "W": 1,
-   "L": 5,
+   "L": 6,
    "injured": [
-    {
-     "name": "Mikel Brown Jr.",
-     "status": "Day-To-Day",
-     "date": "2026-11-02T01:51Z",
-     "comment": "Brown (rest) is out for Sunday's game in Indiana.",
-     "returnDate": "2026-11-02",
-     "playerId": 1643414
-    },
     {
      "name": "Egor Demin",
      "status": "Out",
@@ -2676,7 +2452,7 @@
      "comment": "The Nets exercised Demin's third-year team option for the 2027-28 season, Sharif Phillips-Keaton of USA Today reports Thursday.",
      "returnDate": "2026-11-07",
      "playerId": 1642856,
-     "missGames": 2
+     "missGames": 1
     },
     {
      "name": "Tyler Bilodeau",
@@ -2688,147 +2464,135 @@
     }
    ],
    "c": {
-    "ortg": -2.9908699222627035,
-    "drtg": 1.0397958633697897,
-    "net": -4.030665785632493,
-    "margin": 4.335,
-    "predWins": 30.110284996560328,
-    "schedGames": 74,
+    "ortg": -2.025968422921153,
+    "drtg": 0.8482229121641467,
+    "net": -2.8741913350852997,
+    "margin": 5.88,
+    "predWins": 32.85969622371947,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 203944,
       "name": "Julius Randle",
-      "min": 33.86953,
-      "ovr": 70.2
+      "min": 36.0,
+      "ovr": 67.7
      },
      {
       "pid": 1629008,
       "name": "Michael Porter Jr.",
-      "min": 31.620292,
-      "ovr": 88.7
+      "min": 36.0,
+      "ovr": 88.6
      },
      {
       "pid": 1631165,
       "name": "Keon Ellis",
-      "min": 24.348145,
-      "ovr": 73.0
-     },
-     {
-      "pid": 1630549,
-      "name": "Day'Ron Sharpe",
-      "min": 22.711489,
-      "ovr": 80.1
+      "min": 34.0,
+      "ovr": 71.4
      },
      {
       "pid": 1643414,
       "name": "Mikel Brown Jr.",
-      "min": 22.362633,
-      "ovr": 62.4
+      "min": 32.0,
+      "ovr": 65.6
      },
      {
       "pid": 1643052,
       "name": "Chaney Johnson",
-      "min": 21.96962,
-      "ovr": 54.7
+      "min": 30.0,
+      "ovr": 48.0
+     },
+     {
+      "pid": 1630549,
+      "name": "Day'Ron Sharpe",
+      "min": 26.0,
+      "ovr": 80.7
      },
      {
       "pid": 1642856,
       "name": "Egor Dëmin",
-      "min": 21.940344,
-      "ovr": 66.7
+      "min": 22.0,
+      "ovr": 64.0
      },
      {
       "pid": 1641730,
       "name": "Noah Clowney",
-      "min": 21.880331,
-      "ovr": 51.4
+      "min": 14.0,
+      "ovr": 50.9
      },
      {
       "pid": 1642849,
       "name": "Nolan Traore",
-      "min": 20.910922,
-      "ovr": 32.6
-     },
-     {
-      "pid": 1629021,
-      "name": "Moritz Wagner",
-      "min": 18.386694,
-      "ovr": 67.9
+      "min": 10.0,
+      "ovr": 40.9
      }
     ]
    },
    "today": {
-    "ortg": -2.1766226618628366,
-    "drtg": 0.4735194584566784,
-    "net": -2.650142120319515,
-    "margin": 5.595,
-    "predWins": 30.546072747503413,
-    "schedGames": 74,
+    "ortg": -2.200195944655235,
+    "drtg": -0.3426667816779627,
+    "net": -1.857529162977272,
+    "margin": 6.775,
+    "predWins": 32.87805566689183,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 203944,
       "name": "Julius Randle",
-      "min": 35.04103,
-      "ovr": 70.2
+      "min": 36.0,
+      "ovr": 67.7
      },
      {
       "pid": 1629008,
       "name": "Michael Porter Jr.",
-      "min": 32.713994,
-      "ovr": 88.7
+      "min": 36.0,
+      "ovr": 88.6
      },
      {
       "pid": 1631165,
       "name": "Keon Ellis",
-      "min": 25.190313,
-      "ovr": 73.0
-     },
-     {
-      "pid": 1630549,
-      "name": "Day'Ron Sharpe",
-      "min": 23.497048,
-      "ovr": 80.1
+      "min": 34.0,
+      "ovr": 71.4
      },
      {
       "pid": 1643414,
       "name": "Mikel Brown Jr.",
-      "min": 23.136126,
-      "ovr": 62.4
+      "min": 32.0,
+      "ovr": 65.6
      },
      {
       "pid": 1643052,
       "name": "Chaney Johnson",
-      "min": 22.729518,
-      "ovr": 54.7
+      "min": 30.0,
+      "ovr": 48.0
+     },
+     {
+      "pid": 1630549,
+      "name": "Day'Ron Sharpe",
+      "min": 26.0,
+      "ovr": 80.7
      },
      {
       "pid": 1641730,
       "name": "Noah Clowney",
-      "min": 22.637142,
-      "ovr": 51.4
+      "min": 22.0,
+      "ovr": 50.9
      },
      {
       "pid": 1642849,
       "name": "Nolan Traore",
-      "min": 21.634202,
-      "ovr": 32.6
+      "min": 14.0,
+      "ovr": 40.9
      },
      {
       "pid": 1629021,
       "name": "Moritz Wagner",
-      "min": 19.022664,
-      "ovr": 67.9
-     },
-     {
-      "pid": 1642874,
-      "name": "Danny Wolf",
-      "min": 14.397962,
-      "ovr": 64.9
+      "min": 10.0,
+      "ovr": 72.7
      }
     ],
-    "predWinsAllSeason": 33.8805270991263,
+    "predWinsAllSeason": 36.48606348385264,
     "lineupStates": 2
    },
    "restored": [],
@@ -2837,180 +2601,167 @@
   "1610612752": {
    "name": "New York Knicks",
    "abbr": "NYK",
-   "W": 2,
+   "W": 3,
    "L": 4,
-   "injured": [
-    {
-     "name": "Jose Alvarado",
-     "status": "Out",
-     "date": "2026-11-01T22:16Z",
-     "comment": "Alvarado (ankle) is questionable for Monday's game against the Nets.",
-     "returnDate": "2026-11-02",
-     "playerId": 1630631,
-     "missGames": 1
-    }
-   ],
+   "injured": [],
    "c": {
-    "ortg": 4.096445730070457,
-    "drtg": 2.7149823606683015,
-    "net": 1.3814633694021552,
-    "margin": 9.525,
-    "predWins": 43.07583914128379,
-    "schedGames": 74,
+    "ortg": 3.494449115019677,
+    "drtg": 3.2033716955382374,
+    "net": 0.2910774194814394,
+    "margin": 8.835,
+    "predWins": 41.11624911132032,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1628973,
       "name": "Jalen Brunson",
-      "min": 34.538908,
-      "ovr": 88.4
+      "min": 36.0,
+      "ovr": 82.2
      },
      {
       "pid": 1628384,
       "name": "OG Anunoby",
-      "min": 32.950111,
+      "min": 36.0,
       "ovr": 88.7
-     },
-     {
-      "pid": 1628404,
-      "name": "Josh Hart",
-      "min": 31.896609,
-      "ovr": 79.6
      },
      {
       "pid": 1626157,
       "name": "Karl-Anthony Towns",
-      "min": 31.151237,
-      "ovr": 88.5
+      "min": 34.0,
+      "ovr": 88.3
+     },
+     {
+      "pid": 1628404,
+      "name": "Josh Hart",
+      "min": 32.0,
+      "ovr": 79.1
      },
      {
       "pid": 1628969,
       "name": "Mikal Bridges",
-      "min": 26.892373,
-      "ovr": 82.5
+      "min": 30.0,
+      "ovr": 82.0
      },
      {
       "pid": 1629013,
       "name": "Landry Shamet",
-      "min": 23.658891,
-      "ovr": 75.3
+      "min": 26.0,
+      "ovr": 75.6
      },
      {
       "pid": 1630540,
       "name": "Miles McBride",
-      "min": 18.32971,
-      "ovr": 77.5
-     },
-     {
-      "pid": 1642278,
-      "name": "Tyler Kolek",
-      "min": 14.069203,
-      "ovr": 56.7
-     },
-     {
-      "pid": 1630631,
-      "name": "Jose Alvarado",
-      "min": 13.388654,
-      "ovr": 72.0
+      "min": 22.0,
+      "ovr": 75.2
      },
      {
       "pid": 203083,
       "name": "Andre Drummond",
-      "min": 13.124305,
-      "ovr": 51.3
+      "min": 14.0,
+      "ovr": 50.4
+     },
+     {
+      "pid": 1642278,
+      "name": "Tyler Kolek",
+      "min": 10.0,
+      "ovr": 56.7
      }
     ]
    },
    "today": {
-    "ortg": 2.5013287159858777,
-    "drtg": 2.773142526198882,
-    "net": -0.2718138102130041,
-    "margin": 8.025,
-    "predWins": 43.180031232601394,
-    "schedGames": 74,
+    "ortg": 3.494449115019677,
+    "drtg": 3.2033716955382374,
+    "net": 0.2910774194814394,
+    "margin": 8.835,
+    "predWins": 41.08934317493406,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1628973,
       "name": "Jalen Brunson",
-      "min": 35.274719,
-      "ovr": 88.4
+      "min": 36.0,
+      "ovr": 82.2
      },
      {
       "pid": 1628384,
       "name": "OG Anunoby",
-      "min": 33.652075,
+      "min": 36.0,
       "ovr": 88.7
-     },
-     {
-      "pid": 1628404,
-      "name": "Josh Hart",
-      "min": 32.576129,
-      "ovr": 79.6
      },
      {
       "pid": 1626157,
       "name": "Karl-Anthony Towns",
-      "min": 31.814878,
-      "ovr": 88.5
+      "min": 34.0,
+      "ovr": 88.3
+     },
+     {
+      "pid": 1628404,
+      "name": "Josh Hart",
+      "min": 32.0,
+      "ovr": 79.1
      },
      {
       "pid": 1628969,
       "name": "Mikal Bridges",
-      "min": 27.465283,
-      "ovr": 82.5
+      "min": 30.0,
+      "ovr": 82.0
      },
      {
       "pid": 1629013,
       "name": "Landry Shamet",
-      "min": 24.162916,
-      "ovr": 75.3
+      "min": 26.0,
+      "ovr": 75.6
      },
      {
       "pid": 1630540,
       "name": "Miles McBride",
-      "min": 18.720203,
-      "ovr": 77.5
-     },
-     {
-      "pid": 1642278,
-      "name": "Tyler Kolek",
-      "min": 14.368931,
-      "ovr": 56.7
+      "min": 22.0,
+      "ovr": 75.2
      },
      {
       "pid": 203083,
       "name": "Andre Drummond",
-      "min": 13.403903,
-      "ovr": 51.3
+      "min": 14.0,
+      "ovr": 50.4
      },
      {
-      "pid": 203903,
-      "name": "Jordan Clarkson",
-      "min": 8.560961,
-      "ovr": 45.8
+      "pid": 1642278,
+      "name": "Tyler Kolek",
+      "min": 10.0,
+      "ovr": 56.7
      }
     ],
-    "predWinsAllSeason": 40.492255743531686,
-    "lineupStates": 2
+    "predWinsAllSeason": 42.88013345070881,
+    "lineupStates": 1
    },
    "restored": [],
-   "nOut": 1
+   "nOut": 0
   },
   "1610612753": {
    "name": "Orlando Magic",
    "abbr": "ORL",
    "W": 2,
-   "L": 4,
+   "L": 5,
    "injured": [
+    {
+     "name": "Anthony Black",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T05:35Z",
+     "comment": "Black will be rested Monday against the Wizards.",
+     "returnDate": "2026-11-05",
+     "playerId": 1641710,
+     "missGames": 0
+    },
     {
      "name": "Jonathan Isaac",
      "status": "Out",
-     "date": "2026-10-29T18:29Z",
-     "comment": "Isaac (knee) is out for Friday's game in Toronto.",
+     "date": "2026-11-02T15:22Z",
+     "comment": "Orlando recalled Isaac (knee) from the G League's Osceola Magic on Sunday.",
      "returnDate": "2026-11-10",
      "playerId": 1628371,
-     "missGames": 3
+     "missGames": 2
     },
     {
      "name": "Jalen Suggs",
@@ -3019,7 +2770,7 @@
      "comment": "Suggs has been diagnosed with a mild bone bruise in his right knee and will be re-evaluated in two weeks, Shams Charania of ESPN reports.",
      "returnDate": "2026-11-10",
      "playerId": 1630591,
-     "missGames": 3
+     "missGames": 2
     },
     {
      "name": "Paolo Banchero",
@@ -3028,7 +2779,7 @@
      "comment": "Banchero is expected to be sidelined for the next four-to-six weeks due to a right high-ankle sprain, Shams Charania of ESPN reports.",
      "returnDate": "2026-11-22",
      "playerId": 1631094,
-     "missGames": 9
+     "missGames": 8
     },
     {
      "name": "Noah Penda",
@@ -3037,7 +2788,7 @@
      "comment": "Penda was diagnosed with a partially torn right hamstring Saturday, Jason Beede of the Orlando Sentinel reports.",
      "returnDate": "2026-11-18",
      "playerId": 1642869,
-     "missGames": 7
+     "missGames": 6
     },
     {
      "name": "Izaiyah Nelson",
@@ -3049,183 +2800,217 @@
     }
    ],
    "c": {
-    "ortg": -2.9268436711903547,
-    "drtg": 1.6851317964551242,
-    "net": -4.611975467645479,
-    "margin": 3.455,
-    "predWins": 29.861110859706464,
-    "schedGames": 74,
+    "ortg": -3.5179901287685027,
+    "drtg": 1.0658132644487637,
+    "net": -4.583803393217266,
+    "margin": 3.99,
+    "predWins": 30.31035232612059,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630532,
       "name": "Franz Wagner",
-      "min": 30.560203,
-      "ovr": 89.0
+      "min": 36.0,
+      "ovr": 89.4
      },
      {
       "pid": 1630217,
       "name": "Desmond Bane",
-      "min": 29.717839,
-      "ovr": 91.6
+      "min": 36.0,
+      "ovr": 89.8
      },
      {
       "pid": 1631094,
       "name": "Paolo Banchero",
-      "min": 29.104371,
-      "ovr": 77.4
+      "min": 34.0,
+      "ovr": 79.1
      },
      {
       "pid": 1630591,
       "name": "Jalen Suggs",
-      "min": 28.760448,
-      "ovr": 85.5
+      "min": 32.0,
+      "ovr": 85.8
      },
      {
       "pid": 1628976,
       "name": "Wendell Carter Jr.",
-      "min": 27.724548,
-      "ovr": 78.4
+      "min": 30.0,
+      "ovr": 78.5
      },
      {
       "pid": 1641783,
       "name": "Tristan da Silva",
-      "min": 24.874638,
-      "ovr": 60.6
+      "min": 26.0,
+      "ovr": 60.3
      },
      {
       "pid": 1641710,
       "name": "Anthony Black",
-      "min": 24.069918,
-      "ovr": 72.3
+      "min": 22.0,
+      "ovr": 75.5
      },
      {
       "pid": 1642859,
       "name": "Jase Richardson",
-      "min": 17.140326,
-      "ovr": 47.7
+      "min": 14.0,
+      "ovr": 42.0
      },
      {
       "pid": 1628975,
       "name": "Jevon Carter",
-      "min": 15.161766,
-      "ovr": 52.9
-     },
-     {
-      "pid": 1631288,
-      "name": "Jamal Cain",
-      "min": 12.885943,
-      "ovr": 58.0
+      "min": 10.0,
+      "ovr": 50.7
      }
     ]
    },
    "today": {
-    "ortg": -1.6096888638308826,
-    "drtg": 1.7856776032136565,
-    "net": -3.395366467044539,
-    "margin": 4.94,
-    "predWins": 30.572282838989217,
-    "schedGames": 74,
+    "ortg": -1.3343930875932983,
+    "drtg": 4.158068290939383,
+    "net": -5.492461378532681,
+    "margin": 2.985,
+    "predWins": 29.729275351585276,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630532,
       "name": "Franz Wagner",
-      "min": 37.081033,
-      "ovr": 89.0
+      "min": 36.0,
+      "ovr": 89.4
      },
      {
       "pid": 1630217,
       "name": "Desmond Bane",
-      "min": 36.058928,
-      "ovr": 91.6
+      "min": 36.0,
+      "ovr": 89.8
      },
      {
       "pid": 1628976,
       "name": "Wendell Carter Jr.",
-      "min": 33.640316,
-      "ovr": 78.4
+      "min": 34.0,
+      "ovr": 78.5
      },
      {
       "pid": 1641783,
       "name": "Tristan da Silva",
-      "min": 30.182302,
-      "ovr": 60.6
-     },
-     {
-      "pid": 1641710,
-      "name": "Anthony Black",
-      "min": 29.205873,
-      "ovr": 72.3
+      "min": 32.0,
+      "ovr": 60.3
      },
      {
       "pid": 1642859,
       "name": "Jase Richardson",
-      "min": 20.797669,
-      "ovr": 47.7
+      "min": 30.0,
+      "ovr": 42.0
      },
      {
       "pid": 1628975,
       "name": "Jevon Carter",
-      "min": 18.396931,
-      "ovr": 52.9
+      "min": 26.0,
+      "ovr": 50.7
      },
      {
       "pid": 1631288,
       "name": "Jamal Cain",
-      "min": 15.635501,
-      "ovr": 58.0
-     },
-     {
-      "pid": 1629048,
-      "name": "Goga Bitadze",
-      "min": 9.741935,
-      "ovr": 70.4
+      "min": 22.0,
+      "ovr": 59.8
      },
      {
       "pid": 202696,
       "name": "Nikola Vučević",
-      "min": 9.259511,
-      "ovr": 67.2
+      "min": 14.0,
+      "ovr": 65.3
+     },
+     {
+      "pid": 1629048,
+      "name": "Goga Bitadze",
+      "min": 10.0,
+      "ovr": 69.0
      }
     ],
-    "predWinsAllSeason": 34.13234205128717,
+    "predWinsAllSeason": 29.56829139612911,
     "lineupStates": 3
    },
    "restored": [],
-   "nOut": 4
+   "nOut": 5
   },
   "1610612754": {
    "name": "Indiana Pacers",
    "abbr": "IND",
    "W": 2,
-   "L": 5,
+   "L": 6,
    "injured": [
     {
-     "name": "Obi Toppin",
+     "name": "Pascal Siakam",
      "status": "Day-To-Day",
-     "date": "2026-11-02T01:51Z",
-     "comment": "Toppin (back) is out for Sunday's game against the Nets, Alex Golden of SI.com reports.",
-     "returnDate": "2026-11-02",
-     "playerId": 1630167
+     "date": "2026-11-03T05:50Z",
+     "comment": "Siakam will be rested against the Hawks on Monday.",
+     "returnDate": "2026-11-04",
+     "playerId": 1627783,
+     "missGames": 0
+    },
+    {
+     "name": "Aaron Nesmith",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T05:50Z",
+     "comment": "Nesmith (rest) is sitting out Monday against Atlanta.",
+     "returnDate": "2026-11-04",
+     "playerId": 1630174,
+     "missGames": 0
+    },
+    {
+     "name": "Andrew Nembhard",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T05:50Z",
+     "comment": "Nembhard (cervical strain) is out for Monday's game against Atlanta.",
+     "returnDate": "2026-11-04",
+     "playerId": 1629614,
+     "missGames": 0
+    },
+    {
+     "name": "Kelly Oubre Jr.",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T05:49Z",
+     "comment": "Oubre (knee) has been ruled out for Monday's game against the Hawks.",
+     "returnDate": "2026-11-04",
+     "playerId": 1626162,
+     "missGames": 0
+    },
+    {
+     "name": "Larry Nance Jr.",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T05:49Z",
+     "comment": "Nance (illness) has been ruled out for Monday's game against the Hawks.",
+     "returnDate": "2026-11-04",
+     "playerId": 1626204,
+     "missGames": 0
+    },
+    {
+     "name": "Obi Toppin",
+     "status": "Out",
+     "date": "2026-11-02T23:07Z",
+     "comment": "Toppin (back) will dress for Monday's game against  Hawks but will only play in an emergency, Tony East of Forbes.com reports.",
+     "returnDate": "2026-11-04",
+     "playerId": 1630167,
+     "missGames": 0
     },
     {
      "name": "T.J. McConnell",
      "status": "Out",
-     "date": "2026-11-01T16:26Z",
-     "comment": "Indiana recalled McConnell (hamstring) from the G League's Noblesville Boom on Saturday.",
-     "returnDate": "2026-11-02",
+     "date": "2026-11-02T18:19Z",
+     "comment": "McConnell (hamstring) is out for Monday's game against the Hawks and remains week-to-week.",
+     "returnDate": "2026-11-09",
      "playerId": 204456,
-     "missGames": 1
+     "missGames": 2
     },
     {
      "name": "Ivica Zubac",
      "status": "Out",
-     "date": "2026-10-31T21:14Z",
-     "comment": "Zubac (ankle) will remain on the inactive list for Sunday's game against the Nets.",
-     "returnDate": "2026-11-02",
+     "date": "2026-11-02T18:19Z",
+     "comment": "Zubac (ankle) has been ruled out for Monday's game against the Hawks.",
+     "returnDate": "2026-11-09",
      "playerId": 1627826,
-     "missGames": 1
+     "missGames": 2
     },
     {
      "name": "Johnny Furphy",
@@ -3234,7 +3019,7 @@
      "comment": "Furphy (knee) is practicing with the G League's Noblesville Boom, per Alex Golden of SI.com.",
      "returnDate": "2027-01-02",
      "playerId": 1642277,
-     "missGames": 25
+     "missGames": 24
     },
     {
      "name": "Ben Sheppard",
@@ -3243,7 +3028,7 @@
      "comment": "Head coach Rick Carlise confirmed Sheppard will miss \"months\" after undergoing surgery to repair a torn meniscus in his left knee, Tony East of Forbes.com reports.",
      "returnDate": "2027-01-02",
      "playerId": 1641767,
-     "missGames": 25
+     "missGames": 24
     },
     {
      "name": "Tyrese Haliburton",
@@ -3252,179 +3037,141 @@
      "comment": "Haliburton (hamstring) will miss at least the next two weeks of action, Shams Charania of ESPN reports.",
      "returnDate": "2026-11-13",
      "playerId": 1630169,
-     "missGames": 5
+     "missGames": 4
     }
    ],
    "c": {
-    "ortg": -1.03622967940386,
-    "drtg": 4.639280068686233,
-    "net": -5.675509748090093,
-    "margin": 2.455,
-    "predWins": 26.518385801432345,
-    "schedGames": 73,
+    "ortg": -2.9987926569758656,
+    "drtg": 7.50829707849654,
+    "net": -10.507089735472405,
+    "margin": -2.14,
+    "predWins": 17.032398046314473,
+    "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630169,
       "name": "Tyrese Haliburton",
-      "min": 32.121886,
+      "min": 36.0,
       "ovr": 84.7156,
       "ovrSrc": "24-25 卡"
      },
      {
       "pid": 1629614,
       "name": "Andrew Nembhard",
-      "min": 31.769875,
-      "ovr": 78.4
+      "min": 36.0,
+      "ovr": 79.1
      },
      {
       "pid": 1627783,
       "name": "Pascal Siakam",
-      "min": 31.271475,
-      "ovr": 81.0
-     },
-     {
-      "pid": 1626162,
-      "name": "Kelly Oubre Jr.",
-      "min": 22.567811,
-      "ovr": 73.5
-     },
-     {
-      "pid": 1630174,
-      "name": "Aaron Nesmith",
-      "min": 22.443263,
-      "ovr": 76.1
-     },
-     {
-      "pid": 1630167,
-      "name": "Obi Toppin",
-      "min": 22.254177,
-      "ovr": 77.3
+      "min": 34.0,
+      "ovr": 79.9
      },
      {
       "pid": 1641716,
       "name": "Jarace Walker",
-      "min": 21.145744,
-      "ovr": 58.5
+      "min": 32.0,
+      "ovr": 55.7
+     },
+     {
+      "pid": 1626162,
+      "name": "Kelly Oubre Jr.",
+      "min": 30.0,
+      "ovr": 72.3
+     },
+     {
+      "pid": 1630174,
+      "name": "Aaron Nesmith",
+      "min": 26.0,
+      "ovr": 74.7
+     },
+     {
+      "pid": 1630167,
+      "name": "Obi Toppin",
+      "min": 22.0,
+      "ovr": 79.8
+     },
+     {
+      "pid": 1631245,
+      "name": "Quenton Jackson",
+      "min": 14.0,
+      "ovr": 77.6
      },
      {
       "pid": 1627826,
       "name": "Ivica Zubac",
-      "min": 20.859498,
-      "ovr": 77.6
-     },
-     {
-      "pid": 1631245,
-      "name": "Quenton Jackson",
-      "min": 19.33208,
-      "ovr": 73.4
-     },
-     {
-      "pid": 1630643,
-      "name": "Jay Huff",
-      "min": 16.234191,
-      "ovr": 69.3
+      "min": 10.0,
+      "ovr": 76.2
      }
     ]
    },
    "today": {
-    "ortg": -4.068068363382608,
-    "drtg": 2.825194520024567,
-    "net": -6.893262883407175,
-    "margin": 1.23,
-    "predWins": 26.794750171621736,
-    "schedGames": 73,
+    "ortg": -10.427428614252207,
+    "drtg": -2.265636965410451,
+    "net": -8.161791648841756,
+    "margin": 0.23,
+    "predWins": 16.86253368519498,
+    "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
-      "pid": 1629614,
-      "name": "Andrew Nembhard",
-      "min": 35.455972,
-      "ovr": 78.4
-     },
-     {
-      "pid": 1627783,
-      "name": "Pascal Siakam",
-      "min": 34.899746,
-      "ovr": 81.0
-     },
-     {
-      "pid": 1626162,
-      "name": "Kelly Oubre Jr.",
-      "min": 25.18624,
-      "ovr": 73.5
-     },
-     {
-      "pid": 1630174,
-      "name": "Aaron Nesmith",
-      "min": 25.047241,
-      "ovr": 76.1
-     },
-     {
-      "pid": 1630167,
-      "name": "Obi Toppin",
-      "min": 24.836217,
-      "ovr": 77.3
-     },
-     {
       "pid": 1641716,
       "name": "Jarace Walker",
-      "min": 23.599178,
-      "ovr": 58.5
+      "min": 40.0,
+      "ovr": 55.7
      },
      {
       "pid": 1631245,
       "name": "Quenton Jackson",
-      "min": 21.575083,
-      "ovr": 73.4
+      "min": 40.0,
+      "ovr": 77.6
      },
      {
       "pid": 1630643,
       "name": "Jay Huff",
-      "min": 18.117762,
-      "ovr": 69.3
-     },
-     {
-      "pid": 1626204,
-      "name": "Larry Nance Jr.",
-      "min": 17.661765,
-      "ovr": 56.0
+      "min": 40.0,
+      "ovr": 69.7
      },
      {
       "pid": 1641771,
       "name": "Jalen Slawson",
-      "min": 13.620796,
-      "ovr": 61.5
+      "min": 40.0,
+      "ovr": 64.4
+     },
+     {
+      "pid": 1641738,
+      "name": "Kobe Brown",
+      "min": 40.0,
+      "ovr": 53.7
+     },
+     {
+      "pid": 1643552,
+      "name": "Braden Smith",
+      "min": 40.0,
+      "ovr": 57.6
      }
     ],
-    "predWinsAllSeason": 24.767314194068582,
+    "predWinsAllSeason": 22.684711090712593,
     "lineupStates": 3
    },
    "restored": [],
-   "nOut": 5
+   "nOut": 11
   },
   "1610612755": {
    "name": "Philadelphia 76ers",
    "abbr": "PHI",
-   "W": 6,
+   "W": 7,
    "L": 1,
    "injured": [
     {
-     "name": "Joel Embiid",
-     "status": "Day-To-Day",
-     "date": "2026-11-01T22:12Z",
-     "comment": "Embiid (foot) is questionable to suit up for Monday's game against the Bulls.",
-     "returnDate": "2026-11-02",
-     "playerId": 203954
-    },
-    {
      "name": "Dominick Barlow",
      "status": "Out",
-     "date": "2026-10-19T21:07Z",
-     "comment": "Barlow will miss at least the next two weeks of action due to a lumbar spine bone stress response, Adam Aaronson of PhillyVoice.com reports.",
+     "date": "2026-11-02T23:05Z",
+     "comment": "Barlow (back) has been on the court \"a little bit\" and will be re-evaluated Tuesday, Austin Krell of OnPattison.com reports.",
      "returnDate": "2026-11-04",
      "playerId": 1631230,
-     "missGames": 1
+     "missGames": 0
     },
     {
      "name": "Ariel Hukporti",
@@ -3433,151 +3180,139 @@
      "comment": "Hukporti has sustained a season-ending ruptured right Achilles tendon, per Shams Charania of ESPN.",
      "returnDate": "2027-10-01",
      "playerId": 1630574,
-     "missGames": 73
+     "missGames": 72
     }
    ],
    "c": {
-    "ortg": -0.3925219203201351,
-    "drtg": 0.9979666162649465,
-    "net": -1.3904885365850816,
-    "margin": 6.99,
-    "predWins": 41.18716698728231,
-    "schedGames": 73,
+    "ortg": -1.283622025903469,
+    "drtg": 0.6721415772866806,
+    "net": -1.9557636031901495,
+    "margin": 6.55,
+    "predWins": 39.918962491666406,
+    "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630178,
       "name": "Tyrese Maxey",
-      "min": 32.600976,
-      "ovr": 92.6
+      "min": 36.0,
+      "ovr": 92.9
      },
      {
       "pid": 1627759,
       "name": "Jaylen Brown",
-      "min": 31.786853,
-      "ovr": 89.9
+      "min": 36.0,
+      "ovr": 89.3
      },
      {
       "pid": 203954,
       "name": "Joel Embiid",
-      "min": 30.504763,
-      "ovr": 91.7
-     },
-     {
-      "pid": 2544,
-      "name": "LeBron James",
-      "min": 29.053674,
-      "ovr": 91.4
+      "min": 34.0,
+      "ovr": 88.5
      },
      {
       "pid": 1642845,
       "name": "VJ Edgecombe",
-      "min": 28.905301,
-      "ovr": 78.7
+      "min": 32.0,
+      "ovr": 79.4
+     },
+     {
+      "pid": 2544,
+      "name": "LeBron James",
+      "min": 30.0,
+      "ovr": 91.4
      },
      {
       "pid": 1629731,
       "name": "Dean Wade",
-      "min": 24.134491,
+      "min": 26.0,
       "ovr": 77.0
      },
      {
       "pid": 1629014,
       "name": "Anfernee Simons",
-      "min": 21.38958,
-      "ovr": 60.9
+      "min": 22.0,
+      "ovr": 56.7
      },
      {
       "pid": 203484,
       "name": "Kentavious Caldwell-Pope",
-      "min": 21.063503,
-      "ovr": 71.2
+      "min": 14.0,
+      "ovr": 71.4
      },
      {
       "pid": 1641737,
       "name": "Adem Bona",
-      "min": 12.258617,
-      "ovr": 56.3
-     },
-     {
-      "pid": 1631133,
-      "name": "Jabari Walker",
-      "min": 8.302242,
-      "ovr": 55.5
+      "min": 10.0,
+      "ovr": 53.0
      }
     ]
    },
    "today": {
-    "ortg": -0.3925219203201351,
-    "drtg": 0.9979666162649465,
-    "net": -1.3904885365850816,
-    "margin": 6.99,
-    "predWins": 41.30612643547443,
-    "schedGames": 73,
+    "ortg": -1.283622025903469,
+    "drtg": 0.6721415772866806,
+    "net": -1.9557636031901495,
+    "margin": 6.55,
+    "predWins": 39.964648177414006,
+    "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630178,
       "name": "Tyrese Maxey",
-      "min": 32.600976,
-      "ovr": 92.6
+      "min": 36.0,
+      "ovr": 92.9
      },
      {
       "pid": 1627759,
       "name": "Jaylen Brown",
-      "min": 31.786853,
-      "ovr": 89.9
+      "min": 36.0,
+      "ovr": 89.3
      },
      {
       "pid": 203954,
       "name": "Joel Embiid",
-      "min": 30.504763,
-      "ovr": 91.7
-     },
-     {
-      "pid": 2544,
-      "name": "LeBron James",
-      "min": 29.053674,
-      "ovr": 91.4
+      "min": 34.0,
+      "ovr": 88.5
      },
      {
       "pid": 1642845,
       "name": "VJ Edgecombe",
-      "min": 28.905301,
-      "ovr": 78.7
+      "min": 32.0,
+      "ovr": 79.4
+     },
+     {
+      "pid": 2544,
+      "name": "LeBron James",
+      "min": 30.0,
+      "ovr": 91.4
      },
      {
       "pid": 1629731,
       "name": "Dean Wade",
-      "min": 24.134491,
+      "min": 26.0,
       "ovr": 77.0
      },
      {
       "pid": 1629014,
       "name": "Anfernee Simons",
-      "min": 21.38958,
-      "ovr": 60.9
+      "min": 22.0,
+      "ovr": 56.7
      },
      {
       "pid": 203484,
       "name": "Kentavious Caldwell-Pope",
-      "min": 21.063503,
-      "ovr": 71.2
+      "min": 14.0,
+      "ovr": 71.4
      },
      {
       "pid": 1641737,
       "name": "Adem Bona",
-      "min": 12.258617,
-      "ovr": 56.3
-     },
-     {
-      "pid": 1631133,
-      "name": "Jabari Walker",
-      "min": 8.302242,
-      "ovr": 55.5
+      "min": 10.0,
+      "ovr": 53.0
      }
     ],
-    "predWinsAllSeason": 42.135307019721814,
+    "predWinsAllSeason": 41.31873681712527,
     "lineupStates": 1
    },
    "restored": [],
@@ -3587,8 +3322,17 @@
    "name": "Phoenix Suns",
    "abbr": "PHX",
    "W": 1,
-   "L": 3,
+   "L": 4,
    "injured": [
+    {
+     "name": "Jordan Goodwin",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T04:33Z",
+     "comment": "Goodwin won't return to Monday's game against the Warriors due to a left calf injury, Duane Rankin of The Arizona Republic reports. He recorded four points (2-3 FG, 0-1 3Pt), two rebounds, two assists and one steal in 10 minutes before exit",
+     "returnDate": "2026-11-04",
+     "playerId": 1630692,
+     "missGames": 0
+    },
     {
      "name": "Mark Williams",
      "status": "Out",
@@ -3596,160 +3340,148 @@
      "comment": "Williams underwent surgery Thursday to repair a torn labrum in his left shoulder and will miss an extended period of time, Shams Charania of ESPN reports.",
      "returnDate": "2027-02-03",
      "playerId": 1631109,
-     "missGames": 43
+     "missGames": 42
     }
    ],
    "c": {
-    "ortg": -3.514261261667926,
-    "drtg": -0.607415348315044,
-    "net": -2.906845913352882,
-    "margin": 5.27,
-    "predWins": 32.85027543497223,
-    "schedGames": 76,
+    "ortg": -4.47056003917281,
+    "drtg": -0.16578790508391705,
+    "net": -4.304772134088893,
+    "margin": 4.205,
+    "predWins": 29.314267603196303,
+    "schedGames": 75,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1626164,
       "name": "Devin Booker",
-      "min": 35.017343,
-      "ovr": 88.4
+      "min": 36.0,
+      "ovr": 88.1
      },
      {
       "pid": 1628970,
       "name": "Miles Bridges",
-      "min": 32.889,
-      "ovr": 72.4
+      "min": 36.0,
+      "ovr": 70.9
      },
      {
       "pid": 1628415,
       "name": "Dillon Brooks",
-      "min": 28.712691,
-      "ovr": 67.8
+      "min": 34.0,
+      "ovr": 68.2
      },
      {
       "pid": 1630224,
       "name": "Jalen Green",
-      "min": 26.836466,
-      "ovr": 67.6
+      "min": 32.0,
+      "ovr": 64.2
      },
      {
       "pid": 1631221,
       "name": "Collin Gillespie",
-      "min": 26.768603,
-      "ovr": 77.4
+      "min": 30.0,
+      "ovr": 76.0
      },
      {
       "pid": 1642863,
       "name": "Khaman Maluach",
-      "min": 22.037016,
-      "ovr": 48.9
-     },
-     {
-      "pid": 1630692,
-      "name": "Jordan Goodwin",
-      "min": 21.153466,
-      "ovr": 72.8
+      "min": 26.0,
+      "ovr": 49.1
      },
      {
       "pid": 1642345,
       "name": "Oso Ighodaro",
-      "min": 17.909801,
-      "ovr": 73.2
+      "min": 22.0,
+      "ovr": 73.3
+     },
+     {
+      "pid": 1630692,
+      "name": "Jordan Goodwin",
+      "min": 14.0,
+      "ovr": 72.8
      },
      {
       "pid": 1628379,
       "name": "Luke Kennard",
-      "min": 15.753632,
-      "ovr": 80.1
-     },
-     {
-      "pid": 1642346,
-      "name": "Ryan Dunn",
-      "min": 12.921982,
-      "ovr": 66.0
+      "min": 10.0,
+      "ovr": 81.0
      }
     ]
    },
    "today": {
-    "ortg": -3.514261261667926,
-    "drtg": -0.607415348315044,
-    "net": -2.906845913352882,
-    "margin": 5.27,
-    "predWins": 33.08699947862247,
-    "schedGames": 76,
+    "ortg": -5.265138532110427,
+    "drtg": -0.30244009419079987,
+    "net": -4.962698437919627,
+    "margin": 3.62,
+    "predWins": 29.50090098495134,
+    "schedGames": 75,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1626164,
       "name": "Devin Booker",
-      "min": 35.017343,
-      "ovr": 88.4
+      "min": 36.0,
+      "ovr": 88.1
      },
      {
       "pid": 1628970,
       "name": "Miles Bridges",
-      "min": 32.889,
-      "ovr": 72.4
+      "min": 36.0,
+      "ovr": 70.9
      },
      {
       "pid": 1628415,
       "name": "Dillon Brooks",
-      "min": 28.712691,
-      "ovr": 67.8
+      "min": 34.0,
+      "ovr": 68.2
      },
      {
       "pid": 1630224,
       "name": "Jalen Green",
-      "min": 26.836466,
-      "ovr": 67.6
+      "min": 32.0,
+      "ovr": 64.2
      },
      {
       "pid": 1631221,
       "name": "Collin Gillespie",
-      "min": 26.768603,
-      "ovr": 77.4
+      "min": 30.0,
+      "ovr": 76.0
      },
      {
       "pid": 1642863,
       "name": "Khaman Maluach",
-      "min": 22.037016,
-      "ovr": 48.9
-     },
-     {
-      "pid": 1630692,
-      "name": "Jordan Goodwin",
-      "min": 21.153466,
-      "ovr": 72.8
+      "min": 26.0,
+      "ovr": 49.1
      },
      {
       "pid": 1642345,
       "name": "Oso Ighodaro",
-      "min": 17.909801,
-      "ovr": 73.2
+      "min": 22.0,
+      "ovr": 73.3
      },
      {
       "pid": 1628379,
       "name": "Luke Kennard",
-      "min": 15.753632,
-      "ovr": 80.1
+      "min": 14.0,
+      "ovr": 81.0
      },
      {
       "pid": 1642346,
       "name": "Ryan Dunn",
-      "min": 12.921982,
-      "ovr": 66.0
+      "min": 10.0,
+      "ovr": 65.5
      }
     ],
-    "predWinsAllSeason": 33.87534437215186,
+    "predWinsAllSeason": 29.574634650734147,
     "lineupStates": 1
    },
    "restored": [],
-   "nOut": 1
+   "nOut": 2
   },
   "1610612757": {
    "name": "Portland Trail Blazers",
    "abbr": "POR",
-   "W": 4,
+   "W": 5,
    "L": 1,
    "injured": [
     {
@@ -3759,7 +3491,7 @@
      "comment": "Morant has been diagnosed with a Grade 2 left hamstring strain and is expected to miss four weeks, Portland announced Friday.",
      "returnDate": "2026-12-01",
      "playerId": 1629630,
-     "missGames": 15
+     "missGames": 14
     },
     {
      "name": "Shaedon Sharpe",
@@ -3768,153 +3500,141 @@
      "comment": "Sharpe suffered a torn meniscus in his knee and is expected to miss six months, per Shams Charania of ESPN.",
      "returnDate": "2027-03-02",
      "playerId": 1631101,
-     "missGames": 54
+     "missGames": 53
     }
    ],
    "c": {
-    "ortg": -1.440853210004363,
-    "drtg": 0.15433481560523887,
-    "net": -1.5951880256096018,
-    "margin": 6.67,
-    "predWins": 37.90652621144337,
-    "schedGames": 75,
+    "ortg": 0.115940754282434,
+    "drtg": -2.0360597933353404,
+    "net": 2.1520005476177744,
+    "margin": 10.565,
+    "predWins": 46.86423400092416,
+    "schedGames": 74,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630166,
       "name": "Deni Avdija",
-      "min": 32.576958,
-      "ovr": 84.5
+      "min": 36.0,
+      "ovr": 83.2
      },
      {
       "pid": 203081,
       "name": "Damian Lillard",
-      "min": 30.106771,
+      "min": 36.0,
       "ovr": 85.6044,
       "ovrSrc": "24-25 卡"
      },
      {
       "pid": 1641739,
       "name": "Toumani Camara",
-      "min": 27.175295,
-      "ovr": 79.3
+      "min": 34.0,
+      "ovr": 79.0
      },
      {
       "pid": 1629630,
       "name": "Ja Morant",
-      "min": 26.864422,
-      "ovr": 76.1
+      "min": 32.0,
+      "ovr": 80.0
      },
      {
       "pid": 201950,
       "name": "Jrue Holiday",
-      "min": 25.585609,
-      "ovr": 81.0
+      "min": 30.0,
+      "ovr": 87.7
      },
      {
       "pid": 1642270,
       "name": "Donovan Clingan",
-      "min": 23.143355,
-      "ovr": 71.7
+      "min": 26.0,
+      "ovr": 72.1
      },
      {
       "pid": 1631321,
       "name": "Sidy Cissoko",
-      "min": 22.817208,
-      "ovr": 56.8
+      "min": 22.0,
+      "ovr": 60.0
      },
      {
       "pid": 1630703,
       "name": "Scoot Henderson",
-      "min": 22.037069,
-      "ovr": 57.2
+      "min": 14.0,
+      "ovr": 52.3
      },
      {
       "pid": 1629057,
       "name": "Robert Williams III",
-      "min": 17.755568,
-      "ovr": 77.1
-     },
-     {
-      "pid": 1630249,
-      "name": "Vít Krejčí",
-      "min": 11.937744,
-      "ovr": 69.1
+      "min": 10.0,
+      "ovr": 76.1
      }
     ]
    },
    "today": {
-    "ortg": -0.5377561563489479,
-    "drtg": -1.9285266539467472,
-    "net": 1.3907704975977992,
-    "margin": 9.7,
-    "predWins": 39.78541785968853,
-    "schedGames": 75,
+    "ortg": 1.599420273268592,
+    "drtg": -3.534683448328906,
+    "net": 5.134103721597498,
+    "margin": 13.845,
+    "predWins": 48.198262861649965,
+    "schedGames": 74,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630166,
       "name": "Deni Avdija",
-      "min": 34.990253,
-      "ovr": 84.5
+      "min": 36.0,
+      "ovr": 83.2
      },
      {
       "pid": 203081,
       "name": "Damian Lillard",
-      "min": 32.337074,
+      "min": 36.0,
       "ovr": 85.6044,
       "ovrSrc": "24-25 卡"
      },
      {
       "pid": 1641739,
       "name": "Toumani Camara",
-      "min": 29.188435,
-      "ovr": 79.3
+      "min": 34.0,
+      "ovr": 79.0
      },
      {
       "pid": 201950,
       "name": "Jrue Holiday",
-      "min": 27.480986,
-      "ovr": 81.0
+      "min": 32.0,
+      "ovr": 87.7
      },
      {
       "pid": 1642270,
       "name": "Donovan Clingan",
-      "min": 24.85781,
-      "ovr": 71.7
+      "min": 30.0,
+      "ovr": 72.1
      },
      {
       "pid": 1631321,
       "name": "Sidy Cissoko",
-      "min": 24.507502,
-      "ovr": 56.8
+      "min": 26.0,
+      "ovr": 60.0
      },
      {
       "pid": 1630703,
       "name": "Scoot Henderson",
-      "min": 23.669571,
-      "ovr": 57.2
+      "min": 22.0,
+      "ovr": 52.3
      },
      {
       "pid": 1629057,
       "name": "Robert Williams III",
-      "min": 19.070897,
-      "ovr": 77.1
+      "min": 14.0,
+      "ovr": 76.1
      },
      {
-      "pid": 1630249,
-      "name": "Vít Krejčí",
-      "min": 12.822089,
-      "ovr": 69.1
-     },
-     {
-      "pid": 1642905,
-      "name": "Yang Hansen",
-      "min": 11.075382,
-      "ovr": 48.3
+      "pid": 1642959,
+      "name": "Chris Youngblood",
+      "min": 10.0,
+      "ovr": 48.2
      }
     ],
-    "predWinsAllSeason": 46.32247438857456,
+    "predWinsAllSeason": 55.62601489881401,
     "lineupStates": 2
    },
    "restored": [],
@@ -3923,25 +3643,17 @@
   "1610612758": {
    "name": "Sacramento Kings",
    "abbr": "SAC",
-   "W": 0,
+   "W": 1,
    "L": 6,
    "injured": [
     {
      "name": "Dylan Cardwell",
      "status": "Out",
-     "date": "2026-11-01T23:24Z",
-     "comment": "Cardwell (calf) is questionable to suit up for Monday's game against the Mavericks.",
-     "returnDate": "2026-11-02",
+     "date": "2026-11-02T23:34Z",
+     "comment": "Cardwell (calf) has been ruled out for Monday's game against the Mavericks.",
+     "returnDate": "2026-11-04",
      "playerId": 1642928,
-     "missGames": 1
-    },
-    {
-     "name": "Zach LaVine",
-     "status": "Day-To-Day",
-     "date": "2026-11-01T23:20Z",
-     "comment": "LaVine (elbow) is questionable to play in Monday's game against Dallas.",
-     "returnDate": "2026-11-02",
-     "playerId": 203897
+     "missGames": 0
     },
     {
      "name": "Maxime Raynaud",
@@ -3950,16 +3662,16 @@
      "comment": "Raynaud (knee) is progressing in his rehabilitation and will be re-evaluated in approximately two weeks, Brenden Nunes of KHTK Sactown Sports 1140 reports.",
      "returnDate": "2026-11-10",
      "playerId": 1642875,
-     "missGames": 4
+     "missGames": 3
     },
     {
      "name": "Keegan Murray",
      "status": "Out",
      "date": "2026-10-26T22:01Z",
      "comment": "Murray (ankle) will be re-evaluated in 10-to-14 days, NBA reporter Marc Stein reports.",
-     "returnDate": "2026-11-06",
+     "returnDate": "2026-11-10",
      "playerId": 1631099,
-     "missGames": 2
+     "missGames": 3
     },
     {
      "name": "Ben Simmons",
@@ -3971,147 +3683,135 @@
     }
    ],
    "c": {
-    "ortg": -4.2004529778284905,
-    "drtg": 6.975871834688533,
-    "net": -11.176324812517024,
-    "margin": -3.02,
-    "predWins": 14.664937663449244,
-    "schedGames": 74,
+    "ortg": -4.128476708195379,
+    "drtg": 5.520265017745345,
+    "net": -9.648741725940724,
+    "margin": -1.275,
+    "predWins": 17.907281797746016,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
-      "pid": 1627734,
-      "name": "Domantas Sabonis",
-      "min": 34.964157,
-      "ovr": 79.8
-     },
-     {
       "pid": 1643411,
       "name": "Darius Acuff Jr.",
-      "min": 34.444515,
-      "ovr": 66.1
+      "min": 36.0,
+      "ovr": 68.9
+     },
+     {
+      "pid": 1627734,
+      "name": "Domantas Sabonis",
+      "min": 36.0,
+      "ovr": 80.9
      },
      {
       "pid": 203897,
       "name": "Zach LaVine",
-      "min": 32.151452,
-      "ovr": 77.7
+      "min": 34.0,
+      "ovr": 78.4
      },
      {
       "pid": 1629631,
       "name": "De'Andre Hunter",
-      "min": 27.708966,
-      "ovr": 72.3
+      "min": 32.0,
+      "ovr": 70.0
      },
      {
       "pid": 1630173,
       "name": "Precious Achiuwa",
-      "min": 27.236242,
-      "ovr": 58.7
+      "min": 30.0,
+      "ovr": 59.3
      },
      {
       "pid": 1631099,
       "name": "Keegan Murray",
-      "min": 25.661917,
-      "ovr": 73.9
+      "min": 26.0,
+      "ovr": 73.0
      },
      {
       "pid": 1643567,
       "name": "Emanuel Sharp",
-      "min": 17.050354,
-      "ovr": 48.7
+      "min": 22.0,
+      "ovr": 50.8
      },
      {
       "pid": 1642367,
       "name": "Jonathan Mogbo",
-      "min": 16.32234,
-      "ovr": 53.6
-     },
-     {
-      "pid": 1631342,
-      "name": "Daeqwon Plowden",
-      "min": 13.313368,
-      "ovr": 50.6
+      "min": 14.0,
+      "ovr": 51.7
      },
      {
       "pid": 1628370,
       "name": "Malik Monk",
-      "min": 11.14669,
-      "ovr": 62.8
+      "min": 10.0,
+      "ovr": 61.4
      }
     ]
    },
    "today": {
-    "ortg": -3.1707598456345067,
-    "drtg": 6.653088559998594,
-    "net": -9.8238484056331,
-    "margin": -1.64,
-    "predWins": 14.722053149223537,
-    "schedGames": 74,
+    "ortg": -3.885638327639967,
+    "drtg": 7.891775035500174,
+    "net": -11.777413363140141,
+    "margin": -3.405,
+    "predWins": 17.753233493587917,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
-      "pid": 1627734,
-      "name": "Domantas Sabonis",
-      "min": 37.574371,
-      "ovr": 79.8
-     },
-     {
       "pid": 1643411,
       "name": "Darius Acuff Jr.",
-      "min": 37.015935,
-      "ovr": 66.1
+      "min": 36.0,
+      "ovr": 68.9
+     },
+     {
+      "pid": 1627734,
+      "name": "Domantas Sabonis",
+      "min": 36.0,
+      "ovr": 80.9
      },
      {
       "pid": 203897,
       "name": "Zach LaVine",
-      "min": 34.551686,
-      "ovr": 77.7
+      "min": 34.0,
+      "ovr": 78.4
      },
      {
       "pid": 1629631,
       "name": "De'Andre Hunter",
-      "min": 29.777551,
-      "ovr": 72.3
+      "min": 32.0,
+      "ovr": 70.0
      },
      {
       "pid": 1630173,
       "name": "Precious Achiuwa",
-      "min": 29.269536,
-      "ovr": 58.7
+      "min": 30.0,
+      "ovr": 59.3
      },
      {
       "pid": 1643567,
       "name": "Emanuel Sharp",
-      "min": 18.323231,
-      "ovr": 48.7
+      "min": 26.0,
+      "ovr": 50.8
      },
      {
       "pid": 1642367,
       "name": "Jonathan Mogbo",
-      "min": 17.540868,
-      "ovr": 53.6
-     },
-     {
-      "pid": 1631342,
-      "name": "Daeqwon Plowden",
-      "min": 14.307264,
-      "ovr": 50.6
+      "min": 22.0,
+      "ovr": 51.7
      },
      {
       "pid": 1628370,
       "name": "Malik Monk",
-      "min": 11.978835,
-      "ovr": 62.8
+      "min": 14.0,
+      "ovr": 61.4
      },
      {
-      "pid": 1642284,
-      "name": "Alex Karaban",
-      "min": 9.660723,
-      "ovr": 51.5
+      "pid": 1631342,
+      "name": "Daeqwon Plowden",
+      "min": 10.0,
+      "ovr": 51.1
      }
     ],
-    "predWinsAllSeason": 17.793997708462214,
+    "predWinsAllSeason": 15.620417818897419,
     "lineupStates": 2
    },
    "restored": [],
@@ -4120,7 +3820,7 @@
   "1610612759": {
    "name": "San Antonio Spurs",
    "abbr": "SAS",
-   "W": 4,
+   "W": 5,
    "L": 2,
    "injured": [
     {
@@ -4130,7 +3830,7 @@
      "comment": "Harris (calf) is listed as out for Saturday's game against Minnesota.",
      "returnDate": "2026-11-06",
      "playerId": 202699,
-     "missGames": 2
+     "missGames": 1
     },
     {
      "name": "Jayden Quaintance",
@@ -4142,147 +3842,135 @@
     }
    ],
    "c": {
-    "ortg": 1.4196797290234429,
-    "drtg": -6.296350669045012,
-    "net": 7.716030398068455,
-    "margin": 16.22,
-    "predWins": 59.585161635865994,
-    "schedGames": 74,
+    "ortg": 0.6107449213855176,
+    "drtg": -4.1118821542851975,
+    "net": 4.722627075670715,
+    "margin": 13.385,
+    "predWins": 52.9941069881144,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1642844,
       "name": "Dylan Harper",
-      "min": 33.372255,
-      "ovr": 76.7
-     },
-     {
-      "pid": 1641705,
-      "name": "Victor Wembanyama",
-      "min": 32.080639,
-      "ovr": 101.8
+      "min": 36.0,
+      "ovr": 75.7
      },
      {
       "pid": 1630170,
       "name": "Devin Vassell",
-      "min": 32.017969,
-      "ovr": 76.8
+      "min": 36.0,
+      "ovr": 75.5
+     },
+     {
+      "pid": 1641705,
+      "name": "Victor Wembanyama",
+      "min": 34.0,
+      "ovr": 101.9
      },
      {
       "pid": 1628368,
       "name": "De'Aaron Fox",
-      "min": 31.912149,
-      "ovr": 92.0
+      "min": 32.0,
+      "ovr": 92.8
      },
      {
       "pid": 1642264,
       "name": "Stephon Castle",
-      "min": 29.206969,
-      "ovr": 76.0
+      "min": 30.0,
+      "ovr": 76.3
      },
      {
       "pid": 1630577,
       "name": "Julian Champagnie",
-      "min": 27.551012,
-      "ovr": 75.8
+      "min": 26.0,
+      "ovr": 76.3
      },
      {
       "pid": 1629640,
       "name": "Keldon Johnson",
-      "min": 22.320222,
-      "ovr": 68.1
+      "min": 22.0,
+      "ovr": 66.0
      },
      {
       "pid": 1628436,
       "name": "Luke Kornet",
-      "min": 14.523247,
-      "ovr": 74.7
-     },
-     {
-      "pid": 1642868,
-      "name": "Carter Bryant",
-      "min": 8.986325,
-      "ovr": 51.0
+      "min": 14.0,
+      "ovr": 74.5
      },
      {
       "pid": 203084,
       "name": "Harrison Barnes",
-      "min": 8.029214,
-      "ovr": 62.3
+      "min": 10.0,
+      "ovr": 61.8
      }
     ]
    },
    "today": {
-    "ortg": 1.4196797290234429,
-    "drtg": -6.296350669045012,
-    "net": 7.716030398068455,
-    "margin": 16.22,
-    "predWins": 59.67621491393704,
-    "schedGames": 74,
+    "ortg": 0.6107449213855176,
+    "drtg": -4.1118821542851975,
+    "net": 4.722627075670715,
+    "margin": 13.385,
+    "predWins": 52.85799412029247,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1642844,
       "name": "Dylan Harper",
-      "min": 33.372255,
-      "ovr": 76.7
-     },
-     {
-      "pid": 1641705,
-      "name": "Victor Wembanyama",
-      "min": 32.080639,
-      "ovr": 101.8
+      "min": 36.0,
+      "ovr": 75.7
      },
      {
       "pid": 1630170,
       "name": "Devin Vassell",
-      "min": 32.017969,
-      "ovr": 76.8
+      "min": 36.0,
+      "ovr": 75.5
+     },
+     {
+      "pid": 1641705,
+      "name": "Victor Wembanyama",
+      "min": 34.0,
+      "ovr": 101.9
      },
      {
       "pid": 1628368,
       "name": "De'Aaron Fox",
-      "min": 31.912149,
-      "ovr": 92.0
+      "min": 32.0,
+      "ovr": 92.8
      },
      {
       "pid": 1642264,
       "name": "Stephon Castle",
-      "min": 29.206969,
-      "ovr": 76.0
+      "min": 30.0,
+      "ovr": 76.3
      },
      {
       "pid": 1630577,
       "name": "Julian Champagnie",
-      "min": 27.551012,
-      "ovr": 75.8
+      "min": 26.0,
+      "ovr": 76.3
      },
      {
       "pid": 1629640,
       "name": "Keldon Johnson",
-      "min": 22.320222,
-      "ovr": 68.1
+      "min": 22.0,
+      "ovr": 66.0
      },
      {
       "pid": 1628436,
       "name": "Luke Kornet",
-      "min": 14.523247,
-      "ovr": 74.7
-     },
-     {
-      "pid": 1642868,
-      "name": "Carter Bryant",
-      "min": 8.986325,
-      "ovr": 51.0
+      "min": 14.0,
+      "ovr": 74.5
      },
      {
       "pid": 203084,
       "name": "Harrison Barnes",
-      "min": 8.029214,
-      "ovr": 62.3
+      "min": 10.0,
+      "ovr": 61.8
      }
     ],
-    "predWinsAllSeason": 60.24183361925299,
+    "predWinsAllSeason": 53.981321622828574,
     "lineupStates": 1
    },
    "restored": [],
@@ -4291,7 +3979,7 @@
   "1610612760": {
    "name": "Oklahoma City Thunder",
    "abbr": "OKC",
-   "W": 4,
+   "W": 5,
    "L": 2,
    "injured": [
     {
@@ -4309,7 +3997,7 @@
      "comment": "Wallace underwent surgery Friday to repair a torn labrum in his left shoulder and will be re-evaluated before the end of the regular season, Clemente Almanza of USA Today reports.",
      "returnDate": "2027-03-02",
      "playerId": 1641717,
-     "missGames": 53
+     "missGames": 52
     },
     {
      "name": "Chet Holmgren",
@@ -4318,7 +4006,7 @@
      "comment": "Holmgren underwent a biological treatment Friday to address a small patellar tendon tear and will miss at least 8-10 weeks, Nick Crain of Slam reports.",
      "returnDate": "2027-01-02",
      "playerId": 1631096,
-     "missGames": 26
+     "missGames": 25
     },
     {
      "name": "Jalen Williams",
@@ -4327,7 +4015,7 @@
      "comment": "Williams (leg) underwent successful surgery Wednesday to \"address a fractured left fibula and reconstruction of ankle ligaments following a fracture and dislocation.\" He will be re-evaluated before the end of the regular season, Tim MacMaho",
      "returnDate": "2027-03-02",
      "playerId": 1631114,
-     "missGames": 53
+     "missGames": 52
     },
     {
      "name": "Alex Caruso",
@@ -4336,161 +4024,149 @@
      "comment": "Caruso (ankle) is expected to miss time due to an ankle sprain, Clemente Almanza of USA Today reports.",
      "returnDate": "2026-11-04",
      "playerId": 1627936,
-     "missGames": 1
+     "missGames": 0
     },
     {
      "name": "Nikola Topic",
      "status": "Out",
      "date": "2026-10-27T21:38Z",
      "comment": "Topic (back) will remain on the inactive list for Wednesday's game in Dallas.",
-     "returnDate": "2026-11-04",
+     "returnDate": "2026-11-06",
      "playerId": 1642260,
      "missGames": 1
     }
    ],
    "c": {
-    "ortg": 3.372218534096959,
-    "drtg": -8.822341344477039,
-    "net": 12.194559878573997,
-    "margin": 20.775,
-    "predWins": 67.15589008683114,
-    "schedGames": 74,
+    "ortg": 0.7984165643599255,
+    "drtg": -10.136197220891802,
+    "net": 10.934613785251727,
+    "margin": 19.525,
+    "predWins": 64.83347521800327,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1628983,
       "name": "Shai Gilgeous-Alexander",
-      "min": 32.464042,
-      "ovr": 107.8
+      "min": 36.0,
+      "ovr": 107.9
      },
      {
       "pid": 1631114,
       "name": "Jalen Williams",
-      "min": 31.400672,
-      "ovr": 91.8
+      "min": 36.0,
+      "ovr": 90.9
      },
      {
       "pid": 1631096,
       "name": "Chet Holmgren",
-      "min": 29.739598,
+      "min": 34.0,
       "ovr": 93.5
      },
      {
       "pid": 1642349,
       "name": "Ajay Mitchell",
-      "min": 25.339758,
-      "ovr": 80.8
+      "min": 32.0,
+      "ovr": 76.8
      },
      {
       "pid": 1642272,
       "name": "Jared McCain",
-      "min": 24.489821,
-      "ovr": 57.1
+      "min": 30.0,
+      "ovr": 52.5
      },
      {
       "pid": 1628392,
       "name": "Isaiah Hartenstein",
-      "min": 23.769718,
-      "ovr": 80.3
+      "min": 26.0,
+      "ovr": 75.2
      },
      {
       "pid": 1627936,
       "name": "Alex Caruso",
-      "min": 18.807043,
-      "ovr": 81.2
-     },
-     {
-      "pid": 1643717,
-      "name": "Josh Dix",
-      "min": 18.165543,
-      "ovr": null
+      "min": 22.0,
+      "ovr": 84.3
      },
      {
       "pid": 1631119,
       "name": "Jaylin Williams",
-      "min": 18.121643,
-      "ovr": 81.4
+      "min": 14.0,
+      "ovr": 80.3
      },
      {
       "pid": 1643530,
       "name": "Aday Mara",
-      "min": 17.702161,
-      "ovr": 56.9
+      "min": 10.0,
+      "ovr": 58.2
      }
     ]
    },
    "today": {
-    "ortg": 2.388469787377389,
-    "drtg": -4.57141993567663,
-    "net": 6.959889723054019,
-    "margin": 15.29,
-    "predWins": 64.01011109834442,
-    "schedGames": 74,
+    "ortg": 0.19571398580663413,
+    "drtg": -5.735965231244506,
+    "net": 5.9316792170511405,
+    "margin": 14.495,
+    "predWins": 65.43136229318714,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1628983,
       "name": "Shai Gilgeous-Alexander",
-      "min": 39.329597,
-      "ovr": 107.8
+      "min": 36.0,
+      "ovr": 107.9
      },
      {
       "pid": 1642349,
       "name": "Ajay Mitchell",
-      "min": 30.698656,
-      "ovr": 80.8
+      "min": 36.0,
+      "ovr": 76.8
      },
      {
       "pid": 1642272,
       "name": "Jared McCain",
-      "min": 29.668973,
-      "ovr": 57.1
+      "min": 34.0,
+      "ovr": 52.5
      },
      {
       "pid": 1628392,
       "name": "Isaiah Hartenstein",
-      "min": 28.796581,
-      "ovr": 80.3
-     },
-     {
-      "pid": 1643717,
-      "name": "Josh Dix",
-      "min": 22.007226,
-      "ovr": null
+      "min": 32.0,
+      "ovr": 75.2
      },
      {
       "pid": 1631119,
       "name": "Jaylin Williams",
-      "min": 21.954042,
-      "ovr": 81.4
+      "min": 30.0,
+      "ovr": 80.3
      },
      {
       "pid": 1643530,
       "name": "Aday Mara",
-      "min": 21.445846,
-      "ovr": 56.9
+      "min": 26.0,
+      "ovr": 58.2
      },
      {
-      "pid": 1642892,
-      "name": "Bennett Stirtz",
-      "min": 18.600911,
-      "ovr": 64.1
+      "pid": 1643717,
+      "name": "Josh Dix",
+      "min": 22.0,
+      "ovr": null
      },
      {
       "pid": 1629026,
       "name": "Kenrich Williams",
-      "min": 16.448493,
-      "ovr": 67.2
+      "min": 14.0,
+      "ovr": 68.0
      },
      {
-      "pid": 1642877,
-      "name": "Micah Peavy",
-      "min": 11.049677,
-      "ovr": 48.2
+      "pid": 1642892,
+      "name": "Bennett Stirtz",
+      "min": 10.0,
+      "ovr": 55.4
      }
     ],
-    "predWinsAllSeason": 58.38395094210811,
-    "lineupStates": 4
+    "predWinsAllSeason": 56.49474672442335,
+    "lineupStates": 3
    },
    "restored": [],
    "nOut": 5
@@ -4498,16 +4174,25 @@
   "1610612761": {
    "name": "Toronto Raptors",
    "abbr": "TOR",
-   "W": 3,
+   "W": 4,
    "L": 3,
    "injured": [
     {
      "name": "Jakob Poeltl",
      "status": "Day-To-Day",
-     "date": "2026-11-02T04:47Z",
-     "comment": "Poeltl (shoulder) won't play in Sunday's game against the Lakers, Vivek Jacob of the Raptors' official site reports.",
-     "returnDate": "2026-11-02",
-     "playerId": 1627751
+     "date": "2026-11-03T06:10Z",
+     "comment": "Poeltl (shoulder) has been ruled out for Monday's game against the Clippers, Zulfi Sheikh reports.",
+     "returnDate": "2026-11-04",
+     "playerId": 1627751,
+     "missGames": 0
+    },
+    {
+     "name": "Nate Bittle",
+     "status": "Out",
+     "date": "2026-11-02T20:20Z",
+     "comment": "Bittle (foot) is out for Monday's game against the Clippers and remains without a timetable to return.",
+     "returnDate": "2026-11-09",
+     "playerId": null
     },
     {
      "name": "Kawhi Leonard",
@@ -4516,169 +4201,149 @@
      "comment": "Leonard (knee) is expected to be sidelined for at least three to four weeks, Chris Haynes of NBA TV reports.",
      "returnDate": "2026-11-23",
      "playerId": 202695,
-     "missGames": 10
-    },
-    {
-     "name": "Nate Bittle",
-     "status": "Out",
-     "date": "2026-10-27T19:31Z",
-     "comment": "Bittle (foot) has been ruled out for Wednesday's game against the Magic, Cody Taylor of USA Today reports.",
-     "returnDate": "2026-11-02",
-     "playerId": null
+     "missGames": 9
     }
    ],
    "c": {
-    "ortg": 2.8241073348453085,
-    "drtg": -0.07901503775079277,
-    "net": 2.9031223725961013,
-    "margin": 11.15,
-    "predWins": 47.94844504968185,
-    "schedGames": 74,
+    "ortg": 1.4685657775005865,
+    "drtg": 0.7637074666688477,
+    "net": 0.7048583108317388,
+    "margin": 9.415,
+    "predWins": 43.29708631337103,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630567,
       "name": "Scottie Barnes",
-      "min": 32.832252,
+      "min": 36.0,
       "ovr": 89.5
      },
      {
       "pid": 1629628,
       "name": "RJ Barrett",
-      "min": 31.748244,
-      "ovr": 79.5
+      "min": 36.0,
+      "ovr": 79.8
      },
      {
       "pid": 1630193,
       "name": "Immanuel Quickley",
-      "min": 30.688904,
-      "ovr": 79.3
+      "min": 34.0,
+      "ovr": 79.7
      },
      {
       "pid": 1642266,
       "name": "Ja'Kobe Walter",
-      "min": 28.476123,
-      "ovr": 68.7
+      "min": 32.0,
+      "ovr": 71.0
      },
      {
       "pid": 202695,
       "name": "Kawhi Leonard",
-      "min": 25.830342,
-      "ovr": 98.3
+      "min": 30.0,
+      "ovr": 98.1
      },
      {
       "pid": 1642347,
       "name": "Jamal Shead",
-      "min": 22.080869,
-      "ovr": 54.4
-     },
-     {
-      "pid": 1627751,
-      "name": "Jakob Poeltl",
-      "min": 20.240965,
-      "ovr": 73.2
+      "min": 26.0,
+      "ovr": 53.0
      },
      {
       "pid": 1642867,
       "name": "Collin Murray-Boyles",
-      "min": 19.053746,
-      "ovr": 69.4
+      "min": 22.0,
+      "ovr": 68.8
+     },
+     {
+      "pid": 1627751,
+      "name": "Jakob Poeltl",
+      "min": 14.0,
+      "ovr": 72.5
      },
      {
       "pid": 1642419,
       "name": "Jamison Battle",
-      "min": 15.337255,
-      "ovr": 55.2
-     },
-     {
-      "pid": 1643512,
-      "name": "Allen Graves",
-      "min": 13.711299,
-      "ovr": 60.8
+      "min": 10.0,
+      "ovr": 55.4
      }
     ]
    },
    "today": {
-    "ortg": 0.02174857030769317,
-    "drtg": 0.32509604373329637,
-    "net": -0.3033474734256032,
-    "margin": 8.12,
-    "predWins": 47.29235576722928,
-    "schedGames": 74,
+    "ortg": -1.4917519215686355,
+    "drtg": 0.07861400879168912,
+    "net": -1.5703659303603246,
+    "margin": 6.935,
+    "predWins": 42.48819988845826,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630567,
       "name": "Scottie Barnes",
-      "min": 35.492225,
+      "min": 36.0,
       "ovr": 89.5
      },
      {
       "pid": 1629628,
       "name": "RJ Barrett",
-      "min": 34.320393,
-      "ovr": 79.5
+      "min": 36.0,
+      "ovr": 79.8
      },
      {
       "pid": 1630193,
       "name": "Immanuel Quickley",
-      "min": 33.175229,
-      "ovr": 79.3
+      "min": 34.0,
+      "ovr": 79.7
      },
      {
       "pid": 1642266,
       "name": "Ja'Kobe Walter",
-      "min": 30.783175,
-      "ovr": 68.7
+      "min": 32.0,
+      "ovr": 71.0
      },
      {
       "pid": 1642347,
       "name": "Jamal Shead",
-      "min": 23.869796,
-      "ovr": 54.4
-     },
-     {
-      "pid": 1627751,
-      "name": "Jakob Poeltl",
-      "min": 21.880829,
-      "ovr": 73.2
+      "min": 30.0,
+      "ovr": 53.0
      },
      {
       "pid": 1642867,
       "name": "Collin Murray-Boyles",
-      "min": 20.597425,
-      "ovr": 69.4
+      "min": 26.0,
+      "ovr": 68.8
      },
      {
       "pid": 1642419,
       "name": "Jamison Battle",
-      "min": 16.579834,
-      "ovr": 55.2
+      "min": 22.0,
+      "ovr": 55.4
      },
      {
       "pid": 1643512,
       "name": "Allen Graves",
-      "min": 14.822149,
-      "ovr": 60.8
+      "min": 14.0,
+      "ovr": 61.5
      },
      {
       "pid": 1631218,
       "name": "Trayce Jackson-Davis",
-      "min": 8.478945,
-      "ovr": 59.8
+      "min": 10.0,
+      "ovr": 60.0
      }
     ],
-    "predWinsAllSeason": 41.85897114928965,
+    "predWinsAllSeason": 39.23933983814417,
     "lineupStates": 2
    },
    "restored": [],
-   "nOut": 1
+   "nOut": 2
   },
   "1610612762": {
    "name": "Utah Jazz",
    "abbr": "UTA",
    "W": 1,
-   "L": 5,
+   "L": 6,
    "injured": [
     {
      "name": "Jaren Jackson Jr.",
@@ -4687,7 +4352,7 @@
      "comment": "Jackson has been diagnosed with a torn MCL in his right knee and will be sidelined for 6-to-8 weeks, per Shams Charania of ESPN.",
      "returnDate": "2026-12-14",
      "playerId": 1628991,
-     "missGames": 18
+     "missGames": 17
     },
     {
      "name": "Trey Alexander",
@@ -4696,7 +4361,7 @@
      "comment": "Alexander won't play Wednesday against the Grizzlies due to a left knee bone bruise.",
      "returnDate": "2026-11-06",
      "playerId": 1641725,
-     "missGames": 2
+     "missGames": 1
     },
     {
      "name": "Jusuf Nurkic",
@@ -4705,151 +4370,139 @@
      "comment": "Nurkic will miss at least the next four weeks due to a partial plantar plate tear of second toe in right foot, Chris Haynes of NBA TV reports.",
      "returnDate": "2026-11-04",
      "playerId": 203994,
-     "missGames": 1
+     "missGames": 0
     }
    ],
    "c": {
-    "ortg": 2.078696167221352,
-    "drtg": 0.5328438901415353,
-    "net": 1.5458522770798169,
-    "margin": 9.715,
-    "predWins": 42.56812014091096,
-    "schedGames": 74,
+    "ortg": 0.9759174413463683,
+    "drtg": -0.2772445628140332,
+    "net": 1.2531620041604015,
+    "margin": 9.735,
+    "predWins": 41.43174204924696,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1641718,
       "name": "Keyonte George",
-      "min": 31.730058,
-      "ovr": 67.3
-     },
-     {
-      "pid": 1642846,
-      "name": "Ace Bailey",
-      "min": 30.393334,
-      "ovr": 61.0
+      "min": 36.0,
+      "ovr": 64.3
      },
      {
       "pid": 1643408,
       "name": "Darryn Peterson",
-      "min": 29.584137,
-      "ovr": 78.6
+      "min": 36.0,
+      "ovr": 78.4
+     },
+     {
+      "pid": 1642846,
+      "name": "Ace Bailey",
+      "min": 34.0,
+      "ovr": 60.0
      },
      {
       "pid": 1628374,
       "name": "Lauri Markkanen",
-      "min": 28.7253,
-      "ovr": 85.2
+      "min": 32.0,
+      "ovr": 84.8
      },
      {
       "pid": 1628991,
       "name": "Jaren Jackson Jr.",
-      "min": 26.166975,
-      "ovr": 84.4
+      "min": 30.0,
+      "ovr": 84.1
      },
      {
       "pid": 1629637,
       "name": "Jaxson Hayes",
-      "min": 25.16333,
-      "ovr": 71.4
-     },
-     {
-      "pid": 1642268,
-      "name": "Isaiah Collier",
-      "min": 18.269947,
-      "ovr": 50.4
+      "min": 26.0,
+      "ovr": 70.7
      },
      {
       "pid": 1628964,
       "name": "Mo Bamba",
-      "min": 17.797164,
-      "ovr": 56.5
+      "min": 22.0,
+      "ovr": 56.0
+     },
+     {
+      "pid": 1642268,
+      "name": "Isaiah Collier",
+      "min": 14.0,
+      "ovr": 48.5
      },
      {
       "pid": 1629004,
       "name": "Svi Mykhailiuk",
-      "min": 16.636651,
-      "ovr": 57.1
-     },
-     {
-      "pid": 1629006,
-      "name": "Josh Okogie",
-      "min": 15.533104,
-      "ovr": 72.0
+      "min": 10.0,
+      "ovr": 53.4
      }
     ]
    },
    "today": {
-    "ortg": 1.5869218639349896,
-    "drtg": 4.202669092192423,
-    "net": -2.615747228257433,
-    "margin": 5.625,
-    "predWins": 40.382585882924296,
-    "schedGames": 74,
+    "ortg": 0.8308674672174021,
+    "drtg": 2.641043063300458,
+    "net": -1.810175596083056,
+    "margin": 6.565,
+    "predWins": 39.94710767857483,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1641718,
       "name": "Keyonte George",
-      "min": 33.243375,
-      "ovr": 67.3
-     },
-     {
-      "pid": 1642846,
-      "name": "Ace Bailey",
-      "min": 31.842898,
-      "ovr": 61.0
+      "min": 36.0,
+      "ovr": 64.3
      },
      {
       "pid": 1643408,
       "name": "Darryn Peterson",
-      "min": 30.995107,
-      "ovr": 78.6
+      "min": 36.0,
+      "ovr": 78.4
+     },
+     {
+      "pid": 1642846,
+      "name": "Ace Bailey",
+      "min": 34.0,
+      "ovr": 60.0
      },
      {
       "pid": 1628374,
       "name": "Lauri Markkanen",
-      "min": 30.09531,
-      "ovr": 85.2
+      "min": 32.0,
+      "ovr": 84.8
      },
      {
       "pid": 1629637,
       "name": "Jaxson Hayes",
-      "min": 26.363456,
-      "ovr": 71.4
-     },
-     {
-      "pid": 1642268,
-      "name": "Isaiah Collier",
-      "min": 19.141304,
-      "ovr": 50.4
+      "min": 30.0,
+      "ovr": 70.7
      },
      {
       "pid": 1628964,
       "name": "Mo Bamba",
-      "min": 18.645973,
-      "ovr": 56.5
+      "min": 26.0,
+      "ovr": 56.0
+     },
+     {
+      "pid": 1642268,
+      "name": "Isaiah Collier",
+      "min": 22.0,
+      "ovr": 48.5
      },
      {
       "pid": 1629004,
       "name": "Svi Mykhailiuk",
-      "min": 17.43011,
-      "ovr": 57.1
+      "min": 14.0,
+      "ovr": 53.4
      },
      {
       "pid": 1629006,
       "name": "Josh Okogie",
-      "min": 16.273931,
-      "ovr": 72.0
-     },
-     {
-      "pid": 1641729,
-      "name": "Brice Sensabaugh",
-      "min": 15.968534,
-      "ovr": 66.7
+      "min": 10.0,
+      "ovr": 71.7
      }
     ],
-    "predWinsAllSeason": 34.21222714933533,
+    "predWinsAllSeason": 35.85078298255385,
     "lineupStates": 2
    },
    "restored": [],
@@ -4859,179 +4512,195 @@
    "name": "Memphis Grizzlies",
    "abbr": "MEM",
    "W": 6,
-   "L": 0,
+   "L": 1,
    "injured": [
-    {
-     "name": "Scotty Pippen Jr.",
-     "status": "Doubtful",
-     "date": "2026-11-01T23:15Z",
-     "comment": "Pippen (back) is listed as doubtful for Monday's game against the Pelicans.",
-     "returnDate": "2026-11-02",
-     "playerId": 1630590,
-     "missGames": 1
-    },
     {
      "name": "Quinten Post",
      "status": "Day-To-Day",
-     "date": "2026-11-01T23:13Z",
-     "comment": "Post (ankle) is questionable to suit up for Monday's game against New Orleans.",
-     "returnDate": "2026-11-02",
-     "playerId": 1642366
+     "date": "2026-11-03T06:02Z",
+     "comment": "Post (ankle) has been downgraded to out for Monday's game against the Pelicans.",
+     "returnDate": "2026-11-04",
+     "playerId": 1642366,
+     "missGames": 0
+    },
+    {
+     "name": "Scotty Pippen Jr.",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T06:02Z",
+     "comment": "Pippen (back) has been ruled out for Monday's game against the Pelicans.",
+     "returnDate": "2026-11-04",
+     "playerId": 1630590,
+     "missGames": 0
     }
    ],
    "c": {
-    "ortg": 4.951049265426278,
-    "drtg": -2.71818557385582,
-    "net": 7.6692348392820975,
-    "margin": 16.025,
-    "predWins": 60.37980149530872,
-    "schedGames": 74,
+    "ortg": 6.947225484153577,
+    "drtg": -1.1088078193768354,
+    "net": 8.056033303530413,
+    "margin": 16.765,
+    "predWins": 60.46461812481507,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1643409,
       "name": "Cameron Boozer",
-      "min": 31.808745,
-      "ovr": 72.8
+      "min": 36.0,
+      "ovr": 69.5
      },
      {
       "pid": 1629660,
       "name": "Ty Jerome",
-      "min": 30.539901,
-      "ovr": 94.2
+      "min": 36.0,
+      "ovr": 96.0
      },
      {
       "pid": 1642907,
       "name": "Cedric Coward",
-      "min": 28.8551,
-      "ovr": 81.8
+      "min": 34.0,
+      "ovr": 81.3
      },
      {
       "pid": 1642377,
       "name": "Jaylen Wells",
-      "min": 27.808112,
-      "ovr": 64.4
+      "min": 32.0,
+      "ovr": 68.4
      },
      {
       "pid": 203924,
       "name": "Jerami Grant",
-      "min": 24.961011,
-      "ovr": 52.8
+      "min": 30.0,
+      "ovr": 49.2
      },
      {
       "pid": 1641744,
       "name": "Zach Edey",
-      "min": 20.583511,
-      "ovr": 71.7
+      "min": 26.0,
+      "ovr": 71.2
      },
      {
       "pid": 1642914,
       "name": "Javon Small",
-      "min": 20.065204,
-      "ovr": 78.4
-     },
-     {
-      "pid": 1642285,
-      "name": "Cam Spencer",
-      "min": 19.57946,
-      "ovr": 77.2
+      "min": 22.0,
+      "ovr": 75.0
      },
      {
       "pid": 1630191,
       "name": "Isaiah Stewart",
-      "min": 18.555096,
-      "ovr": 67.6
+      "min": 14.0,
+      "ovr": 70.7
      },
      {
-      "pid": 1641713,
-      "name": "GG Jackson",
-      "min": 17.24386,
-      "ovr": 50.8
+      "pid": 1642285,
+      "name": "Cam Spencer",
+      "min": 10.0,
+      "ovr": 81.6
      }
     ]
    },
    "today": {
-    "ortg": 4.951049265426278,
-    "drtg": -2.71818557385582,
-    "net": 7.6692348392820975,
-    "margin": 16.025,
-    "predWins": 60.666359197983915,
-    "schedGames": 74,
+    "ortg": 6.947225484153577,
+    "drtg": -1.1088078193768354,
+    "net": 8.056033303530413,
+    "margin": 16.765,
+    "predWins": 60.42194211829884,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1643409,
       "name": "Cameron Boozer",
-      "min": 31.808745,
-      "ovr": 72.8
+      "min": 36.0,
+      "ovr": 69.5
      },
      {
       "pid": 1629660,
       "name": "Ty Jerome",
-      "min": 30.539901,
-      "ovr": 94.2
+      "min": 36.0,
+      "ovr": 96.0
      },
      {
       "pid": 1642907,
       "name": "Cedric Coward",
-      "min": 28.8551,
-      "ovr": 81.8
+      "min": 34.0,
+      "ovr": 81.3
      },
      {
       "pid": 1642377,
       "name": "Jaylen Wells",
-      "min": 27.808112,
-      "ovr": 64.4
+      "min": 32.0,
+      "ovr": 68.4
      },
      {
       "pid": 203924,
       "name": "Jerami Grant",
-      "min": 24.961011,
-      "ovr": 52.8
+      "min": 30.0,
+      "ovr": 49.2
      },
      {
       "pid": 1641744,
       "name": "Zach Edey",
-      "min": 20.583511,
-      "ovr": 71.7
+      "min": 26.0,
+      "ovr": 71.2
      },
      {
       "pid": 1642914,
       "name": "Javon Small",
-      "min": 20.065204,
-      "ovr": 78.4
-     },
-     {
-      "pid": 1642285,
-      "name": "Cam Spencer",
-      "min": 19.57946,
-      "ovr": 77.2
+      "min": 22.0,
+      "ovr": 75.0
      },
      {
       "pid": 1630191,
       "name": "Isaiah Stewart",
-      "min": 18.555096,
-      "ovr": 67.6
+      "min": 14.0,
+      "ovr": 70.7
      },
      {
-      "pid": 1641713,
-      "name": "GG Jackson",
-      "min": 17.24386,
-      "ovr": 50.8
+      "pid": 1642285,
+      "name": "Cam Spencer",
+      "min": 10.0,
+      "ovr": 81.6
      }
     ],
-    "predWinsAllSeason": 61.5199268867056,
+    "predWinsAllSeason": 61.79624409744712,
     "lineupStates": 1
    },
    "restored": [],
-   "nOut": 1
+   "nOut": 2
   },
   "1610612764": {
    "name": "Washington Wizards",
    "abbr": "WAS",
-   "W": 3,
+   "W": 4,
    "L": 3,
    "injured": [
+    {
+     "name": "Alex Sarr",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T05:34Z",
+     "comment": "Sarr (knee) is out for Monday's game against Orlando.",
+     "returnDate": "2026-11-04",
+     "playerId": 1642259,
+     "missGames": 0
+    },
+    {
+     "name": "Anthony Gill",
+     "status": "Day-To-Day",
+     "date": "2026-11-03T05:34Z",
+     "comment": "Gill (back) is out for Monday's game against the Magic.",
+     "returnDate": "2026-11-04",
+     "playerId": 1630264,
+     "missGames": 0
+    },
+    {
+     "name": "Reece Beekman",
+     "status": "Out",
+     "date": "2026-11-02T18:22Z",
+     "comment": "The Wizards announced Monday that Beekman sustained a right acromioclavicular joint injury and will be re-evaluated in approximately three weeks.",
+     "returnDate": "2026-12-03",
+     "playerId": 1641736,
+     "missGames": 14
+    },
     {
      "name": "Tristan Vukcevic",
      "status": "Out",
@@ -5039,23 +4708,7 @@
      "comment": "Vukcevic (hip) is listed as out for Monday's game against Orlando.",
      "returnDate": "2026-11-09",
      "playerId": 1641774,
-     "missGames": 4
-    },
-    {
-     "name": "Alex Sarr",
-     "status": "Day-To-Day",
-     "date": "2026-11-01T21:45Z",
-     "comment": "Sarr (knee) is questionable to play in Monday's game against the Magic.",
-     "returnDate": "2026-11-02",
-     "playerId": 1642259
-    },
-    {
-     "name": "Anthony Gill",
-     "status": "Day-To-Day",
-     "date": "2026-11-01T21:40Z",
-     "comment": "Gill (back) is questionable to suit up in Monday's contest against Orlando.",
-     "returnDate": "2026-11-02",
-     "playerId": 1630264
+     "missGames": 3
     },
     {
      "name": "Justin Champagnie",
@@ -5064,7 +4717,7 @@
      "comment": "Champagnie (foot) is expected to miss several months, per Josh Robbins of The Athletic.",
      "returnDate": "2027-02-25",
      "playerId": 1630551,
-     "missGames": 51
+     "missGames": 50
     },
     {
      "name": "Jamir Watkins",
@@ -5073,170 +4726,158 @@
      "comment": "The Wizards announced Thursday that Watkins has undergone surgery for a torn ACL.",
      "returnDate": "2027-04-02",
      "playerId": 1642364,
-     "missGames": 68
+     "missGames": 67
     }
    ],
    "c": {
-    "ortg": -3.220877014227696,
-    "drtg": 1.1268582522602912,
-    "net": -4.347735266487987,
-    "margin": 3.725,
-    "predWins": 31.070360479165256,
-    "schedGames": 74,
+    "ortg": -4.744309594513609,
+    "drtg": 0.24006768344230522,
+    "net": -4.984377277955915,
+    "margin": 3.465,
+    "predWins": 30.637140493823807,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1629027,
       "name": "Trae Young",
-      "min": 34.338894,
-      "ovr": 76.5
+      "min": 36.0,
+      "ovr": 76.9
      },
      {
       "pid": 203076,
       "name": "Anthony Davis",
-      "min": 31.51181,
-      "ovr": 89.7
+      "min": 36.0,
+      "ovr": 89.1
      },
      {
       "pid": 1642273,
       "name": "Kyshawn George",
-      "min": 29.777215,
-      "ovr": 70.9
+      "min": 34.0,
+      "ovr": 74.6
      },
      {
       "pid": 1643407,
       "name": "AJ Dybantsa",
-      "min": 26.658558,
-      "ovr": 79.0
+      "min": 32.0,
+      "ovr": 84.8
      },
      {
       "pid": 1641731,
       "name": "Bilal Coulibaly",
-      "min": 24.841265,
-      "ovr": 58.1
+      "min": 30.0,
+      "ovr": 58.2
      },
      {
       "pid": 1642259,
       "name": "Alex Sarr",
-      "min": 23.918693,
-      "ovr": 61.2
+      "min": 26.0,
+      "ovr": 60.0
      },
      {
       "pid": 1642848,
       "name": "Tre Johnson",
-      "min": 19.503585,
-      "ovr": 50.7
+      "min": 22.0,
+      "ovr": 49.6
      },
      {
       "pid": 1642267,
       "name": "Bub Carrington",
-      "min": 18.605111,
-      "ovr": 48.5
+      "min": 14.0,
+      "ovr": 49.9
      },
      {
       "pid": 1630551,
       "name": "Justin Champagnie",
-      "min": 17.293823,
-      "ovr": 71.6
-     },
-     {
-      "pid": 1629028,
-      "name": "Deandre Ayton",
-      "min": 13.551045,
-      "ovr": 61.0
+      "min": 10.0,
+      "ovr": 72.5
      }
     ]
    },
    "today": {
-    "ortg": -4.599728998060968,
-    "drtg": 1.9577502427839022,
-    "net": -6.55747924084487,
-    "margin": 1.575,
-    "predWins": 28.158946701448105,
-    "schedGames": 74,
+    "ortg": -6.42446641287539,
+    "drtg": 3.884373488726851,
+    "net": -10.30883990160224,
+    "margin": -1.945,
+    "predWins": 31.712871218719435,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1629027,
       "name": "Trae Young",
-      "min": 34.970324,
-      "ovr": 76.5
+      "min": 36.0,
+      "ovr": 76.9
      },
      {
       "pid": 203076,
       "name": "Anthony Davis",
-      "min": 32.091255,
-      "ovr": 89.7
+      "min": 36.0,
+      "ovr": 89.1
      },
      {
       "pid": 1642273,
       "name": "Kyshawn George",
-      "min": 30.324764,
-      "ovr": 70.9
+      "min": 34.0,
+      "ovr": 74.6
      },
      {
       "pid": 1643407,
       "name": "AJ Dybantsa",
-      "min": 27.148761,
-      "ovr": 79.0
+      "min": 32.0,
+      "ovr": 84.8
      },
      {
       "pid": 1641731,
       "name": "Bilal Coulibaly",
-      "min": 25.298051,
-      "ovr": 58.1
-     },
-     {
-      "pid": 1642259,
-      "name": "Alex Sarr",
-      "min": 24.358514,
-      "ovr": 61.2
+      "min": 30.0,
+      "ovr": 58.2
      },
      {
       "pid": 1642848,
       "name": "Tre Johnson",
-      "min": 19.862221,
-      "ovr": 50.7
+      "min": 26.0,
+      "ovr": 49.6
      },
      {
       "pid": 1642267,
       "name": "Bub Carrington",
-      "min": 18.947226,
-      "ovr": 48.5
+      "min": 22.0,
+      "ovr": 49.9
      },
      {
       "pid": 1629028,
       "name": "Deandre Ayton",
-      "min": 13.800224,
-      "ovr": 61.0
+      "min": 14.0,
+      "ovr": 60.7
      },
      {
       "pid": 203114,
       "name": "Khris Middleton",
-      "min": 13.19866,
-      "ovr": 67.3
+      "min": 10.0,
+      "ovr": 64.8
      }
     ],
-    "predWinsAllSeason": 27.149613136349796,
+    "predWinsAllSeason": 21.220104197098504,
     "lineupStates": 2
    },
    "restored": [],
-   "nOut": 3
+   "nOut": 6
   },
   "1610612765": {
    "name": "Detroit Pistons",
    "abbr": "DET",
-   "W": 5,
+   "W": 6,
    "L": 1,
    "injured": [
     {
      "name": "Isaiah Joe",
      "status": "Out",
-     "date": "2026-11-01T22:17Z",
-     "comment": "Joe (hip) is questionable for Friday's game against the Hornets.",
-     "returnDate": "2026-11-02",
+     "date": "2026-11-02T17:35Z",
+     "comment": "Joe (hip) is out for Monday against the Hornets.",
+     "returnDate": "2026-11-04",
      "playerId": 1630198,
-     "missGames": 1
+     "missGames": 0
     },
     {
      "name": "Jalen Duren",
@@ -5245,152 +4886,140 @@
      "comment": "Duren will be re-evaluated in two weeks due to a right hamstring strain, Eric Vincent of ClutchPoints.com reports.",
      "returnDate": "2026-11-09",
      "playerId": 1631105,
-     "missGames": 3
+     "missGames": 2
     }
    ],
    "c": {
-    "ortg": 1.7742345317175108,
-    "drtg": -2.4242624271179096,
-    "net": 4.19849695883542,
-    "margin": 12.715,
-    "predWins": 54.06375103359578,
-    "schedGames": 74,
+    "ortg": 6.3431715887097795,
+    "drtg": -1.5111118459510635,
+    "net": 7.854283434660843,
+    "margin": 16.63,
+    "predWins": 61.77059481464473,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630595,
       "name": "Cade Cunningham",
-      "min": 33.189021,
+      "min": 36.0,
       "ovr": 93.9
      },
      {
       "pid": 1629130,
       "name": "Duncan Robinson",
-      "min": 29.446247,
-      "ovr": 70.0
+      "min": 36.0,
+      "ovr": 70.3
      },
      {
       "pid": 1630194,
       "name": "Paul Reed",
-      "min": 26.568484,
-      "ovr": 79.0
-     },
-     {
-      "pid": 1628381,
-      "name": "John Collins",
-      "min": 26.453171,
-      "ovr": 71.4
+      "min": 34.0,
+      "ovr": 82.4
      },
      {
       "pid": 1641709,
       "name": "Ausar Thompson",
-      "min": 26.405156,
-      "ovr": 85.1
+      "min": 32.0,
+      "ovr": 85.2
+     },
+     {
+      "pid": 1628381,
+      "name": "John Collins",
+      "min": 30.0,
+      "ovr": 68.6
      },
      {
       "pid": 1642450,
       "name": "Daniss Jenkins",
-      "min": 24.466045,
-      "ovr": 59.6
+      "min": 26.0,
+      "ovr": 60.9
      },
      {
       "pid": 1628989,
       "name": "Kevin Huerter",
-      "min": 20.497033,
+      "min": 22.0,
       "ovr": 75.9
      },
      {
       "pid": 1631105,
       "name": "Jalen Duren",
-      "min": 18.926191,
-      "ovr": 78.8
+      "min": 14.0,
+      "ovr": 78.7
      },
      {
       "pid": 1629750,
       "name": "Javonte Green",
-      "min": 18.501641,
-      "ovr": 76.0
-     },
-     {
-      "pid": 1641842,
-      "name": "Ronald Holland II",
-      "min": 15.54701,
-      "ovr": 71.0
+      "min": 10.0,
+      "ovr": 76.3
      }
     ]
    },
    "today": {
-    "ortg": 0.15352655763794587,
-    "drtg": -0.5159188081966732,
-    "net": 0.6694453658346191,
-    "margin": 9.005,
-    "predWins": 54.10770252660062,
-    "schedGames": 74,
+    "ortg": 3.404762541683141,
+    "drtg": -1.069035666868544,
+    "net": 4.473798208551685,
+    "margin": 13.23,
+    "predWins": 61.56472899620848,
+    "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630595,
       "name": "Cade Cunningham",
-      "min": 34.942981,
+      "min": 36.0,
       "ovr": 93.9
      },
      {
       "pid": 1629130,
       "name": "Duncan Robinson",
-      "min": 31.002411,
-      "ovr": 70.0
+      "min": 36.0,
+      "ovr": 70.3
      },
      {
       "pid": 1630194,
       "name": "Paul Reed",
-      "min": 27.972565,
-      "ovr": 79.0
-     },
-     {
-      "pid": 1628381,
-      "name": "John Collins",
-      "min": 27.851158,
-      "ovr": 71.4
+      "min": 34.0,
+      "ovr": 82.4
      },
      {
       "pid": 1641709,
       "name": "Ausar Thompson",
-      "min": 27.800606,
-      "ovr": 85.1
+      "min": 32.0,
+      "ovr": 85.2
+     },
+     {
+      "pid": 1628381,
+      "name": "John Collins",
+      "min": 30.0,
+      "ovr": 68.6
      },
      {
       "pid": 1642450,
       "name": "Daniss Jenkins",
-      "min": 25.759017,
-      "ovr": 59.6
+      "min": 26.0,
+      "ovr": 60.9
      },
      {
       "pid": 1628989,
       "name": "Kevin Huerter",
-      "min": 21.580252,
+      "min": 22.0,
       "ovr": 75.9
      },
      {
       "pid": 1629750,
       "name": "Javonte Green",
-      "min": 19.479408,
-      "ovr": 76.0
+      "min": 14.0,
+      "ovr": 76.3
      },
      {
       "pid": 1641842,
       "name": "Ronald Holland II",
-      "min": 16.368632,
-      "ovr": 71.0
-     },
-     {
-      "pid": 1627752,
-      "name": "Taurean Prince",
-      "min": 7.24297,
-      "ovr": 54.5
+      "min": 10.0,
+      "ovr": 71.2
      }
     ],
-    "predWinsAllSeason": 46.65777523605234,
-    "lineupStates": 3
+    "predWinsAllSeason": 56.6862175219566,
+    "lineupStates": 2
    },
    "restored": [],
    "nOut": 2
@@ -5399,7 +5028,7 @@
    "name": "Charlotte Hornets",
    "abbr": "CHA",
    "W": 3,
-   "L": 4,
+   "L": 5,
    "injured": [
     {
      "name": "Grant Williams",
@@ -5408,7 +5037,7 @@
      "comment": "Williams (hamstring) is listed as out for Monday's game against the Pistons.",
      "returnDate": "2026-11-09",
      "playerId": 1629684,
-     "missGames": 3
+     "missGames": 2
     },
     {
      "name": "Kon Knueppel",
@@ -5417,151 +5046,139 @@
      "comment": "Knueppel (hamstring) is listed as out for Monday's game versus the Pistons.",
      "returnDate": "2026-11-09",
      "playerId": 1642851,
-     "missGames": 3
+     "missGames": 2
     }
    ],
    "c": {
-    "ortg": -2.767268088514811,
-    "drtg": -3.514948350295313,
-    "net": 0.7476802617805021,
-    "margin": 9.055,
-    "predWins": 42.497302100650685,
-    "schedGames": 73,
+    "ortg": -3.1261595027169875,
+    "drtg": -2.8948032223705695,
+    "net": -0.23135628034641798,
+    "margin": 8.51,
+    "predWins": 40.1745506681243,
+    "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1641706,
       "name": "Brandon Miller",
-      "min": 34.677594,
-      "ovr": 77.1
+      "min": 36.0,
+      "ovr": 77.2
      },
      {
       "pid": 203471,
       "name": "Dennis Schröder",
-      "min": 33.00677,
-      "ovr": 51.7
+      "min": 36.0,
+      "ovr": 48.3
      },
      {
       "pid": 1631217,
       "name": "Moussa Diabaté",
-      "min": 29.962983,
-      "ovr": 74.2
+      "min": 34.0,
+      "ovr": 73.1
      },
      {
       "pid": 1629675,
       "name": "Naz Reid",
-      "min": 29.514685,
-      "ovr": 80.1
+      "min": 32.0,
+      "ovr": 75.0
      },
      {
       "pid": 1628960,
       "name": "Grayson Allen",
-      "min": 27.853309,
-      "ovr": 76.2
+      "min": 30.0,
+      "ovr": 74.8
      },
      {
       "pid": 1642883,
       "name": "Sion James",
-      "min": 25.433114,
-      "ovr": 66.0
+      "min": 26.0,
+      "ovr": 61.3
      },
      {
       "pid": 1626220,
       "name": "Royce O'Neale",
-      "min": 18.3289,
-      "ovr": 58.5
+      "min": 22.0,
+      "ovr": 58.3
      },
      {
       "pid": 1641750,
       "name": "Ryan Kalkbrenner",
-      "min": 16.901237,
-      "ovr": 64.3
+      "min": 14.0,
+      "ovr": 63.4
      },
      {
-      "pid": 1642275,
-      "name": "Tidjane Salaün",
-      "min": 13.708788,
-      "ovr": 47.6
-     },
-     {
-      "pid": 1643515,
-      "name": "Christian Anderson",
-      "min": 10.61262,
-      "ovr": 63.8
+      "pid": 1629632,
+      "name": "Coby White",
+      "min": 10.0,
+      "ovr": 73.1
      }
     ]
    },
    "today": {
-    "ortg": -2.767268088514811,
-    "drtg": -3.514948350295313,
-    "net": 0.7476802617805021,
-    "margin": 9.055,
-    "predWins": 42.83215121495242,
-    "schedGames": 73,
+    "ortg": -3.1261595027169875,
+    "drtg": -2.8948032223705695,
+    "net": -0.23135628034641798,
+    "margin": 8.51,
+    "predWins": 40.10464025527821,
+    "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1641706,
       "name": "Brandon Miller",
-      "min": 34.677594,
-      "ovr": 77.1
+      "min": 36.0,
+      "ovr": 77.2
      },
      {
       "pid": 203471,
       "name": "Dennis Schröder",
-      "min": 33.00677,
-      "ovr": 51.7
+      "min": 36.0,
+      "ovr": 48.3
      },
      {
       "pid": 1631217,
       "name": "Moussa Diabaté",
-      "min": 29.962983,
-      "ovr": 74.2
+      "min": 34.0,
+      "ovr": 73.1
      },
      {
       "pid": 1629675,
       "name": "Naz Reid",
-      "min": 29.514685,
-      "ovr": 80.1
+      "min": 32.0,
+      "ovr": 75.0
      },
      {
       "pid": 1628960,
       "name": "Grayson Allen",
-      "min": 27.853309,
-      "ovr": 76.2
+      "min": 30.0,
+      "ovr": 74.8
      },
      {
       "pid": 1642883,
       "name": "Sion James",
-      "min": 25.433114,
-      "ovr": 66.0
+      "min": 26.0,
+      "ovr": 61.3
      },
      {
       "pid": 1626220,
       "name": "Royce O'Neale",
-      "min": 18.3289,
-      "ovr": 58.5
+      "min": 22.0,
+      "ovr": 58.3
      },
      {
       "pid": 1641750,
       "name": "Ryan Kalkbrenner",
-      "min": 16.901237,
-      "ovr": 64.3
+      "min": 14.0,
+      "ovr": 63.4
      },
      {
-      "pid": 1642275,
-      "name": "Tidjane Salaün",
-      "min": 13.708788,
-      "ovr": 47.6
-     },
-     {
-      "pid": 1643515,
-      "name": "Christian Anderson",
-      "min": 10.61262,
-      "ovr": 63.8
+      "pid": 1629632,
+      "name": "Coby White",
+      "min": 10.0,
+      "ovr": 73.1
      }
     ],
-    "predWinsAllSeason": 43.36830930716203,
+    "predWinsAllSeason": 41.47120088877143,
     "lineupStates": 1
    },
    "restored": [],

@@ -96,7 +96,7 @@ BODY = """<div class="rkroot"><div class="msg" id="msg">載入中…</div>
 <div class="tbox"><table id="tbl"><thead><tr>
 <th data-k="rank" class="rk">#</th><th data-k="name" class="l">球隊</th><th data-k="net" aria-sort="descending">Net<span class="zh">淨效率</span></th>
 <th data-k="ortg" class="hide-m">ORtg<span class="zh">進攻</span></th><th data-k="drtg" class="hide-m">DRtg<span class="zh">防守</span></th>
-<th data-k="wpct">戰績<span class="zh">W-L</span></th><th data-k="pred">預測勝場<span class="zh">全季</span></th><th data-k="nOut">傷兵<span class="zh">Out／Doubtful</span></th>
+<th data-k="wpct">戰績<span class="zh">W-L</span></th><th data-k="pred">預測勝場<span class="zh">全季</span></th><th data-k="nOut">傷兵<span class="zh">不可用</span></th>
 </tr></thead><tbody id="tb"></tbody></table></div>
 <div class="note" id="note"></div>
 </div></div>"""
@@ -121,9 +121,9 @@ function info(){
    +(i.stale?' <span class="warn">　今天抓不到傷病名單，沿用前一份。</span>':'')
    +'　評分更新 <b>'+esc(D.generatedAt.slice(0,16).replace('T',' '))+'</b>'
    +'　剩餘賽程 '+(D.schedule&&D.schedule.remainingGames?'逐場計算（NBA.com 賽程）':'<span class="warn">抓不到賽程，剩餘場次以對全聯盟平均勝率計</span>');
-  $('#viewHint').textContent=view==='today'?'排除 Out／Doubtful；依回歸日逐場模擬。':'不扣傷兵；陣容全程不變。';
+  $('#viewHint').textContent=view==='today'?'排除 Out／Doubtful／Questionable／Day-To-Day；依回歸日逐場模擬。':'不扣傷兵；陣容全程不變。';
   $('#note').innerHTML='模擬評分（引擎 '+esc(D.engine)+'，名單對聯盟平均隊各打 '+D.seeds+' 場；ORtg／DRtg／Net 已扣聯盟平均）。<b>回測僅與上季淨效率打平，弱隊容易高估，僅供參考。</b>'
-   +'<br>分鐘規則：每位現役球員取他自己最近 '+D.lastN+' 場「有出場」的平均分鐘（沒上場的比賽不算，不管當時在哪隊）；候選人是該隊最近 '+D.lastN+' 場出場過的人，加上最近沒出場但自己平均 ≥'+(D.returnMin||15)+' 分鐘的人（視為傷缺復出）；前 10 人、總和 240、單人上限 48。「可用」先拿掉 Out／Doubtful（含停賽），Questionable／Day-To-Day 保留。'
+   +'<br>分鐘規則：每位現役球員取他自己最近 '+D.lastN+' 場「有出場」的平均分鐘（沒上場的比賽不算，不管當時在哪隊）；候選人是該隊最近 '+D.lastN+' 場出場過的人，加上最近沒出場但自己平均 ≥'+(D.returnMin||15)+' 分鐘的人（視為傷缺復出）；依教練最近的上場時間（上述平均分鐘，由多到少）排序，所有球隊套同一張焦灼比賽分鐘表 36、36、34、32、30、26、22、14、10（合計 240、單人上限 36）；可用人數不足 9 人時，缺的分鐘依序加給前面的人（每人上限 40）。「可用」先拿掉 Out／Doubtful／Questionable／Day-To-Day（含停賽），只留 Probable 與沒上名單的人，不做機率加權；「傷兵」欄＝被拿掉的人數。'
    +((D.baseProfiles||[]).length?'<br>上季整季缺陣、今年還沒有排名的人（'+D.baseProfiles.map(x=>esc(x.name)).join('、')+'）：模擬用他最近一張賽季卡的能力值（不做年齡調整），OVR 欄標「24-25 卡」等來源；沒有任何歷史卡的新人仍當聯盟平均球員。':'')
    +'<br>預測勝場＝目前勝場＋剩餘賽程逐場勝率（主場 +'+D.H+' 分、σ='+D.sigma+'）。「可用」版依 ESPN 預計回歸日逐場換陣容：比賽日期早於回歸日就缺陣，之後回來；'
    +((D.injuries&&D.injuries.outNoReturnDate)?'<span class="warn">目前有 '+D.injuries.outNoReturnDate+' 位缺陣者沒有回歸日（官方 PDF 備援不提供），當整季缺陣。</span>':'沒有回歸日的缺陣者當整季缺陣。')+'「全員」版不扣人、陣容全程不變。主表的 Net 是今天的陣容。';
@@ -139,7 +139,7 @@ function detail(o){
   const inj=t.injured.length?t.injured.map(x=>'<tr><td class="n"><div class="pn">'+av(x.playerId)+'<span>'+esc(x.name)+'<span class="cm">'+esc(x.comment)+'</span></span></div></td><td class="n">'+esc(x.status)+'</td><td>'+esc(d10(x.date))+ret(x)+'</td></tr>').join(''):'<tr><td class="n" colspan="3">傷病名單沒有這隊的人</td></tr>';
   return '<div class="dg"><div class="sum"><b>'+esc(t.name)+'</b>　ORtg '+f1(v.ortg)+'・DRtg '+f1(v.drtg)+'・Net '+f1(v.net)+'・對平均隊每場 '+f1(v.margin)+' 分　剩餘賽程 '+v.schedGames+' 場逐場計算'+(v.poolGames?'、'+v.poolGames+' 場以平均勝率補':'')+(view==='today'&&v.lineupStates>1?'　傷兵回歸讓陣容分 '+v.lineupStates+' 種狀態':'')+'</div>'
    +'<div><h3>'+(view==='today'?'可用輪替':'全員輪替')+'（分鐘／OVR）</h3><table><tbody>'+rot+'</tbody></table></div>'
-   +'<div><h3>傷病名單（狀態／資料日期／預計回歸）</h3><table><tbody>'+inj+'</tbody></table></div></div>';
+   +'<div><h3>傷病名單（狀態／資料日期／預計回歸；Probable 照常上場）</h3><table><tbody>'+inj+'</tbody></table></div></div>';
 }
 function render(){
   const R=rows();

@@ -7,8 +7,15 @@
 - 每位目前在該隊名單的球員：分鐘＝他本季自己最近 ≤10 場「有出場（min>0）」的平均（不管當時在哪隊；0 分鐘的場次不算）。
 - 候選人：該隊最近 10 場至少出場一次的人；另外，該隊最近 10 場沒出場、但自己最近 ≤10 場平均 ≥ RETURN_MIN（15）分鐘的人也算（視為傷缺復出，不是教練不用）。
   15 分鐘門檻寫死，不看結果調。本季還沒出場的人沿用季前預期 fallback。
-- 近況：不扣人，取前 10 人，正規化成 240 分鐘、單人上限 48。
-- 今日陣容：同上，但先拿掉 ESPN 傷病名單裡 Out／Doubtful／Suspension 的人，剩下的再取前 10 人、正規化到 240、上限 48。Questionable／Day-To-Day 保留。
+- 分鐘分配（R-151 焦灼比賽最強陣容）：所有球隊同一張 MINUTE_TABLE＝36、36、34、32、30、26、22、14、10（合計 240、單人上限 36）。
+  候選人照上面的規則選，**順序照教練最近的上場時間**（上面算出的近 ≤10 場有出場平均分鐘，由多到少；同分照 OVR 再照 pid），依序套表；不照 OVR 排。
+  可用人數 < 9 時：表上缺的分鐘由前面的人開始依序加給前面的人，每人上限 MAX_SHORT＝40；全加滿仍不足（<6 人）就 240 平均攤。
+  （候選人不到 8 人時仍照舊由季前預期補到 8 人。）常數放檔頭，不看結果調。
+- 近況（全員）：不扣人。
+- 今日陣容（可用）：先拿掉傷病名單裡 Out／Doubtful／Questionable／Day-To-Day／Suspension 的人（ESPN 與官方 PDF 的狀態字都對應；Probable、Available、
+  不在名單上的人照常上場），剩下的再套表。不做機率加權：同一個人不會同時在可用名單與傷兵名單。
+  沒有 returnDate 時：Out／Suspension 當整季缺陣；Questionable／Doubtful／Day-To-Day 只缺今天的比賽（隔天回來）。
+- 每次抓完傷病（ESPN／PDF 成功）把 injuries.json 另存 injury-snapshots/<UTC 時間戳>.json（只存不讀，之後量各狀態實際上場率）。
 評分＝名單對「聯盟平均隊」各打 SEEDS 場（換主客）：ORtg／DRtg 扣「近況」版的聯盟平均（兩版共用，兩版差＝純傷兵影響）。
 預測勝場＝目前勝 + 剩餘賽程逐場 Φ((marginA − marginB ± H) / σ)；H=2.5、σ=12（同 E-208）。賽程抓不到時，剩餘場次用對其他 29 隊的平均勝率。
   近況版：陣容全程不變。今日陣容版：每場依 ESPN returnDate 切換陣容——該場日期 < 傷兵 returnDate（或 ≤ 今天，ESPN 日期過期但仍列 Out）就缺陣，之後回來；
@@ -68,7 +75,10 @@ NBA_TEAMS = {'Atlanta Hawks': 'ATL', 'Boston Celtics': 'BOS', 'Brooklyn Nets': '
              'Washington Wizards': 'WAS'}
 H, SIGMA, SEEDS, GAMES, LAST_N = 2.5, 12.0, 200, 82, 10   # H、σ 同 E-208 預註冊
 RETURN_MIN = 15.0                                         # 最近 10 場沒出場、但自己平均 ≥ 此分鐘的現役球員補回輪替（寫死，不看結果調）
-OUT_STATUS = {'out', 'doubtful', 'suspension'}            # 今日陣容拿掉的狀態（小寫）
+OUT_STATUS = {'out', 'doubtful', 'questionable', 'day-to-day', 'suspension'}   # 今日陣容（可用）預先排除的狀態（小寫；R-151）；Probable／Available 照常上場
+LONG_OUT = {'out', 'suspension'}                          # 沒有 returnDate 時當整季缺陣的狀態；其餘（Questionable／Doubtful／Day-To-Day）只缺今天的比賽
+MINUTE_TABLE = (36, 36, 34, 32, 30, 26, 22, 14, 10)       # R-151 焦灼比賽分鐘表：合計 240、單人上限 36；依教練最近上場時間的順序套用
+MAX_SHORT = 40                                            # 可用人數 < 9 時，缺的分鐘依序加給前面的人，每人上限 40
 ESPN_ABBR = {'GS': 'GSW', 'NO': 'NOP', 'NY': 'NYK', 'SA': 'SAS', 'WSH': 'WAS', 'UTAH': 'UTA', 'PHO': 'PHX', 'BRK': 'BKN', 'CHO': 'CHA'}
 CREATE_NO_WINDOW = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
 # 底卡（E-216）：引擎（2025-26 卡）和 live 排名都沒有的非新秀（上季整季缺陣的人，例如 Kyrie、Lillard、Haliburton、VanVleet）。
@@ -97,6 +107,31 @@ def is_out(status: str) -> bool:
     return (status or '').strip().lower() in OUT_STATUS
 
 
+def is_long_out(status: str) -> bool:
+    return (status or '').strip().lower() in LONG_OUT
+
+
+def norm_table(items: list, total: float = 240.0) -> list:
+    """items＝[[pid, 教練近況分鐘], …]（已拿掉不能上場的人）→ 依分鐘由多到少（同分維持呼叫端排好的順序，穩定排序）套 MINUTE_TABLE。
+    人數 n ≥ 9：取前 9 人，36、36、34、32、30、26、22、14、10。n < 9：取表前 n 格，缺的分鐘由前面的人開始依序加（每人上限 MAX_SHORT）；
+    仍不足（n < 6）就 total/n 平均攤。"""
+    items = [[p, m] for p, m in items if m > 0]
+    items.sort(key=lambda t: -t[1])
+    n = min(len(items), len(MINUTE_TABLE))
+    if n == 0:
+        return []
+    slots = [float(x) for x in MINUTE_TABLE[:n]]
+    miss = total - sum(slots)
+    for i in range(n):
+        if miss <= 1e-9:
+            break
+        add = min(MAX_SHORT - slots[i], miss)
+        slots[i] += add; miss -= add
+    if miss > 1e-9:
+        slots = [total / n] * n
+    return [[items[i][0], round(slots[i], 6)] for i in range(n)]
+
+
 def own_avg(log) -> float | None:
     """球員自己的分鐘紀錄（時間順序）→ 最近 ≤LAST_N 場「有出場（>0）」的平均；沒出場過回 None。"""
     played = [m for m in log if m > 0][-LAST_N:]
@@ -123,10 +158,10 @@ def candidate_minutes(prior: list, logs=None, roster=None) -> tuple:
     return out, restored
 
 
-def rotation(prior: list, fallback: list, excluded=frozenset(), logs=None, roster=None) -> list:
-    """候選人（見 candidate_minutes）自己最近 ≤10 場有出場的平均分鐘（拿掉 excluded）→ 前 10 人、240 分鐘、上限 48。
-    prior 為空時用 fallback（[[pid, mpg], …]，季前預期）。
-    不足 8 人（大量缺陣）時用 fallback 依序補人，補到 8 人以上，確保能分滿 240／上限 48。"""
+def rotation(prior: list, fallback: list, excluded=frozenset(), logs=None, roster=None, ovr=None) -> list:
+    """候選人（見 candidate_minutes）自己最近 ≤10 場有出場的平均分鐘（拿掉 excluded）→ 順序照該分鐘（同分照 OVR、再照 pid）→ 套 MINUTE_TABLE（見 norm_table）。
+    prior 為空時用 fallback（[[pid, mpg], …]，季前預期）。ovr＝{pid: OVR}，只用來排同分。
+    不足 8 人（大量缺陣）時用 fallback 依序補人，補到 8 人。"""
     base = candidate_minutes(prior, logs, roster)[0] if prior else {p: m for p, m in fallback}
     items = [[p, m] for p, m in base.items() if p not in excluded]
     if len(items) < 8:
@@ -136,7 +171,8 @@ def rotation(prior: list, fallback: list, excluded=frozenset(), logs=None, roste
                 break
             if p not in have and p not in excluded:
                 items.append([p, max(m, 1.0)]); have.add(p)
-    return norm(sorted(items))
+    ovr = ovr or {}
+    return norm_table(sorted(items, key=lambda t: (-t[1], -ovr.get(t[0], 0.0), t[0])))
 
 
 def margin_win_prob(d: float, home: bool) -> float:
@@ -382,7 +418,14 @@ def load_injuries(index: dict, fetch: bool = True, source: str = 'auto') -> dict
 
     def save(doc):
         INJURIES.parent.mkdir(parents=True, exist_ok=True)
-        INJURIES.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+        text = json.dumps(doc, ensure_ascii=False, indent=1) + '\n'
+        INJURIES.write_text(text, encoding='utf-8')
+        try:        # R-151：每次抓完傷病另存快照（只存不讀）
+            snap = INJURIES.parent / 'injury-snapshots'
+            snap.mkdir(parents=True, exist_ok=True)
+            (snap / (dt.datetime.now(dt.timezone.utc).strftime('%Y%m%dT%H%M%SZ') + '.json')).write_text(text, encoding='utf-8')
+        except OSError as e:
+            log.warning('傷病快照寫入失敗（不影響評分）：%s', e)
         if doc['unmatched']:
             log.info('傷病名單 %d 人對不上球員（多半本季還沒上場）：%s', len(doc['unmatched']), '、'.join(doc['unmatched'][:30]))
         return doc
@@ -550,7 +593,10 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
         all_inj[tid].append(it)
         if pid is not None and is_out(it['status']):
             out_pids[tid].add(pid)
-            out_ret[tid][pid] = str(it['returnDate'])[:10] if it.get('returnDate') else None      # 沒有 returnDate（PDF 備援）＝整季缺陣
+            if it.get('returnDate'):
+                out_ret[tid][pid] = str(it['returnDate'])[:10]
+            else:       # 沒有 returnDate（PDF 備援）：Out／Suspension＝整季缺陣；Questionable／Doubtful／Day-To-Day 只缺今天的比賽
+                out_ret[tid][pid] = None if is_long_out(it['status']) else (dt.date.fromisoformat(today) + dt.timedelta(days=1)).isoformat()
 
     pre = collections.defaultdict(list)     # 季前預期（MPGhat）：沒有任何 box 時的後備
     for r in rows:
@@ -580,7 +626,7 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
     for tid in tids:
         prior = hist[tid][-LAST_N:]
         moved = {p for r in prior for p, _ in r if live_team.get(p) not in (None, tid)}   # 此後被交易走的人不算進輪替
-        rot = lambda excl: rotation(prior, pre[tid], excluded=moved | set(excl), logs=plog, roster=members[tid])
+        rot = lambda excl: rotation(prior, pre[tid], excluded=moved | set(excl), logs=plog, roster=members[tid], ovr=ovr)
         restored[tid] = candidate_minutes(prior, plog, members[tid])[1] if prior else set()
         recent, today_r = rot(()), rot(out_pids[tid])
         rosters[tid] = {'c': recent, 'today': today_r}
