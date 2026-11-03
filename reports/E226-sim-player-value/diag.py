@@ -1,14 +1,14 @@
-"""E-224 診斷（只讀，不調參，L-026）：同一個 stint ridge 套在 2025-26 實測 stints 與模擬回合帳本，比 ≥1000 分鐘球員的單人淨值。
+"""E-226 診斷（只讀，不調參，L-026）：同一個 stint ridge 套在 2025-26 實測 stints 與模擬回合帳本，比 ≥1000 分鐘球員的單人淨值。
 ridge：每邊球員進攻欄＋防守欄（λ3000，權重＝回合，每 100 回合）＋每邊「場上中鋒人數」「場上後衛人數」輕懲罰欄（λ=1）。
 單人值＝進攻係數−防守係數（＋所屬位置欄），+＝讓球隊淨分變好。拆分：得分＝籃下(2·shortM)＋中距(2·midM)＋三分(3·longM)＋罰球(ftm)，逐項加總＝總值；
 另列計數通道（進攻籃板、對手進攻籃板、失誤、出手數）當機制指標，不可加總。
 半數：實測＝game id 奇偶；模擬＝帳本檔案奇偶。模擬帳本：sim 0.1.1 兩個 seed＋sim 0.1.2（E-166 k1）四個 seed（與 F-114 同一組）。
-用法（repo 根目錄）：python -I -X utf8 reports/E224-sim-player-value/diag.py [--sim012]"""
+用法（repo 根目錄）：python -I -X utf8 reports/E226-sim-player-value/diag.py [--sim012]"""
 import json, sys, hashlib
 import numpy as np, scipy.sparse as sp, scipy.sparse.linalg as sl
 from scipy.stats import spearmanr
 sys.stdout.reconfigure(encoding='utf-8')
-OUT = 'reports/E224-sim-player-value/'
+OUT = 'reports/E226-sim-player-value/'
 ONLY012 = '--sim012' in sys.argv
 REAL = 'reports/defense-b1/stints.jsonl'
 SIMF = ([] if ONLY012 else [('reports/sim-0.1.1-wing-diag/poss-sim-%d.json' % s) for s in (20261101, 20261102)]) + \
@@ -101,7 +101,7 @@ def noise_sd(a, k='net'):   # 全樣本估計的雜訊 sd ≈ sd(h0−h1)/2
     return np.std([V[a][0][i][k] - V[a][1][i][k] for i in P]) / 2
 
 L = []; pr = L.append
-pr(f'# E-224 診斷輸出  sim 帳本：{"0.1.2 only (4 seeds)" if ONLY012 else "0.1.1×2 + 0.1.2×4"}')
+pr(f'# E-226 診斷輸出  sim 帳本：{"0.1.2 only (4 seeds)" if ONLY012 else "0.1.1×2 + 0.1.2×4"}')
 pr(f'inputs sha256: stints {hashlib.sha256(open(REAL, "rb").read()).hexdigest()[:16]} | ' + ' '.join(f.split('/')[-1] + ':' + hashlib.sha256(open(f, 'rb').read()).hexdigest()[:12] for f in SIMF))
 pr(f'possessions real {poss["real"]:,} sim {poss["sim"]:,}; players (≥1000 min, 兩邊兩半都有) {len(P)}')
 r_full = np.corrcoef(list(rv.values()), [sv[i] for i in rv])[0, 1]; rho = spearmanr([rv[i] for i in P], [sv[i] for i in P])[0]

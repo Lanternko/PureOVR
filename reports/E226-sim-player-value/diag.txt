@@ -1,4 +1,4 @@
-# E-224 診斷輸出  sim 帳本：0.1.1×2 + 0.1.2×4
+# E-226 診斷輸出  sim 帳本：0.1.1×2 + 0.1.2×4
 inputs sha256: stints 5eff6aa81f37d0f3 | poss-sim-20261101.json:0d017ea867f5 poss-sim-20261102.json:6d6111eeda40 possk-k1-20261103.json:41fdb2adf601 possk-judge-k1-20261028.json:2121420026ca possk-k1-20261104.json:87111cefdb2f possk-judge-k1-20261029.json:c3263edc0999
 possessions real 246,883.0 sim 524,269; players (≥1000 min, 兩邊兩半都有) 150
 單人淨值 real sd 2.32 (noise 0.88, half-r +0.60) | sim sd 1.89 (noise 0.53, half-r +0.84)
