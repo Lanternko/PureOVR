@@ -119,6 +119,8 @@ def build(src: Path = SRC) -> tuple[dict, dict[str, dict]]:
     box_of: dict[str, dict] = {}    # game id → box
     for gid, d, home, away in sched['games']:
         games[gid] = {'date': d, 'g': {'id': gid, 'home': ABBR[home], 'away': ABBR[away], 'status': 'scheduled'}}
+        if gid in sched.get('tipoff', {}):
+            games[gid]['g']['tip'] = sched['tipoff'][gid]    # 開賽 UTC（前端轉 UTC+8 顯示）
     for gid, ts in by_game.items():
         if len(ts) != 2:     # 另一隊的列還沒抓到：當未完賽
             continue

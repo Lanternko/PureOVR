@@ -9,12 +9,14 @@ const r = await fetch('https://cdn.nba.com/static/json/staticData/scheduleLeague
 if (!r.ok) { console.error('schedule HTTP ' + r.status); process.exit(1); }
 const d = await r.json();
 const games = [];
+const tipoff = {};   // gameId → 開賽 UTC（賽程檢視顯示 UTC+8 用；另放一個 map 是為了不動 games 的四欄格式，team_ratings_daily 照 4 欄解開）
 for (const day of d.leagueSchedule.gameDates) for (const g of day.games) {
   if (!String(g.gameId).startsWith('002')) continue;   // 例行賽（001 季前、004 季後、005 附加賽、006 盃賽決賽）
   if (!g.homeTeam.teamId || !g.awayTeam.teamId) continue;   // 盃賽淘汰賽尚未定對手（teamId 0），不是 82 場裡的場次
+  if (g.gameDateTimeUTC) tipoff[g.gameId] = g.gameDateTimeUTC;
   games.push([g.gameId, String(g.gameDateEst).slice(0, 10), g.homeTeam.teamId, g.awayTeam.teamId]);
 }
 if (games.length < 1000) { console.error('schedule 場數異常：' + games.length); process.exit(1); }
 fs.mkdirSync(path.dirname(out), {recursive: true});
-fs.writeFileSync(out, JSON.stringify({fetchedAt: new Date().toISOString(), source: 'cdn.nba.com scheduleLeagueV2', season: d.leagueSchedule.seasonYear, games}));
+fs.writeFileSync(out, JSON.stringify({fetchedAt: new Date().toISOString(), source: 'cdn.nba.com scheduleLeagueV2', season: d.leagueSchedule.seasonYear, games, tipoff}));
 console.log(`schedule：${games.length} 場例行賽 → ${out}`);
