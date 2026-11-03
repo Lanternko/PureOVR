@@ -397,16 +397,16 @@ def step_viewer(out_dir: Path) -> Path:
     return html
 
 
-# 球隊網址 /PureOVR/nets 沒有實體檔，GitHub Pages 回 404.html：放首頁副本，頁面自己從路徑讀球隊（使用者 2026-11-04）。
-# 多打斜線（/nets/）時相對路徑會跑到 nets/ 底下，先轉回不帶斜線的網址
-NOT_FOUND_FIX = ("<script>if(/[/]$/.test(location.pathname))"
-                 "location.replace(location.pathname.replace(/[/]+$/,'')+location.search+location.hash)</script>")
+# 球隊不放網址（使用者 2026-11-04 改回：只存瀏覽器記憶）。11-04 上午發過的 /hawks、/rookies 舊連結沒有實體檔，
+# GitHub Pages 回 404.html：直接轉回首頁，保留 ?query 與 #hash
+NOT_FOUND_HTML = ('<!doctype html><meta charset="utf-8"><title>TrueOVR</title>'
+                  "<script>location.replace(location.pathname.replace(/[^/]*[/]*$/,'')+location.search+location.hash)</script>"
+                  '<a href="./">TrueOVR</a>')
 
 
 def write_not_found(html: Path) -> Path:
-    """頁面沒有 <head>（第一行就是 <meta charset>），修正腳本直接放最前面，仍在 charset 要求的前 1024 位元組內。"""
     out = html.with_name('404.html')
-    out.write_text(NOT_FOUND_FIX + '\n' + html.read_text(encoding='utf-8'), encoding='utf-8')
+    out.write_text(NOT_FOUND_HTML, encoding='utf-8')
     return out
 
 

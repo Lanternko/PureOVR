@@ -740,21 +740,7 @@ document.getElementById('q').oninput'''),
     ("mode: 'grade',", "mode: (() => { try { return localStorage.getItem('bbac.mode') === 'num' ? 'num' : 'grade'; } catch (e) { return 'grade'; } })(),"),
     ("b.onclick = () => { st[key] = v;",
      "b.onclick = () => { st[key] = v; if (key === 'mode') try { localStorage.setItem('bbac.mode', v); } catch (e) {}"),
-    ('function render() {', '''// 選的球隊放在網址路徑：/PureOVR/nets、/PureOVR/rookies（使用者 2026-11-04）。只有首頁（路徑不以 .html 結尾）這樣做，
-// /PureOVR/<隊> 不存在，由 gh-pages 的 404.html（首頁副本）接；2025-26.html 不動網址
-const TSLUG = { ATL: 'hawks', BOS: 'celtics', BKN: 'nets', CHA: 'hornets', CHI: 'bulls', CLE: 'cavaliers', DAL: 'mavericks', DEN: 'nuggets',
-  DET: 'pistons', GSW: 'warriors', HOU: 'rockets', IND: 'pacers', LAC: 'clippers', LAL: 'lakers', MEM: 'grizzlies', MIA: 'heat',
-  MIL: 'bucks', MIN: 'timberwolves', NOP: 'pelicans', NYK: 'knicks', OKC: 'thunder', ORL: 'magic', PHI: 'sixers', PHX: 'suns',
-  POR: 'blazers', SAC: 'kings', SAS: 'spurs', TOR: 'raptors', UTA: 'jazz', WAS: 'wizards' };
-const TROUTE = !/[.]html$/i.test(location.pathname);
-const teamSeg = () => decodeURIComponent(location.pathname.split('/').pop()).toLowerCase();
-function teamFromPath() {
-  const s = teamSeg();
-  if (s === 'rookies') return ROOKIES.size ? 'ROOKIE' : 'ALL';
-  return Object.keys(TSLUG).find(t => (TSLUG[t] === s || t.toLowerCase() === s) && TEAM_IDS[t]) || 'ALL';
-}
-const teamPath = cur => location.pathname.replace(/[^/]*$/, '') + (cur === 'ALL' ? '' : cur === 'ROOKIE' ? 'rookies' : TSLUG[cur]);
-function setTeam(cur) {
+    ('function render() {', '''function setTeam(cur) {
   st.rk = cur === 'ROOKIE'; st.team = st.rk ? 'ALL' : cur; st.page = 0; st.extra = 0;
   // 記住上次選的球隊／新秀：在其他檢視點眉頭「球隊」時回到這隊（site_header）
   if (cur !== 'ALL') {
@@ -781,27 +767,12 @@ function teamPick() {
       const b = e.target.closest('button[data-t]');
       if (!b) return;
       setTeam(b.dataset.t); d.open = false;
-      if (TROUTE) {
-        const u = teamPath(b.dataset.t) + location.search;
-        // 排行／賽程檢視下選隊：眉頭接著會 push 球隊名單，這裡只把目前這筆改成新球隊，免得多一筆同網址
-        if (location.hash) history.replaceState(null, '', u + location.hash);
-        else if (u !== location.pathname + location.search) history.pushState(null, '', u);
-      }
       render();
     };
     try {
       const l = localStorage.getItem('bbac.lastTeam');  // 兩個賽季頁共用；這頁沒有的（2027 頁的新秀）不用
       if (l && grid.querySelector(`[data-t="${CSS.escape(l)}"]`) && l !== 'ALL') d.dataset.last = l;
     } catch (e) {}
-    if (TROUTE) {
-      const t0 = teamFromPath();
-      if (t0 !== 'ALL') setTeam(t0);
-      else if (teamSeg()) history.replaceState(null, '', teamPath('ALL') + location.search + location.hash);  // 不認得的隊名回首頁網址
-      addEventListener('popstate', () => {
-        const t = teamFromPath();
-        if (t !== (st.rk ? 'ROOKIE' : st.team)) { setTeam(t); render(); }
-      });
-    }
     // 面板靠左展開，超出螢幕右緣就往左推
     d.addEventListener('toggle', () => {
       if (!d.open) return;
