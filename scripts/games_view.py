@@ -40,13 +40,11 @@ h1 span{display:block;font:600 1rem var(--f-body);font-style:normal;letter-spaci
 .dx button#latest:disabled{background:var(--panel);color:var(--muted);border-color:var(--line);opacity:.5;cursor:default}
 button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .gl{display:flex;flex-direction:column;gap:10px}
-.gm{--c1:124,133,145;--c2:124,133,145;position:relative;isolation:isolate;min-width:0;overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:14px;
-  background:linear-gradient(90deg,rgba(var(--c1),.46) 0%,rgba(var(--c1),.16) 30%,rgba(150,160,175,.10) 50%,rgba(var(--c2),.16) 70%,rgba(var(--c2),.46) 100%),rgba(20,26,32,.72);
-  -webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,0,0,.25),0 8px 24px rgba(0,0,0,.32)}
-.gm::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.13) 0%,rgba(255,255,255,.03) 38%,transparent 60%)}
+.gm{--c1:124,133,145;--c2:124,133,145;position:relative;min-width:0;overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:#141a20;
+  box-shadow:0 8px 24px rgba(0,0,0,.32)}
 .gm.open{border-color:rgba(255,255,255,.28)}
-.gh{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(3rem,auto) auto minmax(0,1fr);align-items:center;gap:0 12px;padding:20px 20px 8px;cursor:pointer;user-select:none}
-.gh:hover{background:rgba(255,255,255,.05)}
+.gh{background:linear-gradient(90deg,rgba(var(--c1),.9) 0%,rgba(var(--c1),.38) 34%,rgba(var(--c1),0) 50%,rgba(var(--c2),0) 50%,rgba(var(--c2),.38) 66%,rgba(var(--c2),.9) 100%);display:grid;grid-template-columns:minmax(0,1fr) auto minmax(3rem,auto) auto minmax(0,1fr);align-items:center;gap:0 12px;padding:20px 20px 8px;cursor:pointer;user-select:none}
+.gh:hover{box-shadow:inset 0 0 0 999px rgba(255,255,255,.06)}
 .tm{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;text-align:center}
 .tm .lg{width:72px;height:72px;object-fit:contain}
 .tm .nk{font:700 1.6rem/1.1 var(--f-body);letter-spacing:.04em;text-indent:.04em;color:var(--fg)}
@@ -116,7 +114,7 @@ BODY = """<div class="gwroot"><div class="msg" id="msg">載入中…</div>
 <div class="gww" id="gww" hidden>
 <div class="hd"><h1>Schedule<span>賽程</span></h1></div>
 <div class="dbar"><button type="button" class="arw" id="sl" aria-label="往前翻">‹</button><div class="strip" id="strip" role="group" aria-label="選擇日期"></div><button type="button" class="arw" id="sr" aria-label="往後翻">›</button>
-<div class="dx"><select id="dsel" aria-label="跳到日期"></select><button type="button" id="latest">回到最近</button></div></div>
+<div class="dx"><button type="button" id="latest">回到今天</button></div></div>
 <div class="gl" id="gl"></div>
 <div class="note" id="note"></div>
 </div></div>"""
@@ -173,7 +171,6 @@ function card(g){
 function build(){
   built=true;
   $('#strip').innerHTML=D.dates.map(d=>{const p=dp(d);return '<button type="button" class="dc" data-d="'+d+'" aria-pressed="false"><span>'+p.m+'</span><b>'+p.w+'</b></button>';}).join('');
-  $('#dsel').innerHTML=D.dates.map(d=>'<option value="'+d+'">'+d+'（'+D.games[d].length+' 場）</option>').join('');
 }
 function center(smooth){
   const s=$('#strip'),c=s.querySelector('.dc.on');if(!c)return;
@@ -186,7 +183,7 @@ function render(smooth){
   if(!built)build();
   const gs=D.games[date]||[];
   root.querySelectorAll('.dc').forEach(b=>{const on=b.dataset.d===date;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
-  $('#dsel').value=date;$('#latest').disabled=date===D.latest&&!openId;
+  $('#latest').disabled=date===D.latest&&!openId;
   $('#gl').innerHTML=gs.length?gs.map(card).join(''):'<div class="empty">這天沒有賽事</div>';
   $('#note').innerHTML='比分與 box score 來自 NBA.com 官方 gamelog；W-L 是該場結束時的戰績（由 gamelog 逐場累計）；已完賽場次的日期以 gamelog 的比賽日（美東）為準，未開打場次取自賽程，開賽時間以 UTC+8 顯示。gamelog 沒有先發名單與 DNP，球員依上場分鐘排序。';
   center(smooth);
@@ -215,7 +212,6 @@ $('#strip').addEventListener('scroll',arrows,{passive:true});
 $('#sl').addEventListener('click',()=>{const s=$('#strip');s.scrollBy({left:-s.clientWidth*.85,behavior:'smooth'});});
 $('#sr').addEventListener('click',()=>{const s=$('#strip');s.scrollBy({left:s.clientWidth*.85,behavior:'smooth'});});
 $('#latest').addEventListener('click',()=>go(D.latest));
-$('#dsel').addEventListener('change',e=>go(e.target.value));
 new ResizeObserver(()=>{if(pend&&$('#strip').clientWidth){pend=false;center(false);}arrows();}).observe($('#strip'));
 function ensure(){
   if(!loading)loading=fetch('games-data.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{
