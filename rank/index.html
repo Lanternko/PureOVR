@@ -378,7 +378,11 @@ button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{ou
 .gm.open{border-color:rgba(255,255,255,.28)}
 .gh{background:linear-gradient(103deg,rgba(var(--c1),.9) 0%,rgba(var(--c1),.55) 22%,rgba(var(--c1),.2) 40%,rgba(var(--c1),0) 53%,rgba(var(--c2),0) 53%,rgba(var(--c2),.2) 62%,rgba(var(--c2),.55) 78%,rgba(var(--c2),.9) 100%);display:grid;grid-template-columns:minmax(0,1fr) auto minmax(3rem,auto) auto minmax(0,1fr);align-items:center;gap:0 12px;padding:9px 20px 3px;cursor:pointer;user-select:none}
 .gh:hover{box-shadow:inset 0 0 0 999px rgba(255,255,255,.06)}
-.tm{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:0;text-align:center}
+.tm{display:flex;align-items:center;justify-content:center;gap:10px;min-width:0}  /* 簡稱＋戰績擠在 icon 與比分之間：客隊 icon｜文字｜比分，主隊 比分｜文字｜icon */
+.tm.home{flex-direction:row-reverse}
+.tm .tx{display:flex;flex-direction:column;gap:1px;min-width:0}
+.tm.away .tx{text-align:left}
+.tm.home .tx{text-align:right}
 .tm .lg{width:44px;height:44px;object-fit:contain}
 .tm .nk{font:700 1.15rem/1.1 var(--f-body);letter-spacing:.04em;text-indent:.04em;color:var(--fg)}
 .tm .rc{font:500 .85rem/1.2 var(--f-body);color:var(--muted);font-variant-numeric:tabular-nums}
@@ -432,7 +436,8 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
   .dc span{font-size:.8rem}.dc b{font-size:1.15rem}
   .dx{flex:1 1 100%;border-left:0;padding:4px 0 0;justify-content:flex-end}
   .gh{grid-template-columns:minmax(0,1fr) auto minmax(1.9rem,auto) auto minmax(0,1fr);gap:0 2px;padding:14px 8px 6px}
-  .tm .lg{width:46px;height:46px}
+  .tm{gap:5px}
+  .tm .lg{width:36px;height:36px}
   .tm .nk{font-size:1.05rem}.tm .rc{font-size:.8rem}
   .sc{font-size:3rem}
   .mid .tri{border-width:8px}.mid .tri.l{border-right-width:12px}.mid .tri.r{border-left-width:12px}
@@ -1122,7 +1127,10 @@ function gcCell(v, b, cut, fb, tip) {
   return `<td${tip ? ` title="${tip}"` : fb ? ' title="這場抓不到防守對位資料，只用 box score 算"' : ''}><span class="${b == null ? '' : gcCls(v - b, cut)}">${gcS(v)}</span></td>`;
 }
 // 手寫的個別球員註解（使用者 2026-11-04）：接在 N 場平均評分／上季後面。數字會隨賽程變，改前先對照最新 g5
-const GC_NOTE = {1630162: '*因為本季命中率下降＋失誤上升，所以即使得分很多，OVR仍不變'}; // Anthony Edwards
+const GC_NOTE = {
+  1630162: '*因為本季命中率下降＋失誤上升，所以即使得分很多，OVR仍不變', // Anthony Edwards
+  1642843: '*由於上季球隊戰績差，加上效率很差，本季的初始OVR很低、爬升較慢', // Cooper Flagg
+};
 const gcExtra = r => REAL_VIEW === 'g5' && GC_NOTE[r.id] ? `　<span class="gcx">${GC_NOTE[r.id]}</span>` : '';
 function gcNote(r, p, n) {
   const c = r.gc;
@@ -1692,11 +1700,12 @@ function info(){
    +(i.stale&&(!i.fetchedAt||Date.now()-Date.parse(i.fetchedAt)>3*864e5)?'<span class="warn">傷病名單已超過三天沒更新。</span>':'')
    +(D.schedule&&D.schedule.remainingGames?'':'<span class="warn">抓不到賽程，剩餘場次以對全聯盟平均勝率計。</span>');
   $('#viewHint').textContent=view==='today'?'排除傷兵':'全員健康的版本';
-  $('#note').innerHTML=(isT?'評分模型 '+esc(D.engine)+'（2025-26 整季與本季已完賽場次回測都比舊模擬引擎準）':'模擬引擎 '+esc(D.engine))+'；ORtg／DRtg／Net 已扣聯盟平均。'
-   +'<br>分鐘規則：每位現役球員取他自己最近 '+D.lastN+' 場「有出場」的平均分鐘（沒上場的比賽不算，不管當時在哪隊）；候選人是該隊最近 '+D.lastN+' 場出場過的人，加上最近沒出場但自己平均 ≥'+(D.returnMin||15)+' 分鐘的人（視為傷缺復出）；照教練實際用人：每人的起點分鐘就是上述平均分鐘，再乘上「焦灼比賽乘數」（依該隊球員的分鐘名次分 11 槽，乘數＝2024-25、2025-26 兩季焦灼場〔分差 ≤5 或延長賽〕的平均分鐘 ÷ 全部場的平均分鐘，約 1.02–1.11，由資料直接量），再等比放大到合計 240 分鐘；單人上限 36（超出的分鐘依比例分給沒到上限的人，反覆到收斂），不設下限；可上場人數太少（不到 7 人）時上限放寬到 40。名次只用來決定乘數，不直接決定分鐘。「可用」先拿掉 Out／Doubtful／Questionable／Day-To-Day（含停賽），只留 Probable 與沒上名單的人，不做機率加權；「傷兵」欄＝被拿掉的人數。'
-   +((D.baseProfiles||[]).length?'<br>上季整季缺陣、今年還沒有排名的人（'+D.baseProfiles.map(x=>esc(x.name)).join('、')+'）：模擬用他最近一張賽季卡的能力值（不做年齡調整），OVR 欄標「24-25 卡」等來源；沒有任何歷史卡的新人仍當聯盟平均球員。':'')
-   +'<br>預測勝場＝目前勝場＋剩餘賽程逐場勝率（主場 +'+D.H+' 分、σ='+D.sigma+'）。「可用」版依 ESPN 預計回歸日逐場換陣容：比賽日期早於回歸日就缺陣，之後回來；'
-   +((D.injuries&&D.injuries.outNoReturnDate)?'<span class="warn">目前有 '+D.injuries.outNoReturnDate+' 位缺陣者沒有回歸日（官方 PDF 備援不提供），當整季缺陣。</span>':'沒有回歸日的缺陣者當整季缺陣。')+'「全員」版不扣人、陣容全程不變。主表的 Net 是今天的陣容。';
+  $('#note').innerHTML='ORtg／DRtg／Net 為每百回合得失分與淨效率，已扣除聯盟平均（0 為平均；DRtg 越低防守越好）。主表顯示今天的陣容。'
+   +'<br>上場時間：取球員近 '+D.lastN+' 場有出賽的平均分鐘，依焦灼比賽（分差 5 分內或延長賽）主力縮輪替的比例調整並湊滿 240 分鐘，單人上限 36 分鐘（未滿 7 人時放寬至 40）。近期未出賽但場均滿 '+(D.returnMin||15)+' 分鐘者視為傷癒復出，照常排入輪替。'
+   +'<br>可用／全員：「可用」排除 Out、Doubtful、Questionable、Day-To-Day 與停賽球員（Probable 照常上場），「傷兵」欄為排除人數；「全員」假設全隊健康。'
+   +((D.baseProfiles||[]).length?'<br>上季整季缺陣、本季尚無排名的球員（'+D.baseProfiles.map(x=>esc(x.name)).join('、')+'），OVR 欄暫標最近一張賽季卡。':'')
+   +'<br>預測勝場：目前勝場＋剩餘賽程逐場勝率（計入主客場與對手強弱）。「可用」版依 ESPN 預計回歸日逐場更換陣容，回歸日前缺陣、之後歸隊；'
+   +((D.injuries&&D.injuries.outNoReturnDate)?'<span class="warn">目前有 '+D.injuries.outNoReturnDate+' 位缺陣者沒有回歸日（官方 PDF 備援不提供），視為整季缺陣。</span>':'無回歸日者視為整季缺陣。')+'「全員」版全程以健康陣容計算。';
 }
 function rows(){
   const R=T.map(t=>({t,v:t[view]})).sort((a,b)=>b.v.net-a.v.net).map((o,i)=>({...o,rank:i+1}));
@@ -1784,7 +1793,7 @@ function tipHtml(g){
 }
 function card(g){
   const pc=pair(g.away,g.home),fin=g.status==='final',w=fin?(g.winner===g.home?'home':'away'):'',op=openId===g.id;
-  const tm=k=>'<div class="tm">'+logo(g[k])+'<div class="nk">'+esc(g[k])+'</div><div class="rc">'+esc(g.rec?g.rec[k]:'')+'</div></div>';
+  const tm=k=>'<div class="tm '+k+'">'+logo(g[k])+'<div class="tx"><div class="nk">'+esc(g[k])+'</div><div class="rc">'+esc(g.rec?g.rec[k]:'')+'</div></div></div>';
   const sc=k=>'<div class="sc'+(k==='home'?' h':'')+(fin&&w!==k?' lose':'')+'">'+(fin?g.score[k]:'')+'</div>';
   const mid=fin?'<div class="mid"><span class="tri '+(w==='away'?'l':'r')+'"></span>'+(g.ot?'<div class="ot">'+(g.ot>1?g.ot:'')+'OT</div>':'')+'</div>'
     :'<div class="mid">'+tipHtml(g)+'</div>';
