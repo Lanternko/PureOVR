@@ -372,10 +372,13 @@ h1 span{display:block;font:600 1rem var(--f-body);font-style:normal;letter-spaci
 .dx button#latest:disabled{background:var(--panel);color:var(--muted);border-color:var(--line);opacity:.5;cursor:default}
 button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .gl{display:flex;flex-direction:column;gap:10px}
-.gm{background:var(--panel);border:1px solid var(--line);border-radius:12px;min-width:0;overflow:hidden}
-.gm.open{border-color:#3a4654}
+.gm{--c1:124,133,145;--c2:124,133,145;position:relative;isolation:isolate;min-width:0;overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:14px;
+  background:linear-gradient(90deg,rgba(var(--c1),.46) 0%,rgba(var(--c1),.16) 30%,rgba(150,160,175,.10) 50%,rgba(var(--c2),.16) 70%,rgba(var(--c2),.46) 100%),rgba(20,26,32,.72);
+  -webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,0,0,.25),0 8px 24px rgba(0,0,0,.32)}
+.gm::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.13) 0%,rgba(255,255,255,.03) 38%,transparent 60%)}
+.gm.open{border-color:rgba(255,255,255,.28)}
 .gh{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(90px,auto) auto minmax(0,1fr);align-items:center;gap:0 16px;padding:18px 20px 8px;cursor:pointer;user-select:none}
-.gh:hover{background:#161d24}
+.gh:hover{background:rgba(255,255,255,.05)}
 .tm{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;text-align:center}
 .tm .lg{width:64px;height:64px;object-fit:contain}
 .tm .nk{font:500 1.15rem/1.2 var(--f-body);color:var(--fg);max-width:100%;overflow-wrap:anywhere}
@@ -383,9 +386,10 @@ button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{ou
 .sc{font:700 3.4rem/1 var(--nf);font-variant-numeric:tabular-nums;color:var(--fg);text-align:center;min-width:2ch}
 .sc.lose{color:#7c858f}
 .mid{text-align:center;font:700 1.2rem/1.25 var(--f-body);letter-spacing:.03em;white-space:nowrap}
-.mid .fl{display:flex;align-items:center;justify-content:center;gap:6px}
-.mid .tri{font-size:.8rem;width:1em;display:inline-block}
-.mid .tri.off{visibility:hidden}
+.mid .fl{position:relative;padding:0 19px}
+.mid .tri{position:absolute;top:50%;margin-top:-6px;width:0;height:0;border:6px solid transparent}
+.mid .tri.l{left:3px;border-left:0;border-right:9px solid var(--fg)}
+.mid .tri.r{right:3px;border-right:0;border-left:9px solid var(--fg)}
 .mid .ot{font-weight:700}
 .mid .tbd{color:var(--muted);font-weight:500}
 .bh{text-align:center;color:var(--muted);font:500 .74rem var(--f-body);padding:0 0 10px;letter-spacing:.04em}
@@ -1689,6 +1693,11 @@ const COLS=[["MIN", "min"], ["PTS", "pts"], ["REB", "reb"], ["AST", "ast"], ["FG
 const $=s=>root.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const CDN='https://cdn.nba.com/';
 const logo=a=>'<img class="lg" alt="" loading="lazy" src="'+CDN+'logos/nba/'+D.teams[a].id+'/global/D/logo.svg" onerror="this.style.visibility=\'hidden\'">';
+// 球隊主色（官方主色；深色隊在深色底看不出來，改用提亮版或辨識度高的副色），給賽程卡片漸層用，格式 "r,g,b"
+const TC={ATL:'#E03A3E',BOS:'#1E9B4F',BKN:'#9AA0A6',CHA:'#00A3B8',CHI:'#CE1141',CLE:'#A8174F',DAL:'#1E73BE',DEN:'#2D5DA8',DET:'#C8102E',GSW:'#2F63C0',
+  HOU:'#CE1141',IND:'#2A5CA8',LAC:'#C8102E',LAL:'#7A45B8',MEM:'#5D76A9',MIA:'#B5123F',MIL:'#1B8A45',MIN:'#2B6AA8',NOP:'#2D5A9A',NYK:'#006BB6',
+  OKC:'#007AC1',ORL:'#0077C0',PHI:'#006BB6',PHX:'#E56020',POR:'#E03A3E',SAC:'#7A47B0',SAS:'#A5ACB2',TOR:'#CE1141',UTA:'#4B7BD0',WAS:'#E31837'};
+const tcol=a=>{const h=(TC[a]||'#7c8591').slice(1);return [0,2,4].map(i=>parseInt(h.substr(i,2),16)).join(',')};
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const dp=d=>{const x=new Date(d+'T00:00:00Z');return {m:MON[x.getUTCMonth()]+' '+x.getUTCDate(),w:WD[x.getUTCDay()]}};
 const sgn=v=>v>0?'+'+v:String(v);
@@ -1714,9 +1723,9 @@ function card(g){
   const fin=g.status==='final',w=fin?(g.winner===g.home?'home':'away'):'',op=openId===g.id;
   const tm=k=>'<div class="tm">'+logo(g[k])+'<div class="nk">'+esc(D.teams[g[k]].nick)+'</div><div class="rc">'+esc(g.rec?g.rec[k]:'')+'</div></div>';
   const sc=k=>'<div class="sc'+(fin&&w!==k?' lose':'')+'">'+(fin?g.score[k]:'')+'</div>';
-  const mid=fin?'<div class="mid"><div class="fl"><span class="tri'+(w==='away'?'':' off')+'">◀</span>FINAL<span class="tri'+(w==='home'?'':' off')+'">▶</span></div>'+(g.ot?'<div class="ot">'+g.ot+'OT</div>':'')+'</div>'
+  const mid=fin?'<div class="mid"><div class="fl">'+(w==='away'?'<span class="tri l"></span>':'')+'FINAL'+(w==='home'?'<span class="tri r"></span>':'')+'</div>'+(g.ot?'<div class="ot">'+g.ot+'OT</div>':'')+'</div>'
     :'<div class="mid"><span class="tbd">'+esc(g.time||'—')+'</span></div>';
-  return '<div class="gm'+(op?' open':'')+'" data-id="'+g.id+'"><div class="gh" role="button" tabindex="0" aria-expanded="'+op+'">'+tm('away')+sc('away')+mid+sc('home')+tm('home')+'</div>'
+  return '<div class="gm'+(op?' open':'')+'" data-id="'+g.id+'" style="--c1:'+tcol(g.away)+';--c2:'+tcol(g.home)+'"><div class="gh" role="button" tabindex="0" aria-expanded="'+op+'">'+tm('away')+sc('away')+mid+sc('home')+tm('home')+'</div>'
    +(fin?'<div class="bh">'+(op?'收起 box score ▴':'box score ▾')+'</div>':'')+(op&&fin?boxHtml(g):'')+'</div>';
 }
 function build(){
