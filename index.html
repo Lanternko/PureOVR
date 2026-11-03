@@ -133,7 +133,7 @@ td.sortcol{background:rgba(255,255,255,.035)}
 .tgrid button.all{grid-column:1/-1;font-size:.9rem;padding:7px}
 .tgrid button.all.half{grid-column:span 3}
 .tgrid button:hover{border-color:var(--muted);color:var(--fg)}
-.tgrid button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold);background:#2a2410}
+.tgrid button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold-ink);background:var(--gold)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 .pager-r{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .chip.dim{opacity:.7}
@@ -270,9 +270,9 @@ table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
 thead th{background:var(--bg,#0d1014);color:var(--muted);font:600 .95rem var(--nf);text-transform:uppercase;letter-spacing:.1em;padding:10px 8px;text-align:right;cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
 thead th.l,td.l{text-align:left}
 thead th .zh{display:block;font:500 .68rem var(--f-body);opacity:.75}
-thead th[aria-sort]{color:var(--fg)}
-thead th[aria-sort]::after{content:" ▾";color:var(--fg)}
-thead th[aria-sort="ascending"]::after{content:" ▴"}
+thead th[aria-sort]{color:#fff;font-weight:700;box-shadow:inset 0 0 0 999px rgba(255,255,255,.05)}
+thead th[aria-sort] .zh{color:#fff;font-weight:700;opacity:1}
+td.sorted{box-shadow:inset 0 0 0 999px rgba(255,255,255,.05)}
 td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;font:600 1.15rem var(--nf);letter-spacing:.02em}
 tr.row{cursor:pointer}
 tr.row:hover td{background:#1a2128}
@@ -384,7 +384,9 @@ button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{ou
 .mid .tri{display:inline-block;vertical-align:middle;width:0;height:0;border:11px solid transparent}
 .mid .tri.l{border-left:0;border-right:17px solid var(--fg)}
 .mid .tri.r{border-right:0;border-left:17px solid var(--fg)}
-.mid .ot{font-weight:700}
+.mid{position:relative}
+.mid .ot{font-weight:700;color:var(--fg)}
+.mid .tri+.ot{position:absolute;left:50%;top:calc(50% + 14px);transform:translateX(-50%);font-size:1rem;line-height:1;letter-spacing:.04em}  /* 延長賽標記：三角形正下方，不佔排版高度，三角才會維持在兩個比分的垂直正中 */
 .mid .tbd{color:var(--fg);font-weight:700;font-size:1.5rem;line-height:1.1}
 .mid .tbd+.ot{color:var(--muted);font-weight:500;font-size:.78rem}
 .bh{text-align:center;color:var(--muted);font:500 .74rem var(--f-body);padding:0 0 10px;letter-spacing:.04em}
@@ -429,6 +431,7 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
   .tm .nk{font-size:1.05rem}.tm .rc{font-size:.8rem}
   .sc{font-size:3rem}
   .mid .tri{border-width:8px}.mid .tri.l{border-right-width:12px}.mid .tri.r{border-left-width:12px}
+  .mid .tri+.ot{top:calc(50% + 11px);font-size:.8rem}
   .mid{font-size:.85rem}
   .bxw{padding:4px 10px 12px}
   th.l{width:92px}.tbox{scroll-padding-left:92px}table{min-width:666px}
@@ -1479,6 +1482,29 @@ function pages(n) {
   mk('›', st.page + 1, st.page >= tot - 1);
 }
 
+// 選的球隊放在網址路徑：/PureOVR/nets、/PureOVR/rookies（使用者 2026-11-04）。只有首頁（路徑不以 .html 結尾）這樣做，
+// /PureOVR/<隊> 不存在，由 gh-pages 的 404.html（首頁副本）接；2025-26.html 不動網址
+const TSLUG = { ATL: 'hawks', BOS: 'celtics', BKN: 'nets', CHA: 'hornets', CHI: 'bulls', CLE: 'cavaliers', DAL: 'mavericks', DEN: 'nuggets',
+  DET: 'pistons', GSW: 'warriors', HOU: 'rockets', IND: 'pacers', LAC: 'clippers', LAL: 'lakers', MEM: 'grizzlies', MIA: 'heat',
+  MIL: 'bucks', MIN: 'timberwolves', NOP: 'pelicans', NYK: 'knicks', OKC: 'thunder', ORL: 'magic', PHI: 'sixers', PHX: 'suns',
+  POR: 'blazers', SAC: 'kings', SAS: 'spurs', TOR: 'raptors', UTA: 'jazz', WAS: 'wizards' };
+const TROUTE = !/[.]html$/i.test(location.pathname);
+const teamSeg = () => decodeURIComponent(location.pathname.split('/').pop()).toLowerCase();
+function teamFromPath() {
+  const s = teamSeg();
+  if (s === 'rookies') return ROOKIES.size ? 'ROOKIE' : 'ALL';
+  return Object.keys(TSLUG).find(t => (TSLUG[t] === s || t.toLowerCase() === s) && TEAM_IDS[t]) || 'ALL';
+}
+const teamPath = cur => location.pathname.replace(/[^/]*$/, '') + (cur === 'ALL' ? '' : cur === 'ROOKIE' ? 'rookies' : TSLUG[cur]);
+function setTeam(cur) {
+  st.rk = cur === 'ROOKIE'; st.team = st.rk ? 'ALL' : cur; st.page = 0; st.extra = 0;
+  // 選隊後球員卡顯示該隊（或新秀）依目前排序欄位排第一的人：預設排序＝OVR 最高（使用者 2026-11-03）
+  if (st.rk || st.team !== 'ALL') {
+    const top = list()[0];
+    if (top) st.sel = top.name;
+  }
+}
+
 function teamPick() {
   const d = document.getElementById('teamPick'), grid = document.getElementById('teamGrid');
   const logo = t => `<img alt="" src="https://cdn.nba.com/logos/nba/${TEAM_IDS[t]}/global/D/logo.svg" onerror="this.style.visibility='hidden'">`;
@@ -1491,14 +1517,24 @@ function teamPick() {
     grid.onclick = e => {
       const b = e.target.closest('button[data-t]');
       if (!b) return;
-      st.rk = b.dataset.t === 'ROOKIE'; st.team = st.rk ? 'ALL' : b.dataset.t; st.page = 0; st.extra = 0; d.open = false;
-      // 選隊後球員卡顯示該隊（或新秀）依目前排序欄位排第一的人：預設排序＝OVR 最高（使用者 2026-11-03）
-      if (st.rk || st.team !== 'ALL') {
-        const top = list()[0];
-        if (top) st.sel = top.name;
+      setTeam(b.dataset.t); d.open = false;
+      if (TROUTE) {
+        const u = teamPath(b.dataset.t) + location.search;
+        // 排行／賽程檢視下選隊：眉頭接著會 push 球隊名單，這裡只把目前這筆改成新球隊，免得多一筆同網址
+        if (location.hash) history.replaceState(null, '', u + location.hash);
+        else if (u !== location.pathname + location.search) history.pushState(null, '', u);
       }
       render();
     };
+    if (TROUTE) {
+      const t0 = teamFromPath();
+      if (t0 !== 'ALL') setTeam(t0);
+      else if (teamSeg()) history.replaceState(null, '', teamPath('ALL') + location.search + location.hash);  // 不認得的隊名回首頁網址
+      addEventListener('popstate', () => {
+        const t = teamFromPath();
+        if (t !== (st.rk ? 'ROOKIE' : st.team)) { setTeam(t); render(); }
+      });
+    }
     // 面板靠左展開，超出螢幕右緣就往左推
     d.addEventListener('toggle', () => {
       if (!d.open) return;
@@ -1598,10 +1634,11 @@ document.fonts && document.fonts.ready.then(fitTable);
 // 寬度鎖成欄寬總和（不是 min-width）：不然表格會跟著外框撐寬，外框又照表格寬算，越撐越寬。
 // 只動這幾個屬性、量時除掉 zoom：桌機縮放（enrich_roster_viewer）寫在同一個 style 上。
 function lockCols() {
-  const t = document.getElementById('tbl'), SZ = SIZE, s = t.style, z = parseFloat(s.zoom) || 1;
+  const t = document.getElementById('tbl'), SZ = SIZE, s = t.style, z = parseFloat(s.zoom) || 1, tm = [st.team, st.rk];
   t.querySelector('colgroup')?.remove();
   s.tableLayout = ''; s.width = 'min-content'; s.minWidth = '0';
-  SIZE = 1e5; render(); SIZE = SZ;
+  // 網址直接開某隊（/nets）時也照全部球隊量
+  st.team = 'ALL'; st.rk = false; SIZE = 1e5; render(); SIZE = SZ; [st.team, st.rk] = tm;
   const ws = [...t.querySelectorAll('thead tr:last-child th')].filter(th => getComputedStyle(th).display !== 'none')
     .map(th => Math.ceil(th.getBoundingClientRect().width / z));
   t.insertAdjacentHTML('afterbegin', '<colgroup>' + ws.map(w => `<col style="width:${w}px">`).join('') + '</colgroup>');
@@ -1634,9 +1671,9 @@ function info(){
   $('#stamp').innerHTML='<b>'+esc(D.dataCutoff)+'</b>'+esc(D.generatedAt.slice(11,16))+' 更新';
   $('#meta').innerHTML='<ul class="nb"><li>戰力排行是模型模擬比賽（每隊對五支不同強度、位置配置的對手隊共打 '+D.seeds+' 場）得出的數據，目前還在 beta 版本，有不準的地方，僅供參考。</li>'
    +'<li>76 人被低估：模型認為同一隊持球單打手太多，彼此搶球，化學反應不好。</li></ul>'
-   +(i.stale?'<span class="warn">今天抓不到傷病名單，沿用前一份。</span>':'')
+   +(i.stale&&(!i.fetchedAt||Date.now()-Date.parse(i.fetchedAt)>3*864e5)?'<span class="warn">傷病名單已超過三天沒更新。</span>':'')
    +(D.schedule&&D.schedule.remainingGames?'':'<span class="warn">抓不到賽程，剩餘場次以對全聯盟平均勝率計。</span>');
-  $('#viewHint').textContent=view==='today'?'排除 Out／Doubtful／Questionable／Day-To-Day；依回歸日逐場模擬。':'不扣傷兵；陣容全程不變。';
+  $('#viewHint').textContent=view==='today'?'排除傷兵':'全員健康的版本';
   $('#note').innerHTML='模擬引擎 '+esc(D.engine)+'；ORtg／DRtg／Net 已扣聯盟平均。'
    +'<br>分鐘規則：每位現役球員取他自己最近 '+D.lastN+' 場「有出場」的平均分鐘（沒上場的比賽不算，不管當時在哪隊）；候選人是該隊最近 '+D.lastN+' 場出場過的人，加上最近沒出場但自己平均 ≥'+(D.returnMin||15)+' 分鐘的人（視為傷缺復出）；照教練實際用人：每人的起點分鐘就是上述平均分鐘，再乘上「焦灼比賽乘數」（依該隊球員的分鐘名次分 11 槽，乘數＝2024-25、2025-26 兩季焦灼場〔分差 ≤5 或延長賽〕的平均分鐘 ÷ 全部場的平均分鐘，約 1.02–1.11，由資料直接量），再等比放大到合計 240 分鐘；單人上限 36（超出的分鐘依比例分給沒到上限的人，反覆到收斂），不設下限；可上場人數太少（不到 7 人）時上限放寬到 40。名次只用來決定乘數，不直接決定分鐘。「可用」先拿掉 Out／Doubtful／Questionable／Day-To-Day（含停賽），只留 Probable 與沒上名單的人，不做機率加權；「傷兵」欄＝被拿掉的人數。'
    +((D.baseProfiles||[]).length?'<br>上季整季缺陣、今年還沒有排名的人（'+D.baseProfiles.map(x=>esc(x.name)).join('、')+'）：模擬用他最近一張賽季卡的能力值（不做年齡調整），OVR 欄標「24-25 卡」等來源；沒有任何歷史卡的新人仍當聯盟平均球員。':'')
@@ -1664,7 +1701,9 @@ function render(){
      +'<td class="hide-m">'+f1(v.ortg)+'</td><td class="hide-m">'+f1(v.drtg)+'</td><td>'+t.W+'-'+t.L+'</td><td>'+f0(v.predWins)+'</td><td class="'+(t.nOut?'inj':'')+'">'+(t.nOut||'')+'</td></tr>'
      +(open===t.abbr?'<tr class="det"><td colspan="8">'+detail(o)+'</td></tr>':'');}).join('');
   root.querySelectorAll('#viewSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===view)));
-  root.querySelectorAll('thead th').forEach(h=>{if(h.dataset.k===sk)h.setAttribute('aria-sort',sd<0?'descending':'ascending');else h.removeAttribute('aria-sort');});
+  let si=-1;
+  root.querySelectorAll('thead th').forEach((h,i)=>{if(h.dataset.k===sk){si=i;h.setAttribute('aria-sort',sd<0?'descending':'ascending');}else h.removeAttribute('aria-sort');});
+  root.querySelectorAll('#tb tr.row').forEach(r=>r.children[si]?.classList.add('sorted'));
   info();
 }
 $('#tb').addEventListener('click',e=>{const r=e.target.closest('tr.row');if(!r)return;toggle(r.dataset.a);});
@@ -1729,10 +1768,10 @@ function card(g){
   const pc=pair(g.away,g.home),fin=g.status==='final',w=fin?(g.winner===g.home?'home':'away'):'',op=openId===g.id;
   const tm=k=>'<div class="tm">'+logo(g[k])+'<div class="nk">'+esc(g[k])+'</div><div class="rc">'+esc(g.rec?g.rec[k]:'')+'</div></div>';
   const sc=k=>'<div class="sc'+(k==='home'?' h':'')+(fin&&w!==k?' lose':'')+'">'+(fin?g.score[k]:'')+'</div>';
-  const mid=fin?'<div class="mid"><span class="tri '+(w==='away'?'l':'r')+'"></span></div>'
+  const mid=fin?'<div class="mid"><span class="tri '+(w==='away'?'l':'r')+'"></span>'+(g.ot?'<div class="ot">'+(g.ot>1?g.ot:'')+'OT</div>':'')+'</div>'
     :'<div class="mid">'+tipHtml(g)+'</div>';
   return '<div class="gm'+(op?' open':'')+'" data-id="'+g.id+'" style="--c1:'+pc[0]+';--c2:'+pc[1]+'"><div class="gh" role="button" tabindex="0" aria-expanded="'+op+'">'+tm('away')+sc('away')+mid+sc('home')+tm('home')+'</div>'
-   +(fin&&g.ot?'<div class="bh"><span>'+(g.ot>1?g.ot:'')+'OT</span></div>':'')+(op&&fin?boxHtml(g):'')+'</div>';
+   +(op&&fin?boxHtml(g):'')+'</div>';
 }
 function build(){
   built=true;
