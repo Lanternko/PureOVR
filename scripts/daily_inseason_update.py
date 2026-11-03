@@ -397,6 +397,19 @@ def step_viewer(out_dir: Path) -> Path:
     return html
 
 
+# 球隊網址 /PureOVR/nets 沒有實體檔，GitHub Pages 回 404.html：放首頁副本，頁面自己從路徑讀球隊（使用者 2026-11-04）。
+# 多打斜線（/nets/）時相對路徑會跑到 nets/ 底下，先轉回不帶斜線的網址
+NOT_FOUND_FIX = ("<script>if(/[/]$/.test(location.pathname))"
+                 "location.replace(location.pathname.replace(/[/]+$/,'')+location.search+location.hash)</script>")
+
+
+def write_not_found(html: Path) -> Path:
+    """頁面沒有 <head>（第一行就是 <meta charset>），修正腳本直接放最前面，仍在 charset 要求的前 1024 位元組內。"""
+    out = html.with_name('404.html')
+    out.write_text(NOT_FOUND_FIX + '\n' + html.read_text(encoding='utf-8'), encoding='utf-8')
+    return out
+
+
 def step_card_viewer(out_dir: Path) -> Path:
     """建 2025-26 正式卡頁（含賽季切換列），輸出到工作夾，與賽中頁一起發布成 2025-26.html。"""
     html = out_dir / 'card-roster-viewer.html'
@@ -560,7 +573,8 @@ def _run(args) -> int:
 
         final = LIVE / cutoff
         shutil.copytree(work, final, dirs_exist_ok=True)
-        pages = {'index.html': final / 'roster-viewer.html', '2025-26.html': final / card_html.name}
+        write_not_found(final / 'roster-viewer.html')
+        pages = {'index.html': final / 'roster-viewer.html', '404.html': final / '404.html', '2025-26.html': final / card_html.name}
         if teams_html is not None:
             pages['teams.html'] = final / teams_html.name
             pages['teams-data.json'] = final / 'teams-data.json'
@@ -601,8 +615,9 @@ def _run_shell(args) -> int:
             work = None
             return 0
         shutil.copyfile(html, final / html.name)
+        write_not_found(final / html.name)
         shutil.copyfile(card_html, final / card_html.name)
-        pages = {'index.html': final / html.name, '2025-26.html': final / card_html.name}
+        pages = {'index.html': final / html.name, '404.html': final / '404.html', '2025-26.html': final / card_html.name}
         if teams_html is not None:
             shutil.copyfile(teams_html, final / teams_html.name)
             shutil.copyfile(teams_html.with_name('teams-data.json'), final / 'teams-data.json')
