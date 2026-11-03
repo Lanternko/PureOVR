@@ -322,8 +322,8 @@ class Header(unittest.TestCase):
         html, js = rank_view.embed()
         self.assertIn('id="rankHost"', html)
         self.assertIn('id="rankTpl"', html)
-        self.assertIn('戰力排行', html)
-        self.assertIn('回測僅與上季淨效率打平', js)
+        self.assertIn('Power Ranking', html)                # a0528bb 拿掉中文標題，改驗英文標題
+        self.assertIn('目前還在 beta 版本', js)            # a0528bb 改成 beta 提醒
         self.assertIn("fetch('teams-data.json'", js)
 
     def test_old_teams_url_redirects_and_data_written(self):
