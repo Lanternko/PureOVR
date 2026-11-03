@@ -1,5 +1,5 @@
 """E-229 前向評估：T vs M0（2026-27）。凍結前拒絕執行（缺 FREEZE.txt）；已完賽且凍結後記錄的場次不足 --min-games 也拒絕。
-  python -I -X utf8 eval_forward.py [--min-games 500] [--log-dir log] [--results ../../data/defense-seventh/2026-27/league.json] [--out eval-forward.json]
+  python -I -X utf8 eval_forward.py [--min-games 400] [--log-dir log] [--results ../../data/defense-seventh/2026-27/league.json] [--out eval-forward.json]
 FREEZE.txt 第一行＝凍結時間（ISO，含時區）。只用 generated >= 凍結時間、非 -smoke 的記錄；每場取開賽前最後一筆（generated < tipoff）。
 p＝Φ((邊際±H)/σ)（H=2.5、σ=12，記錄裡已算好 pT／pM0）。Brier 逐場；成對場次 bootstrap 2000 次、rng 20261102、5／95 百分位＝90% 區間。
 只做顯式 import，不用 star import（E-228 的 HERE 被覆寫事故）。"""
@@ -9,8 +9,8 @@ from datetime import datetime, timezone
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-MDE_B = None          # 凍結時由 preregistration 填入（J1 不更差的上界門檻）；None＝報告時只輸出區間、不判定
-CAL_MAX = None        # 凍結時填入（J2 校準最大偏差上限）
+MDE_B = 0.013        # 凍結 2026-11-04（preregistration.md J1）
+CAL_MAX = 0.15       # 凍結 2026-11-04（preregistration.md J2）
 
 
 def parse_t(s):
@@ -50,7 +50,7 @@ def calibration(p, y, bins=5):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--min-games', type=int, default=500)
+    ap.add_argument('--min-games', type=int, default=400)
     ap.add_argument('--log-dir', default=os.path.join(HERE, 'log'))
     ap.add_argument('--results', default=os.path.join(os.path.dirname(os.path.dirname(HERE)), 'data', 'defense-seventh', '2026-27', 'league.json'))
     ap.add_argument('--freeze', default=os.path.join(HERE, 'FREEZE.txt'))
