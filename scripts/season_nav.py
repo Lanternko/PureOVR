@@ -648,7 +648,10 @@ COMMON_REPLACEMENTS = [
 function fitTable() {
   // 手機以「卡片頂端貼齊視窗頂」為準：卡片＋篩選列以下的空間都給表格。
   // 桌機有固定眉頭（2026-11-02），改以頁面頂端為準：不捲頁面就看得到表格底，20 人在表格裡捲完（使用者 2026-11-02）
-  const t = document.querySelector('.tbox'), tt = t.getBoundingClientRect().top;
+  // 近 N 場展開不壓縮表格（使用者 2026-11-04）：量位置時暫時收起，高度照收起時算，展開只把表格往下推
+  const t = document.querySelector('.tbox'), g = document.querySelector('.card .g5'), gOpen = g && !g.hidden;
+  if (gOpen) g.hidden = true;
+  const tt = t.getBoundingClientRect().top;
   const above = innerWidth <= 640 ? tt - document.getElementById('card').getBoundingClientRect().top : tt + scrollY;
   const h = Math.max(innerWidth <= 640 ? 240 : 300, innerHeight - above - 12);
   t.style.maxHeight = Math.round(h) + 'px';
@@ -659,6 +662,7 @@ function tboxEdges() {
   const t = document.querySelector('.tbox');
   t.classList.toggle('scrolled', t.scrollTop > 0);
   t.classList.toggle('below', t.scrollTop + t.clientHeight < t.scrollHeight - 2);
+  if (gOpen) g.hidden = false;
 }
 document.querySelector('.tbox').addEventListener('scroll', tboxEdges, { passive: true });
 // 手機：同一次滑動把表格捲到頂／底時不接著帶動整頁（iOS 會接著捲）；放開後「下一次」滑動若一開始就在頂／底，才讓整頁捲（使用者 2026-11-02）
