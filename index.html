@@ -1749,7 +1749,7 @@ function render(smooth){
   if(!built)build();
   const gs=D.games[date]||[];
   root.querySelectorAll('.dc').forEach(b=>{const on=b.dataset.d===date;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
-  $('#latest').disabled=date===D.latest&&!openId;
+  $('#latest').disabled=date===D.latest;
   $('#gl').innerHTML=gs.length?gs.map(card).join(''):'<div class="empty">這天沒有賽事</div>';
   $('#note').innerHTML='比分與 box score 來自 NBA.com 官方 gamelog；W-L 是該場結束時的戰績（由 gamelog 逐場累計）；已完賽場次的日期以 gamelog 的比賽日（美東）為準，未開打場次取自賽程，開賽時間以 UTC+8 顯示。gamelog 沒有先發名單與 DNP，球員依上場分鐘排序。';
   center(smooth);
