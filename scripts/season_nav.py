@@ -7,10 +7,11 @@ from pathlib import Path
 # 標籤用年份（使用者 2026-10-29）：2027 beta＝2026-27 賽中，2026＝2025-26 正式卡
 PAGES = [('inseason', '2027 beta', './'), ('card', '2026', '2025-26.html')]
 # icon＝五格評分環、亮四格薄荷綠（使用者 2026-11-04 選 E4，取代 10-30 的金色籃球）；favicon 與版標同一張
-GAUGE = ('<rect x=".5" y=".5" width="63" height="63" rx="14" fill="#0b0e12" stroke="#1e252e"/>'
-         '<g fill="none" stroke-width="9" transform="rotate(-86 32 32)">'
+# 眉頭只用環（RING，不帶外框，使用者 2026-11-04「外面的框好醜」）；favicon 仍帶深底方框，在分頁列上才看得清楚
+RING = ('<g fill="none" stroke-width="9" transform="rotate(-86 32 32)">'
          '<circle cx="32" cy="32" r="19" stroke="#1f2a26" stroke-dasharray="19.87 4"/>'
          '<circle cx="32" cy="32" r="19" stroke="#3ddc97" stroke-dasharray="19.87 4 19.87 4 19.87 4 19.87 23.87"/></g>')
+GAUGE = '<rect x=".5" y=".5" width="63" height="63" rx="14" fill="#0b0e12" stroke="#1e252e"/>' + RING
 FAVICON = ('<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,'
            + ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
               + GAUGE + '</svg>').replace('"', "'").replace('#', '%23').replace('<', '%3C').replace('>', '%3E') + '">')

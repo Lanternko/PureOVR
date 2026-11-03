@@ -6,7 +6,7 @@ history.pushState＋popstate 管網址（#rank、#rank/LAL、#games、#games/202
 舊的 .top 標題列與 .ctrl 控制列只剩空殼，直接隱藏。add_season_nav 之後呼叫。"""
 import re
 
-from season_nav import GAUGE
+from season_nav import RING
 
 ICON = {
     'filter': '<path d="M4.2 4h15.6a1 1 0 0 1 .78 1.63L14.5 13.2v5.3a1 1 0 0 1-.55.9l-3 1.5A1 1 0 0 1 9.5 20v-6.8L3.42 5.63A1 1 0 0 1 4.2 4z" fill="currentColor" stroke="none"/>',
@@ -30,12 +30,10 @@ body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰
 .mast.scrolled{border-bottom-color:transparent;box-shadow:0 6px 22px -10px rgba(0,0,0,.6)}
 .mast-in{display:flex;align-items:center;gap:16px;height:56px;max-width:1360px;margin:0 auto;box-sizing:border-box;
   padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
-.mbrand{display:inline-flex;align-items:baseline;gap:8px;text-decoration:none;flex:none;width:206px}  /* 固定寬：Righteous 字型晚到時分頁不會被推動 */
-.mbrand .mlogo{width:30px;height:30px;flex:none;align-self:center}  /* 五格評分環 icon（使用者 2026-11-04 選 E4） */
-.mbrand b{font:400 1.6rem/1 "Righteous",var(--f-disp);letter-spacing:.02em;color:var(--fg)}
-.mbrand b span{color:var(--mfg)}  /* 使用者 2026-11-03：眉頭文字換更白 */
-.mbrand b i{font-style:inherit;color:var(--gold)}
-.mbrand:hover b span{color:var(--mfg2)}
+.mbrand{display:inline-flex;align-items:baseline;gap:9px;text-decoration:none;flex:none;width:206px}  /* 固定寬：Righteous 字型晚到時分頁不會被推動 */
+.mbrand .mlogo{width:22px;height:22px;flex:none;align-self:center}  /* 五格評分環 icon（使用者 2026-11-04 選 E4）；裁到環本身、無外框，直徑略大於大寫字高、中心對齊 */
+.mbrand b{font:400 1.6rem/1 "Righteous",var(--f-disp);letter-spacing:.02em;color:var(--mfg)}  /* 字標全白單色（使用者 2026-11-04）：顏色留給評分環 */
+.mbrand:hover b{color:var(--mfg2)}
 .mbrand small{font:600 .78rem var(--f-disp);letter-spacing:.06em;color:#dfe4ea;font-variant-numeric:tabular-nums}
 .mtabs{position:relative;display:flex;align-items:center;gap:2px;margin:0 auto 0 8px}
 .mtab,.mtabs .tpick summary{appearance:none;box-sizing:border-box;margin:0;border:0;background:none;color:var(--mfg);font:600 1.02rem/1 var(--f-body);letter-spacing:.02em;
@@ -51,14 +49,13 @@ body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰
 .mtabs #teamPick:not(.on) summary{font-size:0;gap:0}
 .mtabs #teamPick:not(.on) summary::before{content:"球隊";font-size:1.02rem;letter-spacing:.02em}
 /* 「球隊」格固定最小寬（最寬的 GSW＋隊徽約 104px），選哪隊後面的「戰力排行」都不會被推動 */
-.mtabs #teamPick summary,.mtab-pick{min-width:106px;justify-content:center}
-/* 使用者 2026-11-03：選完球隊不要下箭頭，格子也跟著縮窄（只剩隊徽＋隊名） */
+.mtabs #teamPick summary,.mtab-pick{min-width:76px;justify-content:center}
+/* 使用者 2026-11-03：選完球隊不要下箭頭，格子縮窄（只剩隊徽＋隊名）；選隊前後同寬（最小 76px） */
 .mtabs #teamPick.on summary::after{display:none}
 /* 使用者 2026-11-04：回到全部球員時仍顯示上次的球隊（隊徽＋隊名，不反白、不加箭頭），點了回到那隊 */
 .mtabs #teamPick.last:not(.on) summary{font-size:1.02rem;gap:6px}
 .mtabs #teamPick.last:not(.on) summary::before{content:none}
 .mtabs #teamPick.last summary::after{display:none}
-.mtabs #teamPick.on summary{min-width:0}
 .mtabs .tpick.on summary{border:0;color:var(--mfg2)}
 .mtabs .tpick summary:focus-visible,.mtab:focus-visible,.micon:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .mind{position:absolute;bottom:0;left:var(--ix,0);width:var(--iw,0);height:3px;border-radius:3px 3px 0 0;background:var(--gold);
@@ -114,6 +111,7 @@ body[data-view="rank"] .mtabs #teamPick.on summary,body[data-view="games"] .mtab
 @media (max-width:640px){
   .mast-in{flex-wrap:wrap;height:auto;padding-top:8px;padding-bottom:0;gap:0 10px}
   .mbrand b{font-size:1.4rem}
+  .mbrand .mlogo{width:19px;height:19px}
   .mbrand{min-height:34px}  /* 和 .micon 同高：沒有右側按鈕的戰力排行頁，分頁列才不會比首頁高 */
   .macts{margin-left:auto;gap:6px}
   .mtabs{order:10;flex-basis:100%;margin:4px 0 0}
@@ -143,7 +141,7 @@ const mode=$('#modeSeg');if(mode)$('#mMode').append(mode);
 const pn=$('.snav .pnote');if(pn)$('#mNotes').append(pn);else $('#mNotes').closest('.mrow').remove();
 const q=$('#q');if(q){$('.msearch .sbox').append(q);q.placeholder='搜尋球員或球隊';}
 const pl=$('#mPlayers'),tr=$('#mTeams'),gm=$('#mGames'),PR=window.PureRank,PG=window.PureGames,T0=document.title,sy={},reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
-const TITLE={rank:'戰力排行 · PureOVR',games:'賽程 · PureOVR'};
+const TITLE={rank:'戰力排行 · TrueOVR',games:'賽程 · TrueOVR'};
 const parseHash=()=>{
   let m=/^#rank(?:[/]([A-Za-z]{2,4}))?$/.exec(location.hash);if(m)return{v:'rank',arg:m[1]?m[1].toUpperCase():null};
   m=/^#games(?:[/](\d{4}-\d{2}-\d{2})(?:[/](\d{10}))?)?$/.exec(location.hash);if(m)return{v:'games',arg:m[1]||null,gid:m[2]||null};
@@ -218,7 +216,7 @@ const sc=()=>mast.classList.toggle('scrolled',scrollY>4);addEventListener('scrol
 def header_html(current):
     return (
         '<header class="mast"><div class="mast-in">'
-        f'<a class="mbrand" href="./" aria-label="PureOVR 首頁"><svg class="mlogo" viewBox="0 0 64 64" aria-hidden="true">{GAUGE}</svg><b><span>Pure</span><i>OVR</i></b><small>{SEASON[current]}</small></a>'
+        f'<a class="mbrand" href="./" aria-label="TrueOVR 首頁"><svg class="mlogo" viewBox="8 8 48 48" aria-hidden="true">{RING}</svg><b>TrueOVR</b><small>{SEASON[current]}</small></a>'
         '<nav class="mtabs" aria-label="主要分頁">'
         '<button type="button" class="mtab" id="mPlayers" aria-selected="true">球員</button>'
         '<span class="mtab mtab-pick" id="mPickPh">球隊</span>'
@@ -251,8 +249,8 @@ def add_masthead(html_str, current):
     assert s.count('<div class="wrap">') == 1, 'wrap not found'
     rank_html, rank_js = '', ''
     if current == 'inseason':  # 戰力排行、賽程檢視只有 2026-27 名單頁有；#rank／#games 直連時在首次繪製前先切好，不閃一下球員檢視
-        import games_view
         import rank_view
+        import games_view
         rank_html, rank_js = rank_view.embed()
         games_html, games_js = games_view.embed()
         rank_html += games_html + "<script>{const m=/^#(rank|games)/.exec(location.hash);if(m)document.body.dataset.view=m[1]}</script>"
