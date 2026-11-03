@@ -349,8 +349,6 @@ tbody tr.row td:not(.rk):not(.net):not(.tm){color:var(--muted)}
 .hd{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:3px solid var(--fg);padding-bottom:10px}
 h1{font:italic 800 4.2rem/.85 var(--nf);text-transform:uppercase;margin:0;letter-spacing:-.01em}
 h1 span{display:block;font:600 1rem var(--f-body);font-style:normal;letter-spacing:.3em;color:var(--muted);margin-top:8px;text-transform:none}
-.stamp{white-space:nowrap;font:700 1.15rem/1.2 var(--nf);text-transform:uppercase;letter-spacing:.06em;text-align:right;color:var(--muted)}
-.stamp b{display:block;color:var(--fg);font-size:1.9rem;font-style:italic;font-weight:800}
 .dbar{display:flex;align-items:center;gap:6px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:4px 0}
 .strip{position:relative;flex:1;min-width:0;display:flex;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
 .strip::-webkit-scrollbar{display:none}
@@ -420,7 +418,6 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
 @media (max-width:640px){
   .gwroot{font-size:13px}
   h1{font-size:2.6rem}
-  .stamp{font-size:.9rem}.stamp b{font-size:1.1rem}
   .gww{gap:10px}
   .dbar{flex-wrap:wrap}
   .arw{width:26px}
@@ -442,7 +439,7 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
 }
 .msg{color:var(--muted);padding:40px 16px;text-align:center}</style><div class="gwroot"><div class="msg" id="msg">載入中…</div>
 <div class="gww" id="gww" hidden>
-<div class="hd"><h1>Schedule<span>賽程</span></h1><div class="stamp" id="stamp"></div></div>
+<div class="hd"><h1>Schedule<span>賽程</span></h1></div>
 <div class="dbar"><button type="button" class="arw" id="sl" aria-label="往前翻">‹</button><div class="strip" id="strip" role="group" aria-label="選擇日期"></div><button type="button" class="arw" id="sr" aria-label="往後翻">›</button>
 <div class="dx"><select id="dsel" aria-label="跳到日期"></select><button type="button" id="latest">回到最近</button></div></div>
 <div class="gl" id="gl"></div>
@@ -1748,8 +1745,7 @@ function center(smooth){
 function arrows(){const s=$('#strip');$('#sl').disabled=s.scrollLeft<=1;$('#sr').disabled=s.scrollLeft>=s.scrollWidth-s.clientWidth-1;}
 function render(smooth){
   if(!built)build();
-  const gs=D.games[date]||[],p=dp(date);
-  $('#stamp').innerHTML='<b>'+esc(p.m)+'</b>'+esc(date.slice(0,4))+' '+p.w;
+  const gs=D.games[date]||[];
   root.querySelectorAll('.dc').forEach(b=>{const on=b.dataset.d===date;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
   $('#dsel').value=date;$('#latest').disabled=date===D.latest&&!openId;
   $('#gl').innerHTML=gs.length?gs.map(card).join(''):'<div class="empty">這天沒有賽事</div>';
