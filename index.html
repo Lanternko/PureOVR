@@ -440,7 +440,7 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
 <div class="gww" id="gww" hidden>
 <div class="hd"><h1>Schedule<span>賽程</span></h1></div>
 <div class="dbar"><button type="button" class="arw" id="sl" aria-label="往前翻">‹</button><div class="strip" id="strip" role="group" aria-label="選擇日期"></div><button type="button" class="arw" id="sr" aria-label="往後翻">›</button>
-<div class="dx"><select id="dsel" aria-label="跳到日期"></select><button type="button" id="latest">回到最近</button></div></div>
+<div class="dx"><button type="button" id="latest">回到今天</button></div></div>
 <div class="gl" id="gl"></div>
 <div class="note" id="note"></div>
 </div></div></template><script>{const m=/^#(rank|games)/.exec(location.hash);if(m)document.body.dataset.view=m[1]}</script><div class="wrap">
@@ -1733,7 +1733,6 @@ function card(g){
 function build(){
   built=true;
   $('#strip').innerHTML=D.dates.map(d=>{const p=dp(d);return '<button type="button" class="dc" data-d="'+d+'" aria-pressed="false"><span>'+p.m+'</span><b>'+p.w+'</b></button>';}).join('');
-  $('#dsel').innerHTML=D.dates.map(d=>'<option value="'+d+'">'+d+'（'+D.games[d].length+' 場）</option>').join('');
 }
 function center(smooth){
   const s=$('#strip'),c=s.querySelector('.dc.on');if(!c)return;
@@ -1746,7 +1745,7 @@ function render(smooth){
   if(!built)build();
   const gs=D.games[date]||[];
   root.querySelectorAll('.dc').forEach(b=>{const on=b.dataset.d===date;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
-  $('#dsel').value=date;$('#latest').disabled=date===D.latest&&!openId;
+  $('#latest').disabled=date===D.latest&&!openId;
   $('#gl').innerHTML=gs.length?gs.map(card).join(''):'<div class="empty">這天沒有賽事</div>';
   $('#note').innerHTML='比分與 box score 來自 NBA.com 官方 gamelog；W-L 是該場結束時的戰績（由 gamelog 逐場累計）；已完賽場次的日期以 gamelog 的比賽日（美東）為準，未開打場次取自賽程，開賽時間以 UTC+8 顯示。gamelog 沒有先發名單與 DNP，球員依上場分鐘排序。';
   center(smooth);
@@ -1775,7 +1774,6 @@ $('#strip').addEventListener('scroll',arrows,{passive:true});
 $('#sl').addEventListener('click',()=>{const s=$('#strip');s.scrollBy({left:-s.clientWidth*.85,behavior:'smooth'});});
 $('#sr').addEventListener('click',()=>{const s=$('#strip');s.scrollBy({left:s.clientWidth*.85,behavior:'smooth'});});
 $('#latest').addEventListener('click',()=>go(D.latest));
-$('#dsel').addEventListener('change',e=>go(e.target.value));
 new ResizeObserver(()=>{if(pend&&$('#strip').clientWidth){pend=false;center(false);}arrows();}).observe($('#strip'));
 function ensure(){
   if(!loading)loading=fetch('games-data.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{
