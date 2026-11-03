@@ -1,0 +1,122 @@
+{
+ "inputs": {
+  "stints-2014-15": {
+   "file": "reports/defense-seventh/2014-15/stints-ff/stints.jsonl",
+   "sha256": "8770c3d37f7096a2326baecedc36ecab2d873715b950186940622f2d912e81dc"
+  },
+  "stints-2015-16": {
+   "file": "reports/defense-seventh/2015-16/stints-ff/stints.jsonl",
+   "sha256": "89cf24bb513f5406975bc8daf8a28f945124d6247c95e6c1cf49098d84792506"
+  },
+  "stints-2016-17": {
+   "file": "reports/defense-seventh/2016-17/stints-ff/stints.jsonl",
+   "sha256": "c68dcd92ef64e2b69e657a7e26840824d71874ead41c5263561d2397f6b4c1c0"
+  },
+  "stints-2017-18": {
+   "file": "reports/defense-seventh/2017-18/stints-ff/stints.jsonl",
+   "sha256": "0d604fef5273c877e54fa8590cf342eb9c64585968fcba7804e28372a0a64ae7"
+  },
+  "players-2017-18": {
+   "file": "reports/ovr-inseason-2026-27/e111-card027/cards/prior-2017-18-027.json",
+   "sha256": "2e844edf4df34e23726b806a9ed5931bbafde54d6d74d6fde0fdfd192ea5c7a3"
+  },
+  "stints-2018-19": {
+   "file": "reports/defense-seventh/2018-19/stints-ff/stints.jsonl",
+   "sha256": "f59d05c17ccae4be5e5d45668f49dbb185dc7a2bb48edc17ca9f45f81a641836"
+  },
+  "players-2018-19": {
+   "file": "reports/ovr-inseason-2026-27/e111-card027/cards/prior-2018-19-027.json",
+   "sha256": "3b32db530fbd23e570d3f2fe681967c837b2dbec958754200ebb25e5161c1d79"
+  },
+  "stints-2019-20": {
+   "file": "reports/defense-seventh/2019-20/stints-ff/stints.jsonl",
+   "sha256": "d338bf9a8e418ada2f624d00d178daa9f7313c11615bf422794ba209d79b8a13"
+  },
+  "players-2019-20": {
+   "file": "reports/ovr-inseason-2026-27/e111-card027/cards/prior-2019-20-027.json",
+   "sha256": "4cecd432f108b1eeceb9aa04c03bd6ed1abbfd5f92ad253f2a74bb6e8617bbfe"
+  },
+  "stints-2020-21": {
+   "file": "reports/defense-seventh/2020-21/stints-ff/stints.jsonl",
+   "sha256": "4bbeab066cd5332505b9537120091bc426ef09d32ffb0358d73d4c4ca0f40099"
+  },
+  "players-2020-21": {
+   "file": "reports/ovr-inseason-2026-27/e111-card027/cards/prior-2020-21-027.json",
+   "sha256": "65c30011f42bb710d294c4226f41888da34e5ba7c64444792cc088c1a7bd44c2"
+  },
+  "stints-2021-22": {
+   "file": "reports/ovr-inseason-2026-27/v5/pathA/ff-2021-22/stints-ff/stints.jsonl",
+   "sha256": "f4ae7b419249f38bf7c255e5b87971699c34ff38fcfca9d23c6daf5557375fc7"
+  },
+  "players-2021-22": {
+   "file": "reports/ovr-inseason-2026-27/v4/cards/2021-22.csv",
+   "sha256": "ee67beedfdac13a51e5bd9b2aa7adf45648c2dc3966304b108ad715e035466ff"
+  },
+  "stints-2022-23": {
+   "file": "reports/defense-seventh/2022-23/stints/stints.jsonl",
+   "sha256": "5936e16bbfcce88da4743cb72b828be2d602bdb67e470e549c68bd2d7c3eaec6"
+  },
+  "players-2022-23": {
+   "file": "reports/ovr-inseason-2026-27/v4/cards/2022-23.csv",
+   "sha256": "2fed78d1631ba81f7e6a88c634d2bc817b9efbd5eb8466e7c9620ef0b3f360c4"
+  },
+  "stints-2023-24": {
+   "file": "reports/defense-seventh/2023-24/stints/stints.jsonl",
+   "sha256": "a83b1c42ba735810f2fd8dccd8355d2f41e4fd164389ee82fb4318b4a3d0adb6"
+  },
+  "players-2023-24": {
+   "file": "reports/ovr-inseason-2026-27/v4/cards/2023-24.csv",
+   "sha256": "73050d7679f4350e10ec27b17ac8db58d821531ffd8bf07913dfc0bb88a9515b"
+  },
+  "stints-2024-25": {
+   "file": "reports/defense-seventh/2024-25/stints/stints.jsonl",
+   "sha256": "8790976ac74edf2054470427c50984d35d8c8ab0abf72fd92b5105489cf74ac0"
+  },
+  "players-2024-25": {
+   "file": "reports/ovr-inseason-2026-27/v4/cards/2024-25.csv",
+   "sha256": "b71a8fd0911eb6c4c09206bfab95fbf01ce885f3a9ce77c0ea4a8f8ae5f99dec"
+  },
+  "stints-2025-26": {
+   "file": "reports/defense-b1/stints.jsonl",
+   "sha256": "5eff6aa81f37d0f3baef97be2fdc7346a05ffce5ccfa1f6e4456be229a296179"
+  },
+  "players-2025-26": {
+   "file": "reports/ovr-inseason-2026-27/v4/cards/2025-26.csv",
+   "sha256": "8e89c5f4b515043a7a8ebb63a3ac7b7f52dc41bdab7cf5caa394d88a089f11c8"
+  },
+  "stints-2026-27": {
+   "file": "reports/defense-seventh/2026-27/stints/stints.jsonl",
+   "sha256": "7234efabfbef3ed91a5a2a548ee4d6ee01b4a1450285f1473b4c62d3698c6cc7"
+  },
+  "players-2026-27": {
+   "file": "reports/ovr-inseason-2026-27/live/2026-11-02/ranking.csv",
+   "sha256": "4db1d2ab1342738812e470a4f618b78d72052f745906441a8684aa33d49b7fff"
+  }
+ },
+ "outputs": {
+  "stints-2014-15.csv.gz": "9b2e2353218b470135a0ddfe73055729a2cedcdc519d153eef1ea31b1034571e",
+  "stints-2015-16.csv.gz": "00caa2efc1565ac2916a4810638fbb442c0e5b4f479c823425a0a779b86e3378",
+  "stints-2016-17.csv.gz": "d127856aba524f612fbb05672f8d5e671afdb2cd9a813a3d57205ffb223edf01",
+  "stints-2017-18.csv.gz": "fe30c41d1a8e0e31fb36b51705c8a00f44769ea727d609d93a5ffaa14eb50499",
+  "players-2017-18.csv": "ed8ababcda3ee4f39a91e0f09402801580db3b34749b127fcdf57c02d3d17594",
+  "stints-2018-19.csv.gz": "1f39112ca520ab8a4e1bf0d1cdf6c6074fbae59831aedd50e3ce1d01aec29553",
+  "players-2018-19.csv": "1b0c42f8bdbf038a5f230df459b62634d99beed65234c24d0b8a16b7f45f786e",
+  "stints-2019-20.csv.gz": "11b84b12efb9ba10cd28d6a6fd8da14914239e221cd717ec5ea1751839ed20ec",
+  "players-2019-20.csv": "139a3aad4173a85dfeab0a8c1c65c07f44b74f26fbb83230a263cb5f81b264cf",
+  "stints-2020-21.csv.gz": "8f79cc1d15657f262fd272f4b8b2ae4bb66e245b9cc7dc3d8c445de4367c868b",
+  "players-2020-21.csv": "67160a1a4faee6ffe76df8db648505d18306d03ee4547a0752fb98afd41853b0",
+  "stints-2021-22.csv.gz": "ee1a45b5d780d969c8b146387bfe882148508331526f1ca716779f0d7badafdc",
+  "players-2021-22.csv": "1409b4e44dd2b453be6304fd45ef82d108f05942a15e6f93de447b3746df8058",
+  "stints-2022-23.csv.gz": "79eaf7118b876420294d6801fd7a9d7b427f12a3ebc420619cdf37b7c9d6dcb6",
+  "players-2022-23.csv": "71f9eae47d6dc8ee3680b45e0aa19422357eee833f86320b2e9113f57336cf23",
+  "stints-2023-24.csv.gz": "ba713375874662ec8caeb2207671b53fd2fedfbe5a0a660dcdbe404a857e592d",
+  "players-2023-24.csv": "f723a22bee8c37acfd886194e2c8b4e225942485d05dd8a30f9322c20c8d2eab",
+  "stints-2024-25.csv.gz": "b7f018771d3a0a7cd997dcfb21333775659620bca7193e228f4d9d89f83f1a61",
+  "players-2024-25.csv": "cee20470f1999a53baec5bcac4cc4edb19d07cffb183ee01bd7b4f8c58111700",
+  "stints-2025-26.csv.gz": "e50dcc009f865989ab71fca3060f0b5789cc577da30fd8e9ef97ceec71ddc4f3",
+  "players-2025-26.csv": "eb71ba2e4a06e92293ef04b104248fc5ef5e83850ad743f7a3ae77d068d889aa",
+  "stints-2026-27.csv.gz": "f2d3bd9aa2c7398936d0bf2485b671043c0a68836bf84b8ad091d377a3052108",
+  "players-2026-27.csv": "a2863ecbe3ea530a4515b8cee9aec919ec895b99bd5ead473ba803ff84e86172"
+ },
+ "splitRule": "test: sha256('E225|test|'+gid)[:8] mod 100 < 20; fold: sha256('E225|fold|'+gid)[:8] mod 5; forward seasons 2025-26, 2026-27"
+}

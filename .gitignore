@@ -19,3 +19,6 @@ __pycache__/
 
 # memory 摘要表是本機產生物（python memory/build_digest.py），不進 git
 /memory/digest.md
+
+# E-225 資料（可由 build_dataset.py 重產；sha256 見 manifest.json）
+reports/E225-lineup-transformer/data/
