@@ -397,11 +397,11 @@ button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{ou
 table{border-collapse:collapse;table-layout:fixed;width:100%;min-width:850px;font-variant-numeric:tabular-nums}  /* 固定欄寬：兩隊的表欄位對齊 */
 th{color:var(--muted);font:600 .78rem var(--f-body);letter-spacing:.08em;padding:6px 4px;text-align:center;white-space:nowrap;width:48px}
 th:nth-child(4),th:nth-child(5),th:nth-child(6){width:64px}
-th.l{text-align:left;width:130px;padding-left:0}
+th.l{text-align:left;width:130px;padding-left:0;padding-right:6px;position:sticky;left:0;z-index:2;background:#10151a;box-shadow:6px 0 6px -4px #10151a}
 td{padding:7px 4px;text-align:center;white-space:nowrap;font:500 .98rem var(--f-body);color:var(--fg)}
 tbody tr.pl:nth-child(even) td{background:#0d1217}
-td.l{text-align:left;position:sticky;left:0;background:#10151a;overflow:hidden;text-overflow:ellipsis;padding-left:0}
-tbody tr.pl:nth-child(even) td.l{background:#0d1217}
+td.l{text-align:left;position:sticky;left:0;z-index:1;background:#10151a;overflow:hidden;text-overflow:ellipsis;padding-left:0;padding-right:6px;box-shadow:6px 0 6px -4px #10151a}
+tbody tr.pl:nth-child(even) td.l{background:#0d1217;box-shadow:6px 0 6px -4px #0d1217}
 tr.tot td{border-top:1px solid var(--line);font-weight:700;padding-top:10px}
 tr.tot td.l{font:700 .8rem var(--f-body);letter-spacing:.08em}
 tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
