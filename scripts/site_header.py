@@ -6,6 +6,8 @@ history.pushState＋popstate 管網址（#rank、#rank/LAL、#games、#games/202
 舊的 .top 標題列與 .ctrl 控制列只剩空殼，直接隱藏。add_season_nav 之後呼叫。"""
 import re
 
+from season_nav import GAUGE
+
 ICON = {
     'filter': '<path d="M4.2 4h15.6a1 1 0 0 1 .78 1.63L14.5 13.2v5.3a1 1 0 0 1-.55.9l-3 1.5A1 1 0 0 1 9.5 20v-6.8L3.42 5.63A1 1 0 0 1 4.2 4z" fill="currentColor" stroke="none"/>',
     'gear': '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
@@ -28,7 +30,8 @@ body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰
 .mast.scrolled{border-bottom-color:transparent;box-shadow:0 6px 22px -10px rgba(0,0,0,.6)}
 .mast-in{display:flex;align-items:center;gap:16px;height:56px;max-width:1360px;margin:0 auto;box-sizing:border-box;
   padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
-.mbrand{display:inline-flex;align-items:baseline;gap:8px;text-decoration:none;flex:none;width:168px}  /* 固定寬：Righteous 字型晚到時分頁不會被推動 */
+.mbrand{display:inline-flex;align-items:baseline;gap:8px;text-decoration:none;flex:none;width:206px}  /* 固定寬：Righteous 字型晚到時分頁不會被推動 */
+.mbrand .mlogo{width:30px;height:30px;flex:none;align-self:center}  /* 五格評分環 icon（使用者 2026-11-04 選 E4） */
 .mbrand b{font:400 1.6rem/1 "Righteous",var(--f-disp);letter-spacing:.02em;color:var(--fg)}
 .mbrand b span{color:var(--mfg)}  /* 使用者 2026-11-03：眉頭文字換更白 */
 .mbrand b i{font-style:inherit;color:var(--gold)}
@@ -215,7 +218,7 @@ const sc=()=>mast.classList.toggle('scrolled',scrollY>4);addEventListener('scrol
 def header_html(current):
     return (
         '<header class="mast"><div class="mast-in">'
-        f'<a class="mbrand" href="./" aria-label="PureOVR 首頁"><b><span>Pure</span><i>OVR</i></b><small>{SEASON[current]}</small></a>'
+        f'<a class="mbrand" href="./" aria-label="PureOVR 首頁"><svg class="mlogo" viewBox="0 0 64 64" aria-hidden="true">{GAUGE}</svg><b><span>Pure</span><i>OVR</i></b><small>{SEASON[current]}</small></a>'
         '<nav class="mtabs" aria-label="主要分頁">'
         '<button type="button" class="mtab" id="mPlayers" aria-selected="true">球員</button>'
         '<span class="mtab mtab-pick" id="mPickPh">球隊</span>'

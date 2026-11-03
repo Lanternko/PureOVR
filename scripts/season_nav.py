@@ -6,14 +6,15 @@ from pathlib import Path
 
 # 標籤用年份（使用者 2026-10-29）：2027 beta＝2026-27 賽中，2026＝2025-26 正式卡
 PAGES = [('inseason', '2027 beta', './'), ('card', '2026', '2025-26.html')]
-# icon＝金色籃球（使用者 2026-10-30 從四個方向選 A）；favicon 用同一顆球、底色換頁面底色
-BALL = ('<circle cx="32" cy="32" r="22" fill="#f2c230"/><g fill="none" stroke="#1a1405" stroke-width="{w}">'
-        '<path d="M10 32h44M32 10v44M17 16c8 8 8 24 0 32M47 16c-8 8-8 24 0 32"/></g>')
+# icon＝五格評分環、亮四格薄荷綠（使用者 2026-11-04 選 E4，取代 10-30 的金色籃球）；favicon 與版標同一張
+GAUGE = ('<rect x=".5" y=".5" width="63" height="63" rx="14" fill="#0b0e12" stroke="#1e252e"/>'
+         '<g fill="none" stroke-width="9" transform="rotate(-86 32 32)">'
+         '<circle cx="32" cy="32" r="19" stroke="#1f2a26" stroke-dasharray="19.87 4"/>'
+         '<circle cx="32" cy="32" r="19" stroke="#3ddc97" stroke-dasharray="19.87 4 19.87 4 19.87 4 19.87 23.87"/></g>')
 FAVICON = ('<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,'
-           + ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0d1014"/>'
-              + BALL.format(w=4) + '</svg>').replace('"', "'").replace('#', '%23').replace('<', '%3C').replace('>', '%3E') + '">')
-LOGO = ('<svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect x="1" y="1" width="62" height="62" rx="14" '
-        'fill="var(--panel)" stroke="var(--line)" stroke-width="2"/>' + BALL.format(w=3.5) + '</svg>')
+           + ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
+              + GAUGE + '</svg>').replace('"', "'").replace('#', '%23').replace('<', '%3C').replace('>', '%3E') + '">')
+LOGO = '<svg class="logo" viewBox="0 0 64 64" aria-hidden="true">' + GAUGE + '</svg>'
 CSS = """<style>
 .top{position:relative;z-index:5}
 .top{align-items:center}
