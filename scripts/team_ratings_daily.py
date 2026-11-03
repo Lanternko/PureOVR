@@ -591,7 +591,8 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
             jobs.append({'team': tid, 'ver': 'today', 'roster': today_r})
         outs = outs_of[tid] = list(out_ret[tid].items())
         far = '9999-12-31'
-        states = {lineup_out(outs, d, today) for _, _, d in rem_by[tid]} | {lineup_out(outs, far, today)}
+        # 今日陣容的缺陣集合也要有版本：傷兵 returnDate 都早於下一場時，剩餘賽程的狀態裡不會出現它（2026-11-03 KeyError）
+        states = {lineup_out(outs, d, today) for _, _, d in rem_by[tid]} | {lineup_out(outs, far, today), frozenset(out_pids[tid])}
         state_ver[tid] = {}
         for stt in sorted(states, key=sorted):
             if stt == frozenset():
