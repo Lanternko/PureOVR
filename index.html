@@ -397,7 +397,7 @@ button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{ou
 .bt.win .tn{border-left-color:var(--blue)}
 .tbox{overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scroll-padding-left:130px}  /* 捲動停在整欄邊界，不留半截欄位 */
 th:not(.l){scroll-snap-align:start}
-table{border-collapse:collapse;table-layout:fixed;width:100%;min-width:790px;font-variant-numeric:tabular-nums}  /* 固定欄寬：兩隊的表欄位對齊 */
+table{border-collapse:collapse;table-layout:fixed;width:100%;min-width:834px;font-variant-numeric:tabular-nums}  /* 固定欄寬：兩隊的表欄位對齊 */
 th{color:var(--muted);font:600 .72rem var(--f-body);letter-spacing:.04em;padding:6px 2px;text-align:center;white-space:nowrap;width:44px}
 th:nth-child(6),th:nth-child(7),th:nth-child(8){width:58px}
 th.l{text-align:left;width:130px;padding-left:0;padding-right:6px;position:sticky;left:0;z-index:2;background:#10151a;box-shadow:6px 0 6px -4px #10151a}
@@ -429,7 +429,7 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
   .sc{font-size:2.3rem}
   .mid{font-size:.85rem}
   .bxw{padding:4px 10px 12px}
-  th.l{width:92px}.tbox{scroll-padding-left:92px}table{min-width:630px}
+  th.l{width:92px}.tbox{scroll-padding-left:92px}table{min-width:666px}
   th{font-size:.66rem;width:36px}th:nth-child(6),th:nth-child(7),th:nth-child(8){width:48px}
   td{font-size:.82rem;padding:7px 1px}
   .bt .tn{font-size:1.05rem}.bt .ts{font-size:1.8rem}
@@ -1685,7 +1685,7 @@ const host=document.getElementById('gamesHost'),tpl=document.getElementById('gam
 const root=host.attachShadow({mode:'open'});root.append(tpl.content.cloneNode(true));
 let D=null,loading=null,date=null,openId=null,want=null,built=false,pend=false;
 const boxes={},ERR={err:true};   // 月份 → 'loading'｜{doc}｜ERR
-const COLS=[["MIN", "min"], ["PTS", "pts"], ["REB", "reb"], ["AST", "ast"], ["FG", "fg"], ["3PT", "tp"], ["FT", "ft"], ["STL", "stl"], ["BLK", "blk"], ["TO", "tov"], ["OREB", "oreb"], ["DREB", "dreb"], ["PF", "pf"], ["+/-", "pm"]];
+const COLS=[["MIN", "min"], ["PTS", "pts"], ["REB", "reb"], ["AST", "ast"], ["FG", "fg"], ["3PT", "tp"], ["FT", "ft"], ["STL", "stl"], ["BLK", "blk"], ["TO", "tov"], ["OREB", "oreb"], ["DREB", "dreb"], ["PF", "pf"], ["+/-", "pm"], ["\u8a55\u5206", "rt"]];
 const $=s=>root.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const CDN='https://cdn.nba.com/';
 const logo=a=>'<img class="lg" alt="" loading="lazy" src="'+CDN+'logos/nba/'+D.teams[a].id+'/global/D/logo.svg" onerror="this.style.visibility=\'hidden\'">';
@@ -1702,9 +1702,9 @@ function boxHtml(g){
   const x=b.doc.games[g.id];
   if(!x)return '<div class="bxw"><div class="nob">這場沒有 box score 資料（逐人數據還沒抓到）。</div></div>';
   const side=k=>{
-    const a=g[k],t=x.team[k],ps=x[k],cell=(c,o)=>c[1]==='pm'?'<td class="'+(o.pm>0?'pos':o.pm<0?'neg':'')+'">'+sgn(o.pm)+'</td>':'<td>'+o[c[1]]+'</td>';
+    const a=g[k],t=x.team[k],ps=x[k],cell=(c,o)=>c[1]==='pm'?'<td class="'+(o.pm>0?'pos':o.pm<0?'neg':'')+'">'+sgn(o.pm)+'</td>':c[1]==='rt'?(o.rt==null?'<td>—</td>':'<td'+(o.fb?' title="這場抓不到防守對位資料，只用 box score 算"':'')+'>'+Math.max(0,o.rt).toFixed(1)+'</td>'):'<td>'+o[c[1]]+'</td>';
     const rows=ps.map(p=>'<tr class="pl"><td class="l">'+esc(p.n)+'</td>'+COLS.map(c=>cell(c,p)).join('')+'</tr>').join('');
-    const tot='<tr class="tot"><td class="l">TEAM TOTALS</td>'+COLS.map(c=>c[1]==='min'||c[1]==='pm'?'<td>—</td>':'<td>'+t[c[1]]+'</td>').join('')+'</tr>'
+    const tot='<tr class="tot"><td class="l">TEAM TOTALS</td>'+COLS.map(c=>c[1]==='min'||c[1]==='pm'||c[1]==='rt'?'<td>—</td>':'<td>'+t[c[1]]+'</td>').join('')+'</tr>'
       +'<tr class="pct"><td class="l"></td>'+COLS.map(c=>'<td>'+(c[1]==='fg'?pct(t.fg)+'<br>FG':c[1]==='tp'?pct(t.tp)+'<br>3P':c[1]==='ft'?pct(t.ft)+'<br>FT':'')+'</td>').join('')+'</tr>';
     return '<div><div class="bt'+(g.winner===a?' win':'')+'"><span class="tn">'+esc(D.teams[a].name)+'</span><span class="ts">'+g.score[k]+'</span></div><div class="tbox"><table><thead><tr><th class="l">PLAYERS</th>'+COLS.map(c=>'<th>'+esc(c[0])+'</th>').join('')+'</tr></thead><tbody>'+rows+tot+'</tbody></table></div></div>';
   };
