@@ -1,5 +1,8 @@
 """E-225 資料準備：stints → 訓練列＋每季球員能力值表（不訓練、不看任何模型表現）。
 
+位置（R-157）：每段 stint 依當下同邊五人推定——身高（heightInches）由矮到高排，平手時 pass+creation 高者排前，依序指派 PG,SG,SF,PF,C
+（0-4，欄位 pa0..pa4／pb0..pb4 對應 a0..a4／b0..b4）；表外球員或身高缺值用該季表內身高中位數、pass／creation 缺值當 0。
+上場時間：players-<季>.csv 的 mpg＝該球員該季 stints 總秒數／60／出賽場數（同季 box 等價量；與能力值同屬本季資訊，不含結果欄）。
 用法（repo 根目錄）：python -I -X utf8 reports/E225-lineup-transformer/build_dataset.py
 輸出：reports/E225-lineup-transformer/data/（.gitignore；大檔不進 git）
       reports/E225-lineup-transformer/manifest.json（輸入／輸出 sha256，進 git）
@@ -15,7 +18,7 @@
   其餘 split=train，fold＝sha256('E225|fold|'+gid) mod 5（驗證集／k-fold 用）。
 """
 import csv, gzip, hashlib, io, json, os, statistics
-from collections import Counter
+from collections import Counter, defaultdict
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -85,7 +88,25 @@ def load_players(season):
     return out, src, ovr is not None
 
 
-def stint_rows(season, path):
+POS_NAMES = ['PG', 'SG', 'SF', 'PF', 'C']
+
+
+def infer_positions(pids, players, med_h):
+    """同邊五人 → 5 個位置索引（依輸入順序回傳）。身高升冪，平手 pass+creation 高者在前，再平手用 pid。"""
+    def key(p):
+        r = players.get(p) or {}
+        h = r.get('heightInches'); h = med_h if h is None else h
+        pc = (r.get('pass') or 0.0) + (r.get('creation') or 0.0)
+        return (h, -pc, p)
+    order = sorted(range(len(pids)), key=lambda i: key(pids[i]))
+    pos = [0] * len(pids)
+    for rank, i in enumerate(order):
+        pos[i] = rank
+    return pos
+
+
+def stint_rows(season, path, players=None):
+    med_h = statistics.median([r['heightInches'] for r in players.values() if r['heightInches'] is not None]) if players else 78.0
     for line in open(path, encoding='utf-8'):
         s = json.loads(line); t = s['teams']; gid = s['id']
         row = {'season': season, 'gid': gid, 'period': s['period'], 'sec': s['seconds']}
@@ -96,8 +117,11 @@ def stint_rows(season, path):
         else:
             row['split'], row['fold'] = 'train', hmod('fold', gid, 5)
         for k, X in ((0, 'a'), (1, 'b')):
-            for j, p in enumerate(sorted(s['lineups'][k])):
+            ps = sorted(s['lineups'][k])
+            for j, p in enumerate(ps):
                 row[f'{X}{j}'] = p
+            for j, q in enumerate(infer_positions(ps, players or {}, med_h)):
+                row[f'p{X}{j}'] = q
             row[f'team{X}'] = t[k]['teamId']
         for k, X in ((0, 'a'), (1, 'b')):
             o, own = t[1 - k]['opponent'], t[k]['opponent']   # o：X 進攻時對方記的帳；own：X 防守時自己記的帳
@@ -113,7 +137,7 @@ def stint_rows(season, path):
 
 def main():
     os.makedirs(OUT, exist_ok=True)
-    cols = ['season', 'gid', 'period', 'sec', 'split', 'fold'] + [f'{X}{j}' for X in 'ab' for j in range(5)] + ['teama', 'teamb'] + [f'{c}{X}' for X in 'ab' for c in SIDE]
+    cols = ['season', 'gid', 'period', 'sec', 'split', 'fold'] + [f'{X}{j}' for X in 'ab' for j in range(5)] + [f'p{X}{j}' for X in 'ab' for j in range(5)] + ['teama', 'teamb'] + [f'{c}{X}' for X in 'ab' for c in SIDE]
     inv, manifest = {}, {'inputs': {}, 'outputs': {}, 'splitRule': "test: sha256('E225|test|'+gid)[:8] mod 100 < 20; fold: sha256('E225|fold|'+gid)[:8] mod 5; forward seasons 2025-26, 2026-27"}
     for season in SEASONS:
         path = STINTS[season]
@@ -121,15 +145,15 @@ def main():
         i = SEASONS.index(season)
         prev_players = load_players(SEASONS[i - 1])[0] if i else {}   # 上一季能力值臂
         n = games = 0; poss = Counter(); splits = Counter(); gs = {}; seen = set()
-        slot_sec = slot_hit = slot_prev = slot_ovr = 0.0; minutes = Counter()
+        slot_sec = slot_hit = slot_prev = slot_ovr = 0.0; minutes = Counter(); gp = defaultdict(set)
         buf = io.StringIO(); w = csv.DictWriter(buf, fieldnames=cols, extrasaction='ignore'); w.writeheader()
-        for row in stint_rows(season, path):
+        for row in stint_rows(season, path, players):
             w.writerow(row); n += 1; has_box = 'fgaa' in row
             p = row['possa'] + row['possb']; poss[row['split']] += p; splits[row['split']] += 1
             gs.setdefault(row['split'], set()).add(row['gid'])
             for X in 'ab':
                 for j in range(5):
-                    pid = row[f'{X}{j}']; seen.add(pid); minutes[pid] += row['sec'] / 60
+                    pid = row[f'{X}{j}']; seen.add(pid); minutes[pid] += row['sec'] / 60; gp[pid].add(row['gid'])
                     slot_sec += row['sec']; hit = players.get(pid)
                     slot_hit += row['sec'] * (hit is not None); slot_ovr += row['sec'] * (hit is not None and hit['ovr'] is not None)
                     slot_prev += row['sec'] * (pid in prev_players)
@@ -142,9 +166,9 @@ def main():
         if players:
             pfn = os.path.join(OUT, f'players-{season}.csv')
             with open(pfn, 'w', encoding='utf-8', newline='') as f:
-                pw = csv.DictWriter(f, fieldnames=['pid', 'name', 'pos', 'ovr'] + ATTRS); pw.writeheader()
+                pw = csv.DictWriter(f, fieldnames=['pid', 'name', 'pos', 'ovr'] + ATTRS + ['mpg']); pw.writeheader()
                 for pid in sorted(players):
-                    pw.writerow(players[pid])
+                    pw.writerow({**players[pid], 'mpg': round(minutes[pid] / len(gp[pid]), 3) if gp.get(pid) else ''})
             manifest['inputs'][f'players-{season}'] = {'file': os.path.relpath(psrc, ROOT).replace('\\', '/'), 'sha256': sha(psrc)}
             manifest['outputs'][f'players-{season}.csv'] = sha(pfn)
             rot = [players[p] for p in players if minutes[p] >= 500]   # 輪替球員才看鑑別力
