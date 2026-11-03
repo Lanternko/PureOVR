@@ -168,10 +168,9 @@ body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰
 .mtabs #teamPick:not(.on) summary{font-size:0;gap:0}
 .mtabs #teamPick:not(.on) summary::before{content:"球隊";font-size:1.02rem;letter-spacing:.02em}
 /* 「球隊」格固定最小寬（最寬的 GSW＋隊徽約 104px），選哪隊後面的「戰力排行」都不會被推動 */
-.mtabs #teamPick summary,.mtab-pick{min-width:106px;justify-content:center}
-/* 使用者 2026-11-03：選完球隊不要下箭頭，格子也跟著縮窄（只剩隊徽＋隊名） */
+.mtabs #teamPick summary,.mtab-pick{min-width:76px;justify-content:center}
+/* 使用者 2026-11-03：選完球隊不要下箭頭，格子縮窄（只剩隊徽＋隊名）；選隊前後同寬（最小 76px） */
 .mtabs #teamPick.on summary::after{display:none}
-.mtabs #teamPick.on summary{min-width:0}
 .mtabs .tpick.on summary{border:0;color:var(--mfg2)}
 .mtabs .tpick summary:focus-visible,.mtab:focus-visible,.micon:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .mind{position:absolute;bottom:0;left:var(--ix,0);width:var(--iw,0);height:3px;border-radius:3px 3px 0 0;background:var(--gold);
@@ -399,7 +398,7 @@ button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{ou
 th:not(.l){scroll-snap-align:start}
 table{border-collapse:collapse;table-layout:fixed;width:100%;min-width:790px;font-variant-numeric:tabular-nums}  /* 固定欄寬：兩隊的表欄位對齊 */
 th{color:var(--muted);font:600 .72rem var(--f-body);letter-spacing:.04em;padding:6px 2px;text-align:center;white-space:nowrap;width:44px}
-th:nth-child(4),th:nth-child(5),th:nth-child(6){width:58px}
+th:nth-child(6),th:nth-child(7),th:nth-child(8){width:58px}
 th.l{text-align:left;width:130px;padding-left:0;padding-right:6px;position:sticky;left:0;z-index:2;background:#10151a;box-shadow:6px 0 6px -4px #10151a}
 td{padding:7px 2px;text-align:center;white-space:nowrap;font:500 .9rem var(--f-body);color:var(--fg)}
 tbody tr.pl:nth-child(even) td{background:#0d1217}
@@ -430,7 +429,7 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
   .mid{font-size:.85rem}
   .bxw{padding:4px 10px 12px}
   th.l{width:92px}.tbox{scroll-padding-left:92px}table{min-width:630px}
-  th{font-size:.66rem;width:36px}th:nth-child(4),th:nth-child(5),th:nth-child(6){width:48px}
+  th{font-size:.66rem;width:36px}th:nth-child(6),th:nth-child(7),th:nth-child(8){width:48px}
   td{font-size:.82rem;padding:7px 1px}
   .bt .tn{font-size:1.05rem}.bt .ts{font-size:1.8rem}
 }
@@ -1687,7 +1686,7 @@ const host=document.getElementById('gamesHost'),tpl=document.getElementById('gam
 const root=host.attachShadow({mode:'open'});root.append(tpl.content.cloneNode(true));
 let D=null,loading=null,date=null,openId=null,want=null,built=false,pend=false;
 const boxes={},ERR={err:true};   // 月份 → 'loading'｜{doc}｜ERR
-const COLS=[["MIN", "min"], ["PTS", "pts"], ["FG", "fg"], ["3PT", "tp"], ["FT", "ft"], ["REB", "reb"], ["AST", "ast"], ["TO", "tov"], ["STL", "stl"], ["BLK", "blk"], ["OREB", "oreb"], ["DREB", "dreb"], ["PF", "pf"], ["+/-", "pm"]];
+const COLS=[["MIN", "min"], ["PTS", "pts"], ["REB", "reb"], ["AST", "ast"], ["FG", "fg"], ["3PT", "tp"], ["FT", "ft"], ["STL", "stl"], ["BLK", "blk"], ["TO", "tov"], ["OREB", "oreb"], ["DREB", "dreb"], ["PF", "pf"], ["+/-", "pm"]];
 const $=s=>root.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const CDN='https://cdn.nba.com/';
 const logo=a=>'<img class="lg" alt="" loading="lazy" src="'+CDN+'logos/nba/'+D.teams[a].id+'/global/D/logo.svg" onerror="this.style.visibility=\'hidden\'">';
