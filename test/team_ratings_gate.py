@@ -24,7 +24,7 @@ PDF_TXT = (ROOT / 'test/fixtures/injury-report-2026-11-02_04_15AM.txt').read_tex
 
 
 class Rotation(unittest.TestCase):
-    """R-153：教練近況分鐘 × 焦灼比賽槽乘數 → 等比到 240、單人上限 36（超出的依比例分給其他人，反覆到收斂）、不設下限。"""
+    """R-153／R-156：教練近況分鐘 × 焦灼比賽槽乘數 → 等比到 240、單人上限 36（超出的依比例分給其他人，反覆到收斂）、不設下限。"""
 
     def check(self, rot, out=()):
         self.assertAlmostEqual(sum(m for _, m in rot), 240.0, places=4)
@@ -38,7 +38,8 @@ class Rotation(unittest.TestCase):
         mult = json.loads((ROOT / 'reports/E208-team-rating/r153-close-game-multipliers.json').read_text(encoding='utf-8'))['multipliers']
         self.assertEqual(len(T.CLOSE_MULT), 11)                                  # 槽 1…10 ＋ 11+
         self.assertEqual(list(T.CLOSE_MULT), [mult[str(k)]['m'] for k in range(1, 12)])   # 寫死的常數＝資料檔
-        self.assertTrue(all(0.9 < m < 1.2 for m in T.CLOSE_MULT))
+        self.assertTrue(all(0.85 < m < 1.2 for m in T.CLOSE_MULT))
+        self.assertLess(T.CLOSE_MULT[10], min(T.CLOSE_MULT[:10]))                 # R-156：沒上場記 0 後，11+ 槽不再高於前幾槽
         self.assertEqual((T.CAP, T.MAX_SHORT), (36.0, 40.0))
         self.assertFalse(hasattr(T, 'MINUTE_TABLE'))                              # R-151 固定表已取代
 

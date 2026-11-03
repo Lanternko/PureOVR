@@ -1,6 +1,7 @@
 {
- "rule": "R-153",
+ "rule": "R-156 (supersedes R-153 weighting)",
  "close": "|margin| <= 5 or OT",
+ "weighting": "games in team stint (first..last appearance for that team), DNP/absent = 0 min",
  "sources": {
   "2024-25": {
    "dir": "data\\defense-seventh\\2024-25",
@@ -26,91 +27,102 @@
  "multipliers": {
   "1": {
    "label": "1",
-   "allMin": 34.2494,
-   "closeMin": 36.3853,
-   "m": 1.0624,
-   "nAll": 3493,
-   "nClose": 942
+   "allMin": 31.0668,
+   "closeMin": 32.8434,
+   "m": 1.0572,
+   "nAll": 3934,
+   "nClose": 1048,
+   "mR153": 1.0624
   },
   "2": {
    "label": "2",
-   "allMin": 32.7204,
-   "closeMin": 34.3128,
-   "m": 1.0487,
-   "nAll": 3569,
-   "nClose": 946
+   "allMin": 29.0328,
+   "closeMin": 30.3806,
+   "m": 1.0464,
+   "nAll": 4311,
+   "nClose": 1134,
+   "mR153": 1.0487
   },
   "3": {
    "label": "3",
-   "allMin": 31.2187,
-   "closeMin": 32.959,
-   "m": 1.0557,
-   "nAll": 3534,
-   "nClose": 927
+   "allMin": 27.2843,
+   "closeMin": 28.4507,
+   "m": 1.0428,
+   "nAll": 3823,
+   "nClose": 1007,
+   "mR153": 1.0557
   },
   "4": {
    "label": "4",
-   "allMin": 29.8096,
-   "closeMin": 31.2833,
-   "m": 1.0494,
-   "nAll": 3296,
-   "nClose": 891
+   "allMin": 25.1163,
+   "closeMin": 25.9792,
+   "m": 1.0344,
+   "nAll": 4049,
+   "nClose": 1067,
+   "mR153": 1.0494
   },
   "5": {
    "label": "5",
-   "allMin": 28.0031,
-   "closeMin": 29.2075,
-   "m": 1.043,
-   "nAll": 3353,
-   "nClose": 879
+   "allMin": 23.7847,
+   "closeMin": 24.9854,
+   "m": 1.0505,
+   "nAll": 3994,
+   "nClose": 1082,
+   "mR153": 1.043
   },
   "6": {
    "label": "6",
-   "allMin": 26.253,
-   "closeMin": 27.0291,
-   "m": 1.0296,
-   "nAll": 3134,
-   "nClose": 820
+   "allMin": 21.6575,
+   "closeMin": 22.0487,
+   "m": 1.0181,
+   "nAll": 3830,
+   "nClose": 1009,
+   "mR153": 1.0296
   },
   "7": {
    "label": "7",
-   "allMin": 24.7253,
-   "closeMin": 25.1677,
-   "m": 1.0179,
-   "nAll": 3225,
-   "nClose": 836
+   "allMin": 20.3137,
+   "closeMin": 21.0013,
+   "m": 1.0338,
+   "nAll": 3724,
+   "nClose": 977,
+   "mR153": 1.0179
   },
   "8": {
    "label": "8",
-   "allMin": 22.8406,
-   "closeMin": 23.1958,
-   "m": 1.0156,
-   "nAll": 3024,
-   "nClose": 817
+   "allMin": 18.7185,
+   "closeMin": 19.0842,
+   "m": 1.0195,
+   "nAll": 3754,
+   "nClose": 978,
+   "mR153": 1.0156
   },
   "9": {
    "label": "9",
-   "allMin": 20.8398,
-   "closeMin": 21.3701,
-   "m": 1.0254,
-   "nAll": 2968,
-   "nClose": 774
+   "allMin": 16.2914,
+   "closeMin": 16.5757,
+   "m": 1.0175,
+   "nAll": 3436,
+   "nClose": 902,
+   "mR153": 1.0254
   },
   "10": {
    "label": "10",
-   "allMin": 19.8513,
-   "closeMin": 20.5811,
-   "m": 1.0368,
-   "nAll": 2637,
-   "nClose": 647
+   "allMin": 14.9726,
+   "closeMin": 14.7776,
+   "m": 0.987,
+   "nAll": 3735,
+   "nClose": 959,
+   "mR153": 1.0368
   },
   "11": {
    "label": "11+",
-   "allMin": 14.4594,
-   "closeMin": 16.0323,
-   "m": 1.1088,
-   "nAll": 20541,
-   "nClose": 4258
+   "allMin": 8.0819,
+   "closeMin": 7.2953,
+   "m": 0.9027,
+   "nAll": 36135,
+   "nClose": 9360,
+   "mR153": 1.1088
   }
  }
 }
