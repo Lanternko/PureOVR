@@ -8,8 +8,8 @@ box score 太大，按月分檔 games-box-YYYY-MM.json，點開某場才 fetch �
 import json
 
 # box 表欄位（標頭, 球員列／球隊合計的欄位鍵）：順序照參考圖，build_games_data.player_row／team_row 的鍵要對得上（gate 檢查）
-BOX_COLS = [('MIN', 'min'), ('PTS', 'pts'), ('FG', 'fg'), ('3PT', 'tp'), ('FT', 'ft'), ('REB', 'reb'), ('AST', 'ast'), ('TO', 'tov'),
-            ('STL', 'stl'), ('BLK', 'blk'), ('OREB', 'oreb'), ('DREB', 'dreb'), ('PF', 'pf'), ('+/-', 'pm')]
+BOX_COLS = [('MIN', 'min'), ('PTS', 'pts'), ('REB', 'reb'), ('AST', 'ast'), ('FG', 'fg'), ('3PT', 'tp'), ('FT', 'ft'), ('STL', 'stl'),
+            ('BLK', 'blk'), ('TO', 'tov'), ('OREB', 'oreb'), ('DREB', 'dreb'), ('PF', 'pf'), ('+/-', 'pm')]
 
 STYLE = """@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,700;1,800&family=Barlow+Condensed:wght@600;700&display=swap");
 *{box-sizing:border-box}
@@ -71,7 +71,7 @@ button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{ou
 th:not(.l){scroll-snap-align:start}
 table{border-collapse:collapse;table-layout:fixed;width:100%;min-width:790px;font-variant-numeric:tabular-nums}  /* 固定欄寬：兩隊的表欄位對齊 */
 th{color:var(--muted);font:600 .72rem var(--f-body);letter-spacing:.04em;padding:6px 2px;text-align:center;white-space:nowrap;width:44px}
-th:nth-child(4),th:nth-child(5),th:nth-child(6){width:58px}
+th:nth-child(6),th:nth-child(7),th:nth-child(8){width:58px}
 th.l{text-align:left;width:130px;padding-left:0;padding-right:6px;position:sticky;left:0;z-index:2;background:#10151a;box-shadow:6px 0 6px -4px #10151a}
 td{padding:7px 2px;text-align:center;white-space:nowrap;font:500 .9rem var(--f-body);color:var(--fg)}
 tbody tr.pl:nth-child(even) td{background:#0d1217}
@@ -102,7 +102,7 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
   .mid{font-size:.85rem}
   .bxw{padding:4px 10px 12px}
   th.l{width:92px}.tbox{scroll-padding-left:92px}table{min-width:630px}
-  th{font-size:.66rem;width:36px}th:nth-child(4),th:nth-child(5),th:nth-child(6){width:48px}
+  th{font-size:.66rem;width:36px}th:nth-child(6),th:nth-child(7),th:nth-child(8){width:48px}
   td{font-size:.82rem;padding:7px 1px}
   .bt .tn{font-size:1.05rem}.bt .ts{font-size:1.8rem}
 }

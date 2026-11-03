@@ -156,7 +156,7 @@ class Wiring(unittest.TestCase):
     def test_box_column_order(self):
         """參考圖欄位順序，且每個欄位鍵 build_games_data 的球員列／球隊合計都有（pm 只在球員列）。"""
         self.assertEqual([h for h, _ in games_view.BOX_COLS],
-                         ['MIN', 'PTS', 'FG', '3PT', 'FT', 'REB', 'AST', 'TO', 'STL', 'BLK', 'OREB', 'DREB', 'PF', '+/-'])
+                         ['MIN', 'PTS', 'REB', 'AST', 'FG', '3PT', 'FT', 'STL', 'BLK', 'TO', 'OREB', 'DREB', 'PF', '+/-'])
         pl = B.player_row(dict.fromkeys(PG_H, 0) | {'PLAYER_NAME': 'Jalen Walker'})
         tm = B.team_row(dict.fromkeys(TG_H, 0))
         for _, k in games_view.BOX_COLS:
