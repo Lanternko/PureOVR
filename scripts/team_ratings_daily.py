@@ -7,10 +7,11 @@
 - 每位目前在該隊名單的球員：分鐘＝他本季自己最近 ≤10 場「有出場（min>0）」的平均（不管當時在哪隊；0 分鐘的場次不算）。
 - 候選人：該隊最近 10 場至少出場一次的人；另外，該隊最近 10 場沒出場、但自己最近 ≤10 場平均 ≥ RETURN_MIN（15）分鐘的人也算（視為傷缺復出，不是教練不用）。
   15 分鐘門檻寫死，不看結果調。本季還沒出場的人沿用季前預期 fallback。
-- 分鐘分配（R-151 焦灼比賽最強陣容）：所有球隊同一張 MINUTE_TABLE＝36、36、34、32、30、26、22、14、10（合計 240、單人上限 36）。
-  候選人照上面的規則選，**順序照教練最近的上場時間**（上面算出的近 ≤10 場有出場平均分鐘，由多到少；同分照 OVR 再照 pid），依序套表；不照 OVR 排。
-  可用人數 < 9 時：表上缺的分鐘由前面的人開始依序加給前面的人，每人上限 MAX_SHORT＝40；全加滿仍不足（<6 人）就 240 平均攤。
-  （候選人不到 8 人時仍照舊由季前預期補到 8 人。）常數放檔頭，不看結果調。
+- 分鐘分配（R-153，取代 R-151 固定分鐘表）：教練分鐘 × 焦灼比賽槽乘數，等比放大到 240、單人上限 36、不設下限。
+  教練分鐘＝上面算出的近 ≤10 場有出場平均；槽＝可上場候選人依教練分鐘由多到少（同分照 OVR 再照 pid）的名次 1…10，第 11 名以後併一槽（11+）。
+  min_i＝教練分鐘 × CLOSE_MULT[槽]，再同比放大到合計 240；超過 36 的人固定 36，多出的分鐘依比例分給未達上限者，反覆到收斂。
+  所有人到 36 仍不足 240（<7 人）時，上限放寬到 MAX_SHORT＝40；仍不足（<6 人）就 240 平均攤。順序／名次只決定乘數，不直接決定分鐘。
+  （候選人不到 8 人時仍照舊由季前預期補到 8 人。）CLOSE_MULT 是資料量的常數（見檔頭附近註解），不看結果調。
 - 近況（全員）：不扣人。
 - 今日陣容（可用）：先拿掉傷病名單裡 Out／Doubtful／Questionable／Day-To-Day／Suspension 的人（ESPN 與官方 PDF 的狀態字都對應；Probable、Available、
   不在名單上的人照常上場），剩下的再套表。不做機率加權：同一個人不會同時在可用名單與傷兵名單。
@@ -77,8 +78,11 @@ H, SIGMA, SEEDS, GAMES, LAST_N = 2.5, 12.0, 200, 82, 10   # H、σ 同 E-208 預
 RETURN_MIN = 15.0                                         # 最近 10 場沒出場、但自己平均 ≥ 此分鐘的現役球員補回輪替（寫死，不看結果調）
 OUT_STATUS = {'out', 'doubtful', 'questionable', 'day-to-day', 'suspension'}   # 今日陣容（可用）預先排除的狀態（小寫；R-151）；Probable／Available 照常上場
 LONG_OUT = {'out', 'suspension'}                          # 沒有 returnDate 時當整季缺陣的狀態；其餘（Questionable／Doubtful／Day-To-Day）只缺今天的比賽
-MINUTE_TABLE = (36, 36, 34, 32, 30, 26, 22, 14, 10)       # R-151 焦灼比賽分鐘表：合計 240、單人上限 36；依教練最近上場時間的順序套用
-MAX_SHORT = 40                                            # 可用人數 < 9 時，缺的分鐘依序加給前面的人，每人上限 40
+CAP, MAX_SHORT = 36.0, 40.0                               # R-153：單人上限 36；可上場人數太少、全員到 36 仍不足 240 時放寬到 40
+# R-153 焦灼比賽槽乘數 m_k＝該槽在焦灼場（最終分差 ≤5 或延長賽）的平均分鐘 ÷ 在全部場的平均分鐘；槽＝球員在該隊該季依場均分鐘的名次 1…10，11＝第 11 名以後。
+# 來源：2024-25（1230 場）＋2025-26（1230 場）例行賽 box score 合併，reports/E208-team-rating/r153_close_multipliers.py 產出
+# r153-close-game-multipliers.json（延長賽分鐘先換算成 48 分鐘等比）。資料直接量，不擬合不挑參數。
+CLOSE_MULT = (1.0624, 1.0487, 1.0557, 1.0494, 1.043, 1.0296, 1.0179, 1.0156, 1.0254, 1.0368, 1.1088)
 ESPN_ABBR = {'GS': 'GSW', 'NO': 'NOP', 'NY': 'NYK', 'SA': 'SAS', 'WSH': 'WAS', 'UTAH': 'UTA', 'PHO': 'PHX', 'BRK': 'BKN', 'CHO': 'CHA'}
 CREATE_NO_WINDOW = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
 # 底卡（E-216）：引擎（2025-26 卡）和 live 排名都沒有的非新秀（上季整季缺陣的人，例如 Kyrie、Lillard、Haliburton、VanVleet）。
@@ -112,24 +116,31 @@ def is_long_out(status: str) -> bool:
 
 
 def norm_table(items: list, total: float = 240.0) -> list:
-    """items＝[[pid, 教練近況分鐘], …]（已拿掉不能上場的人）→ 依分鐘由多到少（同分維持呼叫端排好的順序，穩定排序）套 MINUTE_TABLE。
-    人數 n ≥ 9：取前 9 人，36、36、34、32、30、26、22、14、10。n < 9：取表前 n 格，缺的分鐘由前面的人開始依序加（每人上限 MAX_SHORT）；
-    仍不足（n < 6）就 total/n 平均攤。"""
+    """items＝[[pid, 教練近況分鐘], …]（已拿掉不能上場的人）→ 依分鐘由多到少（同分維持呼叫端排好的順序，穩定排序）→ 第 k 名 × CLOSE_MULT[k]（11 名以後共用最後一格）
+    → 等比放大到 total；超過 CAP（36）的人固定在 CAP，多出的分鐘依比例分給未達上限者，反覆到收斂。不設下限。
+    全員到 CAP 仍不足 total（<7 人）就把上限放寬到 MAX_SHORT（40）；仍不足（<6 人）就 total/n 平均攤。"""
     items = [[p, m] for p, m in items if m > 0]
     items.sort(key=lambda t: -t[1])
-    n = min(len(items), len(MINUTE_TABLE))
+    n = len(items)
     if n == 0:
         return []
-    slots = [float(x) for x in MINUTE_TABLE[:n]]
-    miss = total - sum(slots)
-    for i in range(n):
-        if miss <= 1e-9:
+    w = [m * CLOSE_MULT[min(i, len(CLOSE_MULT) - 1)] for i, (_, m) in enumerate(items)]
+    for cap in (CAP, MAX_SHORT):
+        if cap * n >= total - 1e-9:
             break
-        add = min(MAX_SHORT - slots[i], miss)
-        slots[i] += add; miss -= add
-    if miss > 1e-9:
-        slots = [total / n] * n
-    return [[items[i][0], round(slots[i], 6)] for i in range(n)]
+    else:
+        return [[p, round(total / n, 6)] for p, _ in items]
+    capped: set = set()
+    while True:
+        free = [i for i in range(n) if i not in capped]
+        scale = (total - cap * len(capped)) / sum(w[i] for i in free)
+        over = [i for i in free if w[i] * scale > cap + 1e-12]
+        if not over:
+            break
+        capped.update(over)
+        if len(capped) == n:
+            break
+    return [[items[i][0], round(cap if i in capped else w[i] * scale, 6)] for i in range(n)]
 
 
 def own_avg(log) -> float | None:
@@ -159,7 +170,7 @@ def candidate_minutes(prior: list, logs=None, roster=None) -> tuple:
 
 
 def rotation(prior: list, fallback: list, excluded=frozenset(), logs=None, roster=None, ovr=None) -> list:
-    """候選人（見 candidate_minutes）自己最近 ≤10 場有出場的平均分鐘（拿掉 excluded）→ 順序照該分鐘（同分照 OVR、再照 pid）→ 套 MINUTE_TABLE（見 norm_table）。
+    """候選人（見 candidate_minutes）自己最近 ≤10 場有出場的平均分鐘（拿掉 excluded）→ 名次照該分鐘（同分照 OVR、再照 pid）→ × 槽乘數、等比到 240、上限 36（見 norm_table）。
     prior 為空時用 fallback（[[pid, mpg], …]，季前預期）。ovr＝{pid: OVR}，只用來排同分。
     不足 8 人（大量缺陣）時用 fallback 依序補人，補到 8 人。"""
     base = candidate_minutes(prior, logs, roster)[0] if prior else {p: m for p, m in fallback}

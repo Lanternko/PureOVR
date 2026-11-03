@@ -1,5 +1,5 @@
-"""球隊評分（E-208 第二階段）：R-151 分鐘表、傷兵移除、姓名對應、預測勝場、頁面表頭。npm test 會跑；不跑模擬（輕量）。
-若本機有 data/season-source-2026-27/team-ratings.json，另外檢查成品：每隊兩版輪替 240 分鐘、人數 ≥9 時單人 ≤36、Out／Doubtful／Questionable／Day-To-Day 不在今日輪替。"""
+"""球隊評分（E-208 第二階段）：R-153 分鐘（教練分鐘×焦灼乘數、上限 36）、傷兵移除、姓名對應、預測勝場、頁面表頭。npm test 會跑；不跑模擬（輕量）。
+若本機有 data/season-source-2026-27/team-ratings.json，另外檢查成品：每隊兩版輪替 240 分鐘、人數 ≥7 時單人 ≤36、Out／Doubtful／Questionable／Day-To-Day 不在今日輪替。"""
 import datetime as dt
 import json
 import sys
@@ -24,28 +24,67 @@ PDF_TXT = (ROOT / 'test/fixtures/injury-report-2026-11-02_04_15AM.txt').read_tex
 
 
 class Rotation(unittest.TestCase):
-    """R-151：焦灼比賽分鐘表 36、36、34、32、30、26、22、14、10；順序照教練最近上場時間。"""
-    TABLE = [36, 36, 34, 32, 30, 26, 22, 14, 10]
+    """R-153：教練近況分鐘 × 焦灼比賽槽乘數 → 等比到 240、單人上限 36（超出的依比例分給其他人，反覆到收斂）、不設下限。"""
 
     def check(self, rot, out=()):
-        self.assertLessEqual(len(rot), 9)
         self.assertAlmostEqual(sum(m for _, m in rot), 240.0, places=4)
-        if len(rot) >= 9:
-            self.assertLessEqual(max(m for _, m in rot), 36.0 + 1e-9)
-        else:
-            self.assertLessEqual(max(m for _, m in rot), T.MAX_SHORT + 1e-9) if len(rot) >= 6 else None
+        if len(rot) >= 7:
+            self.assertLessEqual(max(m for _, m in rot), 36.0 + 1e-6)
+        elif len(rot) >= 6:
+            self.assertLessEqual(max(m for _, m in rot), T.MAX_SHORT + 1e-9)
         self.assertFalse({p for p, _ in rot} & set(out))
 
-    def test_table_constants(self):
-        self.assertEqual(list(T.MINUTE_TABLE), self.TABLE)
-        self.assertEqual((sum(T.MINUTE_TABLE), max(T.MINUTE_TABLE), T.MAX_SHORT), (240, 36, 40))
+    def test_multiplier_constants(self):
+        mult = json.loads((ROOT / 'reports/E208-team-rating/r153-close-game-multipliers.json').read_text(encoding='utf-8'))['multipliers']
+        self.assertEqual(len(T.CLOSE_MULT), 11)                                  # 槽 1…10 ＋ 11+
+        self.assertEqual(list(T.CLOSE_MULT), [mult[str(k)]['m'] for k in range(1, 12)])   # 寫死的常數＝資料檔
+        self.assertTrue(all(0.9 < m < 1.2 for m in T.CLOSE_MULT))
+        self.assertEqual((T.CAP, T.MAX_SHORT), (36.0, 40.0))
+        self.assertFalse(hasattr(T, 'MINUTE_TABLE'))                              # R-151 固定表已取代
 
-    def test_recent_follows_coach_order_not_ovr(self):
+    def test_proportional_to_coach_minutes_times_multiplier(self):
+        items = [[p, 12.0 + p] for p in range(1, 11)]                             # 13…22 分：放大後都不到 36 → 純等比
+        rot = T.norm_table(items)
+        self.check(rot)
+        w = [m * T.CLOSE_MULT[i] for i, (_, m) in enumerate(sorted(items, key=lambda t: -t[1]))]
+        k = 240.0 / sum(w)
+        self.assertEqual(len(rot), 10)                                            # 不再只取前 9 人
+        for (_, got), x in zip(rot, w):
+            self.assertAlmostEqual(got, x * k, places=4)
+        self.assertLess(min(m for _, m in rot), 20)                               # 不設下限
+
+    def test_cap_36_redistributes_until_converged(self):
+        items = [[1, 38.0], [2, 36.0], [3, 22.0], [4, 18.0], [5, 14.0], [6, 12.0], [7, 8.0], [8, 4.0]]
+        rot = dict(T.norm_table(items))
+        self.assertAlmostEqual(sum(rot.values()), 240.0, places=4)
+        self.assertLessEqual(max(rot.values()), 36.0 + 1e-6)
+        self.assertEqual((rot[1], rot[2]), (36.0, 36.0))                          # 一輪放大後超過 36 → 固定 36
+        self.assertEqual(rot[3], 36.0)                                            # 封頂的人多出的分鐘分給其餘人後，第 3 人又超過 → 要反覆才收斂
+        # 獨立算法：找 s 使 Σ min(36, s×w) = 240（二分法），應與迭代結果一致
+        w = {p: m * T.CLOSE_MULT[i] for i, (p, m) in enumerate(items)}
+        lo, hi = 0.0, 100.0
+        for _ in range(200):
+            mid = (lo + hi) / 2
+            lo, hi = (mid, hi) if sum(min(36.0, mid * x) for x in w.values()) < 240.0 else (lo, mid)
+        for p, x in w.items():
+            self.assertAlmostEqual(rot[p], min(36.0, lo * x), places=4)
+
+    def test_no_floor_small_minutes_stay_small(self):
+        rot = dict(T.norm_table([[p, 30.0] for p in range(1, 9)] + [[9, 1.0]]))
+        self.assertLess(rot[9], 1.5)
+        self.assertAlmostEqual(sum(rot.values()), 240.0, places=4)
+
+    def test_rank_only_picks_multiplier(self):
+        rot = T.norm_table([[1, 10.0], [2, 30.0], [3, 20.0], [4, 25.0], [5, 15.0], [6, 12.0], [7, 11.0], [8, 9.0]])
+        got = [p for p, _ in rot]
+        self.assertEqual(got, [2, 4, 3, 5, 6, 7, 1, 8])                           # 名次照教練分鐘排
+        self.assertTrue(all(a[1] >= b[1] for a, b in zip(rot, rot[1:])))
+
+    def test_recent_follows_coach_minutes_not_ovr(self):
         rot = T.rotation(PRIOR, FALLBACK)
         self.check(rot)
-        self.assertEqual([m for _, m in rot], self.TABLE)                        # 1~11 號都夠 9 人 → 剛好一張表
         got = T.candidate_minutes(PRIOR)[0]
-        self.assertEqual([p for p, _ in rot], sorted(got, key=lambda p: (-got[p], p))[:9])    # 順序＝近況平均分鐘由多到少
+        self.assertEqual([p for p, _ in rot], sorted(got, key=lambda p: (-got[p], p)))    # 順序＝近況平均分鐘由多到少，全員都在（11 人）
         ovr = {p: 100.0 - p for p in range(1, 12)}
         ovr[9] = 999.0                                                           # OVR 再高也不改變排序（只用來排同分）
         self.assertEqual(T.rotation(PRIOR, FALLBACK, ovr=ovr), rot)
@@ -58,17 +97,15 @@ class Rotation(unittest.TestCase):
     def test_out_removed_next_man_up(self):
         rot = T.rotation(PRIOR, FALLBACK, excluded={1, 2})
         self.check(rot, out={1, 2})
-        self.assertEqual([m for _, m in rot], self.TABLE)                        # 還有 9 人（3~11）→ 仍是完整一張表，不會被放大
         self.assertEqual(rot[0][0], 3)
+        self.assertGreater(rot[0][1], 30.0)                                      # 少兩個主力 → 其餘人被等比放大
 
-    def test_fewer_than_nine_adds_missing_minutes_to_front(self):
-        rot = T.norm_table([[p, 30.0 - p] for p in range(1, 9)])                  # 8 人：表缺 10 分 → 第一人 +4、第二人 +4、第三人 +2
-        self.assertEqual([m for _, m in rot], [40, 40, 36, 32, 30, 26, 22, 14])
-        self.check(rot)
-        rot7 = T.norm_table([[p, 30.0 - p] for p in range(1, 8)])                 # 7 人：缺 24 → 由前面的人依序補到 40
+    def test_few_players_relax_cap_then_average(self):
+        rot6 = T.norm_table([[p, 30.0 - p] for p in range(1, 7)])                 # 6 人：36×6=216 < 240 → 上限放寬到 40，剛好每人 40
+        self.assertEqual([m for _, m in rot6], [40.0] * 6)
+        rot7 = T.norm_table([[p, 30.0 - p] for p in range(1, 8)])                 # 7 人：36×7=252 ≥ 240 → 上限仍 36
         self.assertAlmostEqual(sum(m for _, m in rot7), 240.0)
-        self.assertLessEqual(max(m for _, m in rot7), 40.0)
-        self.assertEqual([m for _, m in rot7][:3], [40, 40, 40])
+        self.assertLessEqual(max(m for _, m in rot7), 36.0 + 1e-6)
         five = T.norm_table([[p, 30.0 - p] for p in range(1, 6)])                 # 5 人：就算每人 40 也只有 200 → 240 平均攤
         self.assertEqual([m for _, m in five], [48.0] * 5)
         self.assertEqual(T.norm_table([]), [])
@@ -400,7 +437,7 @@ class Product(unittest.TestCase):
             for v in ('c', 'today'):
                 rot = t[v]['rotation']
                 self.assertAlmostEqual(sum(r['min'] for r in rot), 240.0, places=3, msg=t['name'])
-                if len(rot) >= 9:
+                if len(rot) >= 7:
                     self.assertLessEqual(max(r['min'] for r in rot), 36.0 + 1e-6)
             self.assertFalse({r['pid'] for r in t['today']['rotation']} & outs, t['name'])
             if 'lineupStates' in t['today']:

@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-03T16:51:46+08:00",
+ "generatedAt": "2026-11-03T19:43:13+08:00",
  "season": "2026-27",
  "version": "inseason 0.2.12c",
  "dataCutoff": "2026-11-02",
@@ -15,7 +15,7 @@
   "espnTimestamp": "2026-11-03T08:48:09Z",
   "reportTime": null,
   "pdfUrl": null,
-  "stale": false,
+  "stale": true,
   "unmatched": [
    "Henri Veesaar",
    "Tyler Bilodeau",
@@ -37,10 +37,16 @@
  },
  "missingProfiles": [
   1626209,
+  1641759,
+  1642284,
   1642350,
   1642394,
   1642865,
+  1642881,
+  1642889,
   1642892,
+  1642912,
+  1643022,
   1643407,
   1643408,
   1643409,
@@ -50,14 +56,39 @@
   1643413,
   1643414,
   1643415,
+  1643416,
+  1643417,
+  1643418,
+  1643419,
   1643509,
+  1643510,
   1643512,
+  1643515,
   1643516,
+  1643517,
+  1643520,
   1643530,
+  1643536,
+  1643538,
+  1643542,
+  1643544,
+  1643547,
+  1643551,
   1643552,
+  1643553,
+  1643558,
   1643567,
+  1643568,
+  1643570,
+  1643576,
+  1643588,
+  1643590,
+  1643591,
   1643624,
+  1643633,
+  1643637,
   1643717,
+  1643721,
   1643813
  ],
  "baseProfiles": [
@@ -102,9 +133,16 @@
    "team": "IND",
    "src": "24-25 卡",
    "ovr": 84.7156
+  },
+  {
+   "pid": 1641736,
+   "name": "Reece Beekman",
+   "team": "WAS",
+   "src": "24-25 卡",
+   "ovr": 43.8508
   }
  ],
- "elapsedSec": 213.9,
+ "elapsedSec": 211.1,
  "teams": {
   "1610612737": {
    "name": "Atlanta Hawks",
@@ -149,135 +187,183 @@
     }
    ],
    "c": {
-    "ortg": -2.8239211923529695,
-    "drtg": -1.5704238516229054,
-    "net": -1.253497340730064,
-    "margin": 7.195,
-    "predWins": 38.95292315957187,
+    "ortg": -2.6758482226101847,
+    "drtg": 0.6640554106731145,
+    "net": -3.339903633283299,
+    "margin": 3.88,
+    "predWins": 34.80639425449532,
     "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630552,
       "name": "Jalen Johnson",
-      "min": 36.0,
+      "min": 29.097665,
       "ovr": 88.1
      },
      {
       "pid": 1629638,
       "name": "Nickeil Alexander-Walker",
-      "min": 36.0,
+      "min": 26.656589,
       "ovr": 80.2
      },
      {
       "pid": 1630700,
       "name": "Dyson Daniels",
-      "min": 34.0,
+      "min": 25.796377,
       "ovr": 78.3
      },
      {
       "pid": 1630168,
       "name": "Onyeka Okongwu",
-      "min": 32.0,
+      "min": 25.438526,
       "ovr": 74.4
      },
      {
       "pid": 203468,
       "name": "CJ McCollum",
-      "min": 30.0,
+      "min": 23.396355,
       "ovr": 65.7
      },
      {
       "pid": 1630598,
       "name": "Aaron Wiggins",
-      "min": 26.0,
+      "min": 21.948272,
       "ovr": 74.2
      },
      {
       "pid": 1629652,
       "name": "Luguentz Dort",
-      "min": 22.0,
+      "min": 21.029003,
       "ovr": 62.3
      },
      {
       "pid": 1643412,
       "name": "Kingston Flemings",
-      "min": 14.0,
+      "min": 17.321783,
       "ovr": 75.7
      },
      {
       "pid": 1629111,
       "name": "Jock Landale",
-      "min": 10.0,
+      "min": 13.138033,
       "ovr": 57.8
+     },
+     {
+      "pid": 1642854,
+      "name": "Asa Newell",
+      "min": 9.882667,
+      "ovr": 49.5
+     },
+     {
+      "pid": 1630557,
+      "name": "Corey Kispert",
+      "min": 7.841481,
+      "ovr": 59.2
+     },
+     {
+      "pid": 1643544,
+      "name": "Zuby Ejiofor",
+      "min": 7.475521,
+      "ovr": 53.1
+     },
+     {
+      "pid": 1642484,
+      "name": "RayJ Dennis",
+      "min": 7.076839,
+      "ovr": 47.2
+     },
+     {
+      "pid": 1627827,
+      "name": "Dorian Finney-Smith",
+      "min": 3.900889,
+      "ovr": 58.0
      }
     ]
    },
    "today": {
-    "ortg": -4.068068505200614,
-    "drtg": -0.8734867045012038,
-    "net": -3.1945818006994102,
-    "margin": 5.13,
-    "predWins": 38.86784394038825,
+    "ortg": -5.720559110573433,
+    "drtg": -0.8795181720324479,
+    "net": -4.841040938540985,
+    "margin": 2.3,
+    "predWins": 34.807326715131055,
     "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1629638,
       "name": "Nickeil Alexander-Walker",
-      "min": 36.0,
+      "min": 32.811495,
       "ovr": 80.2
      },
      {
       "pid": 1630700,
       "name": "Dyson Daniels",
-      "min": 36.0,
+      "min": 31.135375,
       "ovr": 78.3
      },
      {
       "pid": 1630168,
       "name": "Onyeka Okongwu",
-      "min": 34.0,
+      "min": 31.093961,
       "ovr": 74.4
      },
      {
       "pid": 203468,
       "name": "CJ McCollum",
-      "min": 32.0,
+      "min": 28.601552,
       "ovr": 65.7
      },
      {
       "pid": 1630598,
       "name": "Aaron Wiggins",
-      "min": 30.0,
+      "min": 27.014738,
       "ovr": 74.2
      },
      {
       "pid": 1629652,
       "name": "Luguentz Dort",
-      "min": 26.0,
+      "min": 25.844418,
       "ovr": 62.3
      },
      {
       "pid": 1643412,
       "name": "Kingston Flemings",
-      "min": 22.0,
+      "min": 21.094035,
       "ovr": 75.7
      },
      {
       "pid": 1642854,
       "name": "Asa Newell",
-      "min": 14.0,
+      "min": 11.762145,
       "ovr": 49.5
      },
      {
       "pid": 1630557,
       "name": "Corey Kispert",
-      "min": 10.0,
+      "min": 8.810952,
       "ovr": 59.2
+     },
+     {
+      "pid": 1643544,
+      "name": "Zuby Ejiofor",
+      "min": 8.493132,
+      "ovr": 53.1
+     },
+     {
+      "pid": 1642484,
+      "name": "RayJ Dennis",
+      "min": 8.598525,
+      "ovr": 47.2
+     },
+     {
+      "pid": 1627827,
+      "name": "Dorian Finney-Smith",
+      "min": 4.739672,
+      "ovr": 58.0
      }
     ],
-    "predWinsAllSeason": 35.88964758465225,
+    "predWinsAllSeason": 31.8347834324502,
     "lineupStates": 1
    },
    "restored": [],
@@ -309,76 +395,112 @@
     }
    ],
    "c": {
-    "ortg": 1.9901912047744617,
-    "drtg": -4.538869918318326,
-    "net": 6.529061123092788,
-    "margin": 15.335,
-    "predWins": 58.16393932404633,
+    "ortg": 4.351606827785233,
+    "drtg": -3.9108846982344545,
+    "net": 8.262491526019687,
+    "margin": 15.575,
+    "predWins": 61.601919890882066,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1628369,
       "name": "Jayson Tatum",
-      "min": 36.0,
+      "min": 32.555037,
       "ovr": 94.3
      },
      {
       "pid": 202331,
       "name": "Paul George",
-      "min": 36.0,
+      "min": 28.261982,
       "ovr": 91.8
      },
      {
       "pid": 1628401,
       "name": "Derrick White",
-      "min": 34.0,
+      "min": 27.604387,
       "ovr": 87.8
      },
      {
       "pid": 1630202,
       "name": "Payton Pritchard",
-      "min": 32.0,
+      "min": 25.788787,
       "ovr": 84.6
      },
      {
       "pid": 1629674,
       "name": "Neemias Queta",
-      "min": 30.0,
+      "min": 19.850483,
       "ovr": 80.5
      },
      {
       "pid": 1631248,
       "name": "Baylor Scheierman",
-      "min": 26.0,
+      "min": 17.927414,
       "ovr": 69.5
      },
      {
       "pid": 1630573,
       "name": "Sam Hauser",
-      "min": 22.0,
+      "min": 17.696281,
       "ovr": 74.8
      },
      {
       "pid": 1629011,
       "name": "Mitchell Robinson",
-      "min": 14.0,
+      "min": 16.998932,
       "ovr": 72.0
      },
      {
       "pid": 1641775,
       "name": "Jordan Walsh",
-      "min": 10.0,
+      "min": 14.199165,
       "ovr": 60.2
+     },
+     {
+      "pid": 1642864,
+      "name": "Hugo González",
+      "min": 11.496223,
+      "ovr": 63.5
+     },
+     {
+      "pid": 1630568,
+      "name": "Luka Garza",
+      "min": 11.402788,
+      "ovr": 68.3
+     },
+     {
+      "pid": 1631199,
+      "name": "Ron Harper Jr.",
+      "min": 5.364285,
+      "ovr": 45.5
+     },
+     {
+      "pid": 201144,
+      "name": "Mike Conley",
+      "min": 5.260698,
+      "ovr": 58.1
+     },
+     {
+      "pid": 1643416,
+      "name": "Chris Cenac Jr.",
+      "min": 3.151996,
+      "ovr": 53.0
+     },
+     {
+      "pid": 1641759,
+      "name": "Dillon Mitchell",
+      "min": 2.441543,
+      "ovr": null
      }
     ]
    },
    "today": {
-    "ortg": 5.389807841872326,
-    "drtg": -4.414139842050432,
-    "net": 9.803947683922758,
-    "margin": 18.51,
-    "predWins": 58.17264527860113,
+    "ortg": 4.473656559219293,
+    "drtg": -4.169287763311331,
+    "net": 8.642944322530624,
+    "margin": 16.055,
+    "predWins": 61.63855803143746,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
@@ -391,53 +513,83 @@
      {
       "pid": 1628401,
       "name": "Derrick White",
-      "min": 36.0,
+      "min": 31.294989,
       "ovr": 87.8
      },
      {
       "pid": 1630202,
       "name": "Payton Pritchard",
-      "min": 34.0,
+      "min": 29.608494,
       "ovr": 84.6
      },
      {
       "pid": 1629674,
       "name": "Neemias Queta",
-      "min": 32.0,
+      "min": 22.793645,
       "ovr": 80.5
      },
      {
       "pid": 1631248,
       "name": "Baylor Scheierman",
-      "min": 30.0,
+      "min": 20.726185,
       "ovr": 69.5
      },
      {
       "pid": 1630573,
       "name": "Sam Hauser",
-      "min": 26.0,
+      "min": 20.42826,
       "ovr": 74.8
      },
      {
       "pid": 1629011,
       "name": "Mitchell Robinson",
-      "min": 22.0,
+      "min": 19.444197,
       "ovr": 72.0
      },
      {
       "pid": 1641775,
       "name": "Jordan Walsh",
-      "min": 14.0,
+      "min": 16.050115,
       "ovr": 60.2
      },
      {
       "pid": 1642864,
       "name": "Hugo González",
-      "min": 10.0,
+      "min": 12.975958,
       "ovr": 63.5
+     },
+     {
+      "pid": 1630568,
+      "name": "Luka Garza",
+      "min": 12.168548,
+      "ovr": 68.3
+     },
+     {
+      "pid": 1631199,
+      "name": "Ron Harper Jr.",
+      "min": 6.122063,
+      "ovr": 45.5
+     },
+     {
+      "pid": 201144,
+      "name": "Mike Conley",
+      "min": 6.003843,
+      "ovr": 58.1
+     },
+     {
+      "pid": 1643416,
+      "name": "Chris Cenac Jr.",
+      "min": 3.597259,
+      "ovr": 53.0
+     },
+     {
+      "pid": 1641759,
+      "name": "Dillon Mitchell",
+      "min": 2.786444,
+      "ovr": null
      }
     ],
-    "predWinsAllSeason": 65.18087766892242,
+    "predWinsAllSeason": 62.60530871021148,
     "lineupStates": 1
    },
    "restored": [],
@@ -469,135 +621,183 @@
     }
    ],
    "c": {
-    "ortg": 6.358315618861226,
-    "drtg": -2.6365833027827676,
-    "net": 8.994898921643994,
-    "margin": 17.445,
-    "predWins": 61.04884832626987,
+    "ortg": 4.724925949685897,
+    "drtg": -0.6261831323660516,
+    "net": 5.3511090820519485,
+    "margin": 12.495,
+    "predWins": 54.40082501857957,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 201935,
       "name": "James Harden",
-      "min": 36.0,
+      "min": 28.794347,
       "ovr": 77.5
      },
      {
       "pid": 1628378,
       "name": "Donovan Mitchell",
-      "min": 36.0,
+      "min": 28.34805,
       "ovr": 96.2
      },
      {
       "pid": 1630596,
       "name": "Evan Mobley",
-      "min": 34.0,
+      "min": 27.964028,
       "ovr": 92.7
      },
      {
       "pid": 1631212,
       "name": "Peyton Watson",
-      "min": 32.0,
+      "min": 24.11925,
       "ovr": 63.2
      },
      {
       "pid": 1628386,
       "name": "Jarrett Allen",
-      "min": 30.0,
+      "min": 23.581026,
       "ovr": 88.3
      },
      {
       "pid": 1630241,
       "name": "Sam Merrill",
-      "min": 26.0,
+      "min": 20.009276,
       "ovr": 82.6
      },
      {
       "pid": 1643509,
       "name": "Meleek Thomas",
-      "min": 22.0,
+      "min": 18.137569,
       "ovr": 62.6
      },
      {
       "pid": 1642281,
       "name": "Jaylon Tyson",
-      "min": 14.0,
+      "min": 16.955185,
       "ovr": 66.8
      },
      {
       "pid": 1626209,
       "name": "Mario Hezonja",
-      "min": 10.0,
+      "min": 15.954666,
       "ovr": null
+     },
+     {
+      "pid": 1642878,
+      "name": "Tyrese Proctor",
+      "min": 11.081651,
+      "ovr": 70.5
+     },
+     {
+      "pid": 1641854,
+      "name": "Craig Porter Jr.",
+      "min": 7.386726,
+      "ovr": 66.3
+     },
+     {
+      "pid": 1628418,
+      "name": "Thomas Bryant",
+      "min": 7.16462,
+      "ovr": 59.1
+     },
+     {
+      "pid": 1642400,
+      "name": "Tristan Enaruna",
+      "min": 5.251804,
+      "ovr": 52.4
+     },
+     {
+      "pid": 1642434,
+      "name": "Riley Minix",
+      "min": 5.251804,
+      "ovr": 51.5
      }
     ]
    },
    "today": {
-    "ortg": 7.406134978647302,
-    "drtg": 1.2552830587835615,
-    "net": 6.15085191986374,
-    "margin": 14.705,
-    "predWins": 61.027583252887425,
+    "ortg": 7.671008362162283,
+    "drtg": -0.942996550188127,
+    "net": 8.61400491235041,
+    "margin": 15.96,
+    "predWins": 54.31367436814856,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 201935,
       "name": "James Harden",
-      "min": 36.0,
+      "min": 34.871413,
       "ovr": 77.5
      },
      {
       "pid": 1628378,
       "name": "Donovan Mitchell",
-      "min": 36.0,
+      "min": 34.330924,
       "ovr": 96.2
      },
      {
       "pid": 1630596,
       "name": "Evan Mobley",
-      "min": 34.0,
+      "min": 33.865855,
       "ovr": 92.7
      },
      {
       "pid": 1628386,
       "name": "Jarrett Allen",
-      "min": 32.0,
+      "min": 28.733052,
       "ovr": 88.3
      },
      {
       "pid": 1630241,
       "name": "Sam Merrill",
-      "min": 30.0,
+      "min": 24.547624,
       "ovr": 82.6
      },
      {
       "pid": 1643509,
       "name": "Meleek Thomas",
-      "min": 26.0,
+      "min": 22.217992,
       "ovr": 62.6
      },
      {
       "pid": 1626209,
       "name": "Mario Hezonja",
-      "min": 22.0,
+      "min": 19.180584,
       "ovr": null
      },
      {
       "pid": 1642878,
       "name": "Tyrese Proctor",
-      "min": 14.0,
+      "min": 13.146026,
       "ovr": 70.5
      },
      {
       "pid": 1641854,
       "name": "Craig Porter Jr.",
-      "min": 10.0,
+      "min": 8.272835,
       "ovr": 66.3
+     },
+     {
+      "pid": 1628418,
+      "name": "Thomas Bryant",
+      "min": 8.113295,
+      "ovr": 59.1
+     },
+     {
+      "pid": 1642400,
+      "name": "Tristan Enaruna",
+      "min": 6.360201,
+      "ovr": 52.4
+     },
+     {
+      "pid": 1642434,
+      "name": "Riley Minix",
+      "min": 6.360201,
+      "ovr": 51.5
      }
     ],
-    "predWinsAllSeason": 57.080389680771916,
+    "predWinsAllSeason": 61.611338338712116,
     "lineupStates": 1
    },
    "restored": [],
@@ -638,135 +838,201 @@
     }
    ],
    "c": {
-    "ortg": -0.9737644812648227,
-    "drtg": 0.10570310900480706,
-    "net": -1.0794675902696298,
-    "margin": 7.46,
-    "predWins": 36.90997643780353,
+    "ortg": -1.2844407918948093,
+    "drtg": 0.0933763556130458,
+    "net": -1.3778171475078551,
+    "margin": 5.79,
+    "predWins": 35.94768127458521,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630530,
       "name": "Trey Murphy III",
-      "min": 36.0,
+      "min": 25.261496,
       "ovr": 87.3
      },
      {
       "pid": 1627749,
       "name": "Dejounte Murray",
-      "min": 36.0,
+      "min": 24.599026,
       "ovr": 79.7
      },
      {
       "pid": 1629627,
       "name": "Zion Williamson",
-      "min": 34.0,
+      "min": 24.595111,
       "ovr": 88.0
      },
      {
       "pid": 1642847,
       "name": "Jeremiah Fears",
-      "min": 32.0,
+      "min": 20.571588,
       "ovr": 49.5
      },
      {
       "pid": 1630180,
       "name": "Saddiq Bey",
-      "min": 30.0,
+      "min": 19.681769,
       "ovr": 74.5
      },
      {
       "pid": 1642852,
       "name": "Derik Queen",
-      "min": 26.0,
+      "min": 17.644226,
       "ovr": 60.8
      },
      {
       "pid": 1630529,
       "name": "Herbert Jones",
-      "min": 22.0,
+      "min": 16.261585,
       "ovr": 74.5
      },
      {
       "pid": 1642274,
       "name": "Yves Missi",
-      "min": 14.0,
+      "min": 14.817767,
       "ovr": 56.4
      },
      {
       "pid": 1631255,
       "name": "Karlo Matković",
-      "min": 10.0,
+      "min": 13.43814,
       "ovr": 67.5
+     },
+     {
+      "pid": 1631097,
+      "name": "Bennedict Mathurin",
+      "min": 12.694763,
+      "ovr": 65.2
+     },
+     {
+      "pid": 1630570,
+      "name": "Trendon Watford",
+      "min": 13.575563,
+      "ovr": 62.2
+     },
+     {
+      "pid": 201599,
+      "name": "DeAndre Jordan",
+      "min": 12.981408,
+      "ovr": 55.7
+     },
+     {
+      "pid": 1629673,
+      "name": "Jordan Poole",
+      "min": 12.675655,
+      "ovr": 55.9
+     },
+     {
+      "pid": 1631121,
+      "name": "Bryce McGowens",
+      "min": 6.139618,
+      "ovr": 51.4
+     },
+     {
+      "pid": 1642882,
+      "name": "Julian Reese",
+      "min": 2.531143,
+      "ovr": 47.6
+     },
+     {
+      "pid": 1642358,
+      "name": "AJ Johnson",
+      "min": 2.531143,
+      "ovr": 38.3
      }
     ]
    },
    "today": {
-    "ortg": -2.827019200860974,
-    "drtg": 0.53824236174205,
-    "net": -3.365261562603024,
-    "margin": 5.285,
-    "predWins": 36.67413152703502,
+    "ortg": 0.4491200835410467,
+    "drtg": -1.858684923852337,
+    "net": 2.307805007393384,
+    "margin": 9.59,
+    "predWins": 35.91922777219927,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630530,
       "name": "Trey Murphy III",
-      "min": 36.0,
+      "min": 32.563376,
       "ovr": 87.3
      },
      {
       "pid": 1629627,
       "name": "Zion Williamson",
-      "min": 36.0,
+      "min": 31.49415,
       "ovr": 88.0
      },
      {
       "pid": 1642847,
       "name": "Jeremiah Fears",
-      "min": 34.0,
+      "min": 26.67704,
       "ovr": 49.5
      },
      {
       "pid": 1630180,
       "name": "Saddiq Bey",
-      "min": 32.0,
+      "min": 25.526498,
       "ovr": 74.5
      },
      {
       "pid": 1642852,
       "name": "Derik Queen",
-      "min": 30.0,
+      "min": 23.040332,
       "ovr": 60.8
      },
      {
       "pid": 1630529,
       "name": "Herbert Jones",
-      "min": 26.0,
+      "min": 21.202968,
       "ovr": 74.5
      },
      {
       "pid": 1631255,
       "name": "Karlo Matković",
-      "min": 22.0,
+      "min": 17.195757,
       "ovr": 67.5
      },
      {
       "pid": 1631097,
       "name": "Bennedict Mathurin",
-      "min": 14.0,
+      "min": 16.029598,
       "ovr": 65.2
      },
      {
       "pid": 1630570,
       "name": "Trendon Watford",
-      "min": 10.0,
+      "min": 16.183345,
       "ovr": 62.2
+     },
+     {
+      "pid": 201599,
+      "name": "DeAndre Jordan",
+      "min": 15.647102,
+      "ovr": 55.7
+     },
+     {
+      "pid": 1631121,
+      "name": "Bryce McGowens",
+      "min": 7.914285,
+      "ovr": 51.4
+     },
+     {
+      "pid": 1642882,
+      "name": "Julian Reese",
+      "min": 3.262774,
+      "ovr": 47.6
+     },
+     {
+      "pid": 1642358,
+      "name": "AJ Johnson",
+      "min": 3.262774,
+      "ovr": 38.3
      }
     ],
-    "predWinsAllSeason": 33.68619345128934,
+    "predWinsAllSeason": 45.177662461233844,
     "lineupStates": 2
    },
    "restored": [],
@@ -789,135 +1055,207 @@
     }
    ],
    "c": {
-    "ortg": -3.6256727210327,
-    "drtg": 1.055102896637635,
-    "net": -4.680775617670335,
-    "margin": 3.705,
-    "predWins": 28.376229241099274,
+    "ortg": -4.2429000402342325,
+    "drtg": 1.5728834362373618,
+    "net": -5.815783476471594,
+    "margin": 1.305,
+    "predWins": 26.21059848612289,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1643410,
       "name": "Caleb Wilson",
-      "min": 36.0,
+      "min": 31.172621,
       "ovr": 81.2
      },
      {
       "pid": 1626181,
       "name": "Norman Powell",
-      "min": 36.0,
+      "min": 26.754311,
       "ovr": 76.6
      },
      {
       "pid": 1630581,
       "name": "Josh Giddey",
-      "min": 34.0,
+      "min": 24.677035,
       "ovr": 73.4
      },
      {
       "pid": 1641824,
       "name": "Matas Buzelis",
-      "min": 32.0,
+      "min": 22.592417,
       "ovr": 66.4
      },
      {
       "pid": 1630188,
       "name": "Jalen Smith",
-      "min": 30.0,
+      "min": 22.142747,
       "ovr": 75.2
      },
      {
       "pid": 1630171,
       "name": "Isaac Okoro",
-      "min": 26.0,
+      "min": 16.168105,
       "ovr": 57.6
      },
      {
       "pid": 1630200,
       "name": "Tre Jones",
-      "min": 22.0,
+      "min": 15.928221,
       "ovr": 81.9
      },
      {
       "pid": 1631159,
       "name": "Leonard Miller",
-      "min": 14.0,
+      "min": 15.164807,
       "ovr": 50.7
      },
      {
       "pid": 1642855,
       "name": "Noa Essengue",
-      "min": 10.0,
+      "min": 12.363254,
       "ovr": 52.7
+     },
+     {
+      "pid": 1627741,
+      "name": "Buddy Hield",
+      "min": 12.202553,
+      "ovr": 66.8
+     },
+     {
+      "pid": 1643517,
+      "name": "Dailyn Swain",
+      "min": 11.440391,
+      "ovr": 56.3
+     },
+     {
+      "pid": 1643591,
+      "name": "Tobe Awaka",
+      "min": 9.742995,
+      "ovr": null
+     },
+     {
+      "pid": 1643637,
+      "name": "Jaylin Sellers",
+      "min": 7.598369,
+      "ovr": null
+     },
+     {
+      "pid": 1628380,
+      "name": "Zach Collins",
+      "min": 7.25411,
+      "ovr": 60.2
+     },
+     {
+      "pid": 1641722,
+      "name": "Jordan Hawkins",
+      "min": 4.798064,
+      "ovr": 42.0
      }
     ]
    },
    "today": {
-    "ortg": -3.6256727210327,
-    "drtg": 1.055102896637635,
-    "net": -4.680775617670335,
-    "margin": 3.705,
-    "predWins": 28.28109829884206,
+    "ortg": -4.2429000402342325,
+    "drtg": 1.5728834362373618,
+    "net": -5.815783476471594,
+    "margin": 1.305,
+    "predWins": 26.05166649741937,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1643410,
       "name": "Caleb Wilson",
-      "min": 36.0,
+      "min": 31.172621,
       "ovr": 81.2
      },
      {
       "pid": 1626181,
       "name": "Norman Powell",
-      "min": 36.0,
+      "min": 26.754311,
       "ovr": 76.6
      },
      {
       "pid": 1630581,
       "name": "Josh Giddey",
-      "min": 34.0,
+      "min": 24.677035,
       "ovr": 73.4
      },
      {
       "pid": 1641824,
       "name": "Matas Buzelis",
-      "min": 32.0,
+      "min": 22.592417,
       "ovr": 66.4
      },
      {
       "pid": 1630188,
       "name": "Jalen Smith",
-      "min": 30.0,
+      "min": 22.142747,
       "ovr": 75.2
      },
      {
       "pid": 1630171,
       "name": "Isaac Okoro",
-      "min": 26.0,
+      "min": 16.168105,
       "ovr": 57.6
      },
      {
       "pid": 1630200,
       "name": "Tre Jones",
-      "min": 22.0,
+      "min": 15.928221,
       "ovr": 81.9
      },
      {
       "pid": 1631159,
       "name": "Leonard Miller",
-      "min": 14.0,
+      "min": 15.164807,
       "ovr": 50.7
      },
      {
       "pid": 1642855,
       "name": "Noa Essengue",
-      "min": 10.0,
+      "min": 12.363254,
       "ovr": 52.7
+     },
+     {
+      "pid": 1627741,
+      "name": "Buddy Hield",
+      "min": 12.202553,
+      "ovr": 66.8
+     },
+     {
+      "pid": 1643517,
+      "name": "Dailyn Swain",
+      "min": 11.440391,
+      "ovr": 56.3
+     },
+     {
+      "pid": 1643591,
+      "name": "Tobe Awaka",
+      "min": 9.742995,
+      "ovr": null
+     },
+     {
+      "pid": 1643637,
+      "name": "Jaylin Sellers",
+      "min": 7.598369,
+      "ovr": null
+     },
+     {
+      "pid": 1628380,
+      "name": "Zach Collins",
+      "min": 7.25411,
+      "ovr": 60.2
+     },
+     {
+      "pid": 1641722,
+      "name": "Jordan Hawkins",
+      "min": 4.798064,
+      "ovr": 42.0
      }
     ],
-    "predWinsAllSeason": 29.98438041647237,
+    "predWinsAllSeason": 26.71106463051803,
     "lineupStates": 1
    },
    "restored": [],
@@ -984,77 +1322,113 @@
     }
    ],
    "c": {
-    "ortg": -6.342710504659337,
-    "drtg": 1.1613699057026423,
-    "net": -7.504080410361979,
-    "margin": 0.865,
-    "predWins": 24.134281934991158,
+    "ortg": -4.0774303510500545,
+    "drtg": 0.6444360796632935,
+    "net": -4.721866430713348,
+    "margin": 2.36,
+    "predWins": 29.831651551689742,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1629023,
       "name": "P.J. Washington",
-      "min": 36.0,
+      "min": 28.931049,
       "ovr": 65.3
      },
      {
       "pid": 1642843,
       "name": "Cooper Flagg",
-      "min": 36.0,
+      "min": 28.090931,
       "ovr": 81.6
      },
      {
       "pid": 202681,
       "name": "Kyrie Irving",
-      "min": 34.0,
+      "min": 24.16733,
       "ovr": 90.2599,
       "ovrSrc": "24-25 卡"
      },
      {
       "pid": 1642258,
       "name": "Zaccharie Risacher",
-      "min": 32.0,
+      "min": 23.403757,
       "ovr": 54.6
      },
      {
       "pid": 1630230,
       "name": "Naji Marshall",
-      "min": 30.0,
+      "min": 22.35847,
       "ovr": 62.3
      },
      {
       "pid": 1629655,
       "name": "Daniel Gafford",
-      "min": 26.0,
+      "min": 19.614177,
       "ovr": 80.6
      },
      {
       "pid": 1631108,
       "name": "Max Christie",
-      "min": 22.0,
+      "min": 19.262319,
       "ovr": 59.5
      },
      {
       "pid": 1628997,
       "name": "Caleb Martin",
-      "min": 14.0,
+      "min": 16.188659,
       "ovr": 62.9
      },
      {
       "pid": 1631204,
       "name": "Marcus Sasser",
-      "min": 10.0,
+      "min": 15.631036,
       "ovr": 66.8
+     },
+     {
+      "pid": 1643516,
+      "name": "Morez Johnson Jr.",
+      "min": 12.992129,
+      "ovr": 63.1
+     },
+     {
+      "pid": 1642383,
+      "name": "Walter Clayton Jr.",
+      "min": 11.730472,
+      "ovr": 57.0
+     },
+     {
+      "pid": 1643547,
+      "name": "Sergio de Larrea",
+      "min": 10.301447,
+      "ovr": 52.9
+     },
+     {
+      "pid": 1630619,
+      "name": "Moussa Cisse",
+      "min": 2.6742,
+      "ovr": 54.8
+     },
+     {
+      "pid": 1641724,
+      "name": "Jett Howard",
+      "min": 2.496896,
+      "ovr": 49.1
+     },
+     {
+      "pid": 1643588,
+      "name": "Tobi Lawal",
+      "min": 2.157126,
+      "ovr": 53.2
      }
     ]
    },
    "today": {
-    "ortg": -8.107698246247622,
-    "drtg": -0.5259798037930494,
-    "net": -7.581718442454573,
-    "margin": 0.905,
-    "predWins": 24.324389501676283,
+    "ortg": -4.771788654694404,
+    "drtg": -0.4680113340415488,
+    "net": -4.303777320652856,
+    "margin": 2.79,
+    "predWins": 30.07505508977081,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
@@ -1073,47 +1447,65 @@
      {
       "pid": 1642258,
       "name": "Zaccharie Risacher",
-      "min": 34.0,
+      "min": 30.765537,
       "ovr": 54.6
      },
      {
       "pid": 1630230,
       "name": "Naji Marshall",
-      "min": 32.0,
+      "min": 29.395326,
       "ovr": 62.3
      },
      {
       "pid": 1629655,
       "name": "Daniel Gafford",
-      "min": 30.0,
+      "min": 25.963624,
       "ovr": 80.6
      },
      {
       "pid": 1628997,
       "name": "Caleb Martin",
-      "min": 26.0,
+      "min": 21.445499,
       "ovr": 62.9
      },
      {
       "pid": 1631204,
       "name": "Marcus Sasser",
-      "min": 22.0,
+      "min": 20.275848,
       "ovr": 66.8
      },
      {
       "pid": 1643516,
       "name": "Morez Johnson Jr.",
-      "min": 14.0,
+      "min": 16.629818,
       "ovr": 63.1
      },
      {
       "pid": 1642383,
       "name": "Walter Clayton Jr.",
-      "min": 10.0,
+      "min": 14.175391,
       "ovr": 57.0
+     },
+     {
+      "pid": 1630619,
+      "name": "Moussa Cisse",
+      "min": 3.267497,
+      "ovr": 54.8
+     },
+     {
+      "pid": 1641724,
+      "name": "Jett Howard",
+      "min": 3.262721,
+      "ovr": 49.1
+     },
+     {
+      "pid": 1643588,
+      "name": "Tobi Lawal",
+      "min": 2.81874,
+      "ovr": 53.2
      }
     ],
-    "predWinsAllSeason": 25.66828870835604,
+    "predWinsAllSeason": 30.887082838792093,
     "lineupStates": 1
    },
    "restored": [],
@@ -1145,135 +1537,207 @@
     }
    ],
    "c": {
-    "ortg": 6.651094862240143,
-    "drtg": 4.991568993891789,
-    "net": 1.6595258683483536,
-    "margin": 10.215,
-    "predWins": 44.07215131511595,
+    "ortg": 7.031797811945168,
+    "drtg": 4.543536009781363,
+    "net": 2.488261802163805,
+    "margin": 9.51,
+    "predWins": 45.64833674618403,
     "schedGames": 74,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1627750,
       "name": "Jamal Murray",
-      "min": 36.0,
+      "min": 32.88878,
       "ovr": 93.2
      },
      {
       "pid": 203999,
       "name": "Nikola Jokić",
-      "min": 36.0,
+      "min": 31.207122,
       "ovr": 101.6
      },
      {
       "pid": 1631128,
       "name": "Christian Braun",
-      "min": 34.0,
+      "min": 30.86193,
       "ovr": 82.0
      },
      {
       "pid": 203932,
       "name": "Aaron Gordon",
-      "min": 32.0,
+      "min": 25.599357,
       "ovr": 83.8
      },
      {
       "pid": 1629661,
       "name": "Cameron Johnson",
-      "min": 30.0,
+      "min": 22.457251,
       "ovr": 79.7
      },
      {
       "pid": 201942,
       "name": "DeMar DeRozan",
-      "min": 26.0,
+      "min": 20.862267,
       "ovr": 77.1
      },
      {
       "pid": 1642350,
       "name": "Trevon Brazile",
-      "min": 22.0,
+      "min": 17.94303,
       "ovr": 58.8
      },
      {
       "pid": 1643624,
       "name": "Bryce Hopkins",
-      "min": 14.0,
+      "min": 13.365533,
       "ovr": 48.3
      },
      {
       "pid": 1643813,
       "name": "Alpha Diallo",
-      "min": 10.0,
+      "min": 11.713689,
       "ovr": null
+     },
+     {
+      "pid": 1628963,
+      "name": "Marvin Bagley III",
+      "min": 10.146133,
+      "ovr": 65.2
+     },
+     {
+      "pid": 1626145,
+      "name": "Tyus Jones",
+      "min": 8.656113,
+      "ovr": 49.7
+     },
+     {
+      "pid": 1641715,
+      "name": "Cam Whitmore",
+      "min": 6.273421,
+      "ovr": 52.4
+     },
+     {
+      "pid": 1630192,
+      "name": "Zeke Nnaji",
+      "min": 3.231432,
+      "ovr": 53.8
+     },
+     {
+      "pid": 1641747,
+      "name": "DaRon Holmes II",
+      "min": 2.396971,
+      "ovr": 52.9
+     },
+     {
+      "pid": 1642948,
+      "name": "Ryan Nembhard",
+      "min": 2.396971,
+      "ovr": 43.9
      }
     ]
    },
    "today": {
-    "ortg": 6.651094862240143,
-    "drtg": 4.991568993891789,
-    "net": 1.6595258683483536,
-    "margin": 10.215,
-    "predWins": 44.282524974357145,
+    "ortg": 7.031797811945168,
+    "drtg": 4.543536009781363,
+    "net": 2.488261802163805,
+    "margin": 9.51,
+    "predWins": 45.929838238656565,
     "schedGames": 74,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1627750,
       "name": "Jamal Murray",
-      "min": 36.0,
+      "min": 32.88878,
       "ovr": 93.2
      },
      {
       "pid": 203999,
       "name": "Nikola Jokić",
-      "min": 36.0,
+      "min": 31.207122,
       "ovr": 101.6
      },
      {
       "pid": 1631128,
       "name": "Christian Braun",
-      "min": 34.0,
+      "min": 30.86193,
       "ovr": 82.0
      },
      {
       "pid": 203932,
       "name": "Aaron Gordon",
-      "min": 32.0,
+      "min": 25.599357,
       "ovr": 83.8
      },
      {
       "pid": 1629661,
       "name": "Cameron Johnson",
-      "min": 30.0,
+      "min": 22.457251,
       "ovr": 79.7
      },
      {
       "pid": 201942,
       "name": "DeMar DeRozan",
-      "min": 26.0,
+      "min": 20.862267,
       "ovr": 77.1
      },
      {
       "pid": 1642350,
       "name": "Trevon Brazile",
-      "min": 22.0,
+      "min": 17.94303,
       "ovr": 58.8
      },
      {
       "pid": 1643624,
       "name": "Bryce Hopkins",
-      "min": 14.0,
+      "min": 13.365533,
       "ovr": 48.3
      },
      {
       "pid": 1643813,
       "name": "Alpha Diallo",
-      "min": 10.0,
+      "min": 11.713689,
       "ovr": null
+     },
+     {
+      "pid": 1628963,
+      "name": "Marvin Bagley III",
+      "min": 10.146133,
+      "ovr": 65.2
+     },
+     {
+      "pid": 1626145,
+      "name": "Tyus Jones",
+      "min": 8.656113,
+      "ovr": 49.7
+     },
+     {
+      "pid": 1641715,
+      "name": "Cam Whitmore",
+      "min": 6.273421,
+      "ovr": 52.4
+     },
+     {
+      "pid": 1630192,
+      "name": "Zeke Nnaji",
+      "min": 3.231432,
+      "ovr": 53.8
+     },
+     {
+      "pid": 1641747,
+      "name": "DaRon Holmes II",
+      "min": 2.396971,
+      "ovr": 52.9
+     },
+     {
+      "pid": 1642948,
+      "name": "Ryan Nembhard",
+      "min": 2.396971,
+      "ovr": 43.9
      }
     ],
-    "predWinsAllSeason": 45.509667167467384,
+    "predWinsAllSeason": 45.956006174390446,
     "lineupStates": 1
    },
    "restored": [],
@@ -1341,137 +1805,191 @@
     }
    ],
    "c": {
-    "ortg": -0.5796443362552566,
-    "drtg": 0.4332735739775728,
-    "net": -1.0129179102328294,
-    "margin": 7.635,
-    "predWins": 40.31206555061686,
+    "ortg": 0.35355313501446517,
+    "drtg": 1.0018640245169905,
+    "net": -0.6483108895025254,
+    "margin": 6.485,
+    "predWins": 40.53711262316689,
     "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1641764,
       "name": "Brandin Podziemski",
-      "min": 36.0,
+      "min": 28.631508,
       "ovr": 88.1
      },
      {
       "pid": 1642865,
       "name": "Yaxel Lendeborg",
-      "min": 36.0,
+      "min": 26.993477,
       "ovr": 83.6
      },
      {
       "pid": 201939,
       "name": "Stephen Curry",
-      "min": 34.0,
+      "min": 24.520599,
       "ovr": 96.7
      },
      {
       "pid": 203110,
       "name": "Draymond Green",
-      "min": 32.0,
+      "min": 22.473898,
       "ovr": 74.6
      },
      {
       "pid": 1629001,
       "name": "De'Anthony Melton",
-      "min": 30.0,
+      "min": 19.293362,
       "ovr": 80.9
      },
      {
       "pid": 1630611,
       "name": "Gui Santos",
-      "min": 26.0,
+      "min": 16.680499,
       "ovr": 71.9
      },
      {
       "pid": 1627777,
       "name": "Georges Niang",
-      "min": 22.0,
+      "min": 16.299274,
       "ovr": 60.367,
       "ovrSrc": "24-25 卡"
      },
      {
       "pid": 201143,
       "name": "Al Horford",
-      "min": 14.0,
+      "min": 15.321065,
       "ovr": 64.8
      },
      {
       "pid": 1642954,
       "name": "Will Richard",
-      "min": 10.0,
+      "min": 14.851982,
       "ovr": 63.0
+     },
+     {
+      "pid": 1630314,
+      "name": "Brandon Williams",
+      "min": 14.500649,
+      "ovr": 60.5
+     },
+     {
+      "pid": 1627780,
+      "name": "Gary Payton II",
+      "min": 12.36407,
+      "ovr": 71.0
+     },
+     {
+      "pid": 1629646,
+      "name": "Charles Bassey",
+      "min": 10.202902,
+      "ovr": 61.5
+     },
+     {
+      "pid": 1643633,
+      "name": "Graham Ike",
+      "min": 9.938791,
+      "ovr": null
+     },
+     {
+      "pid": 1643018,
+      "name": "LJ Cryer",
+      "min": 4.255635,
+      "ovr": 55.7
+     },
+     {
+      "pid": 1642502,
+      "name": "Malevy Leons",
+      "min": 3.672289,
+      "ovr": 53.0
      }
     ]
    },
    "today": {
-    "ortg": -0.9339479533909412,
-    "drtg": 1.2106733275204675,
-    "net": -2.1446212809114087,
-    "margin": 6.365,
-    "predWins": 40.39915314070056,
+    "ortg": 0.8385982018376836,
+    "drtg": 1.9885378618822358,
+    "net": -1.1499396600445522,
+    "margin": 5.935,
+    "predWins": 40.47822577951317,
     "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1641764,
       "name": "Brandin Podziemski",
-      "min": 36.0,
+      "min": 35.953339,
       "ovr": 88.1
      },
      {
       "pid": 1642865,
       "name": "Yaxel Lendeborg",
-      "min": 36.0,
+      "min": 33.896421,
       "ovr": 83.6
      },
      {
       "pid": 201939,
       "name": "Stephen Curry",
-      "min": 34.0,
+      "min": 30.791162,
       "ovr": 96.7
      },
      {
       "pid": 203110,
       "name": "Draymond Green",
-      "min": 32.0,
+      "min": 28.221066,
       "ovr": 74.6
      },
      {
       "pid": 1629001,
       "name": "De'Anthony Melton",
-      "min": 30.0,
+      "min": 24.227183,
       "ovr": 80.9
      },
      {
       "pid": 1627777,
       "name": "Georges Niang",
-      "min": 26.0,
+      "min": 20.702685,
       "ovr": 60.367,
       "ovrSrc": "24-25 卡"
      },
      {
       "pid": 1642954,
       "name": "Will Richard",
-      "min": 22.0,
+      "min": 18.513615,
       "ovr": 63.0
      },
      {
       "pid": 1627780,
       "name": "Gary Payton II",
-      "min": 14.0,
+      "min": 14.220863,
       "ovr": 71.0
      },
      {
       "pid": 1629646,
       "name": "Charles Bassey",
-      "min": 10.0,
+      "min": 11.848376,
       "ovr": 61.5
+     },
+     {
+      "pid": 1643633,
+      "name": "Graham Ike",
+      "min": 11.669986,
+      "ovr": null
+     },
+     {
+      "pid": 1643018,
+      "name": "LJ Cryer",
+      "min": 5.343913,
+      "ovr": 55.7
+     },
+     {
+      "pid": 1642502,
+      "name": "Malevy Leons",
+      "min": 4.61139,
+      "ovr": 53.0
      }
     ],
-    "predWinsAllSeason": 39.025890590371546,
+    "predWinsAllSeason": 39.827527261904464,
     "lineupStates": 1
    },
    "restored": [],
@@ -1503,138 +2021,198 @@
     }
    ],
    "c": {
-    "ortg": 0.2637983562165829,
-    "drtg": -2.2038084168831773,
-    "net": 2.46760677309976,
-    "margin": 11.125,
-    "predWins": 48.68251755491207,
+    "ortg": 2.0939039188531154,
+    "drtg": -2.8983595349555173,
+    "net": 4.992263453808633,
+    "margin": 12.32,
+    "predWins": 54.4067782005419,
     "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1631095,
       "name": "Jabari Smith Jr.",
-      "min": 36.0,
+      "min": 28.771451,
       "ovr": 74.9
      },
      {
       "pid": 1630578,
       "name": "Alperen Sengun",
-      "min": 36.0,
+      "min": 28.230061,
       "ovr": 82.0
      },
      {
       "pid": 201142,
       "name": "Kevin Durant",
-      "min": 34.0,
+      "min": 27.794886,
       "ovr": 94.1
      },
      {
       "pid": 1641708,
       "name": "Amen Thompson",
-      "min": 32.0,
+      "min": 26.977553,
       "ovr": 89.0
      },
      {
       "pid": 1627832,
       "name": "Fred VanVleet",
-      "min": 30.0,
+      "min": 24.411376,
       "ovr": 90.2599,
       "ovrSrc": "24-25 卡"
      },
      {
       "pid": 1631106,
       "name": "Tari Eason",
-      "min": 26.0,
+      "min": 19.738817,
       "ovr": 77.1
      },
      {
       "pid": 203935,
       "name": "Marcus Smart",
-      "min": 22.0,
+      "min": 19.265249,
       "ovr": 67.3
      },
      {
       "pid": 1642263,
       "name": "Reed Sheppard",
-      "min": 14.0,
+      "min": 17.495139,
       "ovr": 65.2
      },
      {
       "pid": 203991,
       "name": "Clint Capela",
-      "min": 10.0,
+      "min": 11.453528,
       "ovr": 65.8
+     },
+     {
+      "pid": 203992,
+      "name": "Bogdan Bogdanović",
+      "min": 10.740524,
+      "ovr": 64.0
+     },
+     {
+      "pid": 1631131,
+      "name": "Oscar Tshiebwe",
+      "min": 8.031554,
+      "ovr": 52.2
+     },
+     {
+      "pid": 203500,
+      "name": "Steven Adams",
+      "min": 7.723588,
+      "ovr": 65.8
+     },
+     {
+      "pid": 1642384,
+      "name": "Isaiah Crawford",
+      "min": 4.385996,
+      "ovr": 49.3
+     },
+     {
+      "pid": 1643570,
+      "name": "Bruce Thornton",
+      "min": 2.688211,
+      "ovr": 58.3
+     },
+     {
+      "pid": 1630256,
+      "name": "Jae'Sean Tate",
+      "min": 2.292068,
+      "ovr": 56.9
      }
     ]
    },
    "today": {
-    "ortg": -0.3187676668459858,
-    "drtg": -1.3062071651546177,
-    "net": 0.9874394983086319,
-    "margin": 9.63,
-    "predWins": 48.69928394516877,
+    "ortg": -0.37408333482964906,
+    "drtg": -0.3755855450144594,
+    "net": 0.0015022101848103375,
+    "margin": 7.37,
+    "predWins": 54.36200797352925,
     "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1631095,
       "name": "Jabari Smith Jr.",
-      "min": 36.0,
+      "min": 31.360914,
       "ovr": 74.9
      },
      {
       "pid": 1630578,
       "name": "Alperen Sengun",
-      "min": 36.0,
+      "min": 30.770798,
       "ovr": 82.0
      },
      {
       "pid": 201142,
       "name": "Kevin Durant",
-      "min": 34.0,
+      "min": 30.296457,
       "ovr": 94.1
      },
      {
       "pid": 1641708,
       "name": "Amen Thompson",
-      "min": 32.0,
+      "min": 29.405564,
       "ovr": 89.0
      },
      {
       "pid": 1627832,
       "name": "Fred VanVleet",
-      "min": 30.0,
+      "min": 26.608427,
       "ovr": 90.2599,
       "ovrSrc": "24-25 卡"
      },
      {
       "pid": 1631106,
       "name": "Tari Eason",
-      "min": 26.0,
+      "min": 21.515333,
       "ovr": 77.1
      },
      {
       "pid": 203935,
       "name": "Marcus Smart",
-      "min": 22.0,
+      "min": 20.999143,
       "ovr": 67.3
      },
      {
       "pid": 1642263,
       "name": "Reed Sheppard",
-      "min": 14.0,
+      "min": 19.069722,
       "ovr": 65.2
      },
      {
       "pid": 203992,
       "name": "Bogdan Bogdanović",
-      "min": 10.0,
+      "min": 11.578458,
       "ovr": 64.0
+     },
+     {
+      "pid": 1631131,
+      "name": "Oscar Tshiebwe",
+      "min": 8.185935,
+      "ovr": 52.2
+     },
+     {
+      "pid": 1642384,
+      "name": "Isaiah Crawford",
+      "min": 4.78074,
+      "ovr": 49.3
+     },
+     {
+      "pid": 1643570,
+      "name": "Bruce Thornton",
+      "min": 2.930153,
+      "ovr": 58.3
+     },
+     {
+      "pid": 1630256,
+      "name": "Jae'Sean Tate",
+      "min": 2.498356,
+      "ovr": 56.9
      }
     ],
-    "predWinsAllSeason": 46.8080579857842,
-    "lineupStates": 1
+    "predWinsAllSeason": 43.24665296665737,
+    "lineupStates": 2
    },
    "restored": [],
    "nOut": 2
@@ -1701,135 +2279,195 @@
     }
    ],
    "c": {
-    "ortg": -4.7864072341534865,
-    "drtg": 3.0994690119121344,
-    "net": -7.885876246065621,
-    "margin": 0.555,
-    "predWins": 21.185627583536,
+    "ortg": -4.9126603906933894,
+    "drtg": 2.6804571578508103,
+    "net": -7.5931175485442,
+    "margin": -0.615,
+    "predWins": 21.093509434919252,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1629636,
       "name": "Darius Garland",
-      "min": 36.0,
+      "min": 28.095771,
       "ovr": 75.9
      },
      {
       "pid": 1629060,
       "name": "Rui Hachimura",
-      "min": 36.0,
+      "min": 25.264485,
       "ovr": 61.3
      },
      {
       "pid": 1627739,
       "name": "Kris Dunn",
-      "min": 34.0,
+      "min": 25.174394,
       "ovr": 75.6
      },
      {
       "pid": 1627884,
       "name": "Derrick Jones Jr.",
-      "min": 32.0,
+      "min": 24.173262,
       "ovr": 79.1
      },
      {
       "pid": 1642920,
       "name": "Kobe Sanders",
-      "min": 30.0,
+      "min": 21.135448,
       "ovr": 63.8
      },
      {
       "pid": 1643413,
       "name": "Keaton Wagler",
-      "min": 26.0,
+      "min": 20.606243,
       "ovr": 74.4
      },
      {
       "pid": 1629622,
       "name": "Max Strus",
-      "min": 22.0,
+      "min": 19.093076,
       "ovr": 74.4
      },
      {
       "pid": 1630543,
       "name": "Isaiah Jackson",
-      "min": 14.0,
+      "min": 18.043298,
       "ovr": 69.2
      },
      {
       "pid": 201572,
       "name": "Brook Lopez",
-      "min": 10.0,
+      "min": 18.066385,
       "ovr": 68.8
+     },
+     {
+      "pid": 1641711,
+      "name": "Gradey Dick",
+      "min": 13.25157,
+      "ovr": 56.4
+     },
+     {
+      "pid": 1642394,
+      "name": "Baba Miller",
+      "min": 7.813092,
+      "ovr": 55.7
+     },
+     {
+      "pid": 1642353,
+      "name": "Cam Christie",
+      "min": 6.030477,
+      "ovr": 47.4
+     },
+     {
+      "pid": 1629618,
+      "name": "Jalen Pickett",
+      "min": 4.707674,
+      "ovr": 56.8
+     },
+     {
+      "pid": 1643568,
+      "name": "Nick Martinelli",
+      "min": 4.346633,
+      "ovr": 51.1
+     },
+     {
+      "pid": 1631104,
+      "name": "Blake Wesley",
+      "min": 4.198193,
+      "ovr": 52.9
      }
     ]
    },
    "today": {
-    "ortg": -5.0001691341967955,
-    "drtg": 2.500283488366776,
-    "net": -7.5004526225635715,
-    "margin": 0.955,
-    "predWins": 21.232641338757713,
+    "ortg": -5.510223697501644,
+    "drtg": 1.8283772088252732,
+    "net": -7.338600906326917,
+    "margin": -0.2,
+    "predWins": 21.021007499910493,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1629636,
       "name": "Darius Garland",
-      "min": 36.0,
+      "min": 35.417418,
       "ovr": 75.9
      },
      {
       "pid": 1627739,
       "name": "Kris Dunn",
-      "min": 36.0,
+      "min": 31.52432,
       "ovr": 75.6
      },
      {
       "pid": 1642920,
       "name": "Kobe Sanders",
-      "min": 34.0,
+      "min": 26.967682,
       "ovr": 63.8
      },
      {
       "pid": 1643413,
       "name": "Keaton Wagler",
-      "min": 32.0,
+      "min": 26.47569,
       "ovr": 74.4
      },
      {
       "pid": 1629622,
       "name": "Max Strus",
-      "min": 30.0,
+      "min": 24.662156,
       "ovr": 74.4
      },
      {
       "pid": 1630543,
       "name": "Isaiah Jackson",
-      "min": 26.0,
+      "min": 23.058854,
       "ovr": 69.2
      },
      {
       "pid": 201572,
       "name": "Brook Lopez",
-      "min": 22.0,
+      "min": 22.607836,
       "ovr": 68.8
      },
      {
       "pid": 1641711,
       "name": "Gradey Dick",
-      "min": 14.0,
+      "min": 16.363303,
       "ovr": 56.4
      },
      {
       "pid": 1642394,
       "name": "Baba Miller",
-      "min": 10.0,
+      "min": 9.108334,
       "ovr": 55.7
+     },
+     {
+      "pid": 1642353,
+      "name": "Cam Christie",
+      "min": 7.10836,
+      "ovr": 47.4
+     },
+     {
+      "pid": 1629618,
+      "name": "Jalen Pickett",
+      "min": 5.934475,
+      "ovr": 56.8
+     },
+     {
+      "pid": 1643568,
+      "name": "Nick Martinelli",
+      "min": 5.479348,
+      "ovr": 51.1
+     },
+     {
+      "pid": 1631104,
+      "name": "Blake Wesley",
+      "min": 5.292226,
+      "ovr": 52.9
      }
     ],
-    "predWinsAllSeason": 23.363844884041416,
+    "predWinsAllSeason": 22.353533675008784,
     "lineupStates": 1
    },
    "restored": [],
@@ -1852,135 +2490,219 @@
     }
    ],
    "c": {
-    "ortg": 7.1503722114221375,
-    "drtg": -2.3010283489803385,
-    "net": 9.451400560402476,
-    "margin": 18.485,
-    "predWins": 62.9371020992356,
+    "ortg": 6.514892778066837,
+    "drtg": -1.9911725515353567,
+    "net": 8.506065329602194,
+    "margin": 16.01,
+    "predWins": 61.135107640874324,
     "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630559,
       "name": "Austin Reaves",
-      "min": 36.0,
+      "min": 31.49403,
       "ovr": 93.0
      },
      {
       "pid": 1629029,
       "name": "Luka Dončić",
-      "min": 36.0,
+      "min": 31.058461,
       "ovr": 104.4
      },
      {
       "pid": 1631117,
       "name": "Walker Kessler",
-      "min": 34.0,
+      "min": 26.922287,
       "ovr": 73.6
      },
      {
       "pid": 1629656,
       "name": "Quentin Grimes",
-      "min": 32.0,
+      "min": 22.80953,
       "ovr": 73.2
      },
      {
       "pid": 1630533,
       "name": "Ziaire Williams",
-      "min": 30.0,
+      "min": 22.257351,
       "ovr": 71.5
      },
      {
       "pid": 1629680,
       "name": "Matisse Thybulle",
-      "min": 26.0,
+      "min": 20.840016,
       "ovr": 84.1
      },
      {
       "pid": 1630572,
       "name": "Sandro Mamukelashvili",
-      "min": 22.0,
+      "min": 20.227297,
       "ovr": 71.5
      },
      {
       "pid": 1631222,
       "name": "Jake LaRavia",
-      "min": 14.0,
+      "min": 19.952835,
       "ovr": 64.6
      },
      {
       "pid": 1629012,
       "name": "Collin Sexton",
-      "min": 10.0,
+      "min": 14.810058,
       "ovr": 74.9
+     },
+     {
+      "pid": 1629020,
+      "name": "Jarred Vanderbilt",
+      "min": 11.280807,
+      "ovr": 59.0
+     },
+     {
+      "pid": 1626172,
+      "name": "Kevon Looney",
+      "min": 6.606734,
+      "ovr": 55.7
+     },
+     {
+      "pid": 1630702,
+      "name": "Jaden Hardy",
+      "min": 3.653099,
+      "ovr": 42.2
+     },
+     {
+      "pid": 1643024,
+      "name": "Chris Mañon",
+      "min": 3.176887,
+      "ovr": 53.0
+     },
+     {
+      "pid": 1642355,
+      "name": "Bronny James",
+      "min": 2.575954,
+      "ovr": 52.5
+     },
+     {
+      "pid": 1643133,
+      "name": "Lawson Lovering",
+      "min": 1.255321,
+      "ovr": 59.2
+     },
+     {
+      "pid": 1643418,
+      "name": "Cameron Carr",
+      "min": 1.079333,
+      "ovr": null
      }
     ]
    },
    "today": {
-    "ortg": 7.1503722114221375,
-    "drtg": -2.3010283489803385,
-    "net": 9.451400560402476,
-    "margin": 18.485,
-    "predWins": 63.012902065030374,
+    "ortg": 6.514892778066837,
+    "drtg": -1.9911725515353567,
+    "net": 8.506065329602194,
+    "margin": 16.01,
+    "predWins": 61.252899278084485,
     "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630559,
       "name": "Austin Reaves",
-      "min": 36.0,
+      "min": 31.49403,
       "ovr": 93.0
      },
      {
       "pid": 1629029,
       "name": "Luka Dončić",
-      "min": 36.0,
+      "min": 31.058461,
       "ovr": 104.4
      },
      {
       "pid": 1631117,
       "name": "Walker Kessler",
-      "min": 34.0,
+      "min": 26.922287,
       "ovr": 73.6
      },
      {
       "pid": 1629656,
       "name": "Quentin Grimes",
-      "min": 32.0,
+      "min": 22.80953,
       "ovr": 73.2
      },
      {
       "pid": 1630533,
       "name": "Ziaire Williams",
-      "min": 30.0,
+      "min": 22.257351,
       "ovr": 71.5
      },
      {
       "pid": 1629680,
       "name": "Matisse Thybulle",
-      "min": 26.0,
+      "min": 20.840016,
       "ovr": 84.1
      },
      {
       "pid": 1630572,
       "name": "Sandro Mamukelashvili",
-      "min": 22.0,
+      "min": 20.227297,
       "ovr": 71.5
      },
      {
       "pid": 1631222,
       "name": "Jake LaRavia",
-      "min": 14.0,
+      "min": 19.952835,
       "ovr": 64.6
      },
      {
       "pid": 1629012,
       "name": "Collin Sexton",
-      "min": 10.0,
+      "min": 14.810058,
       "ovr": 74.9
+     },
+     {
+      "pid": 1629020,
+      "name": "Jarred Vanderbilt",
+      "min": 11.280807,
+      "ovr": 59.0
+     },
+     {
+      "pid": 1626172,
+      "name": "Kevon Looney",
+      "min": 6.606734,
+      "ovr": 55.7
+     },
+     {
+      "pid": 1630702,
+      "name": "Jaden Hardy",
+      "min": 3.653099,
+      "ovr": 42.2
+     },
+     {
+      "pid": 1643024,
+      "name": "Chris Mañon",
+      "min": 3.176887,
+      "ovr": 53.0
+     },
+     {
+      "pid": 1642355,
+      "name": "Bronny James",
+      "min": 2.575954,
+      "ovr": 52.5
+     },
+     {
+      "pid": 1643133,
+      "name": "Lawson Lovering",
+      "min": 1.255321,
+      "ovr": 59.2
+     },
+     {
+      "pid": 1643418,
+      "name": "Cameron Carr",
+      "min": 1.079333,
+      "ovr": null
      }
     ],
-    "predWinsAllSeason": 63.86189011819531,
+    "predWinsAllSeason": 60.810201563573564,
     "lineupStates": 1
    },
    "restored": [],
@@ -1993,135 +2715,195 @@
    "L": 5,
    "injured": [],
    "c": {
-    "ortg": 1.3202172619800905,
-    "drtg": 1.1556971440832626,
-    "net": 0.16452011789682786,
-    "margin": 8.555,
-    "predWins": 40.480017628618306,
+    "ortg": -0.3965373141157613,
+    "drtg": 0.5281125119224441,
+    "net": -0.9246498260382054,
+    "margin": 6.135,
+    "predWins": 38.27661724506596,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630558,
       "name": "Davion Mitchell",
-      "min": 36.0,
+      "min": 32.739415,
       "ovr": 76.5
      },
      {
       "pid": 203507,
       "name": "Giannis Antetokounmpo",
-      "min": 36.0,
+      "min": 30.721675,
       "ovr": 95.3
      },
      {
       "pid": 1628389,
       "name": "Bam Adebayo",
-      "min": 34.0,
+      "min": 30.517179,
       "ovr": 82.3
      },
      {
       "pid": 1641796,
       "name": "Pelle Larsson",
-      "min": 32.0,
+      "min": 28.526945,
       "ovr": 75.8
      },
      {
       "pid": 203952,
       "name": "Andrew Wiggins",
-      "min": 30.0,
+      "min": 25.785032,
       "ovr": 69.9
      },
      {
       "pid": 1626171,
       "name": "Bobby Portis Jr.",
-      "min": 26.0,
+      "min": 20.989263,
       "ovr": 67.4
      },
      {
       "pid": 202691,
       "name": "Klay Thompson",
-      "min": 22.0,
+      "min": 20.431378,
       "ovr": 56.7
      },
      {
       "pid": 203501,
       "name": "Tim Hardaway Jr.",
-      "min": 14.0,
+      "min": 17.16603,
       "ovr": 61.0
      },
      {
       "pid": 1631107,
       "name": "Nikola Jović",
-      "min": 10.0,
+      "min": 11.478775,
       "ovr": 57.9
+     },
+     {
+      "pid": 1630696,
+      "name": "Dru Smith",
+      "min": 9.336492,
+      "ovr": 73.5
+     },
+     {
+      "pid": 1643553,
+      "name": "Ryan Conwell",
+      "min": 5.073782,
+      "ovr": 59.0
+     },
+     {
+      "pid": 1631323,
+      "name": "Simone Fontecchio",
+      "min": 2.61457,
+      "ovr": 59.3
+     },
+     {
+      "pid": 1642066,
+      "name": "Myron Gardner",
+      "min": 2.309732,
+      "ovr": 60.8
+     },
+     {
+      "pid": 1630208,
+      "name": "Nick Richards",
+      "min": 2.309732,
+      "ovr": 50.5
      }
     ]
    },
    "today": {
-    "ortg": 1.3202172619800905,
-    "drtg": 1.1556971440832626,
-    "net": 0.16452011789682786,
-    "margin": 8.555,
-    "predWins": 40.57761249741284,
+    "ortg": -0.3965373141157613,
+    "drtg": 0.5281125119224441,
+    "net": -0.9246498260382054,
+    "margin": 6.135,
+    "predWins": 38.473686805456964,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630558,
       "name": "Davion Mitchell",
-      "min": 36.0,
+      "min": 32.739415,
       "ovr": 76.5
      },
      {
       "pid": 203507,
       "name": "Giannis Antetokounmpo",
-      "min": 36.0,
+      "min": 30.721675,
       "ovr": 95.3
      },
      {
       "pid": 1628389,
       "name": "Bam Adebayo",
-      "min": 34.0,
+      "min": 30.517179,
       "ovr": 82.3
      },
      {
       "pid": 1641796,
       "name": "Pelle Larsson",
-      "min": 32.0,
+      "min": 28.526945,
       "ovr": 75.8
      },
      {
       "pid": 203952,
       "name": "Andrew Wiggins",
-      "min": 30.0,
+      "min": 25.785032,
       "ovr": 69.9
      },
      {
       "pid": 1626171,
       "name": "Bobby Portis Jr.",
-      "min": 26.0,
+      "min": 20.989263,
       "ovr": 67.4
      },
      {
       "pid": 202691,
       "name": "Klay Thompson",
-      "min": 22.0,
+      "min": 20.431378,
       "ovr": 56.7
      },
      {
       "pid": 203501,
       "name": "Tim Hardaway Jr.",
-      "min": 14.0,
+      "min": 17.16603,
       "ovr": 61.0
      },
      {
       "pid": 1631107,
       "name": "Nikola Jović",
-      "min": 10.0,
+      "min": 11.478775,
       "ovr": 57.9
+     },
+     {
+      "pid": 1630696,
+      "name": "Dru Smith",
+      "min": 9.336492,
+      "ovr": 73.5
+     },
+     {
+      "pid": 1643553,
+      "name": "Ryan Conwell",
+      "min": 5.073782,
+      "ovr": 59.0
+     },
+     {
+      "pid": 1631323,
+      "name": "Simone Fontecchio",
+      "min": 2.61457,
+      "ovr": 59.3
+     },
+     {
+      "pid": 1642066,
+      "name": "Myron Gardner",
+      "min": 2.309732,
+      "ovr": 60.8
+     },
+     {
+      "pid": 1630208,
+      "name": "Nick Richards",
+      "min": 2.309732,
+      "ovr": 50.5
      }
     ],
-    "predWinsAllSeason": 42.30450594020666,
+    "predWinsAllSeason": 38.99613419890756,
     "lineupStates": 1
    },
    "restored": [],
@@ -2134,135 +2916,195 @@
    "L": 6,
    "injured": [],
    "c": {
-    "ortg": -2.519951096740101,
-    "drtg": 4.615778251531751,
-    "net": -7.135729348271852,
-    "margin": 1.265,
-    "predWins": 22.98152083191962,
+    "ortg": -2.2518354508446947,
+    "drtg": 4.464590749098704,
+    "net": -6.716426199943399,
+    "margin": 0.35,
+    "predWins": 23.976354408455904,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1629639,
       "name": "Tyler Herro",
-      "min": 36.0,
+      "min": 28.274477,
       "ovr": 86.0
      },
      {
       "pid": 1631170,
       "name": "Jaime Jaquez Jr.",
-      "min": 36.0,
+      "min": 25.936552,
       "ovr": 73.9
      },
      {
       "pid": 1626167,
       "name": "Myles Turner",
-      "min": 34.0,
+      "min": 24.868359,
       "ovr": 70.4
      },
      {
       "pid": 1628398,
       "name": "Kyle Kuzma",
-      "min": 32.0,
+      "min": 24.196087,
       "ovr": 50.4
      },
      {
       "pid": 1631157,
       "name": "Ryan Rollins",
-      "min": 30.0,
+      "min": 22.85474,
       "ovr": 76.4
      },
      {
       "pid": 1642857,
       "name": "Kasparas Jakučionis",
-      "min": 26.0,
+      "min": 20.206591,
       "ovr": 70.3
      },
      {
       "pid": 1631260,
       "name": "AJ Green",
-      "min": 22.0,
+      "min": 17.827504,
       "ovr": 68.1
      },
      {
       "pid": 1642276,
       "name": "Kel'el Ware",
-      "min": 14.0,
+      "min": 17.178356,
       "ovr": 57.8
      },
      {
       "pid": 1643415,
       "name": "Brayden Burries",
-      "min": 10.0,
+      "min": 15.57739,
       "ovr": 71.5
+     },
+     {
+      "pid": 1643417,
+      "name": "Nate Ament",
+      "min": 12.907689,
+      "ovr": 60.0
+     },
+     {
+      "pid": 1631172,
+      "name": "Ousmane Dieng",
+      "min": 11.425541,
+      "ovr": 53.1
+     },
+     {
+      "pid": 1630579,
+      "name": "Jericho Sims",
+      "min": 7.456426,
+      "ovr": 48.4
+     },
+     {
+      "pid": 1629018,
+      "name": "Gary Trent Jr.",
+      "min": 6.167652,
+      "ovr": 50.2
+     },
+     {
+      "pid": 1642881,
+      "name": "Bogoljub Marković",
+      "min": 5.122635,
+      "ovr": null
      }
     ]
    },
    "today": {
-    "ortg": -2.519951096740101,
-    "drtg": 4.615778251531751,
-    "net": -7.135729348271852,
-    "margin": 1.265,
-    "predWins": 23.024054818830543,
+    "ortg": -2.2518354508446947,
+    "drtg": 4.464590749098704,
+    "net": -6.716426199943399,
+    "margin": 0.35,
+    "predWins": 24.082744860516605,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1629639,
       "name": "Tyler Herro",
-      "min": 36.0,
+      "min": 28.274477,
       "ovr": 86.0
      },
      {
       "pid": 1631170,
       "name": "Jaime Jaquez Jr.",
-      "min": 36.0,
+      "min": 25.936552,
       "ovr": 73.9
      },
      {
       "pid": 1626167,
       "name": "Myles Turner",
-      "min": 34.0,
+      "min": 24.868359,
       "ovr": 70.4
      },
      {
       "pid": 1628398,
       "name": "Kyle Kuzma",
-      "min": 32.0,
+      "min": 24.196087,
       "ovr": 50.4
      },
      {
       "pid": 1631157,
       "name": "Ryan Rollins",
-      "min": 30.0,
+      "min": 22.85474,
       "ovr": 76.4
      },
      {
       "pid": 1642857,
       "name": "Kasparas Jakučionis",
-      "min": 26.0,
+      "min": 20.206591,
       "ovr": 70.3
      },
      {
       "pid": 1631260,
       "name": "AJ Green",
-      "min": 22.0,
+      "min": 17.827504,
       "ovr": 68.1
      },
      {
       "pid": 1642276,
       "name": "Kel'el Ware",
-      "min": 14.0,
+      "min": 17.178356,
       "ovr": 57.8
      },
      {
       "pid": 1643415,
       "name": "Brayden Burries",
-      "min": 10.0,
+      "min": 15.57739,
       "ovr": 71.5
+     },
+     {
+      "pid": 1643417,
+      "name": "Nate Ament",
+      "min": 12.907689,
+      "ovr": 60.0
+     },
+     {
+      "pid": 1631172,
+      "name": "Ousmane Dieng",
+      "min": 11.425541,
+      "ovr": 53.1
+     },
+     {
+      "pid": 1630579,
+      "name": "Jericho Sims",
+      "min": 7.456426,
+      "ovr": 48.4
+     },
+     {
+      "pid": 1629018,
+      "name": "Gary Trent Jr.",
+      "min": 6.167652,
+      "ovr": 50.2
+     },
+     {
+      "pid": 1642881,
+      "name": "Bogoljub Marković",
+      "min": 5.122635,
+      "ovr": null
      }
     ],
-    "predWinsAllSeason": 24.481698968156184,
+    "predWinsAllSeason": 24.490698898561742,
     "lineupStates": 1
    },
    "restored": [],
@@ -2303,77 +3145,107 @@
     }
    ],
    "c": {
-    "ortg": 3.459529483374183,
-    "drtg": -0.9472412198360587,
-    "net": 4.406770703210242,
-    "margin": 13.15,
-    "predWins": 50.836042741112244,
+    "ortg": 4.012329896539839,
+    "drtg": -0.2491250693762055,
+    "net": 4.261454965916045,
+    "margin": 11.6,
+    "predWins": 50.53649203212797,
     "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630162,
       "name": "Anthony Edwards",
-      "min": 36.0,
+      "min": 29.609339,
       "ovr": 94.5
      },
      {
       "pid": 1630183,
       "name": "Jaden McDaniels",
-      "min": 36.0,
+      "min": 28.922315,
       "ovr": 82.0
      },
      {
       "pid": 1630228,
       "name": "Jonathan Kuminga",
-      "min": 34.0,
+      "min": 27.318974,
       "ovr": 69.4
      },
      {
       "pid": 1630245,
       "name": "Ayo Dosunmu",
-      "min": 32.0,
+      "min": 26.696171,
       "ovr": 81.3
      },
      {
       "pid": 203497,
       "name": "Rudy Gobert",
-      "min": 30.0,
+      "min": 26.339171,
       "ovr": 84.2
      },
      {
       "pid": 1630163,
       "name": "LaMelo Ball",
-      "min": 26.0,
+      "min": 22.606917,
       "ovr": 75.2
      },
      {
       "pid": 1630545,
       "name": "Terrence Shannon Jr",
-      "min": 22.0,
+      "min": 18.807601,
       "ovr": 63.2
      },
      {
       "pid": 1642866,
       "name": "Joan Beringer",
-      "min": 14.0,
+      "min": 15.474331,
       "ovr": 57.4
      },
      {
       "pid": 1626168,
       "name": "Trey Lyles",
-      "min": 10.0,
+      "min": 14.460823,
       "ovr": 63.7671,
       "ovrSrc": "24-25 卡"
+     },
+     {
+      "pid": 1630538,
+      "name": "Bones Hyland",
+      "min": 10.563693,
+      "ovr": 69.2
+     },
+     {
+      "pid": 1641740,
+      "name": "Jaylen Clark",
+      "min": 10.38199,
+      "ovr": 56.0
+     },
+     {
+      "pid": 1642262,
+      "name": "Cody Williams",
+      "min": 3.621916,
+      "ovr": 39.4
+     },
+     {
+      "pid": 1642389,
+      "name": "Zyon Pullin",
+      "min": 2.889726,
+      "ovr": 56.7
+     },
+     {
+      "pid": 1642912,
+      "name": "Isaiah Evans",
+      "min": 2.307034,
+      "ovr": 53.3
      }
     ]
    },
    "today": {
-    "ortg": 3.034012383315556,
-    "drtg": -3.631538566624684,
-    "net": 6.66555094994024,
-    "margin": 15.285,
-    "predWins": 50.91903545508487,
+    "ortg": 3.828167833924738,
+    "drtg": -6.098493067557101,
+    "net": 9.926660901481839,
+    "margin": 17.335,
+    "predWins": 51.136826582087025,
     "schedGames": 72,
     "poolGames": 2,
     "rotation": [
@@ -2386,54 +3258,72 @@
      {
       "pid": 1630228,
       "name": "Jonathan Kuminga",
-      "min": 36.0,
+      "min": 34.179647,
       "ovr": 69.4
      },
      {
       "pid": 1630245,
       "name": "Ayo Dosunmu",
-      "min": 34.0,
+      "min": 33.825239,
       "ovr": 81.3
      },
      {
       "pid": 203497,
       "name": "Rudy Gobert",
-      "min": 32.0,
+      "min": 33.377307,
       "ovr": 84.2
      },
      {
       "pid": 1630163,
       "name": "LaMelo Ball",
-      "min": 30.0,
+      "min": 28.843607,
       "ovr": 75.2
      },
      {
       "pid": 1642866,
       "name": "Joan Beringer",
-      "min": 26.0,
+      "min": 19.758327,
       "ovr": 57.4
      },
      {
       "pid": 1626168,
       "name": "Trey Lyles",
-      "min": 22.0,
+      "min": 18.079951,
       "ovr": 63.7671,
       "ovrSrc": "24-25 卡"
      },
      {
       "pid": 1630538,
       "name": "Bones Hyland",
-      "min": 14.0,
+      "min": 13.032746,
       "ovr": 69.2
      },
      {
       "pid": 1641740,
       "name": "Jaylen Clark",
-      "min": 10.0,
+      "min": 12.092418,
       "ovr": 56.0
+     },
+     {
+      "pid": 1642262,
+      "name": "Cody Williams",
+      "min": 4.265526,
+      "ovr": 39.4
+     },
+     {
+      "pid": 1642389,
+      "name": "Zyon Pullin",
+      "min": 3.639562,
+      "ovr": 56.7
+     },
+     {
+      "pid": 1642912,
+      "name": "Isaiah Evans",
+      "min": 2.90567,
+      "ovr": 53.3
      }
     ],
-    "predWinsAllSeason": 56.65570535511532,
+    "predWinsAllSeason": 62.4721895456898,
     "lineupStates": 2
    },
    "restored": [],
@@ -2464,135 +3354,213 @@
     }
    ],
    "c": {
-    "ortg": -2.025968422921153,
-    "drtg": 0.8482229121641467,
-    "net": -2.8741913350852997,
-    "margin": 5.88,
-    "predWins": 32.85969622371947,
+    "ortg": -4.3668895455097925,
+    "drtg": 0.05025644803421869,
+    "net": -4.417145993544011,
+    "margin": 2.795,
+    "predWins": 28.881302973089433,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 203944,
       "name": "Julius Randle",
-      "min": 36.0,
+      "min": 28.133577,
       "ovr": 67.7
      },
      {
       "pid": 1629008,
       "name": "Michael Porter Jr.",
-      "min": 36.0,
+      "min": 26.354638,
       "ovr": 88.6
      },
      {
       "pid": 1631165,
       "name": "Keon Ellis",
-      "min": 34.0,
+      "min": 20.016419,
       "ovr": 71.4
      },
      {
       "pid": 1643414,
       "name": "Mikel Brown Jr.",
-      "min": 32.0,
+      "min": 18.947233,
       "ovr": 65.6
      },
      {
       "pid": 1643052,
       "name": "Chaney Johnson",
-      "min": 30.0,
+      "min": 18.473286,
       "ovr": 48.0
      },
      {
       "pid": 1630549,
       "name": "Day'Ron Sharpe",
-      "min": 26.0,
+      "min": 18.008695,
       "ovr": 80.7
      },
      {
       "pid": 1642856,
       "name": "Egor Dëmin",
-      "min": 22.0,
+      "min": 17.248697,
       "ovr": 64.0
      },
      {
       "pid": 1641730,
       "name": "Noah Clowney",
-      "min": 14.0,
+      "min": 16.984319,
       "ovr": 50.9
      },
      {
       "pid": 1642849,
       "name": "Nolan Traore",
-      "min": 10.0,
+      "min": 16.966525,
       "ovr": 40.9
+     },
+     {
+      "pid": 1629021,
+      "name": "Moritz Wagner",
+      "min": 14.981727,
+      "ovr": 72.7
+     },
+     {
+      "pid": 1642874,
+      "name": "Danny Wolf",
+      "min": 11.91775,
+      "ovr": 62.7
+     },
+     {
+      "pid": 1629611,
+      "name": "Terance Mann",
+      "min": 11.734601,
+      "ovr": 68.0
+     },
+     {
+      "pid": 1642962,
+      "name": "Drake Powell",
+      "min": 7.976803,
+      "ovr": 42.9
+     },
+     {
+      "pid": 1631169,
+      "name": "Josh Minott",
+      "min": 5.914721,
+      "ovr": 69.6
+     },
+     {
+      "pid": 1643538,
+      "name": "Joshua Jefferson",
+      "min": 3.170504,
+      "ovr": 51.8
+     },
+     {
+      "pid": 1642879,
+      "name": "Ben Saraf",
+      "min": 3.170504,
+      "ovr": 36.8
      }
     ]
    },
    "today": {
-    "ortg": -2.200195944655235,
-    "drtg": -0.3426667816779627,
-    "net": -1.857529162977272,
-    "margin": 6.775,
-    "predWins": 32.87805566689183,
+    "ortg": -2.473106322790656,
+    "drtg": 0.6071123561398792,
+    "net": -3.0802186789305352,
+    "margin": 4.09,
+    "predWins": 28.975754221638333,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 203944,
       "name": "Julius Randle",
-      "min": 36.0,
+      "min": 30.457345,
       "ovr": 67.7
      },
      {
       "pid": 1629008,
       "name": "Michael Porter Jr.",
-      "min": 36.0,
+      "min": 28.53147,
       "ovr": 88.6
      },
      {
       "pid": 1631165,
       "name": "Keon Ellis",
-      "min": 34.0,
+      "min": 21.669729,
       "ovr": 71.4
      },
      {
       "pid": 1643414,
       "name": "Mikel Brown Jr.",
-      "min": 32.0,
+      "min": 20.51223,
       "ovr": 65.6
      },
      {
       "pid": 1643052,
       "name": "Chaney Johnson",
-      "min": 30.0,
+      "min": 19.999136,
       "ovr": 48.0
      },
      {
       "pid": 1630549,
       "name": "Day'Ron Sharpe",
-      "min": 26.0,
+      "min": 19.496171,
       "ovr": 80.7
      },
      {
       "pid": 1641730,
       "name": "Noah Clowney",
-      "min": 22.0,
+      "min": 18.428825,
       "ovr": 50.9
      },
      {
       "pid": 1642849,
       "name": "Nolan Traore",
-      "min": 14.0,
+      "min": 18.192374,
       "ovr": 40.9
      },
      {
       "pid": 1629021,
       "name": "Moritz Wagner",
-      "min": 10.0,
+      "min": 16.040847,
       "ovr": 72.7
+     },
+     {
+      "pid": 1642874,
+      "name": "Danny Wolf",
+      "min": 12.064328,
+      "ovr": 62.7
+     },
+     {
+      "pid": 1629611,
+      "name": "Terance Mann",
+      "min": 12.703852,
+      "ovr": 68.0
+     },
+     {
+      "pid": 1642962,
+      "name": "Drake Powell",
+      "min": 8.635669,
+      "ovr": 42.9
+     },
+     {
+      "pid": 1631169,
+      "name": "Josh Minott",
+      "min": 6.403263,
+      "ovr": 69.6
+     },
+     {
+      "pid": 1643538,
+      "name": "Joshua Jefferson",
+      "min": 3.43238,
+      "ovr": 51.8
+     },
+     {
+      "pid": 1642879,
+      "name": "Ben Saraf",
+      "min": 3.43238,
+      "ovr": 36.8
      }
     ],
-    "predWinsAllSeason": 36.48606348385264,
+    "predWinsAllSeason": 32.450032152027475,
     "lineupStates": 2
    },
    "restored": [],
@@ -2605,135 +3573,207 @@
    "L": 4,
    "injured": [],
    "c": {
-    "ortg": 3.494449115019677,
-    "drtg": 3.2033716955382374,
-    "net": 0.2910774194814394,
-    "margin": 8.835,
-    "predWins": 41.11624911132032,
+    "ortg": 0.9064976021001314,
+    "drtg": 1.0543433681490626,
+    "net": -0.14784576604893118,
+    "margin": 6.91,
+    "predWins": 40.103231365224104,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1628973,
       "name": "Jalen Brunson",
-      "min": 36.0,
+      "min": 32.932936,
       "ovr": 82.2
      },
      {
       "pid": 1628384,
       "name": "OG Anunoby",
-      "min": 36.0,
+      "min": 31.831807,
       "ovr": 88.7
      },
      {
       "pid": 1626157,
       "name": "Karl-Anthony Towns",
-      "min": 34.0,
+      "min": 30.095947,
       "ovr": 88.3
      },
      {
       "pid": 1628404,
       "name": "Josh Hart",
-      "min": 32.0,
+      "min": 29.504061,
       "ovr": 79.1
      },
      {
       "pid": 1628969,
       "name": "Mikal Bridges",
-      "min": 30.0,
+      "min": 23.853177,
       "ovr": 82.0
      },
      {
       "pid": 1629013,
       "name": "Landry Shamet",
-      "min": 26.0,
+      "min": 22.785415,
       "ovr": 75.6
      },
      {
       "pid": 1630540,
       "name": "Miles McBride",
-      "min": 22.0,
+      "min": 16.582489,
       "ovr": 75.2
      },
      {
       "pid": 203083,
       "name": "Andre Drummond",
-      "min": 14.0,
+      "min": 12.016954,
       "ovr": 50.4
      },
      {
       "pid": 1642278,
       "name": "Tyler Kolek",
-      "min": 10.0,
+      "min": 11.426679,
       "ovr": 56.7
+     },
+     {
+      "pid": 1630631,
+      "name": "Jose Alvarado",
+      "min": 11.036188,
+      "ovr": 70.8
+     },
+     {
+      "pid": 203903,
+      "name": "Jordan Clarkson",
+      "min": 8.783935,
+      "ovr": 48.7
+     },
+     {
+      "pid": 1642885,
+      "name": "Mohamed Diawara",
+      "min": 3.584759,
+      "ovr": 50.5
+     },
+     {
+      "pid": 1630164,
+      "name": "James Wiseman",
+      "min": 3.424049,
+      "ovr": 48.9
+     },
+     {
+      "pid": 1642359,
+      "name": "Pacôme Dadiet",
+      "min": 1.198001,
+      "ovr": 51.8
+     },
+     {
+      "pid": 1643022,
+      "name": "Jaden Akins",
+      "min": 0.943603,
+      "ovr": null
      }
     ]
    },
    "today": {
-    "ortg": 3.494449115019677,
-    "drtg": 3.2033716955382374,
-    "net": 0.2910774194814394,
-    "margin": 8.835,
-    "predWins": 41.08934317493406,
+    "ortg": 0.9064976021001314,
+    "drtg": 1.0543433681490626,
+    "net": -0.14784576604893118,
+    "margin": 6.91,
+    "predWins": 39.91134439666267,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1628973,
       "name": "Jalen Brunson",
-      "min": 36.0,
+      "min": 32.932936,
       "ovr": 82.2
      },
      {
       "pid": 1628384,
       "name": "OG Anunoby",
-      "min": 36.0,
+      "min": 31.831807,
       "ovr": 88.7
      },
      {
       "pid": 1626157,
       "name": "Karl-Anthony Towns",
-      "min": 34.0,
+      "min": 30.095947,
       "ovr": 88.3
      },
      {
       "pid": 1628404,
       "name": "Josh Hart",
-      "min": 32.0,
+      "min": 29.504061,
       "ovr": 79.1
      },
      {
       "pid": 1628969,
       "name": "Mikal Bridges",
-      "min": 30.0,
+      "min": 23.853177,
       "ovr": 82.0
      },
      {
       "pid": 1629013,
       "name": "Landry Shamet",
-      "min": 26.0,
+      "min": 22.785415,
       "ovr": 75.6
      },
      {
       "pid": 1630540,
       "name": "Miles McBride",
-      "min": 22.0,
+      "min": 16.582489,
       "ovr": 75.2
      },
      {
       "pid": 203083,
       "name": "Andre Drummond",
-      "min": 14.0,
+      "min": 12.016954,
       "ovr": 50.4
      },
      {
       "pid": 1642278,
       "name": "Tyler Kolek",
-      "min": 10.0,
+      "min": 11.426679,
       "ovr": 56.7
+     },
+     {
+      "pid": 1630631,
+      "name": "Jose Alvarado",
+      "min": 11.036188,
+      "ovr": 70.8
+     },
+     {
+      "pid": 203903,
+      "name": "Jordan Clarkson",
+      "min": 8.783935,
+      "ovr": 48.7
+     },
+     {
+      "pid": 1642885,
+      "name": "Mohamed Diawara",
+      "min": 3.584759,
+      "ovr": 50.5
+     },
+     {
+      "pid": 1630164,
+      "name": "James Wiseman",
+      "min": 3.424049,
+      "ovr": 48.9
+     },
+     {
+      "pid": 1642359,
+      "name": "Pacôme Dadiet",
+      "min": 1.198001,
+      "ovr": 51.8
+     },
+     {
+      "pid": 1643022,
+      "name": "Jaden Akins",
+      "min": 0.943603,
+      "ovr": null
      }
     ],
-    "predWinsAllSeason": 42.88013345070881,
+    "predWinsAllSeason": 40.75823693545275,
     "lineupStates": 1
    },
    "restored": [],
@@ -2800,76 +3840,106 @@
     }
    ],
    "c": {
-    "ortg": -3.5179901287685027,
-    "drtg": 1.0658132644487637,
-    "net": -4.583803393217266,
-    "margin": 3.99,
-    "predWins": 30.31035232612059,
+    "ortg": -2.1112777072443834,
+    "drtg": 1.7852135968934704,
+    "net": -3.8964913041378537,
+    "margin": 3.325,
+    "predWins": 31.78698591588225,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630532,
       "name": "Franz Wagner",
-      "min": 36.0,
+      "min": 27.627545,
       "ovr": 89.4
      },
      {
       "pid": 1630217,
       "name": "Desmond Bane",
-      "min": 36.0,
+      "min": 26.478594,
       "ovr": 89.8
      },
      {
       "pid": 1631094,
       "name": "Paolo Banchero",
-      "min": 34.0,
+      "min": 25.910743,
       "ovr": 79.1
      },
      {
       "pid": 1630591,
       "name": "Jalen Suggs",
-      "min": 32.0,
+      "min": 25.45176,
       "ovr": 85.8
      },
      {
       "pid": 1628976,
       "name": "Wendell Carter Jr.",
-      "min": 30.0,
+      "min": 24.62089,
       "ovr": 78.5
      },
      {
       "pid": 1641783,
       "name": "Tristan da Silva",
-      "min": 26.0,
+      "min": 21.97885,
       "ovr": 60.3
      },
      {
       "pid": 1641710,
       "name": "Anthony Black",
-      "min": 22.0,
+      "min": 20.661452,
       "ovr": 75.5
      },
      {
       "pid": 1642859,
       "name": "Jase Richardson",
-      "min": 14.0,
+      "min": 15.628126,
       "ovr": 42.0
      },
      {
       "pid": 1628975,
       "name": "Jevon Carter",
-      "min": 10.0,
+      "min": 13.126173,
       "ovr": 50.7
+     },
+     {
+      "pid": 1631288,
+      "name": "Jamal Cain",
+      "min": 12.396661,
+      "ovr": 59.8
+     },
+     {
+      "pid": 202696,
+      "name": "Nikola Vučević",
+      "min": 7.684637,
+      "ovr": 65.3
+     },
+     {
+      "pid": 1629048,
+      "name": "Goga Bitadze",
+      "min": 7.507304,
+      "ovr": 69.0
+     },
+     {
+      "pid": 1631457,
+      "name": "Alex Morales",
+      "min": 6.637936,
+      "ovr": 51.5
+     },
+     {
+      "pid": 1630658,
+      "name": "Colin Castleton",
+      "min": 4.28933,
+      "ovr": 50.6
      }
     ]
    },
    "today": {
-    "ortg": -1.3343930875932983,
-    "drtg": 4.158068290939383,
-    "net": -5.492461378532681,
-    "margin": 2.985,
-    "predWins": 29.729275351585276,
+    "ortg": -0.32448788080391466,
+    "drtg": 1.8072247467468117,
+    "net": -2.1317126275507263,
+    "margin": 5.035,
+    "predWins": 31.803655848438446,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
@@ -2888,47 +3958,59 @@
      {
       "pid": 1628976,
       "name": "Wendell Carter Jr.",
-      "min": 34.0,
+      "min": 36.0,
       "ovr": 78.5
      },
      {
       "pid": 1641783,
       "name": "Tristan da Silva",
-      "min": 32.0,
+      "min": 33.495906,
       "ovr": 60.3
      },
      {
       "pid": 1642859,
       "name": "Jase Richardson",
-      "min": 30.0,
+      "min": 23.998426,
       "ovr": 42.0
      },
      {
       "pid": 1628975,
       "name": "Jevon Carter",
-      "min": 26.0,
+      "min": 19.707321,
       "ovr": 50.7
      },
      {
       "pid": 1631288,
       "name": "Jamal Cain",
-      "min": 22.0,
+      "min": 18.198228,
       "ovr": 59.8
      },
      {
       "pid": 202696,
       "name": "Nikola Vučević",
-      "min": 14.0,
+      "min": 10.524635,
       "ovr": 65.3
      },
      {
       "pid": 1629048,
       "name": "Goga Bitadze",
-      "min": 10.0,
+      "min": 10.380979,
       "ovr": 69.0
+     },
+     {
+      "pid": 1631457,
+      "name": "Alex Morales",
+      "min": 9.280878,
+      "ovr": 51.5
+     },
+     {
+      "pid": 1630658,
+      "name": "Colin Castleton",
+      "min": 6.413627,
+      "ovr": 50.6
      }
     ],
-    "predWinsAllSeason": 29.56829139612911,
+    "predWinsAllSeason": 36.30654424059265,
     "lineupStates": 3
    },
    "restored": [],
@@ -3041,77 +4123,113 @@
     }
    ],
    "c": {
-    "ortg": -2.9987926569758656,
-    "drtg": 7.50829707849654,
-    "net": -10.507089735472405,
-    "margin": -2.14,
-    "predWins": 17.032398046314473,
+    "ortg": -2.1141262335518007,
+    "drtg": 4.424571061894397,
+    "net": -6.538697295446198,
+    "margin": 0.5,
+    "predWins": 24.392906266017427,
     "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630169,
       "name": "Tyrese Haliburton",
-      "min": 36.0,
+      "min": 24.417487,
       "ovr": 84.7156,
       "ovrSrc": "24-25 卡"
      },
      {
       "pid": 1629614,
       "name": "Andrew Nembhard",
-      "min": 36.0,
+      "min": 23.838484,
       "ovr": 79.1
      },
      {
       "pid": 1627783,
       "name": "Pascal Siakam",
-      "min": 34.0,
+      "min": 23.621135,
       "ovr": 79.9
      },
      {
       "pid": 1641716,
       "name": "Jarace Walker",
-      "min": 32.0,
+      "min": 17.971459,
       "ovr": 55.7
      },
      {
       "pid": 1626162,
       "name": "Kelly Oubre Jr.",
-      "min": 30.0,
+      "min": 16.841688,
       "ovr": 72.3
      },
      {
       "pid": 1630174,
       "name": "Aaron Nesmith",
-      "min": 26.0,
+      "min": 16.533561,
       "ovr": 74.7
      },
      {
       "pid": 1630167,
       "name": "Obi Toppin",
-      "min": 22.0,
+      "min": 16.207966,
       "ovr": 79.8
      },
      {
       "pid": 1631245,
       "name": "Quenton Jackson",
-      "min": 14.0,
+      "min": 15.339803,
       "ovr": 77.6
      },
      {
       "pid": 1627826,
       "name": "Ivica Zubac",
-      "min": 10.0,
+      "min": 15.304144,
       "ovr": 76.2
+     },
+     {
+      "pid": 1630643,
+      "name": "Jay Huff",
+      "min": 14.455795,
+      "ovr": 69.7
+     },
+     {
+      "pid": 1641771,
+      "name": "Jalen Slawson",
+      "min": 12.780212,
+      "ovr": 64.4
+     },
+     {
+      "pid": 1626204,
+      "name": "Larry Nance Jr.",
+      "min": 12.555247,
+      "ovr": 53.8
+     },
+     {
+      "pid": 1641738,
+      "name": "Kobe Brown",
+      "min": 11.486856,
+      "ovr": 53.7
+     },
+     {
+      "pid": 1641767,
+      "name": "Ben Sheppard",
+      "min": 9.389139,
+      "ovr": 60.9
+     },
+     {
+      "pid": 1643552,
+      "name": "Braden Smith",
+      "min": 9.257023,
+      "ovr": 57.6
      }
     ]
    },
    "today": {
-    "ortg": -10.427428614252207,
-    "drtg": -2.265636965410451,
-    "net": -8.161791648841756,
+    "ortg": -9.672768251662404,
+    "drtg": -2.874452351525818,
+    "net": -6.798315900136586,
     "margin": 0.23,
-    "predWins": 16.86253368519498,
+    "predWins": 26.364779035696493,
     "schedGames": 72,
     "poolGames": 2,
     "rotation": [
@@ -3152,8 +4270,8 @@
       "ovr": 57.6
      }
     ],
-    "predWinsAllSeason": 22.684711090712593,
-    "lineupStates": 3
+    "predWinsAllSeason": 24.521133062044882,
+    "lineupStates": 4
    },
    "restored": [],
    "nOut": 11
@@ -3184,135 +4302,195 @@
     }
    ],
    "c": {
-    "ortg": -1.283622025903469,
-    "drtg": 0.6721415772866806,
-    "net": -1.9557636031901495,
-    "margin": 6.55,
-    "predWins": 39.918962491666406,
+    "ortg": 0.25567809403783315,
+    "drtg": 0.7665757699557645,
+    "net": -0.5108976759179313,
+    "margin": 6.735,
+    "predWins": 43.31377749943844,
     "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630178,
       "name": "Tyrese Maxey",
-      "min": 36.0,
+      "min": 32.541304,
       "ovr": 92.9
      },
      {
       "pid": 1627759,
       "name": "Jaylen Brown",
-      "min": 36.0,
+      "min": 30.943012,
       "ovr": 89.3
      },
      {
       "pid": 203954,
       "name": "Joel Embiid",
-      "min": 34.0,
+      "min": 28.856803,
       "ovr": 88.5
      },
      {
       "pid": 1642845,
       "name": "VJ Edgecombe",
-      "min": 32.0,
+      "min": 28.601381,
       "ovr": 79.4
      },
      {
       "pid": 2544,
       "name": "LeBron James",
-      "min": 30.0,
+      "min": 28.233022,
       "ovr": 91.4
      },
      {
       "pid": 1629731,
       "name": "Dean Wade",
-      "min": 26.0,
+      "min": 22.694622,
       "ovr": 77.0
      },
      {
       "pid": 1629014,
       "name": "Anfernee Simons",
-      "min": 22.0,
+      "min": 20.433221,
       "ovr": 56.7
      },
      {
       "pid": 203484,
       "name": "Kentavious Caldwell-Pope",
-      "min": 14.0,
+      "min": 18.986803,
       "ovr": 71.4
      },
      {
       "pid": 1641737,
       "name": "Adem Bona",
-      "min": 10.0,
+      "min": 11.890248,
       "ovr": 53.0
+     },
+     {
+      "pid": 1631133,
+      "name": "Jabari Walker",
+      "min": 6.841203,
+      "ovr": 56.0
+     },
+     {
+      "pid": 1642889,
+      "name": "Labaron Philon Jr.",
+      "min": 6.187926,
+      "ovr": 54.5
+     },
+     {
+      "pid": 1641712,
+      "name": "Rayan Rupert",
+      "min": 1.859825,
+      "ovr": 44.4
+     },
+     {
+      "pid": 1642348,
+      "name": "Justin Edwards",
+      "min": 1.491953,
+      "ovr": 56.1
+     },
+     {
+      "pid": 1631126,
+      "name": "Caleb Love",
+      "min": 0.438678,
+      "ovr": 35.0
      }
     ]
    },
    "today": {
-    "ortg": -1.283622025903469,
-    "drtg": 0.6721415772866806,
-    "net": -1.9557636031901495,
-    "margin": 6.55,
-    "predWins": 39.964648177414006,
+    "ortg": 0.25567809403783315,
+    "drtg": 0.7665757699557645,
+    "net": -0.5108976759179313,
+    "margin": 6.735,
+    "predWins": 43.185993540645,
     "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630178,
       "name": "Tyrese Maxey",
-      "min": 36.0,
+      "min": 32.541304,
       "ovr": 92.9
      },
      {
       "pid": 1627759,
       "name": "Jaylen Brown",
-      "min": 36.0,
+      "min": 30.943012,
       "ovr": 89.3
      },
      {
       "pid": 203954,
       "name": "Joel Embiid",
-      "min": 34.0,
+      "min": 28.856803,
       "ovr": 88.5
      },
      {
       "pid": 1642845,
       "name": "VJ Edgecombe",
-      "min": 32.0,
+      "min": 28.601381,
       "ovr": 79.4
      },
      {
       "pid": 2544,
       "name": "LeBron James",
-      "min": 30.0,
+      "min": 28.233022,
       "ovr": 91.4
      },
      {
       "pid": 1629731,
       "name": "Dean Wade",
-      "min": 26.0,
+      "min": 22.694622,
       "ovr": 77.0
      },
      {
       "pid": 1629014,
       "name": "Anfernee Simons",
-      "min": 22.0,
+      "min": 20.433221,
       "ovr": 56.7
      },
      {
       "pid": 203484,
       "name": "Kentavious Caldwell-Pope",
-      "min": 14.0,
+      "min": 18.986803,
       "ovr": 71.4
      },
      {
       "pid": 1641737,
       "name": "Adem Bona",
-      "min": 10.0,
+      "min": 11.890248,
       "ovr": 53.0
+     },
+     {
+      "pid": 1631133,
+      "name": "Jabari Walker",
+      "min": 6.841203,
+      "ovr": 56.0
+     },
+     {
+      "pid": 1642889,
+      "name": "Labaron Philon Jr.",
+      "min": 6.187926,
+      "ovr": 54.5
+     },
+     {
+      "pid": 1641712,
+      "name": "Rayan Rupert",
+      "min": 1.859825,
+      "ovr": 44.4
+     },
+     {
+      "pid": 1642348,
+      "name": "Justin Edwards",
+      "min": 1.491953,
+      "ovr": 56.1
+     },
+     {
+      "pid": 1631126,
+      "name": "Caleb Love",
+      "min": 0.438678,
+      "ovr": 35.0
      }
     ],
-    "predWinsAllSeason": 41.31873681712527,
+    "predWinsAllSeason": 43.993759905850624,
     "lineupStates": 1
    },
    "restored": [],
@@ -3344,135 +4522,201 @@
     }
    ],
    "c": {
-    "ortg": -4.47056003917281,
-    "drtg": -0.16578790508391705,
-    "net": -4.304772134088893,
-    "margin": 4.205,
-    "predWins": 29.314267603196303,
+    "ortg": -2.92287011890744,
+    "drtg": -0.10729382930689724,
+    "net": -2.8155762896005427,
+    "margin": 4.215,
+    "predWins": 32.157417473804536,
     "schedGames": 75,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1626164,
       "name": "Devin Booker",
-      "min": 36.0,
+      "min": 31.308152,
       "ovr": 88.1
      },
      {
       "pid": 1628970,
       "name": "Miles Bridges",
-      "min": 36.0,
+      "min": 29.436716,
       "ovr": 70.9
      },
      {
       "pid": 1628415,
       "name": "Dillon Brooks",
-      "min": 34.0,
+      "min": 26.481556,
       "ovr": 68.2
      },
      {
       "pid": 1630224,
       "name": "Jalen Green",
-      "min": 32.0,
+      "min": 25.323413,
       "ovr": 64.2
      },
      {
       "pid": 1631221,
       "name": "Collin Gillespie",
-      "min": 30.0,
+      "min": 23.089834,
       "ovr": 76.0
      },
      {
       "pid": 1642863,
       "name": "Khaman Maluach",
-      "min": 26.0,
+      "min": 17.574195,
       "ovr": 49.1
      },
      {
       "pid": 1642345,
       "name": "Oso Ighodaro",
-      "min": 22.0,
+      "min": 17.23322,
       "ovr": 73.3
      },
      {
       "pid": 1630692,
       "name": "Jordan Goodwin",
-      "min": 14.0,
+      "min": 16.091798,
       "ovr": 72.8
      },
      {
       "pid": 1628379,
       "name": "Luke Kennard",
-      "min": 10.0,
+      "min": 14.027884,
       "ovr": 81.0
+     },
+     {
+      "pid": 1642346,
+      "name": "Ryan Dunn",
+      "min": 10.846329,
+      "ovr": 65.5
+     },
+     {
+      "pid": 1642853,
+      "name": "Rasheer Fleming",
+      "min": 6.921416,
+      "ovr": 46.5
+     },
+     {
+      "pid": 1630311,
+      "name": "Pat Spencer",
+      "min": 6.600121,
+      "ovr": 52.6
+     },
+     {
+      "pid": 1641871,
+      "name": "Duop Reath",
+      "min": 5.910033,
+      "ovr": 55.9
+     },
+     {
+      "pid": 1631123,
+      "name": "Jamaree Bouyea",
+      "min": 4.577667,
+      "ovr": 60.7
+     },
+     {
+      "pid": 1643520,
+      "name": "Koa Peat",
+      "min": 4.577667,
+      "ovr": 52.1
      }
     ]
    },
    "today": {
-    "ortg": -5.265138532110427,
-    "drtg": -0.30244009419079987,
-    "net": -4.962698437919627,
-    "margin": 3.62,
-    "predWins": 29.50090098495134,
+    "ortg": -4.415852150923584,
+    "drtg": -0.9085286837385382,
+    "net": -3.5073234671850457,
+    "margin": 3.615,
+    "predWins": 32.292728458112684,
     "schedGames": 75,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1626164,
       "name": "Devin Booker",
-      "min": 36.0,
+      "min": 33.66386,
       "ovr": 88.1
      },
      {
       "pid": 1628970,
       "name": "Miles Bridges",
-      "min": 36.0,
+      "min": 31.651613,
       "ovr": 70.9
      },
      {
       "pid": 1628415,
       "name": "Dillon Brooks",
-      "min": 34.0,
+      "min": 28.474098,
       "ovr": 68.2
      },
      {
       "pid": 1630224,
       "name": "Jalen Green",
-      "min": 32.0,
+      "min": 27.228813,
       "ovr": 64.2
      },
      {
       "pid": 1631221,
       "name": "Collin Gillespie",
-      "min": 30.0,
+      "min": 24.827175,
       "ovr": 76.0
      },
      {
       "pid": 1642863,
       "name": "Khaman Maluach",
-      "min": 26.0,
+      "min": 18.896524,
       "ovr": 49.1
      },
      {
       "pid": 1642345,
       "name": "Oso Ighodaro",
-      "min": 22.0,
+      "min": 18.529893,
       "ovr": 73.3
      },
      {
       "pid": 1628379,
       "name": "Luke Kennard",
-      "min": 14.0,
+      "min": 14.939223,
       "ovr": 81.0
      },
      {
       "pid": 1642346,
       "name": "Ryan Dunn",
-      "min": 10.0,
+      "min": 11.534203,
       "ovr": 65.5
+     },
+     {
+      "pid": 1642853,
+      "name": "Rasheer Fleming",
+      "min": 6.958941,
+      "ovr": 46.5
+     },
+     {
+      "pid": 1630311,
+      "name": "Pat Spencer",
+      "min": 7.096731,
+      "ovr": 52.6
+     },
+     {
+      "pid": 1641871,
+      "name": "Duop Reath",
+      "min": 6.35472,
+      "ovr": 55.9
+     },
+     {
+      "pid": 1631123,
+      "name": "Jamaree Bouyea",
+      "min": 4.922103,
+      "ovr": 60.7
+     },
+     {
+      "pid": 1643520,
+      "name": "Koa Peat",
+      "min": 4.922103,
+      "ovr": 52.1
      }
     ],
-    "predWinsAllSeason": 29.574634650734147,
+    "predWinsAllSeason": 31.125883692229444,
     "lineupStates": 1
    },
    "restored": [],
@@ -3504,137 +4748,215 @@
     }
    ],
    "c": {
-    "ortg": 0.115940754282434,
-    "drtg": -2.0360597933353404,
-    "net": 2.1520005476177744,
-    "margin": 10.565,
-    "predWins": 46.86423400092416,
+    "ortg": -1.052227470381851,
+    "drtg": -1.8843168950178892,
+    "net": 0.8320894246360382,
+    "margin": 7.99,
+    "predWins": 43.92709994516824,
     "schedGames": 74,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630166,
       "name": "Deni Avdija",
-      "min": 36.0,
+      "min": 27.365515,
       "ovr": 83.2
      },
      {
       "pid": 203081,
       "name": "Damian Lillard",
-      "min": 36.0,
+      "min": 24.666633,
       "ovr": 85.6044,
       "ovrSrc": "24-25 卡"
      },
      {
       "pid": 1641739,
       "name": "Toumani Camara",
-      "min": 34.0,
+      "min": 22.949517,
       "ovr": 79.0
      },
      {
       "pid": 1629630,
       "name": "Ja Morant",
-      "min": 32.0,
+      "min": 21.88924,
       "ovr": 80.0
      },
      {
       "pid": 201950,
       "name": "Jrue Holiday",
-      "min": 30.0,
+      "min": 21.591267,
       "ovr": 87.7
      },
      {
       "pid": 1642270,
       "name": "Donovan Clingan",
-      "min": 26.0,
+      "min": 19.892232,
       "ovr": 72.1
      },
      {
       "pid": 1631321,
       "name": "Sidy Cissoko",
-      "min": 22.0,
+      "min": 18.082587,
       "ovr": 60.0
      },
      {
       "pid": 1630703,
       "name": "Scoot Henderson",
-      "min": 14.0,
+      "min": 17.968373,
       "ovr": 52.3
      },
      {
       "pid": 1629057,
       "name": "Robert Williams III",
-      "min": 10.0,
+      "min": 13.84628,
       "ovr": 76.1
+     },
+     {
+      "pid": 1642959,
+      "name": "Chris Youngblood",
+      "min": 9.187806,
+      "ovr": 48.2
+     },
+     {
+      "pid": 1630249,
+      "name": "Vít Krejčí",
+      "min": 8.934856,
+      "ovr": 67.5
+     },
+     {
+      "pid": 1642905,
+      "name": "Yang Hansen",
+      "min": 8.877435,
+      "ovr": 49.3
+     },
+     {
+      "pid": 1630695,
+      "name": "Micah Potter",
+      "min": 7.29232,
+      "ovr": 56.1
+     },
+     {
+      "pid": 1642382,
+      "name": "Branden Carlson",
+      "min": 7.121143,
+      "ovr": 51.9
+     },
+     {
+      "pid": 1643257,
+      "name": "Jayson Kent",
+      "min": 6.278083,
+      "ovr": 49.5
+     },
+     {
+      "pid": 1642910,
+      "name": "John Tonje",
+      "min": 4.056712,
+      "ovr": 51.8
      }
     ]
    },
    "today": {
-    "ortg": 1.599420273268592,
-    "drtg": -3.534683448328906,
-    "net": 5.134103721597498,
-    "margin": 13.845,
-    "predWins": 48.198262861649965,
+    "ortg": 0.8180920370096487,
+    "drtg": -1.1495225978340642,
+    "net": 1.967614634843713,
+    "margin": 9.165,
+    "predWins": 44.46664323710698,
     "schedGames": 74,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630166,
       "name": "Deni Avdija",
-      "min": 36.0,
+      "min": 30.135863,
       "ovr": 83.2
      },
      {
       "pid": 203081,
       "name": "Damian Lillard",
-      "min": 36.0,
+      "min": 27.163759,
       "ovr": 85.6044,
       "ovrSrc": "24-25 卡"
      },
      {
       "pid": 1641739,
       "name": "Toumani Camara",
-      "min": 34.0,
+      "min": 25.272811,
       "ovr": 79.0
      },
      {
       "pid": 201950,
       "name": "Jrue Holiday",
-      "min": 32.0,
+      "min": 23.922958,
       "ovr": 87.7
      },
      {
       "pid": 1642270,
       "name": "Donovan Clingan",
-      "min": 30.0,
+      "min": 22.191124,
       "ovr": 72.1
      },
      {
       "pid": 1631321,
       "name": "Sidy Cissoko",
-      "min": 26.0,
+      "min": 20.142065,
       "ovr": 60.0
      },
      {
       "pid": 1630703,
       "name": "Scoot Henderson",
-      "min": 22.0,
+      "min": 19.832213,
       "ovr": 52.3
      },
      {
       "pid": 1629057,
       "name": "Robert Williams III",
-      "min": 14.0,
+      "min": 15.102279,
       "ovr": 76.1
      },
      {
       "pid": 1642959,
       "name": "Chris Youngblood",
-      "min": 10.0,
+      "min": 10.006683,
       "ovr": 48.2
+     },
+     {
+      "pid": 1630249,
+      "name": "Vít Krejčí",
+      "min": 9.200456,
+      "ovr": 67.5
+     },
+     {
+      "pid": 1642905,
+      "name": "Yang Hansen",
+      "min": 9.776142,
+      "ovr": 49.3
+     },
+     {
+      "pid": 1630695,
+      "name": "Micah Potter",
+      "min": 8.030558,
+      "ovr": 56.1
+     },
+     {
+      "pid": 1642382,
+      "name": "Branden Carlson",
+      "min": 7.842052,
+      "ovr": 51.9
+     },
+     {
+      "pid": 1643257,
+      "name": "Jayson Kent",
+      "min": 6.913645,
+      "ovr": 49.5
+     },
+     {
+      "pid": 1642910,
+      "name": "John Tonje",
+      "min": 4.467393,
+      "ovr": 51.8
      }
     ],
-    "predWinsAllSeason": 55.62601489881401,
+    "predWinsAllSeason": 46.90849057721536,
     "lineupStates": 2
    },
    "restored": [],
@@ -3683,135 +5005,177 @@
     }
    ],
    "c": {
-    "ortg": -4.128476708195379,
-    "drtg": 5.520265017745345,
-    "net": -9.648741725940724,
-    "margin": -1.275,
-    "predWins": 17.907281797746016,
+    "ortg": -5.072960748613369,
+    "drtg": 4.23479209025642,
+    "net": -9.307752838869789,
+    "margin": -2.42,
+    "predWins": 17.819023232577443,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1643411,
       "name": "Darius Acuff Jr.",
-      "min": 36.0,
+      "min": 31.476547,
       "ovr": 68.9
      },
      {
       "pid": 1627734,
       "name": "Domantas Sabonis",
-      "min": 36.0,
+      "min": 30.746664,
       "ovr": 80.9
      },
      {
       "pid": 203897,
       "name": "Zach LaVine",
-      "min": 34.0,
+      "min": 28.468045,
       "ovr": 78.4
      },
      {
       "pid": 1629631,
       "name": "De'Andre Hunter",
-      "min": 32.0,
+      "min": 25.73956,
       "ovr": 70.0
      },
      {
       "pid": 1630173,
       "name": "Precious Achiuwa",
-      "min": 30.0,
+      "min": 24.204197,
       "ovr": 59.3
      },
      {
       "pid": 1631099,
       "name": "Keegan Murray",
-      "min": 26.0,
+      "min": 22.694232,
       "ovr": 73.0
      },
      {
       "pid": 1643567,
       "name": "Emanuel Sharp",
-      "min": 22.0,
+      "min": 15.129152,
       "ovr": 50.8
      },
      {
       "pid": 1642367,
       "name": "Jonathan Mogbo",
-      "min": 14.0,
+      "min": 14.238458,
       "ovr": 51.7
      },
      {
       "pid": 1628370,
       "name": "Malik Monk",
-      "min": 10.0,
+      "min": 12.349808,
       "ovr": 61.4
+     },
+     {
+      "pid": 1631342,
+      "name": "Daeqwon Plowden",
+      "min": 10.28894,
+      "ovr": 51.1
+     },
+     {
+      "pid": 1641778,
+      "name": "Leaky Black",
+      "min": 9.840621,
+      "ovr": 50.5
+     },
+     {
+      "pid": 1642284,
+      "name": "Alex Karaban",
+      "min": 8.561544,
+      "ovr": 51.6
+     },
+     {
+      "pid": 1642363,
+      "name": "Nique Clifford",
+      "min": 6.262232,
+      "ovr": 56.0
      }
     ]
    },
    "today": {
-    "ortg": -3.885638327639967,
-    "drtg": 7.891775035500174,
-    "net": -11.777413363140141,
-    "margin": -3.405,
-    "predWins": 17.753233493587917,
+    "ortg": -2.9708456981311,
+    "drtg": 5.451386566711051,
+    "net": -8.422232264842151,
+    "margin": -1.385,
+    "predWins": 17.885534736842803,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1643411,
       "name": "Darius Acuff Jr.",
-      "min": 36.0,
+      "min": 34.87034,
       "ovr": 68.9
      },
      {
       "pid": 1627734,
       "name": "Domantas Sabonis",
-      "min": 36.0,
+      "min": 34.06176,
       "ovr": 80.9
      },
      {
       "pid": 203897,
       "name": "Zach LaVine",
-      "min": 34.0,
+      "min": 31.537461,
       "ovr": 78.4
      },
      {
       "pid": 1629631,
       "name": "De'Andre Hunter",
-      "min": 32.0,
+      "min": 28.514792,
       "ovr": 70.0
      },
      {
       "pid": 1630173,
       "name": "Precious Achiuwa",
-      "min": 30.0,
+      "min": 26.813887,
       "ovr": 59.3
      },
      {
       "pid": 1643567,
       "name": "Emanuel Sharp",
-      "min": 26.0,
+      "min": 16.953021,
       "ovr": 50.8
      },
      {
       "pid": 1642367,
       "name": "Jonathan Mogbo",
-      "min": 22.0,
+      "min": 15.809367,
       "ovr": 51.7
      },
      {
       "pid": 1628370,
       "name": "Malik Monk",
-      "min": 14.0,
+      "min": 13.550605,
       "ovr": 61.4
      },
      {
       "pid": 1631342,
       "name": "Daeqwon Plowden",
-      "min": 10.0,
+      "min": 11.272962,
       "ovr": 51.1
+     },
+     {
+      "pid": 1641778,
+      "name": "Leaky Black",
+      "min": 10.193736,
+      "ovr": 50.5
+     },
+     {
+      "pid": 1642284,
+      "name": "Alex Karaban",
+      "min": 9.484647,
+      "ovr": 51.6
+     },
+     {
+      "pid": 1642363,
+      "name": "Nique Clifford",
+      "min": 6.937424,
+      "ovr": 56.0
      }
     ],
-    "predWinsAllSeason": 15.620417818897419,
+    "predWinsAllSeason": 20.211943475450987,
     "lineupStates": 2
    },
    "restored": [],
@@ -3842,135 +5206,207 @@
     }
    ],
    "c": {
-    "ortg": 0.6107449213855176,
-    "drtg": -4.1118821542851975,
-    "net": 4.722627075670715,
-    "margin": 13.385,
-    "predWins": 52.9941069881144,
+    "ortg": 2.2409139721028453,
+    "drtg": -5.592481548589362,
+    "net": 7.833395520692207,
+    "margin": 14.975,
+    "predWins": 59.25652404010211,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1642844,
       "name": "Dylan Harper",
-      "min": 36.0,
+      "min": 31.129697,
       "ovr": 75.7
      },
      {
       "pid": 1630170,
       "name": "Devin Vassell",
-      "min": 36.0,
+      "min": 29.372519,
       "ovr": 75.5
      },
      {
       "pid": 1641705,
       "name": "Victor Wembanyama",
-      "min": 34.0,
+      "min": 29.468797,
       "ovr": 101.9
      },
      {
       "pid": 1628368,
       "name": "De'Aaron Fox",
-      "min": 32.0,
+      "min": 28.851882,
       "ovr": 92.8
      },
      {
       "pid": 1642264,
       "name": "Stephon Castle",
-      "min": 30.0,
+      "min": 27.005012,
       "ovr": 76.3
      },
      {
       "pid": 1630577,
       "name": "Julian Champagnie",
-      "min": 26.0,
+      "min": 24.915452,
       "ovr": 76.3
      },
      {
       "pid": 1629640,
       "name": "Keldon Johnson",
-      "min": 22.0,
+      "min": 21.051413,
       "ovr": 66.0
      },
      {
       "pid": 1628436,
       "name": "Luke Kornet",
-      "min": 14.0,
+      "min": 13.575278,
       "ovr": 74.5
      },
      {
       "pid": 203084,
       "name": "Harrison Barnes",
-      "min": 10.0,
+      "min": 9.764462,
       "ovr": 61.8
+     },
+     {
+      "pid": 1642868,
+      "name": "Carter Bryant",
+      "min": 9.133189,
+      "ovr": 46.8
+     },
+     {
+      "pid": 1629162,
+      "name": "Jordan McLaughlin",
+      "min": 6.101241,
+      "ovr": 54.6
+     },
+     {
+      "pid": 1643542,
+      "name": "Tarris Reed Jr.",
+      "min": 5.000356,
+      "ovr": 53.6
+     },
+     {
+      "pid": 1643551,
+      "name": "Ja'Kobi Gillespie",
+      "min": 2.143065,
+      "ovr": 50.2
+     },
+     {
+      "pid": 1642357,
+      "name": "David Jones Garcia",
+      "min": 1.243818,
+      "ovr": 56.8
+     },
+     {
+      "pid": 1643576,
+      "name": "Maliq Brown",
+      "min": 1.243818,
+      "ovr": 50.2
      }
     ]
    },
    "today": {
-    "ortg": 0.6107449213855176,
-    "drtg": -4.1118821542851975,
-    "net": 4.722627075670715,
-    "margin": 13.385,
-    "predWins": 52.85799412029247,
+    "ortg": 2.2409139721028453,
+    "drtg": -5.592481548589362,
+    "net": 7.833395520692207,
+    "margin": 14.975,
+    "predWins": 59.25393604564714,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1642844,
       "name": "Dylan Harper",
-      "min": 36.0,
+      "min": 31.129697,
       "ovr": 75.7
      },
      {
       "pid": 1630170,
       "name": "Devin Vassell",
-      "min": 36.0,
+      "min": 29.372519,
       "ovr": 75.5
      },
      {
       "pid": 1641705,
       "name": "Victor Wembanyama",
-      "min": 34.0,
+      "min": 29.468797,
       "ovr": 101.9
      },
      {
       "pid": 1628368,
       "name": "De'Aaron Fox",
-      "min": 32.0,
+      "min": 28.851882,
       "ovr": 92.8
      },
      {
       "pid": 1642264,
       "name": "Stephon Castle",
-      "min": 30.0,
+      "min": 27.005012,
       "ovr": 76.3
      },
      {
       "pid": 1630577,
       "name": "Julian Champagnie",
-      "min": 26.0,
+      "min": 24.915452,
       "ovr": 76.3
      },
      {
       "pid": 1629640,
       "name": "Keldon Johnson",
-      "min": 22.0,
+      "min": 21.051413,
       "ovr": 66.0
      },
      {
       "pid": 1628436,
       "name": "Luke Kornet",
-      "min": 14.0,
+      "min": 13.575278,
       "ovr": 74.5
      },
      {
       "pid": 203084,
       "name": "Harrison Barnes",
-      "min": 10.0,
+      "min": 9.764462,
       "ovr": 61.8
+     },
+     {
+      "pid": 1642868,
+      "name": "Carter Bryant",
+      "min": 9.133189,
+      "ovr": 46.8
+     },
+     {
+      "pid": 1629162,
+      "name": "Jordan McLaughlin",
+      "min": 6.101241,
+      "ovr": 54.6
+     },
+     {
+      "pid": 1643542,
+      "name": "Tarris Reed Jr.",
+      "min": 5.000356,
+      "ovr": 53.6
+     },
+     {
+      "pid": 1643551,
+      "name": "Ja'Kobi Gillespie",
+      "min": 2.143065,
+      "ovr": 50.2
+     },
+     {
+      "pid": 1642357,
+      "name": "David Jones Garcia",
+      "min": 1.243818,
+      "ovr": 56.8
+     },
+     {
+      "pid": 1643576,
+      "name": "Maliq Brown",
+      "min": 1.243818,
+      "ovr": 50.2
      }
     ],
-    "predWinsAllSeason": 53.981321622828574,
+    "predWinsAllSeason": 58.82277740470174,
     "lineupStates": 1
    },
    "restored": [],
@@ -4037,76 +5473,112 @@
     }
    ],
    "c": {
-    "ortg": 0.7984165643599255,
-    "drtg": -10.136197220891802,
-    "net": 10.934613785251727,
-    "margin": 19.525,
-    "predWins": 64.83347521800327,
+    "ortg": -0.08016126037483673,
+    "drtg": -7.5293054357584595,
+    "net": 7.449144175383623,
+    "margin": 14.84,
+    "predWins": 59.17984710104074,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1628983,
       "name": "Shai Gilgeous-Alexander",
-      "min": 36.0,
+      "min": 26.317184,
       "ovr": 107.9
      },
      {
       "pid": 1631114,
       "name": "Jalen Williams",
-      "min": 36.0,
+      "min": 24.494088,
       "ovr": 90.9
      },
      {
       "pid": 1631096,
       "name": "Chet Holmgren",
-      "min": 34.0,
+      "min": 23.353216,
       "ovr": 93.5
      },
      {
       "pid": 1642349,
       "name": "Ajay Mitchell",
-      "min": 32.0,
+      "min": 20.853892,
       "ovr": 76.8
      },
      {
       "pid": 1642272,
       "name": "Jared McCain",
-      "min": 30.0,
+      "min": 19.218591,
       "ovr": 52.5
      },
      {
       "pid": 1628392,
       "name": "Isaiah Hartenstein",
-      "min": 26.0,
+      "min": 18.632985,
       "ovr": 75.2
      },
      {
       "pid": 1627936,
       "name": "Alex Caruso",
-      "min": 22.0,
+      "min": 14.239564,
       "ovr": 84.3
      },
      {
       "pid": 1631119,
       "name": "Jaylin Williams",
-      "min": 14.0,
+      "min": 13.877515,
       "ovr": 80.3
      },
      {
       "pid": 1643530,
       "name": "Aday Mara",
-      "min": 10.0,
+      "min": 13.735382,
       "ovr": 58.2
+     },
+     {
+      "pid": 1643717,
+      "name": "Josh Dix",
+      "min": 12.750392,
+      "ovr": null
+     },
+     {
+      "pid": 1641717,
+      "name": "Cason Wallace",
+      "min": 13.345163,
+      "ovr": 79.9
+     },
+     {
+      "pid": 1629026,
+      "name": "Kenrich Williams",
+      "min": 13.26065,
+      "ovr": 68.0
+     },
+     {
+      "pid": 1642892,
+      "name": "Bennett Stirtz",
+      "min": 12.308991,
+      "ovr": 55.4
+     },
+     {
+      "pid": 1642877,
+      "name": "Micah Peavy",
+      "min": 9.442595,
+      "ovr": 49.7
+     },
+     {
+      "pid": 1642964,
+      "name": "Brooks Barnhizer",
+      "min": 4.169792,
+      "ovr": 53.2
      }
     ]
    },
    "today": {
-    "ortg": 0.19571398580663413,
-    "drtg": -5.735965231244506,
-    "net": 5.9316792170511405,
-    "margin": 14.495,
-    "predWins": 65.43136229318714,
+    "ortg": 0.7081785722200777,
+    "drtg": -4.726922493194294,
+    "net": 5.435101065414372,
+    "margin": 12.695,
+    "predWins": 58.4895190859099,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
@@ -4119,53 +5591,65 @@
      {
       "pid": 1642349,
       "name": "Ajay Mitchell",
-      "min": 36.0,
+      "min": 31.174281,
       "ovr": 76.8
      },
      {
       "pid": 1642272,
       "name": "Jared McCain",
-      "min": 34.0,
+      "min": 29.09892,
       "ovr": 52.5
      },
      {
       "pid": 1628392,
       "name": "Isaiah Hartenstein",
-      "min": 32.0,
+      "min": 28.408878,
       "ovr": 75.2
      },
      {
       "pid": 1631119,
       "name": "Jaylin Williams",
-      "min": 30.0,
+      "min": 21.319276,
       "ovr": 80.3
      },
      {
       "pid": 1643530,
       "name": "Aday Mara",
-      "min": 26.0,
+      "min": 20.630753,
       "ovr": 58.2
      },
      {
       "pid": 1643717,
       "name": "Josh Dix",
-      "min": 22.0,
+      "min": 18.725473,
       "ovr": null
      },
      {
       "pid": 1629026,
       "name": "Kenrich Williams",
-      "min": 14.0,
+      "min": 18.1691,
       "ovr": 68.0
      },
      {
       "pid": 1642892,
       "name": "Bennett Stirtz",
-      "min": 10.0,
+      "min": 17.027922,
       "ovr": 55.4
+     },
+     {
+      "pid": 1642877,
+      "name": "Micah Peavy",
+      "min": 13.207854,
+      "ovr": 49.7
+     },
+     {
+      "pid": 1642964,
+      "name": "Brooks Barnhizer",
+      "min": 6.237542,
+      "ovr": 53.2
      }
     ],
-    "predWinsAllSeason": 56.49474672442335,
+    "predWinsAllSeason": 54.52668997060151,
     "lineupStates": 3
    },
    "restored": [],
@@ -4205,76 +5689,106 @@
     }
    ],
    "c": {
-    "ortg": 1.4685657775005865,
-    "drtg": 0.7637074666688477,
-    "net": 0.7048583108317388,
-    "margin": 9.415,
-    "predWins": 43.29708631337103,
+    "ortg": 2.2185539280318665,
+    "drtg": -0.7252056047214239,
+    "net": 2.9437595327532904,
+    "margin": 10.33,
+    "predWins": 48.95314875291052,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630567,
       "name": "Scottie Barnes",
-      "min": 36.0,
+      "min": 30.429075,
       "ovr": 89.5
      },
      {
       "pid": 1629628,
       "name": "RJ Barrett",
-      "min": 36.0,
+      "min": 29.121511,
       "ovr": 79.8
      },
      {
       "pid": 1630193,
       "name": "Immanuel Quickley",
-      "min": 34.0,
+      "min": 28.604788,
       "ovr": 79.7
      },
      {
       "pid": 1642266,
       "name": "Ja'Kobe Walter",
-      "min": 32.0,
+      "min": 26.331214,
       "ovr": 71.0
      },
      {
       "pid": 202695,
       "name": "Kawhi Leonard",
-      "min": 30.0,
+      "min": 23.003304,
       "ovr": 98.1
      },
      {
       "pid": 1642347,
       "name": "Jamal Shead",
-      "min": 26.0,
+      "min": 19.164119,
       "ovr": 53.0
      },
      {
       "pid": 1642867,
       "name": "Collin Murray-Boyles",
-      "min": 22.0,
+      "min": 17.689201,
       "ovr": 68.8
      },
      {
       "pid": 1627751,
       "name": "Jakob Poeltl",
-      "min": 14.0,
+      "min": 17.552124,
       "ovr": 72.5
      },
      {
       "pid": 1642419,
       "name": "Jamison Battle",
-      "min": 10.0,
+      "min": 14.100278,
       "ovr": 55.4
+     },
+     {
+      "pid": 1643512,
+      "name": "Allen Graves",
+      "min": 11.344611,
+      "ovr": 61.5
+     },
+     {
+      "pid": 1631218,
+      "name": "Trayce Jackson-Davis",
+      "min": 6.644558,
+      "ovr": 60.0
+     },
+     {
+      "pid": 203937,
+      "name": "Kyle Anderson",
+      "min": 6.17625,
+      "ovr": 64.4
+     },
+     {
+      "pid": 1642918,
+      "name": "Alijah Martin",
+      "min": 6.14134,
+      "ovr": 54.9
+     },
+     {
+      "pid": 1643558,
+      "name": "Jaden Bradley",
+      "min": 3.697628,
+      "ovr": 57.9
      }
     ]
    },
    "today": {
-    "ortg": -1.4917519215686355,
-    "drtg": 0.07861400879168912,
-    "net": -1.5703659303603246,
-    "margin": 6.935,
-    "predWins": 42.48819988845826,
+    "ortg": -0.8119862112252036,
+    "drtg": 0.7616207072120744,
+    "net": -1.573606918437278,
+    "margin": 5.55,
+    "predWins": 48.336721784502615,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
@@ -4287,53 +5801,71 @@
      {
       "pid": 1629628,
       "name": "RJ Barrett",
-      "min": 36.0,
+      "min": 35.313006,
       "ovr": 79.8
      },
      {
       "pid": 1630193,
       "name": "Immanuel Quickley",
-      "min": 34.0,
+      "min": 34.686423,
       "ovr": 79.7
      },
      {
       "pid": 1642266,
       "name": "Ja'Kobe Walter",
-      "min": 32.0,
+      "min": 31.929467,
       "ovr": 71.0
      },
      {
       "pid": 1642347,
       "name": "Jamal Shead",
-      "min": 30.0,
+      "min": 23.541028,
       "ovr": 53.0
      },
      {
       "pid": 1642867,
       "name": "Collin Murray-Boyles",
-      "min": 26.0,
+      "min": 21.696637,
       "ovr": 68.8
      },
      {
       "pid": 1642419,
       "name": "Jamison Battle",
-      "min": 22.0,
+      "min": 16.973064,
       "ovr": 55.4
      },
      {
       "pid": 1643512,
       "name": "Allen Graves",
-      "min": 14.0,
+      "min": 13.475289,
       "ovr": 61.5
      },
      {
       "pid": 1631218,
       "name": "Trayce Jackson-Davis",
-      "min": 10.0,
+      "min": 7.451213,
       "ovr": 60.0
+     },
+     {
+      "pid": 203937,
+      "name": "Kyle Anderson",
+      "min": 7.003053,
+      "ovr": 64.4
+     },
+     {
+      "pid": 1642918,
+      "name": "Alijah Martin",
+      "min": 7.447044,
+      "ovr": 54.9
+     },
+     {
+      "pid": 1643558,
+      "name": "Jaden Bradley",
+      "min": 4.483777,
+      "ovr": 57.9
      }
     ],
-    "predWinsAllSeason": 39.23933983814417,
+    "predWinsAllSeason": 38.40299393730822,
     "lineupStates": 2
    },
    "restored": [],
@@ -4374,135 +5906,189 @@
     }
    ],
    "c": {
-    "ortg": 0.9759174413463683,
-    "drtg": -0.2772445628140332,
-    "net": 1.2531620041604015,
-    "margin": 9.735,
-    "predWins": 41.43174204924696,
+    "ortg": 1.629367273219387,
+    "drtg": 0.35294800295343975,
+    "net": 1.2764192702659471,
+    "margin": 8.44,
+    "predWins": 41.5402559344654,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1641718,
       "name": "Keyonte George",
-      "min": 36.0,
+      "min": 26.243547,
       "ovr": 64.3
      },
      {
       "pid": 1643408,
       "name": "Darryn Peterson",
-      "min": 36.0,
+      "min": 25.648756,
       "ovr": 78.4
      },
      {
       "pid": 1642846,
       "name": "Ace Bailey",
-      "min": 34.0,
+      "min": 25.383261,
       "ovr": 60.0
      },
      {
       "pid": 1628374,
       "name": "Lauri Markkanen",
-      "min": 32.0,
+      "min": 24.853232,
       "ovr": 84.8
      },
      {
       "pid": 1628991,
       "name": "Jaren Jackson Jr.",
-      "min": 30.0,
+      "min": 22.20699,
       "ovr": 84.1
      },
      {
       "pid": 1629637,
       "name": "Jaxson Hayes",
-      "min": 26.0,
+      "min": 20.699412,
       "ovr": 70.7
      },
      {
       "pid": 1628964,
       "name": "Mo Bamba",
-      "min": 22.0,
+      "min": 14.830552,
       "ovr": 56.0
      },
      {
       "pid": 1642268,
       "name": "Isaiah Collier",
-      "min": 14.0,
+      "min": 14.362708,
       "ovr": 48.5
      },
      {
       "pid": 1629004,
       "name": "Svi Mykhailiuk",
-      "min": 10.0,
+      "min": 13.624335,
       "ovr": 53.4
+     },
+     {
+      "pid": 1629006,
+      "name": "Josh Okogie",
+      "min": 13.537717,
+      "ovr": 71.7
+     },
+     {
+      "pid": 1641729,
+      "name": "Brice Sensabaugh",
+      "min": 13.629932,
+      "ovr": 67.1
+     },
+     {
+      "pid": 1630182,
+      "name": "Josh Green",
+      "min": 12.03671,
+      "ovr": 64.1
+     },
+     {
+      "pid": 1642271,
+      "name": "Kyle Filipowski",
+      "min": 7.147545,
+      "ovr": 60.3
+     },
+     {
+      "pid": 1628396,
+      "name": "Tony Bradley",
+      "min": 5.795302,
+      "ovr": 52.0
      }
     ]
    },
    "today": {
-    "ortg": 0.8308674672174021,
-    "drtg": 2.641043063300458,
-    "net": -1.810175596083056,
-    "margin": 6.565,
-    "predWins": 39.94710767857483,
+    "ortg": 1.1852282904557967,
+    "drtg": 4.653318980848553,
+    "net": -3.4680906903927564,
+    "margin": 3.72,
+    "predWins": 39.11882537248492,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1641718,
       "name": "Keyonte George",
-      "min": 36.0,
+      "min": 29.011581,
       "ovr": 64.3
      },
      {
       "pid": 1643408,
       "name": "Darryn Peterson",
-      "min": 36.0,
+      "min": 28.354054,
       "ovr": 78.4
      },
      {
       "pid": 1642846,
       "name": "Ace Bailey",
-      "min": 34.0,
+      "min": 28.060556,
       "ovr": 60.0
      },
      {
       "pid": 1628374,
       "name": "Lauri Markkanen",
-      "min": 32.0,
+      "min": 27.474623,
       "ovr": 84.8
      },
      {
       "pid": 1629637,
       "name": "Jaxson Hayes",
-      "min": 30.0,
+      "min": 23.180492,
       "ovr": 70.7
      },
      {
       "pid": 1628964,
       "name": "Mo Bamba",
-      "min": 26.0,
+      "min": 16.583248,
       "ovr": 56.0
      },
      {
       "pid": 1642268,
       "name": "Isaiah Collier",
-      "min": 22.0,
+      "min": 15.91357,
       "ovr": 48.5
      },
      {
       "pid": 1629004,
       "name": "Svi Mykhailiuk",
-      "min": 14.0,
+      "min": 14.917415,
       "ovr": 53.4
      },
      {
       "pid": 1629006,
       "name": "Josh Okogie",
-      "min": 10.0,
+      "min": 14.801053,
       "ovr": 71.7
+     },
+     {
+      "pid": 1641729,
+      "name": "Brice Sensabaugh",
+      "min": 14.089135,
+      "ovr": 67.1
+     },
+     {
+      "pid": 1630182,
+      "name": "Josh Green",
+      "min": 13.30628,
+      "ovr": 64.1
+     },
+     {
+      "pid": 1642271,
+      "name": "Kyle Filipowski",
+      "min": 7.901431,
+      "ovr": 60.3
+     },
+     {
+      "pid": 1628396,
+      "name": "Tony Bradley",
+      "min": 6.406561,
+      "ovr": 52.0
      }
     ],
-    "predWinsAllSeason": 35.85078298255385,
+    "predWinsAllSeason": 31.155372136798448,
     "lineupStates": 2
    },
    "restored": [],
@@ -4534,135 +6120,231 @@
     }
    ],
    "c": {
-    "ortg": 6.947225484153577,
-    "drtg": -1.1088078193768354,
-    "net": 8.056033303530413,
-    "margin": 16.765,
-    "predWins": 60.46461812481507,
+    "ortg": 5.5210434453813235,
+    "drtg": -1.2470451224470764,
+    "net": 6.7680885678284,
+    "margin": 14.035,
+    "predWins": 57.77280242948817,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1643409,
       "name": "Cameron Boozer",
-      "min": 36.0,
+      "min": 25.654787,
       "ovr": 69.5
      },
      {
       "pid": 1629660,
       "name": "Ty Jerome",
-      "min": 36.0,
+      "min": 24.399561,
       "ovr": 96.0
      },
      {
       "pid": 1642907,
       "name": "Cedric Coward",
-      "min": 34.0,
+      "min": 22.729825,
       "ovr": 81.3
      },
      {
       "pid": 1642377,
       "name": "Jaylen Wells",
-      "min": 32.0,
+      "min": 22.23272,
       "ovr": 68.4
      },
      {
       "pid": 203924,
       "name": "Jerami Grant",
-      "min": 30.0,
+      "min": 19.184034,
       "ovr": 49.2
      },
      {
       "pid": 1641744,
       "name": "Zach Edey",
-      "min": 26.0,
+      "min": 15.521617,
       "ovr": 71.2
      },
      {
       "pid": 1642914,
       "name": "Javon Small",
-      "min": 22.0,
+      "min": 15.282194,
       "ovr": 75.0
      },
      {
       "pid": 1630191,
       "name": "Isaiah Stewart",
-      "min": 14.0,
+      "min": 14.984149,
       "ovr": 70.7
      },
      {
       "pid": 1642285,
       "name": "Cam Spencer",
-      "min": 10.0,
+      "min": 14.822051,
       "ovr": 81.6
+     },
+     {
+      "pid": 1641713,
+      "name": "GG Jackson",
+      "min": 13.130955,
+      "ovr": 48.5
+     },
+     {
+      "pid": 1630590,
+      "name": "Scotty Pippen Jr.",
+      "min": 13.566691,
+      "ovr": 74.7
+     },
+     {
+      "pid": 1642366,
+      "name": "Quinten Post",
+      "min": 12.848318,
+      "ovr": 63.0
+     },
+     {
+      "pid": 1631200,
+      "name": "Kris Murray",
+      "min": 11.426846,
+      "ovr": 63.4
+     },
+     {
+      "pid": 1641707,
+      "name": "Taylor Hendricks",
+      "min": 3.842405,
+      "ovr": 52.2
+     },
+     {
+      "pid": 1641765,
+      "name": "Olivier-Maxence Prosper",
+      "min": 2.885202,
+      "ovr": 57.3
+     },
+     {
+      "pid": 1643510,
+      "name": "Karim López",
+      "min": 2.885202,
+      "ovr": null
+     },
+     {
+      "pid": 1643721,
+      "name": "Carson Cooper",
+      "min": 2.729698,
+      "ovr": null
+     },
+     {
+      "pid": 1642942,
+      "name": "Jahmai Mashack",
+      "min": 1.873744,
+      "ovr": 35.8
      }
     ]
    },
    "today": {
-    "ortg": 6.947225484153577,
-    "drtg": -1.1088078193768354,
-    "net": 8.056033303530413,
-    "margin": 16.765,
-    "predWins": 60.42194211829884,
+    "ortg": 6.1789014270112546,
+    "drtg": -2.1999664477712884,
+    "net": 8.378867874782543,
+    "margin": 15.63,
+    "predWins": 57.84807297454589,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1643409,
       "name": "Cameron Boozer",
-      "min": 36.0,
+      "min": 28.827629,
       "ovr": 69.5
      },
      {
       "pid": 1629660,
       "name": "Ty Jerome",
-      "min": 36.0,
+      "min": 27.417163,
       "ovr": 96.0
      },
      {
       "pid": 1642907,
       "name": "Cedric Coward",
-      "min": 34.0,
+      "min": 25.540924,
       "ovr": 81.3
      },
      {
       "pid": 1642377,
       "name": "Jaylen Wells",
-      "min": 32.0,
+      "min": 24.982339,
       "ovr": 68.4
      },
      {
       "pid": 203924,
       "name": "Jerami Grant",
-      "min": 30.0,
+      "min": 21.556609,
       "ovr": 49.2
      },
      {
       "pid": 1641744,
       "name": "Zach Edey",
-      "min": 26.0,
+      "min": 17.441245,
       "ovr": 71.2
      },
      {
       "pid": 1642914,
       "name": "Javon Small",
-      "min": 22.0,
+      "min": 17.172211,
       "ovr": 75.0
      },
      {
       "pid": 1630191,
       "name": "Isaiah Stewart",
-      "min": 14.0,
+      "min": 16.837306,
       "ovr": 70.7
      },
      {
       "pid": 1642285,
       "name": "Cam Spencer",
-      "min": 10.0,
+      "min": 16.65516,
       "ovr": 81.6
+     },
+     {
+      "pid": 1641713,
+      "name": "GG Jackson",
+      "min": 14.754919,
+      "ovr": 48.5
+     },
+     {
+      "pid": 1631200,
+      "name": "Kris Murray",
+      "min": 12.840055,
+      "ovr": 63.4
+     },
+     {
+      "pid": 1641707,
+      "name": "Taylor Hendricks",
+      "min": 4.317612,
+      "ovr": 52.2
+     },
+     {
+      "pid": 1641765,
+      "name": "Olivier-Maxence Prosper",
+      "min": 3.242028,
+      "ovr": 57.3
+     },
+     {
+      "pid": 1643510,
+      "name": "Karim López",
+      "min": 3.242028,
+      "ovr": null
+     },
+     {
+      "pid": 1643721,
+      "name": "Carson Cooper",
+      "min": 3.067292,
+      "ovr": null
+     },
+     {
+      "pid": 1642942,
+      "name": "Jahmai Mashack",
+      "min": 2.105478,
+      "ovr": 35.8
      }
     ],
-    "predWinsAllSeason": 61.79624409744712,
+    "predWinsAllSeason": 61.04701485473528,
     "lineupStates": 1
    },
    "restored": [],
@@ -4730,76 +6412,119 @@
     }
    ],
    "c": {
-    "ortg": -4.744309594513609,
-    "drtg": 0.24006768344230522,
-    "net": -4.984377277955915,
-    "margin": 3.465,
-    "predWins": 30.637140493823807,
+    "ortg": -3.4797493187763564,
+    "drtg": 1.7344973374202368,
+    "net": -5.214246656196593,
+    "margin": 1.87,
+    "predWins": 30.057857354539284,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1629027,
       "name": "Trae Young",
-      "min": 36.0,
+      "min": 31.480089,
       "ovr": 76.9
      },
      {
       "pid": 203076,
       "name": "Anthony Davis",
-      "min": 36.0,
+      "min": 28.839875,
       "ovr": 89.1
      },
      {
       "pid": 1642273,
       "name": "Kyshawn George",
-      "min": 34.0,
+      "min": 27.999594,
       "ovr": 74.6
      },
      {
       "pid": 1643407,
       "name": "AJ Dybantsa",
-      "min": 32.0,
+      "min": 25.846089,
       "ovr": 84.8
      },
      {
       "pid": 1641731,
       "name": "Bilal Coulibaly",
-      "min": 30.0,
+      "min": 23.408559,
       "ovr": 58.2
      },
      {
       "pid": 1642259,
       "name": "Alex Sarr",
-      "min": 26.0,
+      "min": 21.45319,
       "ovr": 60.0
      },
      {
       "pid": 1642848,
       "name": "Tre Johnson",
-      "min": 22.0,
+      "min": 17.452936,
       "ovr": 49.6
      },
      {
       "pid": 1642267,
       "name": "Bub Carrington",
-      "min": 14.0,
+      "min": 16.332079,
       "ovr": 49.9
      },
      {
       "pid": 1630551,
       "name": "Justin Champagnie",
-      "min": 10.0,
+      "min": 15.447928,
       "ovr": 72.5
+     },
+     {
+      "pid": 1629028,
+      "name": "Deandre Ayton",
+      "min": 13.470185,
+      "ovr": 60.7
+     },
+     {
+      "pid": 203114,
+      "name": "Khris Middleton",
+      "min": 12.518595,
+      "ovr": 64.8
+     },
+     {
+      "pid": 1642860,
+      "name": "Will Riley",
+      "min": 2.660369,
+      "ovr": 50.5
+     },
+     {
+      "pid": 1643590,
+      "name": "Felix Okpara",
+      "min": 0.880878,
+      "ovr": 50.2
+     },
+     {
+      "pid": 1641736,
+      "name": "Reece Beekman",
+      "min": 0.880878,
+      "ovr": 43.8508,
+      "ovrSrc": "24-25 卡"
+     },
+     {
+      "pid": 1630544,
+      "name": "Tre Mann",
+      "min": 0.812379,
+      "ovr": 45.3
+     },
+     {
+      "pid": 1630264,
+      "name": "Anthony Gill",
+      "min": 0.516377,
+      "ovr": 55.9
      }
     ]
    },
    "today": {
-    "ortg": -6.42446641287539,
-    "drtg": 3.884373488726851,
-    "net": -10.30883990160224,
-    "margin": -1.945,
-    "predWins": 31.712871218719435,
+    "ortg": -4.783770035265633,
+    "drtg": 4.352323972531551,
+    "net": -9.136094007797183,
+    "margin": -2.11,
+    "predWins": 30.24401858949234,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
@@ -4812,54 +6537,72 @@
      {
       "pid": 203076,
       "name": "Anthony Davis",
-      "min": 36.0,
+      "min": 34.798352,
       "ovr": 89.1
      },
      {
       "pid": 1642273,
       "name": "Kyshawn George",
-      "min": 34.0,
+      "min": 33.784463,
       "ovr": 74.6
      },
      {
       "pid": 1643407,
       "name": "AJ Dybantsa",
-      "min": 32.0,
+      "min": 31.186033,
       "ovr": 84.8
      },
      {
       "pid": 1641731,
       "name": "Bilal Coulibaly",
-      "min": 30.0,
+      "min": 28.244896,
       "ovr": 58.2
      },
      {
       "pid": 1642848,
       "name": "Tre Johnson",
-      "min": 26.0,
+      "min": 21.300863,
       "ovr": 49.6
      },
      {
       "pid": 1642267,
       "name": "Bub Carrington",
-      "min": 22.0,
+      "min": 19.751005,
       "ovr": 49.9
      },
      {
       "pid": 1629028,
       "name": "Deandre Ayton",
-      "min": 14.0,
+      "min": 15.920861,
       "ovr": 60.7
      },
      {
       "pid": 203114,
       "name": "Khris Middleton",
-      "min": 10.0,
+      "min": 13.968861,
       "ovr": 64.8
+     },
+     {
+      "pid": 1642860,
+      "name": "Will Riley",
+      "min": 3.001573,
+      "ovr": 50.5
+     },
+     {
+      "pid": 1643590,
+      "name": "Felix Okpara",
+      "min": 1.062872,
+      "ovr": 50.2
+     },
+     {
+      "pid": 1630544,
+      "name": "Tre Mann",
+      "min": 0.980221,
+      "ovr": 45.3
      }
     ],
-    "predWinsAllSeason": 21.220104197098504,
-    "lineupStates": 2
+    "predWinsAllSeason": 22.588921048342524,
+    "lineupStates": 3
    },
    "restored": [],
    "nOut": 6
@@ -4890,135 +6633,219 @@
     }
    ],
    "c": {
-    "ortg": 6.3431715887097795,
-    "drtg": -1.5111118459510635,
-    "net": 7.854283434660843,
-    "margin": 16.63,
-    "predWins": 61.77059481464473,
+    "ortg": 2.0350275733588177,
+    "drtg": -1.526512734154295,
+    "net": 3.5615403075131127,
+    "margin": 10.91,
+    "predWins": 53.28372933670711,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630595,
       "name": "Cade Cunningham",
-      "min": 36.0,
+      "min": 28.272377,
       "ovr": 93.9
      },
      {
       "pid": 1629130,
       "name": "Duncan Robinson",
-      "min": 36.0,
+      "min": 25.794309,
       "ovr": 70.3
      },
      {
       "pid": 1630194,
       "name": "Paul Reed",
-      "min": 34.0,
+      "min": 23.257938,
       "ovr": 82.4
      },
      {
       "pid": 1641709,
       "name": "Ausar Thompson",
-      "min": 32.0,
+      "min": 22.763793,
       "ovr": 85.2
      },
      {
       "pid": 1628381,
       "name": "John Collins",
-      "min": 30.0,
+      "min": 21.845224,
       "ovr": 68.6
      },
      {
       "pid": 1642450,
       "name": "Daniss Jenkins",
-      "min": 26.0,
+      "min": 20.584311,
       "ovr": 60.9
      },
      {
       "pid": 1628989,
       "name": "Kevin Huerter",
-      "min": 22.0,
+      "min": 17.121346,
       "ovr": 75.9
      },
      {
       "pid": 1631105,
       "name": "Jalen Duren",
-      "min": 14.0,
+      "min": 15.873439,
       "ovr": 78.7
      },
      {
       "pid": 1629750,
       "name": "Javonte Green",
-      "min": 10.0,
+      "min": 15.883202,
       "ovr": 76.3
+     },
+     {
+      "pid": 1641842,
+      "name": "Ronald Holland II",
+      "min": 13.830726,
+      "ovr": 71.2
+     },
+     {
+      "pid": 1630198,
+      "name": "Isaiah Joe",
+      "min": 12.638524,
+      "ovr": 83.5
+     },
+     {
+      "pid": 1627752,
+      "name": "Taurean Prince",
+      "min": 6.299259,
+      "ovr": 52.2
+     },
+     {
+      "pid": 1642403,
+      "name": "Isaac Jones",
+      "min": 3.477411,
+      "ovr": 50.9
+     },
+     {
+      "pid": 1642404,
+      "name": "Chaz Lanier",
+      "min": 3.477322,
+      "ovr": 47.3
+     },
+     {
+      "pid": 1642449,
+      "name": "Tolu Smith",
+      "min": 3.399297,
+      "ovr": 52.1
+     },
+     {
+      "pid": 1643536,
+      "name": "Ebuka Okorie",
+      "min": 3.134292,
+      "ovr": 54.7
+     },
+     {
+      "pid": 1641989,
+      "name": "Elijah Harkless",
+      "min": 2.34723,
+      "ovr": 43.6
      }
     ]
    },
    "today": {
-    "ortg": 3.404762541683141,
-    "drtg": -1.069035666868544,
-    "net": 4.473798208551685,
-    "margin": 13.23,
-    "predWins": 61.56472899620848,
+    "ortg": 1.1483182267205336,
+    "drtg": -1.112628778381307,
+    "net": 2.2609470051018405,
+    "margin": 9.55,
+    "predWins": 53.089521048993134,
     "schedGames": 73,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1630595,
       "name": "Cade Cunningham",
-      "min": 36.0,
+      "min": 32.192464,
       "ovr": 93.9
      },
      {
       "pid": 1629130,
       "name": "Duncan Robinson",
-      "min": 36.0,
+      "min": 29.370802,
       "ovr": 70.3
      },
      {
       "pid": 1630194,
       "name": "Paul Reed",
-      "min": 34.0,
+      "min": 26.482751,
       "ovr": 82.4
      },
      {
       "pid": 1641709,
       "name": "Ausar Thompson",
-      "min": 32.0,
+      "min": 25.920091,
       "ovr": 85.2
      },
      {
       "pid": 1628381,
       "name": "John Collins",
-      "min": 30.0,
+      "min": 24.874159,
       "ovr": 68.6
      },
      {
       "pid": 1642450,
       "name": "Daniss Jenkins",
-      "min": 26.0,
+      "min": 23.438415,
       "ovr": 60.9
      },
      {
       "pid": 1628989,
       "name": "Kevin Huerter",
-      "min": 22.0,
+      "min": 19.495294,
       "ovr": 75.9
      },
      {
       "pid": 1629750,
       "name": "Javonte Green",
-      "min": 14.0,
+      "min": 17.912629,
       "ovr": 76.3
      },
      {
       "pid": 1641842,
       "name": "Ronald Holland II",
-      "min": 10.0,
+      "min": 15.575256,
       "ovr": 71.2
+     },
+     {
+      "pid": 1627752,
+      "name": "Taurean Prince",
+      "min": 6.70692,
+      "ovr": 52.2
+     },
+     {
+      "pid": 1642403,
+      "name": "Isaac Jones",
+      "min": 3.959568,
+      "ovr": 50.9
+     },
+     {
+      "pid": 1642404,
+      "name": "Chaz Lanier",
+      "min": 3.959468,
+      "ovr": 47.3
+     },
+     {
+      "pid": 1642449,
+      "name": "Tolu Smith",
+      "min": 3.870625,
+      "ovr": 52.1
+     },
+     {
+      "pid": 1643536,
+      "name": "Ebuka Okorie",
+      "min": 3.568875,
+      "ovr": 54.7
+     },
+     {
+      "pid": 1641989,
+      "name": "Elijah Harkless",
+      "min": 2.672683,
+      "ovr": 43.6
      }
     ],
-    "predWinsAllSeason": 56.6862175219566,
+    "predWinsAllSeason": 50.760801518859594,
     "lineupStates": 2
    },
    "restored": [],
@@ -5050,135 +6877,195 @@
     }
    ],
    "c": {
-    "ortg": -3.1261595027169875,
-    "drtg": -2.8948032223705695,
-    "net": -0.23135628034641798,
-    "margin": 8.51,
-    "predWins": 40.1745506681243,
+    "ortg": -2.848177241319803,
+    "drtg": -2.308623254451007,
+    "net": -0.5395539868687962,
+    "margin": 6.71,
+    "predWins": 39.16471157185376,
     "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1641706,
       "name": "Brandon Miller",
-      "min": 36.0,
+      "min": 30.505303,
       "ovr": 77.2
      },
      {
       "pid": 203471,
       "name": "Dennis Schröder",
-      "min": 36.0,
+      "min": 27.878198,
       "ovr": 48.3
      },
      {
       "pid": 1631217,
       "name": "Moussa Diabaté",
-      "min": 34.0,
+      "min": 25.865928,
       "ovr": 73.1
      },
      {
       "pid": 1629675,
       "name": "Naz Reid",
-      "min": 32.0,
+      "min": 25.665207,
       "ovr": 75.0
      },
      {
       "pid": 1628960,
       "name": "Grayson Allen",
-      "min": 30.0,
+      "min": 23.418453,
       "ovr": 74.8
      },
      {
       "pid": 1642883,
       "name": "Sion James",
-      "min": 26.0,
+      "min": 21.540868,
       "ovr": 61.3
      },
      {
       "pid": 1626220,
       "name": "Royce O'Neale",
-      "min": 22.0,
+      "min": 15.633268,
       "ovr": 58.3
      },
      {
       "pid": 1641750,
       "name": "Ryan Kalkbrenner",
-      "min": 14.0,
+      "min": 14.277758,
       "ovr": 63.4
      },
      {
       "pid": 1629632,
       "name": "Coby White",
-      "min": 10.0,
+      "min": 13.916784,
       "ovr": 73.1
+     },
+     {
+      "pid": 1642275,
+      "name": "Tidjane Salaün",
+      "min": 12.586837,
+      "ovr": 47.9
+     },
+     {
+      "pid": 1643515,
+      "name": "Christian Anderson",
+      "min": 9.664404,
+      "ovr": 64.1
+     },
+     {
+      "pid": 1643419,
+      "name": "Hannes Steinbach",
+      "min": 7.128563,
+      "ovr": 55.5
+     },
+     {
+      "pid": 1642862,
+      "name": "Liam McNeeley",
+      "min": 6.504675,
+      "ovr": 44.7
+     },
+     {
+      "pid": 1641790,
+      "name": "PJ Hall",
+      "min": 5.413754,
+      "ovr": 47.4
      }
     ]
    },
    "today": {
-    "ortg": -3.1261595027169875,
-    "drtg": -2.8948032223705695,
-    "net": -0.23135628034641798,
-    "margin": 8.51,
-    "predWins": 40.10464025527821,
+    "ortg": -2.848177241319803,
+    "drtg": -2.308623254451007,
+    "net": -0.5395539868687962,
+    "margin": 6.71,
+    "predWins": 39.19020613141959,
     "schedGames": 72,
     "poolGames": 2,
     "rotation": [
      {
       "pid": 1641706,
       "name": "Brandon Miller",
-      "min": 36.0,
+      "min": 30.505303,
       "ovr": 77.2
      },
      {
       "pid": 203471,
       "name": "Dennis Schröder",
-      "min": 36.0,
+      "min": 27.878198,
       "ovr": 48.3
      },
      {
       "pid": 1631217,
       "name": "Moussa Diabaté",
-      "min": 34.0,
+      "min": 25.865928,
       "ovr": 73.1
      },
      {
       "pid": 1629675,
       "name": "Naz Reid",
-      "min": 32.0,
+      "min": 25.665207,
       "ovr": 75.0
      },
      {
       "pid": 1628960,
       "name": "Grayson Allen",
-      "min": 30.0,
+      "min": 23.418453,
       "ovr": 74.8
      },
      {
       "pid": 1642883,
       "name": "Sion James",
-      "min": 26.0,
+      "min": 21.540868,
       "ovr": 61.3
      },
      {
       "pid": 1626220,
       "name": "Royce O'Neale",
-      "min": 22.0,
+      "min": 15.633268,
       "ovr": 58.3
      },
      {
       "pid": 1641750,
       "name": "Ryan Kalkbrenner",
-      "min": 14.0,
+      "min": 14.277758,
       "ovr": 63.4
      },
      {
       "pid": 1629632,
       "name": "Coby White",
-      "min": 10.0,
+      "min": 13.916784,
       "ovr": 73.1
+     },
+     {
+      "pid": 1642275,
+      "name": "Tidjane Salaün",
+      "min": 12.586837,
+      "ovr": 47.9
+     },
+     {
+      "pid": 1643515,
+      "name": "Christian Anderson",
+      "min": 9.664404,
+      "ovr": 64.1
+     },
+     {
+      "pid": 1643419,
+      "name": "Hannes Steinbach",
+      "min": 7.128563,
+      "ovr": 55.5
+     },
+     {
+      "pid": 1642862,
+      "name": "Liam McNeeley",
+      "min": 6.504675,
+      "ovr": 44.7
+     },
+     {
+      "pid": 1641790,
+      "name": "PJ Hall",
+      "min": 5.413754,
+      "ovr": 47.4
      }
     ],
-    "predWinsAllSeason": 41.47120088877143,
+    "predWinsAllSeason": 39.43922039117708,
     "lineupStates": 1
    },
    "restored": [],

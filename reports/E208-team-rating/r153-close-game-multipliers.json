@@ -1,0 +1,116 @@
+{
+ "rule": "R-153",
+ "close": "|margin| <= 5 or OT",
+ "sources": {
+  "2024-25": {
+   "dir": "data\\defense-seventh\\2024-25",
+   "team-games.sha256": "b4da45c024c655c64db220568813922ca1e6d37fbc23650ad7ed43f352b1e470",
+   "player-games.sha256": "4c3f33c67ffaa1cf88ea01a7acaeef70af088e22f6020c3a02409989f6ad4ffa"
+  },
+  "2025-26": {
+   "dir": "data\\season-source",
+   "team-games.sha256": "d5cb1a6dbd26a0ed71b24e7e18fcbc862afdf6d8bd8ea3814c5dadbf1989fb8a",
+   "player-games.sha256": "11fc5866b2f61b31e27659e14e4071924b5873ef0d2a4118a585c1a54be04357"
+  }
+ },
+ "games": {
+  "2024-25": {
+   "games": 1230,
+   "closeTeamGames": 330
+  },
+  "2025-26": {
+   "games": 1230,
+   "closeTeamGames": 318
+  }
+ },
+ "multipliers": {
+  "1": {
+   "label": "1",
+   "allMin": 34.2494,
+   "closeMin": 36.3853,
+   "m": 1.0624,
+   "nAll": 3493,
+   "nClose": 942
+  },
+  "2": {
+   "label": "2",
+   "allMin": 32.7204,
+   "closeMin": 34.3128,
+   "m": 1.0487,
+   "nAll": 3569,
+   "nClose": 946
+  },
+  "3": {
+   "label": "3",
+   "allMin": 31.2187,
+   "closeMin": 32.959,
+   "m": 1.0557,
+   "nAll": 3534,
+   "nClose": 927
+  },
+  "4": {
+   "label": "4",
+   "allMin": 29.8096,
+   "closeMin": 31.2833,
+   "m": 1.0494,
+   "nAll": 3296,
+   "nClose": 891
+  },
+  "5": {
+   "label": "5",
+   "allMin": 28.0031,
+   "closeMin": 29.2075,
+   "m": 1.043,
+   "nAll": 3353,
+   "nClose": 879
+  },
+  "6": {
+   "label": "6",
+   "allMin": 26.253,
+   "closeMin": 27.0291,
+   "m": 1.0296,
+   "nAll": 3134,
+   "nClose": 820
+  },
+  "7": {
+   "label": "7",
+   "allMin": 24.7253,
+   "closeMin": 25.1677,
+   "m": 1.0179,
+   "nAll": 3225,
+   "nClose": 836
+  },
+  "8": {
+   "label": "8",
+   "allMin": 22.8406,
+   "closeMin": 23.1958,
+   "m": 1.0156,
+   "nAll": 3024,
+   "nClose": 817
+  },
+  "9": {
+   "label": "9",
+   "allMin": 20.8398,
+   "closeMin": 21.3701,
+   "m": 1.0254,
+   "nAll": 2968,
+   "nClose": 774
+  },
+  "10": {
+   "label": "10",
+   "allMin": 19.8513,
+   "closeMin": 20.5811,
+   "m": 1.0368,
+   "nAll": 2637,
+   "nClose": 647
+  },
+  "11": {
+   "label": "11+",
+   "allMin": 14.4594,
+   "closeMin": 16.0323,
+   "m": 1.1088,
+   "nAll": 20541,
+   "nClose": 4258
+  }
+ }
+}
