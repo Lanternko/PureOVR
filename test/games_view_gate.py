@@ -125,7 +125,7 @@ class Synthetic(unittest.TestCase):
              team_line(LAL, '0022600003', '2026-11-04', 'LAL vs. BOS', 2, 290), team_line(BOS, '0022600003', '2026-11-04', 'BOS @ LAL', 1, 290)], [])
         ot = {g['id']: g.get('ot') for gs in sk['games'].values() for g in gs}
         self.assertEqual(ot, {'0022600001': None, '0022600002': 1, '0022600003': 2})
-        self.assertIn("g.ot?(g.ot>1?g.ot:'')+'OT · '", games_view.JS)    # 前端把 ot 顯示成「OT／2OT」放在 box score 提示前
+        self.assertIn("g.ot?(g.ot>1?g.ot:'')+'OT '", games_view.JS)    # 前端把 ot 顯示成「OT／2OT」放在展開箭頭前
 
     def test_short_name(self):
         for full, want in (('Jalen Walker', 'J. Walker'), ('Gary Trent Jr.', 'G. Trent Jr.'), ('Jaren Jackson III', 'J. Jackson III'),
@@ -167,6 +167,15 @@ class Wiring(unittest.TestCase):
         self.assertEqual(pl['n'], 'J. Walker')
         self.assertNotIn('__COLS__', games_view.JS)
         self.assertIn('"OREB", "oreb"', games_view.JS)
+
+    def test_starters_first_and_divider(self):    # 先發五人排前面（自成一組按分鐘），前端在先發與替補之間畫分隔線
+        self.assertIn("ps[i-1].st", games_view.JS)
+        self.assertIn('class="dv"', games_view.JS)
+        f = next((B.ROOT / 'data/defense-seventh/2026-27/boxes').glob('*.json'))
+        st = B.starters_of(B.SRC, f.stem)
+        self.assertIsNotNone(st)
+        self.assertEqual(len(st), 10)
+        self.assertIsNone(B.starters_of(Path(tempfile.gettempdir()), f.stem))    # 非預設資料夾不讀
 
     def test_scripts_parse(self):
         """頁面腳本語法：丟給 node --check（子程序不開黑窗）。"""

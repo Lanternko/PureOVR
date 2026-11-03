@@ -80,6 +80,7 @@ td{padding:7px 2px;text-align:center;white-space:nowrap;font:500 .9rem var(--f-b
 tbody tr.pl:nth-child(even) td{background:#0d1217}
 td.l{text-align:left;position:sticky;left:0;z-index:1;background:#10151a;overflow:hidden;text-overflow:ellipsis;padding-left:0;padding-right:6px;box-shadow:6px 0 6px -4px #10151a}
 tbody tr.pl:nth-child(even) td.l{background:#0d1217;box-shadow:6px 0 6px -4px #0d1217}
+tr.dv td{padding:0;height:0;border-top:1px solid var(--line);background:none!important}
 tr.tot td{border-top:1px solid var(--line);font-weight:700;padding-top:10px}
 tr.tot td.l{font:700 .74rem var(--f-body);letter-spacing:.04em}
 tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
@@ -128,7 +129,7 @@ const boxes={},ERR={err:true};   // 月份 → 'loading'｜{doc}｜ERR
 const COLS=__COLS__;
 const $=s=>root.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const CDN='https://cdn.nba.com/';
-const logo=a=>'<img class="lg" alt="" loading="lazy" src="'+CDN+'logos/nba/'+D.teams[a].id+'/global/D/logo.svg" onerror="this.style.visibility=\'hidden\'">';
+const logo=a=>'<img class="lg" alt="" loading="lazy" src="'+CDN+'logos/nba/'+D.teams[a].id+'/primary/L/logo.svg" onerror="this.style.visibility=\'hidden\'">';
 // 球隊主色（官方主色；深色隊在深色底看不出來，改用提亮版或辨識度高的副色），給賽程卡片漸層用，格式 "r,g,b"
 const TC={ATL:'#E03A3E',BOS:'#1E9B4F',BKN:'#9AA0A6',CHA:'#00A3B8',CHI:'#CE1141',CLE:'#A8174F',DAL:'#1E73BE',DEN:'#2D5DA8',DET:'#C8102E',GSW:'#2F63C0',
   HOU:'#CE1141',IND:'#2A5CA8',LAC:'#C8102E',LAL:'#7A45B8',MEM:'#5D76A9',MIA:'#B5123F',MIL:'#1B8A45',MIN:'#2B6AA8',NOP:'#2D5A9A',NYK:'#006BB6',
@@ -148,7 +149,7 @@ function boxHtml(g){
   if(!x)return '<div class="bxw"><div class="nob">這場沒有 box score 資料（逐人數據還沒抓到）。</div></div>';
   const side=k=>{
     const a=g[k],t=x.team[k],ps=x[k],cell=(c,o)=>c[1]==='pm'?'<td class="'+(o.pm>0?'pos':o.pm<0?'neg':'')+'">'+sgn(o.pm)+'</td>':c[1]==='rt'?(o.rt==null?'<td>—</td>':'<td'+(o.fb?' title="這場抓不到防守對位資料，只用 box score 算"':'')+'>'+Math.max(0,o.rt).toFixed(1)+'</td>'):'<td>'+o[c[1]]+'</td>';
-    const rows=ps.map(p=>'<tr class="pl"><td class="l">'+esc(p.n)+'</td>'+COLS.map(c=>cell(c,p)).join('')+'</tr>').join('');
+    const rows=ps.map((p,i)=>(i&&!p.st&&ps[i-1].st?'<tr class="dv"><td colspan="'+(COLS.length+1)+'"></td></tr>':'')+'<tr class="pl"><td class="l">'+esc(p.n)+'</td>'+COLS.map(c=>cell(c,p)).join('')+'</tr>').join('');
     const tot='<tr class="tot"><td class="l">TEAM TOTALS</td>'+COLS.map(c=>c[1]==='min'||c[1]==='pm'||c[1]==='rt'?'<td>—</td>':'<td>'+t[c[1]]+'</td>').join('')+'</tr>'
       +'<tr class="pct"><td class="l"></td>'+COLS.map(c=>'<td>'+(c[1]==='fg'?pct(t.fg)+'<br>FG':c[1]==='tp'?pct(t.tp)+'<br>3P':c[1]==='ft'?pct(t.ft)+'<br>FT':'')+'</td>').join('')+'</tr>';
     return '<div><div class="bt'+(g.winner===a?' win':'')+'"><span class="tn">'+esc(D.teams[a].name)+'</span><span class="ts">'+g.score[k]+'</span></div><div class="tbox"><table><thead><tr><th class="l">PLAYERS</th>'+COLS.map(c=>'<th>'+esc(c[0])+'</th>').join('')+'</tr></thead><tbody>'+rows+tot+'</tbody></table></div></div>';
@@ -167,7 +168,7 @@ function card(g){
   const mid=fin?'<div class="mid"><span class="tri '+(w==='away'?'l':'r')+'"></span></div>'
     :'<div class="mid">'+tipHtml(g)+'</div>';
   return '<div class="gm'+(op?' open':'')+'" data-id="'+g.id+'" style="--c1:'+tcol(g.away)+';--c2:'+tcol(g.home)+'"><div class="gh" role="button" tabindex="0" aria-expanded="'+op+'">'+tm('away')+sc('away')+mid+sc('home')+tm('home')+'</div>'
-   +(fin?'<div class="bh"><span>'+(g.ot?(g.ot>1?g.ot:'')+'OT · ':'')+(op?'收起 box score':'box score')+'<i>'+(op?'▴':'▾')+'</i></span></div>':'')+(op&&fin?boxHtml(g):'')+'</div>';
+   +(fin?'<div class="bh"><span>'+(g.ot?(g.ot>1?g.ot:'')+'OT ':'')+'<i>'+(op?'▴':'▾')+'</i></span></div>':'')+(op&&fin?boxHtml(g):'')+'</div>';
 }
 function build(){
   built=true;

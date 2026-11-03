@@ -101,6 +101,19 @@ def team_row(t: dict) -> dict:
             'fg': ma(t['FGM'], t['FGA']), 'tp': ma(t['FG3M'], t['FG3A']), 'ft': ma(t['FTM'], t['FTA'])}
 
 
+def starters_of(src: Path, gid: str) -> set[int] | None:
+    """先發名單（NBA.com liveData boxscore 的 starter 旗標；gamelog 沒有）。只有預設資料夾讀得到；檔案缺或不是兩隊各五人回 None（前端就不畫分隔線）。"""
+    if src.resolve() != SRC.resolve():
+        return None
+    f = ROOT / 'data/defense-seventh/2026-27/boxes' / f'{gid}.json'
+    try:
+        g = json.loads(f.read_text(encoding='utf-8'))['data']['game']
+        out = {t: {int(p['personId']) for p in g[t]['players'] if p.get('starter') == '1'} for t in ('homeTeam', 'awayTeam')}
+    except (OSError, KeyError, ValueError, TypeError):
+        return None
+    return out['homeTeam'] | out['awayTeam'] if all(len(v) == 5 for v in out.values()) else None
+
+
 def build(src: Path = SRC) -> tuple[dict, dict[str, dict]]:
     """回傳 (骨架 doc, {YYYY-MM: box doc})。"""
     sched = json.loads((src / 'schedule.json').read_text(encoding='utf-8'))
@@ -136,7 +149,14 @@ def build(src: Path = SRC) -> tuple[dict, dict[str, dict]]:
         games[gid] = {'date': h['GAME_DATE'], 'g': g}
         ps = players.get(gid, [])
         if ps:
-            side = lambda tid: sorted((player_row(p, scorer) for p in ps if p['TEAM_ID'] == tid), key=lambda r: (-r['min'], -r['pts'], r['n']))
+            st = starters_of(src, gid)
+            def side(tid):
+                rs = [player_row(p, scorer) for p in ps if p['TEAM_ID'] == tid]
+                if st is not None:
+                    for r in rs:
+                        if r['pid'] in st:
+                            r['st'] = 1
+                return sorted(rs, key=lambda r: (not r.get('st'), -r['min'], -r['pts'], r['n']))    # 先發五人在前，各自按上場分鐘
             box_of[gid] = {'home': side(h['TEAM_ID']), 'away': side(a['TEAM_ID']), 'team': {'home': team_row(h), 'away': team_row(a)}}
 
     # 戰績：每隊已完賽場次依 (GAME_DATE, GAME_ID) 排序累計勝負；已完賽場次＝該場結束時，未開打＝開賽前（用已完賽的場次數，不用別處的戰績）
