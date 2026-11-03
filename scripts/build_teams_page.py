@@ -10,6 +10,9 @@ import json
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from injury_desc import injury_desc  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[1]
 RATINGS = ROOT / 'data/season-source-2026-27/team-ratings.json'
 DATA_NAME = 'teams-data.json'
@@ -32,6 +35,10 @@ def main(argv=None) -> int:
     out = Path(a[0])
     src = Path(a[1]) if len(a) > 1 else RATINGS
     doc = json.loads(src.read_text(encoding='utf-8'))
+    teams = doc.get('teams') or []
+    for t in (teams.values() if isinstance(teams, dict) else teams):                  # 舊資料（--shell 不重算）沒有 injury 欄，這裡補
+        for x in t.get('injured') or []:
+            x.setdefault('injury', injury_desc(x.get('comment')))
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(STUB, encoding='utf-8')
     (out.parent / DATA_NAME).write_text(data_json(doc), encoding='utf-8')

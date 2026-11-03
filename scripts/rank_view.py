@@ -141,7 +141,7 @@ function rows(){
 }
 function detail(o){
   const t=o.t,v=o.v,back=new Set((t.restored||[]).map(x=>x.pid)),rot=v.rotation.map(r=>'<tr><td class="n"><div class="pn">'+av(r.pid)+'<span>'+esc(r.name)+(back.has(r.pid)?'<span class="cm">傷缺復出：最近 10 場沒出場，自己平均 ≥'+(D.returnMin||15)+' 分</span>':'')+'</span></div></td><td>'+r.min.toFixed(1)+'</td><td>'+(r.ovr==null?'—':Math.round(r.ovr)+(r.ovrSrc?'<span class="cm">'+esc(r.ovrSrc)+'</span>':''))+'</td></tr>').join('');
-  const inj=t.injured.length?t.injured.map(x=>'<tr><td class="n"><div class="pn">'+av(x.playerId)+'<span>'+esc(x.name)+'<span class="cm">'+esc(x.comment)+'</span></span></div></td><td class="n">'+esc(x.status)+'</td><td>'+esc(d10(x.date))+ret(x)+'</td></tr>').join(''):'<tr><td class="n" colspan="3">傷病名單沒有這隊的人</td></tr>';
+  const inj=t.injured.length?t.injured.map(x=>'<tr><td class="n"><div class="pn">'+av(x.playerId)+'<span>'+esc(x.name)+''+(x.injury?'<span class="cm">'+esc(x.injury)+'</span>':'')+'</span></div></td><td class="n">'+esc(x.status)+'</td><td>'+esc(d10(x.date))+ret(x)+'</td></tr>').join(''):'<tr><td class="n" colspan="3">傷病名單沒有這隊的人</td></tr>';
   return '<div class="dg"><div class="sum"><b>'+esc(t.name)+'</b>　ORtg '+f1(v.ortg)+'・DRtg '+f1(v.drtg)+'・Net '+f1(v.net)+(D.engineKind==='t'?'・對聯盟平均對手每場 ':'・對梯度對手每場 ')+f1(v.margin)+' 分　剩餘賽程 '+v.schedGames+' 場逐場計算'+(v.poolGames?'、'+v.poolGames+' 場以平均勝率補':'')+(view==='today'&&v.lineupStates>1?'　傷兵回歸讓陣容分 '+v.lineupStates+' 種狀態':'')+'</div>'
    +'<div><h3>'+(view==='today'?'可用輪替':'全員輪替')+'（分鐘／OVR）</h3><table><tbody>'+rot+'</tbody></table></div>'
    +'<div><h3>傷病名單（狀態／資料日期／預計回歸；Probable 照常上場）</h3><table><tbody>'+inj+'</tbody></table></div></div>';

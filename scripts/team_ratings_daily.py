@@ -50,6 +50,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 E208 = ROOT / 'reports/E208-team-rating'
 sys.path.insert(0, str(E208))
+from injury_desc import injury_desc  # noqa: E402
 from minutes_rules import norm  # noqa: E402  (E-208 (c) 的正規化：前 10 人、240 分鐘、上限 48)
 
 SEASON = '2026-27'
@@ -746,6 +747,7 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
         inj_rows = []
         for it in all_inj[tid]:
             row = {k: it.get(k) for k in ('name', 'status', 'date', 'comment', 'returnDate', 'playerId')}
+            row['injury'] = injury_desc(it.get('comment'))
             pid = it.get('playerId')
             if pid is not None and pid in out_ret[tid]:
                 row['missGames'] = sum(1 for g in rem_by[tid] if pid in lineup_out(outs_of[tid], g[2], today))     # 剩餘賽程裡缺陣的場數
