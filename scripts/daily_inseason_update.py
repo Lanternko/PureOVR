@@ -52,7 +52,7 @@ TEAMS_PAGE = ROOT / 'scripts/build_teams_page.py'
 GAMES_DATA = ROOT / 'scripts/build_games_data.py'
 CREATE_NO_WINDOW = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
 
-TIMEOUTS = {'games': 900, 'matchups': 1800, 'inseason': 3600, 'tracking': 600, 'gravity': 300, 'possessions': 300, 'stints': 1800, 'c4': 3600, 'viewer': 600, 'history': 3600, 'prereg': 900, 'ratings': 300, 'e229': 900, 'git': 180}
+TIMEOUTS = {'games': 900, 'matchups': 1800, 'inseason': 3600, 'tracking': 600, 'gravity': 300, 'possessions': 300, 'stints': 1800, 'c4': 3600, 'viewer': 600, 'history': 3600, 'prereg': 900, 'ratings': 1800, 'e229': 900, 'ratings_m0': 1800, 'git': 180}
 CO_AUTHOR = 'Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>'
 
 log = logging.getLogger('daily_inseason')
@@ -284,9 +284,12 @@ def step_prereg_e222() -> None:
         log.info('E-222 未評估 exit=%s：%s', r.returncode, last[:300])
 
 
-def step_e229_forward() -> None:
-    """E-229：T 對 M0 的前向預測記錄（reports/E229-transformer-vs-m0-forward/predict_daily.py，緊接 M0 之後）。任何失敗只記警告，不擋發布。"""
+def step_e229_forward(live_dir: Path | None) -> None:
+    """E-229：T 對 M0 的前向預測記錄（reports/E229-transformer-vs-m0-forward/predict_daily.py）。R-160 起 team-ratings.json 是 T，
+    這裡另跑一次舊引擎 M0（不重抓傷病／賽程）寫 team-ratings-m0.json 給記錄器比對。任何失敗只記警告，不擋發布。"""
     try:
+        checked([py_exe(), '-I', '-X', 'utf8', str(TEAM_RATINGS), str(live_dir), '--engine', 'm0', '--no-fetch',
+                 '--out', str(ROOT / 'data/season-source-2026-27/team-ratings-m0.json')], ROOT, TIMEOUTS['ratings_m0'])
         checked([py_exe(), '-I', '-X', 'utf8', str(ROOT / 'reports' / 'E229-transformer-vs-m0-forward' / 'predict_daily.py')], ROOT, TIMEOUTS['e229'])
     except Exception as e:
         log.warning('E-229 前向預測略過（不影響發布）：%s', str(e)[-400:])
@@ -298,7 +301,7 @@ def step_team_ratings(out_dir: Path, live_dir: Path | None, recompute: bool = Tr
     try:
         if recompute:
             checked([py_exe(), '-I', '-X', 'utf8', str(TEAM_RATINGS), str(live_dir)], ROOT, TIMEOUTS['ratings'])
-            step_e229_forward()
+            step_e229_forward(live_dir)
         html = out_dir / 'teams.html'
         checked([py_exe(), '-I', '-X', 'utf8', str(TEAMS_PAGE), str(html)], ROOT, TIMEOUTS['viewer'])
         return html

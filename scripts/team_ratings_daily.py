@@ -567,12 +567,50 @@ def run_sim(inp: dict, seeds: int, workers: int) -> dict:
         shutil.rmtree(tmp, ignore_errors=True)
 
 
+T_DRAWS_PER_OPP = 70      # T 評分：每支對手抽的陣容數（29 隊 × 70 ≈ 2000，同 E-229b 每場 N=2000）
+E229 = ROOT / 'reports/E229-transformer-vs-m0-forward'
+
+
+def run_t(jobs: list, tids: list, today: str, live_dir: Path, threads: int = 4) -> dict:
+    """Transformer 球隊評分（R-160，2026-11-04 起）：E-227 R2-stats 五個 seed，特徵＝e229_live 每日混合表（同 E-229b 回測）。
+    每份名單依分鐘抽 5 人陣容，對其他 29 隊「近況」名單各抽 T_DRAWS_PER_OPP 個陣容（＝對聯盟平均對手），
+    ORtg／DRtg＝雙方每 100 回合得分（A／B 兩個方向平均），margin＝淨值 × 聯盟每場回合數/100。回傳格式同 run_sim。"""
+    import numpy as np
+    import torch
+    sys.path.insert(0, str(E229))
+    import e229_live
+    from e227_model import predict
+    torch.set_num_threads(threads)
+    names = {p: 1 for j in jobs for p, _ in j['roster']}
+    C, info = e229_live.make_ctx(today, str(live_dir), names)
+    prep = {(j['team'], j['ver']): C.prep(j['roster']) for j in jobs}
+    pos = torch.tensor(list(range(5)) * 2).unsqueeze(0); side = torch.tensor([0] * 5 + [1] * 5).unsqueeze(0)
+    res = {}
+    for j in jobs:
+        tid = j['team']
+        rng = np.random.default_rng([229, int(tid), sum(map(ord, j['ver']))])
+        opp = np.concatenate([C.draw(*prep[(o, 'c')], rng, T_DRAWS_PER_OPP) for o in tids if o != tid])
+        own = C.draw(*prep[(tid, j['ver'])], rng, len(opp))
+        n = len(own)
+        X = torch.from_numpy(np.concatenate([np.concatenate([own, opp], 1), np.concatenate([opp, own], 1)], 0))
+        T = [X, pos.expand(2 * n, -1), side.expand(2 * n, -1)]
+        pf = pa = 0.0
+        for m in C.nets:
+            o = predict(m, T, C.dev, bs=8192)[:, :, 0].numpy()
+            pf += 100.0 * 0.5 * (o[:n, 0].mean() + o[n:, 1].mean()) / len(C.nets)
+            pa += 100.0 * 0.5 * (o[:n, 1].mean() + o[n:, 0].mean()) / len(C.nets)
+        res[(tid, j['ver'])] = {'msum': float(pf - pa) * C.avg_poss / 100, 'n': 1, 'pf': float(pf), 'pof': 100.0, 'pa': float(pa), 'poa': 100.0}
+    missing = sorted({p for j in jobs for p, _ in j['roster'] if str(p) not in C.B})
+    return {'res': res, 'missing': missing, 'based': [], 'excluded': [], 'info': info, 'avgPoss': C.avg_poss}
+
+
 # ----------------------------------------------------------------- 主流程
 def read_csv(p: Path) -> list:
     return list(csv.DictReader(open(p, encoding='utf-8')))
 
 
-def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = True, injury_source: str = 'auto', today: str | None = None) -> dict:
+def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = True, injury_source: str = 'auto', today: str | None = None,
+            engine: str = 't', out: Path | None = None) -> dict:
     t0 = time.time()
     today = today or et_from_utc(dt.datetime.now(dt.timezone.utc)).date().isoformat()      # 美東日期（賽程的 gameDateEst 也是美東）
     meta = json.loads((live_dir / 'meta.json').read_text(encoding='utf-8'))
@@ -677,8 +715,19 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
     ovr_src = {p: v['src'] for p, v in base_used.items()}
     ovr.update({p: v['ovr'] for p, v in base_used.items()})       # 底卡 OVR 只補 live 沒有的人（頁面上標來源）
     workers = max(1, min(workers, len(jobs)))
-    sim = run_sim(inp, seeds, workers)
-    log.info('球隊評分模擬：%d 份名單 × %d 場，%d 個 worker，%.0f 秒', len(jobs), seeds, workers, time.time() - t0)
+    used = engine
+    if engine == 't':
+        try:
+            sim = run_t(jobs, tids, today, live_dir)
+            in_jobs = {p for j in jobs for p, _ in j['roster']}
+            sim['based'] = sorted(p for p in base_used if p in in_jobs)
+            log.info('球隊評分（Transformer）：%d 份名單，%.0f 秒', len(jobs), time.time() - t0)
+        except Exception as e:      # T 失敗退回舊模擬引擎，頁面照常發布
+            log.warning('Transformer 球隊評分失敗，改用模擬引擎：%s', str(e)[-400:])
+            used = 'm0'
+    if used == 'm0':
+        sim = run_sim(inp, seeds, workers)
+        log.info('球隊評分模擬：%d 份名單 × %d 場，%d 個 worker，%.0f 秒', len(jobs), seeds, workers, time.time() - t0)
 
     def stat(tid, ver):
         o = sim['res'][(tid, ver)]
@@ -720,17 +769,18 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
         rec['nOut'] = len(out_pids[tid])
         out_teams[tid] = rec
     doc = {'generatedAt': dt.datetime.now().astimezone().isoformat(timespec='seconds'), 'season': SEASON, 'version': meta.get('version'),
-           'dataCutoff': meta.get('dataCutoff'), 'engine': 'sim 0.1.4',
-           'opponent': {'kind': 'gradient-B5', 'teams': 5, 'gamesPerTeam': seeds // 5, 'ladderCard': ladder.get('card'), 'ladderGames': ladder.get('games'),
-                        'ladder': [round(x, 2) for x in ladder['ladder']], 'mins': ladder['mins'], 'excluded': sim.get('excluded', [])},
-           'seeds': seeds, 'H': H, 'sigma': SIGMA, 'lastN': LAST_N,
+           'dataCutoff': meta.get('dataCutoff'), 'engine': 'Transformer E-227 R2-stats' if used == 't' else 'sim 0.1.4', 'engineKind': used,
+           'opponent': ({'kind': 'league-pool', 'teams': 29, 'drawsPerTeam': T_DRAWS_PER_OPP, 'avgPoss': round(sim['avgPoss'], 2), 'features': sim['info']} if used == 't' else
+                        {'kind': 'gradient-B5', 'teams': 5, 'gamesPerTeam': seeds // 5, 'ladderCard': ladder.get('card'), 'ladderGames': ladder.get('games'),
+                         'ladder': [round(x, 2) for x in ladder['ladder']], 'mins': ladder['mins'], 'excluded': sim.get('excluded', [])}),
+           'seeds': 29 * T_DRAWS_PER_OPP if used == 't' else seeds, 'H': H, 'sigma': SIGMA, 'lastN': LAST_N,
            'gamesPlayed': len(lg), 'injuries': {**{k: inj.get(k) for k in ('fetchedAt', 'source', 'espnTimestamp', 'reportTime', 'pdfUrl', 'stale', 'unmatched')}, 'outNoReturnDate': n_noret},
            'today': today, 'returnMin': RETURN_MIN,
            'schedule': {'fetchedAt': sch.get('fetchedAt'), 'source': sch.get('source'), 'remainingGames': len(remaining)},
            'missingProfiles': sim['missing'],
            'baseProfiles': [{'pid': p, 'name': pname.get(p, str(p)), 'team': next((tri.get(j['team']) or teams[j['team']]['abbr'] for j in jobs if p in {q for q, _ in j['roster']}), ''), 'src': v['src'], 'ovr': v['ovr']}
                             for p, v in sorted(base_used.items()) if p in set(sim['based'])], 'elapsedSec': round(time.time() - t0, 1), 'teams': out_teams}
-    RATINGS.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+    (out or RATINGS).write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
     return doc
 
 
@@ -746,10 +796,13 @@ def main(argv=None) -> int:
     ap.add_argument('--workers', type=int, default=8)
     ap.add_argument('--no-fetch', action='store_true')
     ap.add_argument('--injury-source', choices=('auto', 'espn', 'pdf'), default='auto', help='auto＝ESPN→官方 PDF→沿用前一份；pdf＝強制只走官方 PDF（驗證用）')
+    ap.add_argument('--engine', choices=('t', 'm0'), default='t', help='t＝Transformer（R-160 起預設，失敗自動退回 m0）；m0＝舊模擬引擎 sim 0.1.4')
+    ap.add_argument('--out', help='輸出檔（預設 data/season-source-2026-27/team-ratings.json）')
     a = ap.parse_args(argv)
     if not log.handlers:
         logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
-    d = compute(Path(a.live_dir) if a.live_dir else default_live_dir(), a.seeds, a.workers, not a.no_fetch, a.injury_source)
+    d = compute(Path(a.live_dir) if a.live_dir else default_live_dir(), a.seeds, a.workers, not a.no_fetch, a.injury_source,
+                engine=a.engine, out=Path(a.out) if a.out else None)
     print(f"done {d['elapsedSec']}s, teams={len(d['teams'])}")
     return 0
 

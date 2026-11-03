@@ -1,7 +1,7 @@
 """E-229 每日前向預測記錄器：M0 跑完之後，對「M0 今天日期（美東）起算 +1 天內、尚未開賽」的比賽記下 T 與 M0 的賽前預測。
   python -I -X utf8 predict_daily.py            # 正式：寫 log/<美東今天>.json（同一天多次執行＝附加紀錄，評估取每場「開賽前最後一筆」）
   python -I -X utf8 predict_daily.py --smoke    # smoke：寫 log/<日期>-smoke.json，容許 M0 資料過期；評估一律排除 -smoke
-T 與 M0 用「同一份」team-ratings.json 的今日陣容與分鐘（teams[tid].today.rotation）；T 邊際 = 該陣容依分鐘 Gumbel top-5 抽樣（N=2000）餵 E-227 R2-stats
+T 與 M0 用「同一份」M0 評分檔（R-160 起 team-ratings.json 改由 T 產生，M0 另存 team-ratings-m0.json）的今日陣容與分鐘（teams[tid].today.rotation）；T 邊際 = 該陣容依分鐘 Gumbel top-5 抽樣（N=2000）餵 E-227 R2-stats
 五個 seed 平均，×聯盟每隊每場回合數/100（prior 2025-26 train stints），主客各當 A／B 平均（E-228 方法）。M0 邊際 = 兩隊今日 margin 之差。
 pX = Φ((邊際+2.5)/12)（H、σ 同 M0）。不讀任何比賽結果。"""
 import argparse, datetime as dt, json, math, os, sys, time
@@ -29,7 +29,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--smoke', action='store_true'); ap.add_argument('--allow-stale', action='store_true')
     ap.add_argument('--draws', type=int, default=2000); ap.add_argument('--threads', type=int, default=4)
-    ap.add_argument('--ratings', default=os.path.join(SD, 'team-ratings.json')); ap.add_argument('--schedule', default=os.path.join(SD, 'schedule.json'))
+    ap.add_argument('--ratings', default=os.path.join(SD, 'team-ratings-m0.json')); ap.add_argument('--schedule', default=os.path.join(SD, 'schedule.json'))
     ap.add_argument('--log-dir', default=os.path.join(HERE, 'log')); ap.add_argument('--include-started', action='store_true', help='僅供測試：不篩開賽時間')
     a = ap.parse_args()
     t0 = time.time(); now = dt.datetime.now(dt.timezone.utc); et_today = et_from_utc(now).date().isoformat()

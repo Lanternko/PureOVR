@@ -16,7 +16,7 @@
 ## 進行中
 - **E-222 診斷**（R-149 已被 R-150 推翻，保留作事後檢查）：MDE_p 0.030，每日更新在 30 隊滿 20 場時跑 `reports/E222-recent-boost-diagnostic/e222_eval.py` 一次；errata-1（c→g 改 15·c）未核可。剩餘落差：OVR 結構不看重部分高評分表現（Murray 16.9 分場 +0.2）
 - **聯盟 3PAr 偏差**（11-03）：預註冊 1 來源不明；預註冊 2（E-219）位置池對手 K=0.62 部分原因；預註冊 3（E-220，F-148，R-146）3 分 logit 位移 δ*=0.27／0.10 補齊 3PAr 無副作用，但節奏只補 5–8%，同源不成立。使用者 11-03 裁定 δ 暫不進引擎；節奏偏慢下一步（查回合組成：失誤率、罰球率）未開。`reports/3par-logit-shift/report.md`；E-219 報告尚未稽核
-- **球星重疊遞減 E-217**（11-02）：H1 不通過，OL 單隊多為噪音，要驗證需約 10 倍場數。`reports/star-overlap/report.md`
+- **陣容 Transformer**：E-227 已採用；**R-160 球隊評分已換 T**（2026-11-04 上線，舊引擎備援＋每日另存 `team-ratings-m0.json`）；E-229 前向記錄只當附加。
 - **E-208／E-213 球隊評分**（11-02）：`teams.html` 上線；傷病 ESPN→官方PDF（E-214）；缺陣球員補底卡 E-216。`reports/E208-team-rating/report-missing-profiles.md`
 - **0.2.10 待辦**（R-114）：獨立 role-audit 沒做（F-116：組合值評 foulDraw／pass 不過，使用者知情上線）；換季跳動對 0.2.9a 沒量；Porter Jr. 20→40；G5。
 - **E-151 年輕側年齡連續**：已預註冊（6820474），每日排程在 2026-27 stints 達 450 場時自動跑 `e151_eval.py` 一次（daily.log 會出現 WARNING「E-151 評估完成」）。不得提前拿卡片去比。
