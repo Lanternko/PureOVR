@@ -45,6 +45,8 @@ HISTORY = LIVE / 'ovr_history.py'               # 名單頁 OVR 折線：逐日�
 CARD_VIEWER = ROOT / 'scripts/build_card_viewer.py'
 E151_EVAL = ROOT / 'reports/card-0.2.7d+E151-young-curve/e151_eval.py'   # 預註冊驗收，達標跑一次
 E151_RESULT = E151_EVAL.parent / 'results.json'
+E222_EVAL = ROOT / 'reports/E222-recent-boost-diagnostic/e222_eval.py'   # 預註冊診斷：30 隊打滿 20 場後跑一次
+E222_RESULT = E222_EVAL.parent / 'result.json'
 TEAM_RATINGS = ROOT / 'scripts/team_ratings_daily.py'      # E-208 第二階段：傷病名單＋球隊評分
 TEAMS_PAGE = ROOT / 'scripts/build_teams_page.py'
 CREATE_NO_WINDOW = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
@@ -259,6 +261,26 @@ def step_prereg_e151() -> None:
         log.warning('E-151 評估完成（只跑這一次）：%s', last[:500])
     else:
         log.info('E-151 未評估 exit=%s：%s', r.returncode, last[:300])
+
+
+def step_prereg_e222() -> None:
+    """E-222 預註冊（2026-11-03）：30 隊都打滿 20 場後跑一次凍結的 e222_eval.py；寫出 result.json 後不再跑。
+    未達門檻時程式自己 exit 1（印 JSON status）、不算相關。任何失敗都不擋發布。"""
+    if E222_RESULT.exists():
+        return
+    try:
+        r = run([py_exe(), '-I', '-X', 'utf8', str(E222_EVAL)], ROOT, TIMEOUTS['prereg'])
+    except subprocess.TimeoutExpired:
+        log.warning('E-222 評估逾時')
+        return
+    except Exception as e:  # noqa: BLE001  評估壞掉不得讓每日更新失敗
+        log.warning('E-222 評估略過：%s', str(e)[-300:])
+        return
+    last = ((r.stdout or '').strip().splitlines()[-1:] or [(r.stderr or '').strip()[-300:]])[0]
+    if E222_RESULT.exists():
+        log.warning('E-222 評估完成（只跑這一次）：%s', last[:500])
+    else:
+        log.info('E-222 未評估 exit=%s：%s', r.returncode, last[:300])
 
 
 def step_team_ratings(out_dir: Path, live_dir: Path | None, recompute: bool = True) -> Path | None:
@@ -484,6 +506,7 @@ def _run(args) -> int:
     step_fetch_inseason()
     step_build_stints()
     step_prereg_e151()
+    step_prereg_e222()
     step_fetch_tracking()
     step_fetch_gravity()
     step_fetch_possessions()
