@@ -156,12 +156,13 @@ class Wiring(unittest.TestCase):
     def test_box_column_order(self):
         """參考圖欄位順序，且每個欄位鍵 build_games_data 的球員列／球隊合計都有（pm 只在球員列）。"""
         self.assertEqual([h for h, _ in games_view.BOX_COLS],
-                         ['MIN', 'PTS', 'REB', 'AST', 'FG', '3PT', 'FT', 'STL', 'BLK', 'TO', 'OREB', 'DREB', 'PF', '+/-'])
+                         ['MIN', 'PTS', 'REB', 'AST', 'FG', '3PT', 'FT', 'STL', 'BLK', 'TO', 'OREB', 'DREB', 'PF', '+/-', '評分'])
         pl = B.player_row(dict.fromkeys(PG_H, 0) | {'PLAYER_NAME': 'Jalen Walker'})
         tm = B.team_row(dict.fromkeys(TG_H, 0))
         for _, k in games_view.BOX_COLS:
-            self.assertIn(k, pl, k)
-            if k not in ('min', 'pm'):
+            if k != 'rt':     # 評分（rt）只有帶 Scorer 且上場才有（真實資料的測試另驗）
+                self.assertIn(k, pl, k)
+            if k not in ('min', 'pm', 'rt'):
                 self.assertIn(k, tm, k)
         self.assertEqual(pl['n'], 'J. Walker')
         self.assertNotIn('__COLS__', games_view.JS)
@@ -247,6 +248,21 @@ class RealData(unittest.TestCase):
             for k in ('home', 'away'):
                 w, l = map(int, g['rec'][k].split('-'))
                 self.assertGreaterEqual(w + l, 1)
+
+    def test_box_has_rating_for_players_who_played(self):
+        """評分欄（Z1，名目 0–10 但大場可超過 10，只設下限 0）：上場的人都有、落在合理範圍；沒上場的不給。reports/ 被 gitignore，沒有 params.json 的環境整段略過。"""
+        if B.load_scorer(SRC) is None:
+            self.skipTest('沒有 reports/rating-m10-scurve/params.json，box 不帶評分')
+        rows = [p for b in self.box.values() for k in ('home', 'away') for p in b[k]]
+        played = [p for p in rows if p['min'] > 0]
+        self.assertGreater(len(played), 0)
+        missing = [p['n'] for p in played if 'rt' not in p]
+        self.assertLess(len(missing), 0.01 * len(played), f'上場卻沒評分：{missing[:10]}')
+        for p in played:
+            if 'rt' in p:
+                self.assertTrue(0 <= p['rt'] <= 25, (p['n'], p['rt']))
+        self.assertTrue(all('rt' not in p for p in rows if p['min'] == 0))
+        self.assertTrue(all(b['team'][k].get('rt') is None for b in self.box.values() for k in ('home', 'away')))
 
     def test_size_budget(self):
         """骨架 < 500 KB、每個月的 box < 2 MB（全季 box 約 3.5 MB，所以固定按月分檔）。"""

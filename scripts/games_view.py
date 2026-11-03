@@ -2,14 +2,14 @@
 架構照 rank_view.py：Shadow DOM 隔離樣式（色票與字型變數從名單頁繼承）、資料放獨立 JSON（build_games_data.py 產生），第一次進檢視（或閒置時預載）才 fetch；
 box score 太大，按月分檔 games-box-YYYY-MM.json，點開某場才 fetch 該月（同月只抓一次）。
 版面（使用者 2026-11-03 給三張參考圖）：橫向日期列（只列有賽事的日子，選中日置中，可滑動／箭頭翻頁）、單場卡片（隊徽在上、隊名、W-L、大比分、FINAL＋勝方三角）、
-展開 box score（球員縮寫、欄位順序 MIN PTS FG 3PT FT REB AST TO STL BLK OREB DREB PF +/-、TEAM TOTALS＋命中率）。gamelog 沒有先發／DNP，不分先發板凳、不列 DNP。
+展開 box score（球員縮寫、欄位順序 MIN PTS REB AST FG 3PT FT STL BLK TO OREB DREB PF +/- 評分、TEAM TOTALS＋命中率）。gamelog 沒有先發／DNP，不分先發板凳、不列 DNP。
 網址：#games＝預設日（最近有已完賽場次的那天）；#games/2026-11-02＝指定日；#games/2026-11-02/0022600172＝展開某場。
 對外 API：window.PureGames = {ensure(), open(date, gameId), hash()}，檢視切換由 site_header.JS 負責。"""
 import json
 
 # box 表欄位（標頭, 球員列／球隊合計的欄位鍵）：順序照參考圖，build_games_data.player_row／team_row 的鍵要對得上（gate 檢查）
 BOX_COLS = [('MIN', 'min'), ('PTS', 'pts'), ('REB', 'reb'), ('AST', 'ast'), ('FG', 'fg'), ('3PT', 'tp'), ('FT', 'ft'), ('STL', 'stl'),
-            ('BLK', 'blk'), ('TO', 'tov'), ('OREB', 'oreb'), ('DREB', 'dreb'), ('PF', 'pf'), ('+/-', 'pm')]
+            ('BLK', 'blk'), ('TO', 'tov'), ('OREB', 'oreb'), ('DREB', 'dreb'), ('PF', 'pf'), ('+/-', 'pm'), ('評分', 'rt')]
 
 STYLE = """@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,700;1,800&family=Barlow+Condensed:wght@600;700&display=swap");
 *{box-sizing:border-box}
@@ -69,7 +69,7 @@ button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{ou
 .bt.win .tn{border-left-color:var(--blue)}
 .tbox{overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x mandatory;scroll-padding-left:130px}  /* 捲動停在整欄邊界，不留半截欄位 */
 th:not(.l){scroll-snap-align:start}
-table{border-collapse:collapse;table-layout:fixed;width:100%;min-width:790px;font-variant-numeric:tabular-nums}  /* 固定欄寬：兩隊的表欄位對齊 */
+table{border-collapse:collapse;table-layout:fixed;width:100%;min-width:834px;font-variant-numeric:tabular-nums}  /* 固定欄寬：兩隊的表欄位對齊 */
 th{color:var(--muted);font:600 .72rem var(--f-body);letter-spacing:.04em;padding:6px 2px;text-align:center;white-space:nowrap;width:44px}
 th:nth-child(6),th:nth-child(7),th:nth-child(8){width:58px}
 th.l{text-align:left;width:130px;padding-left:0;padding-right:6px;position:sticky;left:0;z-index:2;background:#10151a;box-shadow:6px 0 6px -4px #10151a}
@@ -101,7 +101,7 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
   .sc{font-size:2.3rem}
   .mid{font-size:.85rem}
   .bxw{padding:4px 10px 12px}
-  th.l{width:92px}.tbox{scroll-padding-left:92px}table{min-width:630px}
+  th.l{width:92px}.tbox{scroll-padding-left:92px}table{min-width:666px}
   th{font-size:.66rem;width:36px}th:nth-child(6),th:nth-child(7),th:nth-child(8){width:48px}
   td{font-size:.82rem;padding:7px 1px}
   .bt .tn{font-size:1.05rem}.bt .ts{font-size:1.8rem}
@@ -140,9 +140,9 @@ function boxHtml(g){
   const x=b.doc.games[g.id];
   if(!x)return '<div class="bxw"><div class="nob">這場沒有 box score 資料（逐人數據還沒抓到）。</div></div>';
   const side=k=>{
-    const a=g[k],t=x.team[k],ps=x[k],cell=(c,o)=>c[1]==='pm'?'<td class="'+(o.pm>0?'pos':o.pm<0?'neg':'')+'">'+sgn(o.pm)+'</td>':'<td>'+o[c[1]]+'</td>';
+    const a=g[k],t=x.team[k],ps=x[k],cell=(c,o)=>c[1]==='pm'?'<td class="'+(o.pm>0?'pos':o.pm<0?'neg':'')+'">'+sgn(o.pm)+'</td>':c[1]==='rt'?(o.rt==null?'<td>—</td>':'<td'+(o.fb?' title="這場抓不到防守對位資料，只用 box score 算"':'')+'>'+Math.max(0,o.rt).toFixed(1)+'</td>'):'<td>'+o[c[1]]+'</td>';
     const rows=ps.map(p=>'<tr class="pl"><td class="l">'+esc(p.n)+'</td>'+COLS.map(c=>cell(c,p)).join('')+'</tr>').join('');
-    const tot='<tr class="tot"><td class="l">TEAM TOTALS</td>'+COLS.map(c=>c[1]==='min'||c[1]==='pm'?'<td>—</td>':'<td>'+t[c[1]]+'</td>').join('')+'</tr>'
+    const tot='<tr class="tot"><td class="l">TEAM TOTALS</td>'+COLS.map(c=>c[1]==='min'||c[1]==='pm'||c[1]==='rt'?'<td>—</td>':'<td>'+t[c[1]]+'</td>').join('')+'</tr>'
       +'<tr class="pct"><td class="l"></td>'+COLS.map(c=>'<td>'+(c[1]==='fg'?pct(t.fg)+'<br>FG':c[1]==='tp'?pct(t.tp)+'<br>3P':c[1]==='ft'?pct(t.ft)+'<br>FT':'')+'</td>').join('')+'</tr>';
     return '<div><div class="bt'+(g.winner===a?' win':'')+'"><span class="tn">'+esc(D.teams[a].name)+'</span><span class="ts">'+g.score[k]+'</span></div><div class="tbox"><table><thead><tr><th class="l">PLAYERS</th>'+COLS.map(c=>'<th>'+esc(c[0])+'</th>').join('')+'</tr></thead><tbody>'+rows+tot+'</tbody></table></div></div>';
   };

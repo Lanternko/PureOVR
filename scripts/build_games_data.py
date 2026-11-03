@@ -68,10 +68,32 @@ def ma(m, a) -> str:
     return f'{m or 0}-{a or 0}'
 
 
-def player_row(p: dict) -> dict:
-    return {'n': short_name(p['PLAYER_NAME']), 'pid': p['PLAYER_ID'], 'min': minutes(p['MIN']), 'pts': p['PTS'] or 0, 'reb': p['REB'] or 0, 'oreb': p['OREB'] or 0, 'dreb': p['DREB'] or 0, 'ast': p['AST'] or 0,
-            'stl': p['STL'] or 0, 'blk': p['BLK'] or 0, 'tov': p['TOV'] or 0, 'pf': p['PF'] or 0,
-            'fg': ma(p['FGM'], p['FGA']), 'tp': ma(p['FG3M'], p['FG3A']), 'ft': ma(p['FTM'], p['FTA']), 'pm': p['PLUS_MINUS'] or 0}
+def load_scorer(src: Path):
+    """單場評分（Z1，0–10，和名單頁同一套 rating_m10.Scorer）。Scorer 固定讀 data/season-source-2026-27，所以只有預設資料夾才算；
+    其他資料夾（測試用的假資料）或算不出來（缺 reports/rating-m10-scurve/params.json）回 None，box 就不帶評分欄。"""
+    if src.resolve() != SRC.resolve():
+        return None
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import rating_m10
+        return rating_m10.Scorer('2026-27', 'Z1')
+    except Exception as e:   # noqa: BLE001  評分是顯示用，算不出來不擋賽程資料
+        print(f'WARNING: 單場評分算不出來，box score 不帶評分欄（{e!r}）', file=sys.stderr)
+        return None
+
+
+def player_row(p: dict, scorer=None) -> dict:
+    r = {'n': short_name(p['PLAYER_NAME']), 'pid': p['PLAYER_ID'], 'min': minutes(p['MIN']), 'pts': p['PTS'] or 0, 'reb': p['REB'] or 0, 'oreb': p['OREB'] or 0, 'dreb': p['DREB'] or 0, 'ast': p['AST'] or 0,
+         'stl': p['STL'] or 0, 'blk': p['BLK'] or 0, 'tov': p['TOV'] or 0, 'pf': p['PF'] or 0,
+         'fg': ma(p['FGM'], p['FGA']), 'tp': ma(p['FG3M'], p['FG3A']), 'ft': ma(p['FTM'], p['FTA']), 'pm': p['PLUS_MINUS'] or 0}
+    if scorer is not None and r['min'] > 0:      # 沒上場不給評分；fb＝這場抓不到防守對位，只用 box score 算
+        try:
+            r['rt'] = round(scorer.score(p['GAME_ID'], p['PLAYER_ID']), 1)
+            if scorer.fallback(p['GAME_ID'], p['PLAYER_ID']):
+                r['fb'] = 1
+        except KeyError:
+            pass
+    return r
 
 
 def team_row(t: dict) -> dict:
@@ -84,6 +106,7 @@ def build(src: Path = SRC) -> tuple[dict, dict[str, dict]]:
     sched = json.loads((src / 'schedule.json').read_text(encoding='utf-8'))
     tg, fetched = rows(src / 'team-games.json')
     pg, _ = rows(src / 'player-games.json')
+    scorer = load_scorer(src)
 
     by_game: dict[str, list[dict]] = {}
     for t in tg:
@@ -111,7 +134,7 @@ def build(src: Path = SRC) -> tuple[dict, dict[str, dict]]:
         games[gid] = {'date': h['GAME_DATE'], 'g': g}
         ps = players.get(gid, [])
         if ps:
-            side = lambda tid: sorted((player_row(p) for p in ps if p['TEAM_ID'] == tid), key=lambda r: (-r['min'], -r['pts'], r['n']))
+            side = lambda tid: sorted((player_row(p, scorer) for p in ps if p['TEAM_ID'] == tid), key=lambda r: (-r['min'], -r['pts'], r['n']))
             box_of[gid] = {'home': side(h['TEAM_ID']), 'away': side(a['TEAM_ID']), 'team': {'home': team_row(h), 'away': team_row(a)}}
 
     # 戰績：每隊已完賽場次依 (GAME_DATE, GAME_ID) 排序累計勝負；已完賽場次＝該場結束時，未開打＝開賽前（用已完賽的場次數，不用別處的戰績）
