@@ -601,6 +601,23 @@ function impactChips(p) {
   if (window.ResizeObserver) new ResizeObserver(run).observe(tbl);  // 名單從 display:none 切回來（0→有寬度）時重算；值沒變 run 會直接略過，不會和 zoom 互相觸發
   run();
 })();
+// 閒置過久切回分頁表格各欄疊在左邊（使用者 2026-11-03，iOS Safari）：sticky 欄＋橫向捲動容器的繪圖層被系統回收後沒重建；
+// 切回分頁（visibilitychange／pageshow／focus）時強制重排＋重建合成層，並把 scrollLeft 寫回去，不改版面值。
+(() => {
+  const box = document.querySelector('.tbox'); if (!box) return;
+  let busy = 0;
+  function repaint() {
+    if (document.hidden || busy) return;
+    busy = requestAnimationFrame(() => {
+      const l = box.scrollLeft, t = box.style.transform;
+      box.style.transform = 'translateZ(0)'; void box.offsetWidth;
+      box.scrollLeft = l + 1; box.scrollLeft = l;
+      requestAnimationFrame(() => { box.style.transform = t; busy = 0; });
+    });
+  }
+  document.addEventListener('visibilitychange', repaint);
+  addEventListener('pageshow', repaint); addEventListener('focus', repaint);
+})();
 // 手機表格手勢鎖方向（使用者 2026-10-29：往上滑時手會左右偏，表格跟著晃）：先移動 10px 才判方向，
 // 水平量要大於垂直 1.5 倍才算左右捲，判定後整段手勢只動那一軸。放手後照速度慣性滑行。
 // 表格自己捲只從數值格啟動（使用者 2026-10-30）：從表頭或 #／名字／OVR 欄開始的手勢上下捲整頁，不捲表格。
