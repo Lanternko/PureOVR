@@ -899,14 +899,17 @@ function gcCell(v, b, cut, fb, tip) {
   if (v == null) return '<td>—</td>';
   return `<td${tip ? ` title="${tip}"` : fb ? ' title="這場抓不到防守對位資料，只用 box score 算"' : ''}><span class="${b == null ? '' : gcCls(v - b, cut)}">${gcS(v)}</span></td>`;
 }
+// 手寫的個別球員註解（使用者 2026-11-04）：接在 N 場平均評分／上季後面。數字會隨賽程變，改前先對照最新 g5
+const GC_NOTE = {1630162: '*因為本季命中率下降＋失誤上升，所以即使得分很多，OVR仍不變'}; // Anthony Edwards
+const gcExtra = r => REAL_VIEW === 'g5' && GC_NOTE[r.id] ? `　<span class="gcx">${GC_NOTE[r.id]}</span>` : '';
 function gcNote(r, p, n) {
   const c = r.gc;
   if (c.r == null) return '';
   // 說明只寫兩個數字（使用者 2026-10-30：太長）；五色怎麼切、換算 OVR 放 tooltip
-  if (c.b == null) return `<div class="gcn" title="${GC_DEF}">${n} 場平均評分 <b>${gcS(c.r)}</b>　上季 —</div>`;
+  if (c.b == null) return `<div class="gcn" title="${GC_DEF}">${n} 場平均評分 <b>${gcS(c.r)}</b>　上季 —${gcExtra(r)}</div>`;
   const d = c.r - c.b, cls = gcCls(d, GC_CUT5);
   return `<div class="gcn" title="${GC_DEF}。顏色＝和自己 2025-26 平均比，照所有人的起伏五等分">` +
-    `${n} 場平均評分 <b class="${cls}">${gcS(c.r)}</b>　上季 <b>${gcS(c.b)}</b></div>`;
+    `${n} 場平均評分 <b class="${cls}">${gcS(c.r)}</b>　上季 <b>${gcS(c.b)}</b>${gcExtra(r)}</div>`;
 }
 // 近 5 場逐項上色（使用者 2026-11-03）：五色，每項照它在 2025-26 單場分布的百分位（g[20]，Python item_cls；難拿的項目如阻攻 1 次就算高），中間 50% 灰。分項在 g[19]，順序同 Python ITEM_ORDER
 const ITEM_C5 = {'-2': 'c5f', '-1': 'c5d', 0: 'c5c', 1: 'c5b', 2: 'c5a'};
