@@ -497,7 +497,10 @@ function gcCell(v, b, cut, fb, tip) {
   return `<td${tip ? ` title="${tip}"` : fb ? ' title="這場抓不到防守對位資料，只用 box score 算"' : ''}><span class="${b == null ? '' : gcCls(v - b, cut)}">${gcS(v)}</span></td>`;
 }
 // 手寫的個別球員註解（使用者 2026-11-04）：接在 N 場平均評分／上季後面。數字會隨賽程變，改前先對照最新 g5
-const GC_NOTE = {1630162: '*因為本季命中率下降＋失誤上升，所以即使得分很多，OVR仍不變'}; // Anthony Edwards
+const GC_NOTE = {
+  1630162: '*因為本季命中率下降＋失誤上升，所以即使得分很多，OVR仍不變', // Anthony Edwards
+  1642843: '*由於上季球隊戰績差，加上效率很差，本季的初始OVR很低、爬升較慢', // Cooper Flagg
+};
 const gcExtra = r => REAL_VIEW === 'g5' && GC_NOTE[r.id] ? `　<span class="gcx">${GC_NOTE[r.id]}</span>` : '';
 function gcNote(r, p, n) {
   const c = r.gc;
