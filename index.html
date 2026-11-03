@@ -377,15 +377,16 @@ button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{ou
   -webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,0,0,.25),0 8px 24px rgba(0,0,0,.32)}
 .gm::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.13) 0%,rgba(255,255,255,.03) 38%,transparent 60%)}
 .gm.open{border-color:rgba(255,255,255,.28)}
-.gh{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(90px,auto) auto minmax(0,1fr);align-items:center;gap:0 16px;padding:18px 20px 8px;cursor:pointer;user-select:none}
+.gh{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(6.2rem,auto) auto minmax(0,1fr);align-items:center;gap:0 16px;padding:18px 20px 8px;cursor:pointer;user-select:none}
 .gh:hover{background:rgba(255,255,255,.05)}
 .tm{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;text-align:center}
 .tm .lg{width:64px;height:64px;object-fit:contain}
 .tm .nk{font:500 1.15rem/1.2 var(--f-body);color:var(--fg);max-width:100%;overflow-wrap:anywhere}
 .tm .rc{font:500 1.05rem/1.2 var(--f-body);color:var(--muted);font-variant-numeric:tabular-nums}
-.sc{font:700 3.4rem/1 var(--nf);font-variant-numeric:tabular-nums;color:var(--fg);text-align:center;min-width:2ch}
+.sc{font:700 3.4rem/1 var(--nf);font-variant-numeric:tabular-nums;color:var(--fg);width:3.1ch;text-align:right}  /* 固定三位數寬：兩側等寬，FINAL 才會在兩個比分正中；客隊靠右、主隊靠左，數字都貼向 FINAL */
+.sc.h{text-align:left}
 .sc.lose{color:#7c858f}
-.mid{text-align:center;font:700 1.2rem/1.25 var(--f-body);letter-spacing:.03em;white-space:nowrap}
+.mid{text-align:center;font:700 1.2rem/1.25 var(--f-body);letter-spacing:.03em;text-indent:.03em;white-space:nowrap}
 .mid .fl{position:relative;padding:0 19px}
 .mid .tri{position:absolute;top:50%;margin-top:-6px;width:0;height:0;border:6px solid transparent}
 .mid .tri.l{left:3px;border-left:0;border-right:9px solid var(--fg)}
@@ -393,6 +394,8 @@ button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{ou
 .mid .ot{font-weight:700}
 .mid .tbd{color:var(--muted);font-weight:500}
 .bh{text-align:center;color:var(--muted);font:500 .74rem var(--f-body);padding:0 0 10px;letter-spacing:.04em}
+.bh span{position:relative;display:inline-block}
+.bh i{position:absolute;left:100%;margin-left:.5em;font-style:normal}  /* 箭頭不佔排版寬度，文字本身才會至中 */
 .bxw{border-top:1px solid var(--line);background:#10151a;padding:6px 20px 16px;display:flex;flex-direction:column;gap:14px;min-width:0}
 .bt{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:12px 0 8px;padding-bottom:10px;border-bottom:1px solid var(--line)}
 .bt .tn{font:600 1.35rem var(--f-body);color:#7c858f;border-left:3px solid var(--line);padding-left:10px}
@@ -427,7 +430,7 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
   .strip::before,.strip::after{flex-basis:40%}
   .dc span{font-size:.8rem}.dc b{font-size:1.15rem}
   .dx{flex:1 1 100%;border-left:0;padding:4px 0 0;justify-content:flex-end}
-  .gh{grid-template-columns:minmax(0,1fr) auto minmax(56px,auto) auto minmax(0,1fr);gap:0 6px;padding:14px 8px 6px}
+  .gh{grid-template-columns:minmax(0,1fr) auto minmax(4.6rem,auto) auto minmax(0,1fr);gap:0 4px;padding:14px 8px 6px}
   .tm .lg{width:44px;height:44px}
   .tm .nk{font-size:.82rem}.tm .rc{font-size:.8rem}
   .sc{font-size:2.3rem}
@@ -1722,11 +1725,11 @@ function boxHtml(g){
 function card(g){
   const fin=g.status==='final',w=fin?(g.winner===g.home?'home':'away'):'',op=openId===g.id;
   const tm=k=>'<div class="tm">'+logo(g[k])+'<div class="nk">'+esc(D.teams[g[k]].nick)+'</div><div class="rc">'+esc(g.rec?g.rec[k]:'')+'</div></div>';
-  const sc=k=>'<div class="sc'+(fin&&w!==k?' lose':'')+'">'+(fin?g.score[k]:'')+'</div>';
+  const sc=k=>'<div class="sc'+(k==='home'?' h':'')+(fin&&w!==k?' lose':'')+'">'+(fin?g.score[k]:'')+'</div>';
   const mid=fin?'<div class="mid"><div class="fl">'+(w==='away'?'<span class="tri l"></span>':'')+'FINAL'+(w==='home'?'<span class="tri r"></span>':'')+'</div>'+(g.ot?'<div class="ot">'+g.ot+'OT</div>':'')+'</div>'
     :'<div class="mid"><span class="tbd">'+esc(g.time||'—')+'</span></div>';
   return '<div class="gm'+(op?' open':'')+'" data-id="'+g.id+'" style="--c1:'+tcol(g.away)+';--c2:'+tcol(g.home)+'"><div class="gh" role="button" tabindex="0" aria-expanded="'+op+'">'+tm('away')+sc('away')+mid+sc('home')+tm('home')+'</div>'
-   +(fin?'<div class="bh">'+(op?'收起 box score ▴':'box score ▾')+'</div>':'')+(op&&fin?boxHtml(g):'')+'</div>';
+   +(fin?'<div class="bh"><span>'+(op?'收起 box score':'box score')+'<i>'+(op?'▴':'▾')+'</i></span></div>':'')+(op&&fin?boxHtml(g):'')+'</div>';
 }
 function build(){
   built=true;
