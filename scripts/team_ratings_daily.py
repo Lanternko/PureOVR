@@ -17,7 +17,7 @@
   不在名單上的人照常上場），剩下的再套表。不做機率加權：同一個人不會同時在可用名單與傷兵名單。
   沒有 returnDate 時：Out／Suspension 當整季缺陣；Questionable／Doubtful／Day-To-Day 只缺今天的比賽（隔天回來）。
 - 每次抓完傷病（ESPN／PDF 成功）把 injuries.json 另存 injury-snapshots/<UTC 時間戳>.json（只存不讀，之後量各狀態實際上場率）。
-評分＝名單對「聯盟平均隊」各打 SEEDS 場（換主客）：ORtg／DRtg 扣「近況」版的聯盟平均（兩版共用，兩版差＝純傷兵影響）。
+評分＝名單對五支「梯度對手」（E-224 B5，R-158 起；表在 data/team-ratings-gradient-ladder.json）各打 SEEDS/5 場（換主客）：ORtg／DRtg 扣「近況」版的聯盟平均（兩版共用，兩版差＝純傷兵影響）。
 預測勝場＝目前勝 + 剩餘賽程逐場 Φ((marginA − marginB ± H) / σ)；H=2.5、σ=12（同 E-208）。賽程抓不到時，剩餘場次用對其他 29 隊的平均勝率。
   近況版：陣容全程不變。今日陣容版：每場依 ESPN returnDate 切換陣容——該場日期 < 傷兵 returnDate（或 ≤ 今天，ESPN 日期過期但仍列 Out）就缺陣，之後回來；
   沒有 returnDate（例如 PDF 備援）當整季缺陣。每隊依「哪些人缺陣」分成幾種陣容狀態，各模擬一次；主表的今日 Net 維持今天陣容。
@@ -55,6 +55,7 @@ from minutes_rules import norm  # noqa: E402  (E-208 (c) 的正規化：前 10 �
 SEASON = '2026-27'
 SRC = ROOT / f'data/season-source-{SEASON}'
 INJURIES = SRC / 'injuries.json'
+LADDER = ROOT / 'data/team-ratings-gradient-ladder.json'
 SCHEDULE = SRC / 'schedule.json'
 RATINGS = SRC / 'team-ratings.json'
 BOXES = ROOT / f'data/defense-seventh/{SEASON}/boxes'
@@ -199,7 +200,7 @@ def lineup_out(outs: list, gdate: str, today: str) -> frozenset:
 
 def predict_wins(wins: int, played: int, remaining: list, margin, tid: str, tids=None) -> tuple:
     """remaining＝[(homeId, awayId[, 日期]), …] 本隊的剩餘賽程；回傳 (預測最終勝場, 逐場加總的場數, 以平均勝率補的場數)。
-    margin＝{tid: 對平均隊每場分差}（陣容全程不變），或 f(tid, 日期|None)→分差（逐場陣容；日期 None＝最後狀態，用在補的場次）；後者要給 tids。
+    margin＝{tid: 對梯度對手每場分差}（陣容全程不變），或 f(tid, 日期|None)→分差（逐場陣容；日期 None＝最後狀態，用在補的場次）；後者要給 tids。
     賽程沒涵蓋到 82 場的部分（賽程抓不到、或盃賽淘汰賽未定）用對其他 29 隊的平均勝率補。"""
     mg = margin if callable(margin) else (lambda t, d: margin[t])
     tids = list(margin) if tids is None else tids
@@ -555,13 +556,13 @@ def run_sim(inp: dict, seeds: int, workers: int) -> dict:
             out, err = p.communicate(timeout=1500)
             if p.returncode != 0:
                 raise RuntimeError(f'team_ratings_sim exit={p.returncode}：{(err or out).strip()[-400:]}')
-        res, missing, based = {}, set(), set()
+        res, missing, based, excluded = {}, set(), set(), set()
         for s in range(workers):
             d = json.load(open(tmp / f'out-{s}.json', encoding='utf-8'))
-            missing |= set(d['missing']); based |= set(d.get('based', []))
+            missing |= set(d['missing']); based |= set(d.get('based', [])); excluded |= set(d.get('excluded', []))
             for o in d['res']:
                 res[(str(o['team']), o['ver'])] = o
-        return {'res': res, 'missing': sorted(missing), 'based': sorted(based)}
+        return {'res': res, 'missing': sorted(missing), 'based': sorted(based), 'excluded': sorted(excluded)}
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -666,7 +667,12 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
         final_ver[tid] = state_ver[tid][lineup_out(outs, far, today)]
     live_pids = {int(r['playerId']) for r in rows}
     need = {p for j in jobs for p, _ in j['roster']} - live_pids
-    inp = {**engine_inputs(rows, card_rows, base_profiles(need, load_base_cards())), 'jobs': jobs, 'teamIds': tids}
+    if seeds % 10:
+        raise ValueError(f'seeds 必須是 10 的倍數（五支梯度對手各 seeds/5 場、再平分主客），收到 {seeds}')
+    if not LADDER.exists():
+        raise FileNotFoundError(f'缺梯度對手表 {LADDER}；先跑 python -I -X utf8 scripts/build_gradient_ladder.py')
+    ladder = json.loads(LADDER.read_text(encoding='utf-8'))
+    inp = {**engine_inputs(rows, card_rows, base_profiles(need, load_base_cards())), 'jobs': jobs, 'teamIds': tids, 'ladder': ladder}
     base_used = {int(k): v for k, v in inp['base'].items()}
     ovr_src = {p: v['src'] for p, v in base_used.items()}
     ovr.update({p: v['ovr'] for p, v in base_used.items()})       # 底卡 OVR 只補 live 沒有的人（頁面上標來源）
@@ -682,7 +688,7 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
     mrg = {k: o['msum'] / o['n'] for k, o in sim['res'].items()}
 
     def margin_dated(t, d):
-        """今日陣容版逐場陣容：t 隊在日期 d（None＝全部回歸後）的對平均隊分差。"""
+        """今日陣容版逐場陣容：t 隊在日期 d（None＝全部回歸後）的對梯度對手分差。"""
         return mrg[(t, final_ver[t] if d is None else state_ver[t][lineup_out(outs_of[t], d, today)])]
     n_noret = 0
     out_teams = {}
@@ -714,7 +720,10 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
         rec['nOut'] = len(out_pids[tid])
         out_teams[tid] = rec
     doc = {'generatedAt': dt.datetime.now().astimezone().isoformat(timespec='seconds'), 'season': SEASON, 'version': meta.get('version'),
-           'dataCutoff': meta.get('dataCutoff'), 'engine': 'sim 0.1.4', 'seeds': seeds, 'H': H, 'sigma': SIGMA, 'lastN': LAST_N,
+           'dataCutoff': meta.get('dataCutoff'), 'engine': 'sim 0.1.4',
+           'opponent': {'kind': 'gradient-B5', 'teams': 5, 'gamesPerTeam': seeds // 5, 'ladderCard': ladder.get('card'), 'ladderGames': ladder.get('games'),
+                        'ladder': [round(x, 2) for x in ladder['ladder']], 'mins': ladder['mins'], 'excluded': sim.get('excluded', [])},
+           'seeds': seeds, 'H': H, 'sigma': SIGMA, 'lastN': LAST_N,
            'gamesPlayed': len(lg), 'injuries': {**{k: inj.get(k) for k in ('fetchedAt', 'source', 'espnTimestamp', 'reportTime', 'pdfUrl', 'stale', 'unmatched')}, 'outNoReturnDate': n_noret},
            'today': today, 'returnMin': RETURN_MIN,
            'schedule': {'fetchedAt': sch.get('fetchedAt'), 'source': sch.get('source'), 'remainingGames': len(remaining)},

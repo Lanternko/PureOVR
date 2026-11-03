@@ -420,10 +420,71 @@ class BaseCards(unittest.TestCase):
         eng = [int(k) for k in list(attrs)[:8]]
         jobs = [{'team': '1', 'ver': 'c', 'roster': [[p, 24.0] for p in eng] + [[900001, 24.0], [900002, 24.0]]}]
         base = {'900001': {'src': '24-25 卡', 'ovr': 80.0, 'pos': 'PG', 'heightInches': 75.0, 'off': {a: 10.0 for a in T.ATTRS}}}
-        inp = {'attrs': T.ATTRS, 'deltas': {}, 'newPlayers': [], 'base': base, 'jobs': jobs, 'teamIds': ['1']}
-        out = T.run_sim(inp, 2, 1)
+        ladder = json.loads(T.LADDER.read_text(encoding='utf-8'))
+        inp = {'attrs': T.ATTRS, 'deltas': {}, 'newPlayers': [], 'base': base, 'jobs': jobs, 'teamIds': ['1'], 'ladder': ladder}
+        out = T.run_sim(inp, 10, 1)                              # 五支梯度對手 × 各 2 場（主客各 1）
         self.assertEqual(out['based'], [900001])               # 有底卡的人用底卡
         self.assertEqual(out['missing'], [900002])             # 沒有底卡的人仍是聯盟平均
+
+
+class GradientLadder(unittest.TestCase):
+    """R-158：梯度對手的 Ladder_k／候選表建構（E-224 §3 的機械規則）。"""
+
+    def world(self, nteams=2, per=9, minute_step=100):
+        """nteams 隊、每隊 per 人；球員 pid 100*t+k、名 'Pt{t}x{k}'（nn 後唯一）；隊內 MIN 遞減、OVR＝90-10t-k。"""
+        import build_gradient_ladder as B
+        letters = 'abcdefghijklmnopqrstuvwxyz'
+        card, tm, names = [], {}, {}
+        for t in range(nteams):
+            for k in range(per):
+                pid = 100 * (t + 1) + k
+                nm = f'Pt{letters[t]}x{letters[k]}'
+                names[pid] = nm; tm[pid] = {t + 1: 1000.0 - minute_step * k}
+                card.append(dict(name=nm, pos='PG', ovr=90 - 10 * t - k, MIN=1000 - minute_step * k))
+        return B, card, tm, names
+
+    def test_ladder_is_team_average_of_kth_player(self):
+        B, card, tm, names = self.world()
+        out = B.build(card, tm, names)
+        self.assertEqual(out['teams'], 2)
+        self.assertEqual(out['ladder'], [85 - k for k in range(9)])        # (90-k + 80-k)/2
+        self.assertAlmostEqual(out['flat'], sum(m * l for m, l in zip(B.MINS, out['ladder'])) / 240)
+
+    def test_candidates_need_500_minutes(self):
+        B, card, tm, names = self.world()
+        out = B.build(card, tm, names)
+        self.assertTrue(all(p['min'] >= B.MIN_CAND for p in out['candidates']))
+        self.assertEqual(len(out['candidates']), 2 * 6)                    # MIN＝1000..500（k=0..5）才夠
+
+    def test_name_collision_goes_to_ambiguous_and_unmatched_listed(self):
+        B, card, tm, names = self.world(per=10)                            # 多一人，撞名者被剔除後每隊仍有 9 人
+        names[999] = 'Ptaxa Jr.'; tm[999] = {1: 50.0}                      # nn 後與 'Ptaxa' 撞名
+        card.append(dict(name='Nobody Here', pos='C', ovr=50, MIN=900))
+        out = B.build(card, tm, names)
+        self.assertEqual(out['ambiguous'], ['Ptaxa'])
+        self.assertEqual(out['unmatched'], ['Nobody Here'])
+        self.assertNotIn('Ptaxa', [p['name'] for p in out['candidates']])
+
+    def test_team_with_fewer_than_nine_matched_players_aborts(self):
+        B, card, tm, names = self.world(per=8)
+        with self.assertRaises(SystemExit):
+            B.build(card, tm, names)
+
+    def test_nn_normalises_like_daily(self):
+        import build_gradient_ladder as B
+        for s in ('Jaren Jackson Jr.', 'Nikola Jokić', 'Luka Dončić', 'Gary Payton II'):
+            self.assertEqual(B.nn(s), T.nn(s))
+
+    def test_live_ladder_file_shape(self):
+        p = T.LADDER
+        if not p.exists():
+            self.skipTest('沒有 team-ratings-gradient-ladder.json')
+        d = json.loads(p.read_text(encoding='utf-8'))
+        self.assertEqual(len(d['ladder']), 9)
+        self.assertEqual(d['mins'], [36, 36, 34, 32, 30, 26, 22, 14, 10])
+        self.assertEqual(sum(d['mins']), 240)
+        self.assertEqual(d['teams'], 30)
+        self.assertGreater(len(d['candidates']), 100)
 
 
 class Product(unittest.TestCase):

@@ -119,7 +119,7 @@ const ret=x=>{const out=x.missGames!=null,g=out?'（缺 '+x.missGames+' 場）':
 function info(){
   const i=D.injuries||{};
   $('#stamp').innerHTML='<b>'+esc(D.dataCutoff)+'</b>'+esc(D.generatedAt.slice(11,16))+' 更新';
-  $('#meta').innerHTML='<ul class="nb"><li>戰力排行是模型模擬比賽（每隊對聯盟平均隊各打 '+D.seeds+' 場）得出的數據，目前還在 beta 版本，有不準的地方，僅供參考。</li>'
+  $('#meta').innerHTML='<ul class="nb"><li>戰力排行是模型模擬比賽（每隊對五支不同強度、位置配置的對手隊共打 '+D.seeds+' 場）得出的數據，目前還在 beta 版本，有不準的地方，僅供參考。</li>'
    +'<li>76 人被低估：模型認為同一隊持球單打手太多，彼此搶球，化學反應不好。</li></ul>'
    +(i.stale?'<span class="warn">今天抓不到傷病名單，沿用前一份。</span>':'')
    +(D.schedule&&D.schedule.remainingGames?'':'<span class="warn">抓不到賽程，剩餘場次以對全聯盟平均勝率計。</span>');
@@ -139,7 +139,7 @@ function rows(){
 function detail(o){
   const t=o.t,v=o.v,back=new Set((t.restored||[]).map(x=>x.pid)),rot=v.rotation.map(r=>'<tr><td class="n"><div class="pn">'+av(r.pid)+'<span>'+esc(r.name)+(back.has(r.pid)?'<span class="cm">傷缺復出：最近 10 場沒出場，自己平均 ≥'+(D.returnMin||15)+' 分</span>':'')+'</span></div></td><td>'+r.min.toFixed(1)+'</td><td>'+(r.ovr==null?'—':Math.round(r.ovr)+(r.ovrSrc?'<span class="cm">'+esc(r.ovrSrc)+'</span>':''))+'</td></tr>').join('');
   const inj=t.injured.length?t.injured.map(x=>'<tr><td class="n"><div class="pn">'+av(x.playerId)+'<span>'+esc(x.name)+'<span class="cm">'+esc(x.comment)+'</span></span></div></td><td class="n">'+esc(x.status)+'</td><td>'+esc(d10(x.date))+ret(x)+'</td></tr>').join(''):'<tr><td class="n" colspan="3">傷病名單沒有這隊的人</td></tr>';
-  return '<div class="dg"><div class="sum"><b>'+esc(t.name)+'</b>　ORtg '+f1(v.ortg)+'・DRtg '+f1(v.drtg)+'・Net '+f1(v.net)+'・對平均隊每場 '+f1(v.margin)+' 分　剩餘賽程 '+v.schedGames+' 場逐場計算'+(v.poolGames?'、'+v.poolGames+' 場以平均勝率補':'')+(view==='today'&&v.lineupStates>1?'　傷兵回歸讓陣容分 '+v.lineupStates+' 種狀態':'')+'</div>'
+  return '<div class="dg"><div class="sum"><b>'+esc(t.name)+'</b>　ORtg '+f1(v.ortg)+'・DRtg '+f1(v.drtg)+'・Net '+f1(v.net)+'・對梯度對手每場 '+f1(v.margin)+' 分　剩餘賽程 '+v.schedGames+' 場逐場計算'+(v.poolGames?'、'+v.poolGames+' 場以平均勝率補':'')+(view==='today'&&v.lineupStates>1?'　傷兵回歸讓陣容分 '+v.lineupStates+' 種狀態':'')+'</div>'
    +'<div><h3>'+(view==='today'?'可用輪替':'全員輪替')+'（分鐘／OVR）</h3><table><tbody>'+rot+'</tbody></table></div>'
    +'<div><h3>傷病名單（狀態／資料日期／預計回歸；Probable 照常上場）</h3><table><tbody>'+inj+'</tbody></table></div></div>';
 }
