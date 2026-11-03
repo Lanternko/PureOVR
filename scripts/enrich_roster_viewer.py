@@ -572,7 +572,7 @@ function impactChips(p) {
   const box = document.querySelector('.tbox'), tbl = document.getElementById('tbl'); if (!box || !tbl) return;
   const mq = matchMedia('(min-width:641px)'), de = document.documentElement; let last = '';
   // 刷新時眉頭不跳（使用者 2026-11-03）：頁首 script 已先套上次存的 --tw；字型載完前量到的是備用字型寬度，有存值就先不改，載完再寫並存起來
-  const TWK = 'bbac.tw:' + location.pathname, fontsOk = () => !document.fonts || document.fonts.status === 'loaded';
+  const TWK = 'bbac.tw:' + (/^\/(rank|games)\//.test(location.pathname) ? '/' : location.pathname), fontsOk = () => !document.fonts || document.fonts.status === 'loaded';
   let saved = null; try { saved = localStorage.getItem(TWK); } catch (e) {}
   // 可用寬度只看視窗寬（不看 .wrap：.wrap 寬度又由 --tw 決定，互相回饋會在 Ctrl+-／非整數縮放時來回抖）。
   // offsetWidth 是未縮放的整數自然寬度，不受 zoom 影響；--tw 也在這裡一起寫，值沒變就不寫。

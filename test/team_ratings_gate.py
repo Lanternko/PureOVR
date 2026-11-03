@@ -352,7 +352,7 @@ class Header(unittest.TestCase):
     def test_header_has_rank_link(self):
         for cur in ('inseason', 'card'):
             hdr = site_header.header_html(cur)
-            self.assertIn('href="./#rank"', hdr)                # 戰力排行已併進名單頁，眉頭連到 ./#rank（不再有獨立 teams.html）
+            self.assertIn('href="/rank/"', hdr)                # 戰力排行已併進名單頁，眉頭連到 /rank/（不再有獨立 teams.html）
             self.assertIn('戰力排行', hdr)
             self.assertNotIn('href="teams.html"', hdr)
 
@@ -362,7 +362,7 @@ class Header(unittest.TestCase):
         self.assertIn('id="rankTpl"', html)
         self.assertIn('Power Ranking', html)                # a0528bb 拿掉中文標題，改驗英文標題
         self.assertIn('目前還在 beta 版本', js)            # a0528bb 改成 beta 提醒
-        self.assertIn("fetch('teams-data.json'", js)
+        self.assertIn("fetch('/teams-data.json'", js)
 
     def test_old_teams_url_redirects_and_data_written(self):
         doc = {'season': '2026-27', 'teams': {}, 'injuries': {}, 'schedule': {}, 'version': 'inseason x', 'dataCutoff': 'd', 'generatedAt': 'g',
@@ -372,7 +372,7 @@ class Header(unittest.TestCase):
             src.write_text(json.dumps(doc), encoding='utf-8')
             out = Path(td) / 'site' / 'teams.html'
             self.assertEqual(build_teams_page.main([str(out), str(src)]), 0)
-            self.assertIn("location.replace('./#rank'", out.read_text(encoding='utf-8'))      # 舊網址轉址頁
+            self.assertIn("location.replace('/rank/'", out.read_text(encoding='utf-8'))      # 舊網址轉址頁
             self.assertEqual(json.loads((out.parent / build_teams_page.DATA_NAME).read_text(encoding='utf-8')), doc)
 
 

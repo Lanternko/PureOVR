@@ -1,6 +1,6 @@
 """球隊戰力排行資料與舊網址轉址頁（E-208；2026-11-02 起排行已併進名單頁 index.html 當第二個檢視，見 scripts/rank_view.py）。
 讀 data/season-source-2026-27/team-ratings.json（scripts/team_ratings_daily.py 產生），輸出：
-  <out.html>（舊 teams.html，轉址到 index.html#rank，#LAL 轉 #rank/LAL）＋同資料夾的 teams-data.json（排行檢視 fetch 的資料）。
+  <out.html>（舊 teams.html，轉址到 /rank/，#LAL 轉 /rank/LAL/）＋同資料夾的 teams-data.json（排行檢視 fetch 的資料）。
 
 用法：python -I -X utf8 scripts/build_teams_page.py <out.html> [team-ratings.json]
 """
@@ -16,10 +16,10 @@ DATA_NAME = 'teams-data.json'
 
 STUB = """<!doctype html>
 <html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>戰力排行 · PureOVR</title><meta name="robots" content="noindex">
-<script>var h=location.hash.slice(1);location.replace('./#rank'+(h?'/'+h:''));</script>
-<noscript><meta http-equiv="refresh" content="0;url=./#rank"></noscript>
-</head><body><a href="./#rank">戰力排行已移到首頁，點這裡前往</a></body></html>
+<title>戰力排行 · TrueOVR</title><meta name="robots" content="noindex">
+<script>var h=location.hash.slice(1);location.replace('/rank/'+(h?h+'/':''));</script>
+<noscript><meta http-equiv="refresh" content="0;url=/rank/"></noscript>
+</head><body><a href="/rank/">戰力排行已移到首頁，點這裡前往</a></body></html>
 """
 
 

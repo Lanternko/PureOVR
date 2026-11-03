@@ -1,7 +1,7 @@
 """球隊戰力排行檢視（使用者 2026-11-02「直接合併單頁」）：嵌進名單頁當第二個檢視，和球員分頁共用同一個眉頭，切換不重載。
 用 Shadow DOM 隔離樣式（名單頁的 .pn／.av／.seg／table 規則不會污染排行表；色票與字型變數從名單頁繼承）；
 資料放獨立的 teams-data.json（build_teams_page.py 產生），第一次進排行（或閒置時預載）才 fetch，每日只更新傷病時不用重建 2.3 MB 的名單頁。
-網址：#rank＝排行；#rank/LAL＝展開某隊。對外 API：window.PureRank = {ensure(), open(abbr)}，檢視切換由 site_header.JS 負責。"""
+網址：/rank/＝排行；/rank/LAL/＝展開某隊。對外 API：window.PureRank = {ensure(), open(abbr)}，檢視切換由 site_header.JS 負責。"""
 
 STYLE = """@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,700;1,800&family=Barlow+Condensed:wght@600;700&display=swap");
 *{box-sizing:border-box}
@@ -161,9 +161,9 @@ $('#tb').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){const r
 $('thead').addEventListener('click',e=>{const h=e.target.closest('th');if(!h)return;const k=h.dataset.k;if(k===sk)sd=-sd;else{sk=k;sd=(k==='name'||k==='rank')?1:-1;}render();});
 $('#viewSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;view=b.dataset.v;try{localStorage.setItem('bbac.teamsView',view)}catch(_){}render();});
 
-function toggle(a){open=open===a?null:a;render();if(/^#rank/.test(location.hash))history.replaceState(null,'','#rank'+(open?'/'+open:''));}
+function toggle(a){open=open===a?null:a;render();if(/^\/rank\//.test(location.pathname))history.replaceState(null,'','/rank/'+(open?open+'/':''));}
 function ensure(){
-  if(!loading)loading=fetch('teams-data.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{
+  if(!loading)loading=fetch('/teams-data.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{
     D=d;T=Object.entries(D.teams).map(([id,t])=>({...t,id}));$('#msg').hidden=true;$('#rkw').hidden=false;render();
   }).catch(()=>{loading=null;$('#msg').textContent='戰力排行載入失敗，重新整理再試一次。';});
   return loading;

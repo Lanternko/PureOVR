@@ -148,7 +148,7 @@ class Wiring(unittest.TestCase):
 
     def test_header_embeds_games_view(self):
         self.assertIn('id="mGames"', site_header.header_html('inseason'))
-        self.assertIn('href="./#games"', site_header.header_html('card'))       # 2025-26 頁沒有檢視，連回首頁
+        self.assertIn('href="/games/"', site_header.header_html('card'))       # 2025-26 頁沒有檢視，連回首頁
         host, js = games_view.embed()
         self.assertIn('id="gamesHost"', host)
         self.assertIn('window.PureGames', js)

@@ -399,9 +399,22 @@ def step_viewer(out_dir: Path) -> Path:
 
 # 球隊不放網址（使用者 2026-11-04 改回：只存瀏覽器記憶）。11-04 上午發過的 /hawks、/rookies 舊連結沒有實體檔，
 # GitHub Pages 回 404.html：直接轉回首頁，保留 ?query 與 #hash
+# 2026-11-04 起 /rank/、/games/ 是路徑式檢視（arammeta 做法：部署時各複製一份 index.html，HTTP 200）；
+# 更深的 /rank/LAL/、/games/日期/[場次/] 沒有實體檔，404.html 把完整路徑存進 sessionStorage 再轉到 /rank/ 或 /games/，
+# 頁面載入時用 history.replaceState 還原。其他路徑一律回首頁
 NOT_FOUND_HTML = ('<!doctype html><meta charset="utf-8"><title>TrueOVR</title>'
-                  "<script>location.replace(location.pathname.replace(/[^/]*[/]*$/,'')+location.search+location.hash)</script>"
-                  '<a href="./">TrueOVR</a>')
+                  "<script>var p=location.pathname,m=/^\\/(rank|games)\\//.exec(p);"
+                  "if(m){try{sessionStorage.setItem('bbac.spa',p)}catch(e){}}"
+                  "location.replace((m?'/'+m[1]+'/':'/')+location.search+location.hash)</script>"
+                  '<a href="/">TrueOVR</a>')
+SPA_SECTIONS = ('rank', 'games')
+
+
+def add_spa_pages(pages: dict) -> dict:
+    """把 index.html 的來源檔再登記成 rank/index.html、games/index.html（同一份內容，路徑決定顯示哪個檢視）。"""
+    for s in SPA_SECTIONS:
+        pages[f'{s}/index.html'] = pages['index.html']
+    return pages
 
 
 def write_not_found(html: Path) -> Path:
@@ -445,7 +458,7 @@ def publish_html(repo: Path, html, message: str, *, remote: str = 'origin', bran
     """
     files = dict(html) if isinstance(html, dict) else {target_name: html}
     for name in files:
-        if '/' in name or chr(92) in name or name.startswith('.'):
+        if chr(92) in name or name.startswith(('.', '/')) or any(p in ('', '.', '..') for p in name.split('/')):
             raise ValueError(f'不合法的目標檔名：{name}')
     main_git = GitRunner(repo)
     main_git('fetch', remote, branch)
@@ -455,6 +468,7 @@ def publish_html(repo: Path, html, message: str, *, remote: str = 'origin', bran
         main_git('worktree', 'add', '--detach', str(wt), f'{remote}/{branch}')
         g = GitRunner(wt)
         for name, src in files.items():
+            (wt / name).parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(src, wt / name)
         g('add', '--', *files)
         if g('diff', '--cached', '--quiet', check=False).returncode == 0:
@@ -579,6 +593,7 @@ def _run(args) -> int:
             pages['teams.html'] = final / teams_html.name
             pages['teams-data.json'] = final / 'teams-data.json'
         pages.update({n: final / n for n in games_files})
+        add_spa_pages(pages)
         sha = publish_html(ROOT, pages, commit_message(shown, cutoff),
                            remote=args.remote, branch=args.branch)
         state.pop('letter', None)
@@ -626,6 +641,7 @@ def _run_shell(args) -> int:
         for n, src in games_files.items():
             shutil.copyfile(src, final / n)
             pages[n] = final / n
+        add_spa_pages(pages)
         shown = state.get('displayVersion', '')
         sha = publish_html(ROOT, pages, shell_commit_message(shown, cutoff), remote=args.remote, branch=args.branch)
         if sha:

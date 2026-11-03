@@ -1,7 +1,7 @@
 """名單頁眉頭（使用者 2026-11-02「重新設計眉頭，參考 arammeta」）：黏頂毛玻璃一列＝PUREOVR 字標｜球員・球隊・戰力排行・賽程分頁｜篩選・設定・搜尋。
 2026-11-02「直接合併單頁」：2026-27 名單頁內嵌戰力排行檢視（rank_view.py），三個分頁共用同一個眉頭；用 body[data-view] 切檢視、
-history.pushState＋popstate 管網址（#rank、#rank/LAL、#games、#games/2026-11-02[/GAME_ID]）、View Transition 讓底線滑過去；
-2025-26 卡片頁沒有排行與賽程檢視，兩個分頁連到 index.html#rank、index.html#games。
+history.pushState＋popstate 管網址（/rank/、/rank/LAL/、/games/、/games/2026-11-02/[GAME_ID/]）、View Transition 讓底線滑過去；
+2025-26 卡片頁沒有排行與賽程檢視，兩個分頁連到 /rank/、/games/（部署時各複製一份 index.html）。
 原本的控制項（#posSeg、#teamPick、#modeSeg、#q、賽季切換、更新說明）在頁尾腳本裡原封搬進眉頭，事件與 render 不用改；
 舊的 .top 標題列與 .ctrl 控制列只剩空殼，直接隱藏。add_season_nav 之後呼叫。"""
 import re
@@ -143,8 +143,8 @@ const q=$('#q');if(q){$('.msearch .sbox').append(q);q.placeholder='搜尋球員�
 const pl=$('#mPlayers'),tr=$('#mTeams'),gm=$('#mGames'),PR=window.PureRank,PG=window.PureGames,T0=document.title,sy={},reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
 const TITLE={rank:'戰力排行 · TrueOVR',games:'賽程 · TrueOVR'};
 const parseHash=()=>{
-  let m=/^#rank(?:[/]([A-Za-z]{2,4}))?$/.exec(location.hash);if(m)return{v:'rank',arg:m[1]?m[1].toUpperCase():null};
-  m=/^#games(?:[/](\d{4}-\d{2}-\d{2})(?:[/](\d{10}))?)?$/.exec(location.hash);if(m)return{v:'games',arg:m[1]||null,gid:m[2]||null};
+  let m=/^\\/rank(?:\\/([A-Za-z]{2,4}))?\\/?$/.exec(location.pathname);if(m)return{v:'rank',arg:m[1]?m[1].toUpperCase():null};
+  m=/^\\/games(?:\\/(\\d{4}-\\d{2}-\\d{2})(?:\\/(\\d{10}))?)?\\/?$/.exec(location.pathname);if(m)return{v:'games',arg:m[1]||null,gid:m[2]||null};
   return{v:'players'};
 };
 const avail=v=>v==='rank'?PR:v==='games'?PG:true;
@@ -164,7 +164,7 @@ function show(v,h){
   sy[view]=scrollY;view=v;document.body.dataset.view=v;document.title=TITLE[v]||T0;sync();scrollTo(0,sy[v]||0);
 }
 function go(v,push,h){
-  if(push&&v!==view)history.pushState(null,'',v==='rank'?'#rank':v==='games'?PG.hash():location.pathname+location.search);
+  if(push&&v!==view)history.pushState(null,'',v==='rank'?'/rank/':v==='games'?PG.hash():'/');
   if(v===view||!document.startViewTransition||reduce)return show(v,h);
   mast.classList.add('vt-running');
   const t=document.startViewTransition(()=>show(v,h));
@@ -216,13 +216,13 @@ const sc=()=>mast.classList.toggle('scrolled',scrollY>4);addEventListener('scrol
 def header_html(current):
     return (
         '<header class="mast"><div class="mast-in">'
-        f'<a class="mbrand" href="./" aria-label="TrueOVR 首頁"><svg class="mlogo" viewBox="8 8 48 48" aria-hidden="true">{RING}</svg><b>TrueOVR</b><small>{SEASON[current]}</small></a>'
+        f'<a class="mbrand" href="/" aria-label="TrueOVR 首頁"><svg class="mlogo" viewBox="8 8 48 48" aria-hidden="true">{RING}</svg><b>TrueOVR</b><small>{SEASON[current]}</small></a>'
         '<nav class="mtabs" aria-label="主要分頁">'
         '<button type="button" class="mtab" id="mPlayers" aria-selected="true">球員</button>'
         '<span class="mtab mtab-pick" id="mPickPh">球隊</span>'
         '<span class="mind" aria-hidden="true"></span>'
-        '<a class="mtab" id="mTeams" href="./#rank">戰力排行</a>'
-        '<a class="mtab" id="mGames" href="./#games">賽程</a></nav>'
+        '<a class="mtab" id="mTeams" href="/rank/">戰力排行</a>'
+        '<a class="mtab" id="mGames" href="/games/">賽程</a></nav>'
         '<div class="macts">'
         f'<details class="mpop" id="mFilter"><summary class="micon" aria-label="篩選">{_svg("filter", 15)}</summary>'
         '<div class="mpanel"><div class="mrow"><b>位置</b><div id="mPos"></div></div></div></details>'
@@ -253,10 +253,17 @@ def add_masthead(html_str, current):
         import games_view
         rank_html, rank_js = rank_view.embed()
         games_html, games_js = games_view.embed()
-        rank_html += games_html + "<script>{const m=/^#(rank|games)/.exec(location.hash);if(m)document.body.dataset.view=m[1]}</script>"
+        # 路徑是 /rank/、/games/（部署時各複製一份 index.html，arammeta 做法）；404.html 把更深的路徑（/rank/LAL/、/games/日期/場次/）存進 sessionStorage 再轉回這裡還原；
+        # 舊的 #rank／#games 連結直接改寫成路徑，不重新載入
+        rank_html += games_html + (
+            "<script>{try{const s=sessionStorage.getItem('bbac.spa');if(s){sessionStorage.removeItem('bbac.spa');"
+            "if(s.indexOf(location.pathname)===0)history.replaceState(null,'',s+location.search+location.hash)}}catch(e){}"
+            "const h=/^#(rank|games)(\\/.*)?$/.exec(location.hash);"
+            "if(h&&!/^\\/(rank|games)\\//.test(location.pathname))history.replaceState(null,'','/'+h[1]+'/'+(h[2]?h[2].slice(1)+'/':''));"
+            "const m=/^\\/(rank|games)\\//.exec(location.pathname);if(m)document.body.dataset.view=m[1]}</script>")
         rank_js += games_js
     # 刷新時眉頭不跳（使用者 2026-11-03）：--tw 要等表格畫好、字型載完才量得準，首格先套上次存下的值（enrich_roster_viewer 寫入）
-    tw0 = "<script>try{const w=localStorage.getItem('bbac.tw:'+location.pathname);if(w)document.documentElement.style.setProperty('--tw',w)}catch(e){}</script>"
+    tw0 = "<script>try{const w=localStorage.getItem('bbac.tw:'+(/^\\/(rank|games)\\//.test(location.pathname)?'/':location.pathname));if(w)document.documentElement.style.setProperty('--tw',w)}catch(e){}</script>"
     s = s.replace('<div class="wrap">', CSS + tw0 + header_html(current) + '\n' + rank_html + '<div class="wrap">', 1)
     i = s.rfind('</body>')
     tail = rank_js + JS

@@ -3,7 +3,7 @@
 box score 太大，按月分檔 games-box-YYYY-MM.json，點開某場才 fetch 該月（同月只抓一次）。
 版面（使用者 2026-11-03 給三張參考圖）：橫向日期列（只列有賽事的日子，選中日置中，可滑動／箭頭翻頁）、單場卡片（隊徽在上、隊名、W-L、大比分、FINAL＋勝方三角）、
 展開 box score（球員縮寫、欄位順序 MIN PTS REB AST FG 3PT FT STL BLK TO OREB DREB PF +/- 評分、TEAM TOTALS＋命中率）。gamelog 沒有先發／DNP，不分先發板凳、不列 DNP。
-網址：#games＝預設日（最近有已完賽場次的那天）；#games/2026-11-02＝指定日；#games/2026-11-02/0022600172＝展開某場。
+網址：/games/＝預設日（最近有已完賽場次的那天）；/games/2026-11-02/＝指定日；/games/2026-11-02/0022600172/＝展開某場。
 對外 API：window.PureGames = {ensure(), open(date, gameId), hash()}，檢視切換由 site_header.JS 負責。"""
 import json
 
@@ -144,8 +144,8 @@ const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','De
 const dp=d=>{const x=new Date(d+'T00:00:00Z');return {m:MON[x.getUTCMonth()]+' '+x.getUTCDate(),w:WD[x.getUTCDay()]}};
 const sgn=v=>v>0?'+'+v:String(v);
 const pct=s=>{const [m,a]=s.split('-').map(Number);return a?Math.round(100*m/a)+'%':'—'};
-function hash(){return '#games'+(date&&D&&!(date===D.latest&&!openId)?'/'+date+(openId?'/'+openId:''):'')}
-function sync(){if(/^#games/.test(location.hash))history.replaceState(null,'',hash());}
+function hash(){return '/games/'+(date&&D&&!(date===D.latest&&!openId)?date+'/'+(openId?openId+'/':''):'')}
+function sync(){if(/^\/games\//.test(location.pathname))history.replaceState(null,'',hash());}
 function boxHtml(g){
   const b=boxes[date.slice(0,7)];
   if(!b||b==='loading')return '<div class="bxw"><div class="nob">載入 box score…</div></div>';
@@ -206,7 +206,7 @@ function fetchBox(d){
   const m=d.slice(0,7);
   if(boxes[m]&&boxes[m]!==ERR)return;
   boxes[m]='loading';
-  fetch('games-box-'+m+'.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(doc=>({doc}),()=>ERR).then(v=>{boxes[m]=v;if(openId&&date.slice(0,7)===m){const y=scrollY;render(false);scrollTo(0,y);}});
+  fetch('/games-box-'+m+'.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(doc=>({doc}),()=>ERR).then(v=>{boxes[m]=v;if(openId&&date.slice(0,7)===m){const y=scrollY;render(false);scrollTo(0,y);}});
 }
 function toggle(id){
   openId=openId===id?null:id;render(false);sync();
@@ -221,7 +221,7 @@ $('#sr').addEventListener('click',()=>{const s=$('#strip');s.scrollBy({left:s.cl
 $('#latest').addEventListener('click',()=>go(D.latest));
 new ResizeObserver(()=>{if(pend&&$('#strip').clientWidth){pend=false;center(false);}arrows();}).observe($('#strip'));
 function ensure(){
-  if(!loading)loading=fetch('games-data.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{
+  if(!loading)loading=fetch('/games-data.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{
     D=d;$('#msg').hidden=true;$('#gww').hidden=false;apply();
   }).catch(()=>{loading=null;$('#msg').textContent='賽程載入失敗，重新整理再試一次。';});
   return loading;
