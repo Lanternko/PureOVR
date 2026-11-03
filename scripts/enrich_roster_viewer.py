@@ -330,7 +330,7 @@ div.tbox{background:#1b232d}
 .card{position:relative;border-radius:14px;border:1px solid rgba(255,255,255,.14);
   background:
     radial-gradient(60% 160% at 30% -20%,color-mix(in srgb,var(--card,#2b3d5c) 85%,transparent),transparent 70%),
-    radial-gradient(45% 140% at 92% 120%,color-mix(in srgb,var(--tc,var(--card,#3a4a6a)) 70%,transparent),transparent 72%),
+    radial-gradient(50% 240px at 100% 0,color-mix(in srgb,var(--tc,var(--card,#3a4a6a)) 45%,transparent),transparent 75%),
     linear-gradient(135deg,#1a2430,#0f1419);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.24),inset 0 -1px 0 rgba(255,255,255,.05),0 12px 32px rgba(0,0,0,.5)}
 .card .chip,.card .real .st,.card .g5,.card .g5.hc>.g5in,.card .g5.hc>.ovc{
@@ -339,6 +339,8 @@ div.tbox{background:#1b232d}
   border:1px solid rgba(255,255,255,.17);border-radius:10px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.3),inset 0 -1px 0 rgba(0,0,0,.25),0 4px 14px rgba(0,0,0,.22)}
 .card .g5.hc{background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+/* 走勢圖面板（使用者 2026-11-04：紅色暈染干擾折線）：隊色光暈移到右上，面板改深色底、不做 saturate，折線背景保持中性 */
+.card .g5.hc>.ovc{background:linear-gradient(160deg,rgba(12,16,22,.72),rgba(12,16,22,.55));-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
 .card .ring svg{background:radial-gradient(circle closest-side,rgba(255,255,255,.08) 74%,transparent 74.6%)}
 .card .ring svg circle:first-child{fill:none;stroke:rgba(255,255,255,.2)}
 .card .ring svg circle:nth-child(2){stroke-opacity:.82;filter:saturate(.8) brightness(1.1) drop-shadow(0 0 6px rgba(0,0,0,.3))}
