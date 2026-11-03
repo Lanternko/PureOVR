@@ -21,8 +21,6 @@ STYLE = """@import url("https://fonts.googleapis.com/css2?family=Barlow+Condense
 .hd{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:3px solid var(--fg);padding-bottom:10px}
 h1{font:italic 800 4.2rem/.85 var(--nf);text-transform:uppercase;margin:0;letter-spacing:-.01em}
 h1 span{display:block;font:600 1rem var(--f-body);font-style:normal;letter-spacing:.3em;color:var(--muted);margin-top:8px;text-transform:none}
-.stamp{white-space:nowrap;font:700 1.15rem/1.2 var(--nf);text-transform:uppercase;letter-spacing:.06em;text-align:right;color:var(--muted)}
-.stamp b{display:block;color:var(--fg);font-size:1.9rem;font-style:italic;font-weight:800}
 .dbar{display:flex;align-items:center;gap:6px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:4px 0}
 .strip{position:relative;flex:1;min-width:0;display:flex;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
 .strip::-webkit-scrollbar{display:none}
@@ -47,20 +45,19 @@ button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{ou
   -webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),inset 0 -1px 0 rgba(0,0,0,.25),0 8px 24px rgba(0,0,0,.32)}
 .gm::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.13) 0%,rgba(255,255,255,.03) 38%,transparent 60%)}
 .gm.open{border-color:rgba(255,255,255,.28)}
-.gh{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(6.2rem,auto) auto minmax(0,1fr);align-items:center;gap:0 16px;padding:18px 20px 8px;cursor:pointer;user-select:none}
+.gh{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(3rem,auto) auto minmax(0,1fr);align-items:center;gap:0 12px;padding:20px 20px 8px;cursor:pointer;user-select:none}
 .gh:hover{background:rgba(255,255,255,.05)}
 .tm{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;text-align:center}
-.tm .lg{width:64px;height:64px;object-fit:contain}
-.tm .nk{font:500 1.15rem/1.2 var(--f-body);color:var(--fg);max-width:100%;overflow-wrap:anywhere}
+.tm .lg{width:72px;height:72px;object-fit:contain}
+.tm .nk{font:700 1.6rem/1.1 var(--f-body);letter-spacing:.04em;text-indent:.04em;color:var(--fg)}
 .tm .rc{font:500 1.05rem/1.2 var(--f-body);color:var(--muted);font-variant-numeric:tabular-nums}
-.sc{font:700 3.4rem/1 var(--nf);font-variant-numeric:tabular-nums;color:var(--fg);width:1.6em;text-align:right}  /* 固定三位數寬：兩側等寬，FINAL 才會在兩個比分正中；客隊靠右、主隊靠左，數字都貼向 FINAL */
+.sc{font:700 4.6rem/1 var(--nf);font-variant-numeric:tabular-nums;color:var(--fg);width:1.6em;text-align:right}  /* 固定三位數寬：兩側等寬，中間的三角才會在兩個比分正中；客隊靠右、主隊靠左，數字都貼向中間 */
 .sc.h{text-align:left}
 .sc.lose{color:#7c858f}
 .mid{text-align:center;font:700 1.2rem/1.25 var(--f-body);letter-spacing:.03em;text-indent:.03em;white-space:nowrap}
-.mid .fl{position:relative;padding:0 19px}
-.mid .tri{position:absolute;top:50%;margin-top:-6px;width:0;height:0;border:6px solid transparent}
-.mid .tri.l{left:3px;border-left:0;border-right:9px solid var(--fg)}
-.mid .tri.r{right:3px;border-right:0;border-left:9px solid var(--fg)}
+.mid .tri{display:inline-block;vertical-align:middle;width:0;height:0;border:11px solid transparent}
+.mid .tri.l{border-left:0;border-right:17px solid var(--fg)}
+.mid .tri.r{border-right:0;border-left:17px solid var(--fg)}
 .mid .ot{font-weight:700}
 .mid .tbd{color:var(--fg);font-weight:700;font-size:1.5rem;line-height:1.1}
 .mid .tbd+.ot{color:var(--muted);font-weight:500;font-size:.78rem}
@@ -93,7 +90,6 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
 @media (max-width:640px){
   .gwroot{font-size:13px}
   h1{font-size:2.6rem}
-  .stamp{font-size:.9rem}.stamp b{font-size:1.1rem}
   .gww{gap:10px}
   .dbar{flex-wrap:wrap}
   .arw{width:26px}
@@ -101,10 +97,11 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
   .strip::before,.strip::after{flex-basis:40%}
   .dc span{font-size:.8rem}.dc b{font-size:1.15rem}
   .dx{flex:1 1 100%;border-left:0;padding:4px 0 0;justify-content:flex-end}
-  .gh{grid-template-columns:minmax(0,1fr) auto minmax(4.6rem,auto) auto minmax(0,1fr);gap:0 4px;padding:14px 8px 6px}
-  .tm .lg{width:44px;height:44px}
-  .tm .nk{font-size:.82rem}.tm .rc{font-size:.8rem}
-  .sc{font-size:2.3rem}
+  .gh{grid-template-columns:minmax(0,1fr) auto minmax(1.9rem,auto) auto minmax(0,1fr);gap:0 2px;padding:14px 8px 6px}
+  .tm .lg{width:46px;height:46px}
+  .tm .nk{font-size:1.05rem}.tm .rc{font-size:.8rem}
+  .sc{font-size:3rem}
+  .mid .tri{border-width:8px}.mid .tri.l{border-right-width:12px}.mid .tri.r{border-left-width:12px}
   .mid{font-size:.85rem}
   .bxw{padding:4px 10px 12px}
   th.l{width:92px}.tbox{scroll-padding-left:92px}table{min-width:666px}
@@ -116,7 +113,7 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
 
 BODY = """<div class="gwroot"><div class="msg" id="msg">載入中…</div>
 <div class="gww" id="gww" hidden>
-<div class="hd"><h1>Schedule<span>賽程</span></h1><div class="stamp" id="stamp"></div></div>
+<div class="hd"><h1>Schedule<span>賽程</span></h1></div>
 <div class="dbar"><button type="button" class="arw" id="sl" aria-label="往前翻">‹</button><div class="strip" id="strip" role="group" aria-label="選擇日期"></div><button type="button" class="arw" id="sr" aria-label="往後翻">›</button>
 <div class="dx"><select id="dsel" aria-label="跳到日期"></select><button type="button" id="latest">回到最近</button></div></div>
 <div class="gl" id="gl"></div>
@@ -165,12 +162,12 @@ function tipHtml(g){
 }
 function card(g){
   const fin=g.status==='final',w=fin?(g.winner===g.home?'home':'away'):'',op=openId===g.id;
-  const tm=k=>'<div class="tm">'+logo(g[k])+'<div class="nk">'+esc(D.teams[g[k]].nick)+'</div><div class="rc">'+esc(g.rec?g.rec[k]:'')+'</div></div>';
+  const tm=k=>'<div class="tm">'+logo(g[k])+'<div class="nk">'+esc(g[k])+'</div><div class="rc">'+esc(g.rec?g.rec[k]:'')+'</div></div>';
   const sc=k=>'<div class="sc'+(k==='home'?' h':'')+(fin&&w!==k?' lose':'')+'">'+(fin?g.score[k]:'')+'</div>';
-  const mid=fin?'<div class="mid"><div class="fl">'+(w==='away'?'<span class="tri l"></span>':'')+'FINAL'+(w==='home'?'<span class="tri r"></span>':'')+'</div>'+(g.ot?'<div class="ot">'+g.ot+'OT</div>':'')+'</div>'
+  const mid=fin?'<div class="mid"><span class="tri '+(w==='away'?'l':'r')+'"></span></div>'
     :'<div class="mid">'+tipHtml(g)+'</div>';
   return '<div class="gm'+(op?' open':'')+'" data-id="'+g.id+'" style="--c1:'+tcol(g.away)+';--c2:'+tcol(g.home)+'"><div class="gh" role="button" tabindex="0" aria-expanded="'+op+'">'+tm('away')+sc('away')+mid+sc('home')+tm('home')+'</div>'
-   +(fin?'<div class="bh"><span>'+(op?'收起 box score':'box score')+'<i>'+(op?'▴':'▾')+'</i></span></div>':'')+(op&&fin?boxHtml(g):'')+'</div>';
+   +(fin?'<div class="bh"><span>'+(g.ot?(g.ot>1?g.ot:'')+'OT · ':'')+(op?'收起 box score':'box score')+'<i>'+(op?'▴':'▾')+'</i></span></div>':'')+(op&&fin?boxHtml(g):'')+'</div>';
 }
 function build(){
   built=true;
@@ -186,8 +183,7 @@ function center(smooth){
 function arrows(){const s=$('#strip');$('#sl').disabled=s.scrollLeft<=1;$('#sr').disabled=s.scrollLeft>=s.scrollWidth-s.clientWidth-1;}
 function render(smooth){
   if(!built)build();
-  const gs=D.games[date]||[],p=dp(date);
-  $('#stamp').innerHTML='<b>'+esc(p.m)+'</b>'+esc(date.slice(0,4))+' '+p.w;
+  const gs=D.games[date]||[];
   root.querySelectorAll('.dc').forEach(b=>{const on=b.dataset.d===date;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
   $('#dsel').value=date;$('#latest').disabled=date===D.latest&&!openId;
   $('#gl').innerHTML=gs.length?gs.map(card).join(''):'<div class="empty">這天沒有賽事</div>';
