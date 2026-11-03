@@ -112,7 +112,6 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
 
 BODY = """<div class="gwroot"><div class="msg" id="msg">載入中…</div>
 <div class="gww" id="gww" hidden>
-<div class="hd"><h1>Schedule<span>賽程</span></h1></div>
 <div class="dbar"><button type="button" class="arw" id="sl" aria-label="往前翻">‹</button><div class="strip" id="strip" role="group" aria-label="選擇日期"></div><button type="button" class="arw" id="sr" aria-label="往後翻">›</button>
 <div class="dx"><button type="button" id="latest">回到今天</button></div></div>
 <div class="gl" id="gl"></div>
@@ -171,7 +170,7 @@ function card(g){
   const mid=fin?'<div class="mid"><span class="tri '+(w==='away'?'l':'r')+'"></span></div>'
     :'<div class="mid">'+tipHtml(g)+'</div>';
   return '<div class="gm'+(op?' open':'')+'" data-id="'+g.id+'" style="--c1:'+pc[0]+';--c2:'+pc[1]+'"><div class="gh" role="button" tabindex="0" aria-expanded="'+op+'">'+tm('away')+sc('away')+mid+sc('home')+tm('home')+'</div>'
-   +(fin?'<div class="bh"><span>'+(g.ot?(g.ot>1?g.ot:'')+'OT ':'')+'<i>'+(op?'▴':'▾')+'</i></span></div>':'')+(op&&fin?boxHtml(g):'')+'</div>';
+   +(fin&&g.ot?'<div class="bh"><span>'+(g.ot>1?g.ot:'')+'OT</span></div>':'')+(op&&fin?boxHtml(g):'')+'</div>';
 }
 function build(){
   built=true;
