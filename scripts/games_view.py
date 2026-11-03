@@ -43,7 +43,7 @@ button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{ou
 .gm{--c1:124,133,145;--c2:124,133,145;position:relative;min-width:0;overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:#141a20;
   box-shadow:0 8px 24px rgba(0,0,0,.32)}
 .gm.open{border-color:rgba(255,255,255,.28)}
-.gh{background:linear-gradient(90deg,rgba(var(--c1),.9) 0%,rgba(var(--c1),.38) 34%,rgba(var(--c1),0) 50%,rgba(var(--c2),0) 50%,rgba(var(--c2),.38) 66%,rgba(var(--c2),.9) 100%);display:grid;grid-template-columns:minmax(0,1fr) auto minmax(3rem,auto) auto minmax(0,1fr);align-items:center;gap:0 12px;padding:20px 20px 8px;cursor:pointer;user-select:none}
+.gh{background:linear-gradient(103deg,rgba(var(--c1),.9) 0%,rgba(var(--c1),.55) 22%,rgba(var(--c1),.2) 40%,rgba(var(--c1),0) 53%,rgba(var(--c2),0) 53%,rgba(var(--c2),.2) 62%,rgba(var(--c2),.55) 78%,rgba(var(--c2),.9) 100%);display:grid;grid-template-columns:minmax(0,1fr) auto minmax(3rem,auto) auto minmax(0,1fr);align-items:center;gap:0 12px;padding:20px 20px 8px;cursor:pointer;user-select:none}
 .gh:hover{box-shadow:inset 0 0 0 999px rgba(255,255,255,.06)}
 .tm{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;text-align:center}
 .tm .lg{width:72px;height:72px;object-fit:contain}
@@ -132,7 +132,12 @@ const logo=a=>'<img class="lg" alt="" loading="lazy" src="'+CDN+'logos/nba/'+D.t
 const TC={ATL:'#E03A3E',BOS:'#1E9B4F',BKN:'#9AA0A6',CHA:'#00A3B8',CHI:'#CE1141',CLE:'#A8174F',DAL:'#1E73BE',DEN:'#2D5DA8',DET:'#C8102E',GSW:'#2F63C0',
   HOU:'#CE1141',IND:'#2A5CA8',LAC:'#C8102E',LAL:'#7A45B8',MEM:'#5D76A9',MIA:'#B5123F',MIL:'#1B8A45',MIN:'#2B6AA8',NOP:'#2D5A9A',NYK:'#006BB6',
   OKC:'#007AC1',ORL:'#0077C0',PHI:'#006BB6',PHX:'#E56020',POR:'#E03A3E',SAC:'#7A47B0',SAS:'#A5ACB2',TOR:'#CE1141',UTA:'#4B7BD0',WAS:'#E31837'};
-const tcol=a=>{const h=(TC[a]||'#7c8591').slice(1);return [0,2,4].map(i=>parseInt(h.substr(i,2),16)).join(',')};
+const TC2={ATL:'#C1D32F',BOS:'#BA9653',BKN:'#4A4F57',CHA:'#6A3FB5',CHI:'#3B424B',CLE:'#E0A21A',DAL:'#8E99A6',DEN:'#FEC524',DET:'#1D5FBF',GSW:'#FFC72C',
+  HOU:'#8E9AA6',IND:'#FDBB30',LAC:'#1D5FBF',LAL:'#FDB927',MEM:'#F5B112',MIA:'#F9A01B',MIL:'#EEE1C6',MIN:'#78BE20',NOP:'#C8102E',NYK:'#F58426',
+  OKC:'#EF6A3A',ORL:'#2C3138',PHI:'#ED174C',PHX:'#6A3FB5',POR:'#2C3138',SAC:'#6A7078',SAS:'#2C3138',TOR:'#8E99A6',UTA:'#F9A01B',WAS:'#2E67C0'};
+const rgb=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16)),far=(x,y)=>Math.hypot(...rgb(x).map((v,i)=>v-rgb(y)[i]))>=130;
+// 兩隊主色太像（例：TOR／LAC 都是紅）時換成其中一隊的副色，讓一場的兩側分得出來
+const pair=(a,h)=>{const A=TC[a]||'#7c8591',H=TC[h]||'#7c8591',B=TC2[a]||A,K=TC2[h]||H,D=(x,y)=>Math.hypot(...rgb(x).map((v,i)=>v-rgb(y)[i]));let best=[A,H];if(!far(A,H))[[A,K],[B,H],[B,K]].forEach(p=>{if(D(...p)>D(...best))best=p});return best.map(c=>rgb(c).join(','))};
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const dp=d=>{const x=new Date(d+'T00:00:00Z');return {m:MON[x.getUTCMonth()]+' '+x.getUTCDate(),w:WD[x.getUTCDay()]}};
 const sgn=v=>v>0?'+'+v:String(v);
@@ -160,12 +165,12 @@ function tipHtml(g){
   return '<span class="tbd">'+z(t.getUTCHours())+':'+z(t.getUTCMinutes())+'</span><div class="ot">'+(t.getUTCMonth()+1)+'/'+t.getUTCDate()+' UTC+8</div>';
 }
 function card(g){
-  const fin=g.status==='final',w=fin?(g.winner===g.home?'home':'away'):'',op=openId===g.id;
+  const pc=pair(g.away,g.home),fin=g.status==='final',w=fin?(g.winner===g.home?'home':'away'):'',op=openId===g.id;
   const tm=k=>'<div class="tm">'+logo(g[k])+'<div class="nk">'+esc(g[k])+'</div><div class="rc">'+esc(g.rec?g.rec[k]:'')+'</div></div>';
   const sc=k=>'<div class="sc'+(k==='home'?' h':'')+(fin&&w!==k?' lose':'')+'">'+(fin?g.score[k]:'')+'</div>';
   const mid=fin?'<div class="mid"><span class="tri '+(w==='away'?'l':'r')+'"></span></div>'
     :'<div class="mid">'+tipHtml(g)+'</div>';
-  return '<div class="gm'+(op?' open':'')+'" data-id="'+g.id+'" style="--c1:'+tcol(g.away)+';--c2:'+tcol(g.home)+'"><div class="gh" role="button" tabindex="0" aria-expanded="'+op+'">'+tm('away')+sc('away')+mid+sc('home')+tm('home')+'</div>'
+  return '<div class="gm'+(op?' open':'')+'" data-id="'+g.id+'" style="--c1:'+pc[0]+';--c2:'+pc[1]+'"><div class="gh" role="button" tabindex="0" aria-expanded="'+op+'">'+tm('away')+sc('away')+mid+sc('home')+tm('home')+'</div>'
    +(fin?'<div class="bh"><span>'+(g.ot?(g.ot>1?g.ot:'')+'OT ':'')+'<i>'+(op?'▴':'▾')+'</i></span></div>':'')+(op&&fin?boxHtml(g):'')+'</div>';
 }
 function build(){
