@@ -1,0 +1,218 @@
+"""賽程檢視（使用者 2026-11-03）：嵌進名單頁當第三個檢視，和球員、戰力排行共用同一個眉頭，切換不重載。
+架構照 rank_view.py：Shadow DOM 隔離樣式（色票與字型變數從名單頁繼承）、資料放獨立 JSON（build_games_data.py 產生），第一次進檢視（或閒置時預載）才 fetch；
+box score 太大，按月分檔 games-box-YYYY-MM.json，點開某場才 fetch 該月（同月只抓一次）。
+版面（使用者 2026-11-03 給三張參考圖）：橫向日期列（只列有賽事的日子，選中日置中，可滑動／箭頭翻頁）、單場卡片（隊徽在上、隊名、W-L、大比分、FINAL＋勝方三角）、
+展開 box score（球員縮寫、欄位順序 MIN PTS FG 3PT FT REB AST TO STL BLK OREB DREB PF +/-、TEAM TOTALS＋命中率）。gamelog 沒有先發／DNP，不分先發板凳、不列 DNP。
+網址：#games＝預設日（最近有已完賽場次的那天）；#games/2026-11-02＝指定日；#games/2026-11-02/0022600172＝展開某場。
+對外 API：window.PureGames = {ensure(), open(date, gameId), hash()}，檢視切換由 site_header.JS 負責。"""
+import json
+
+# box 表欄位（標頭, 球員列／球隊合計的欄位鍵）：順序照參考圖，build_games_data.player_row／team_row 的鍵要對得上（gate 檢查）
+BOX_COLS = [('MIN', 'min'), ('PTS', 'pts'), ('FG', 'fg'), ('3PT', 'tp'), ('FT', 'ft'), ('REB', 'reb'), ('AST', 'ast'), ('TO', 'tov'),
+            ('STL', 'stl'), ('BLK', 'blk'), ('OREB', 'oreb'), ('DREB', 'dreb'), ('PF', 'pf'), ('+/-', 'pm')]
+
+STYLE = """@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,700;1,800&family=Barlow+Condensed:wght@600;700&display=swap");
+*{box-sizing:border-box}
+:host{--nf:"Barlow Condensed","Arial Narrow",Impact,sans-serif;--blue:#4a90e2}
+:host{display:block}
+.gwroot{color:var(--fg);font-family:var(--f-body);font-size:14px}
+.gww{max-width:1360px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:12px}
+@media (min-width:641px){.gww{max-width:min(1360px,calc(var(--tw,1328px) + 32px))}}
+.hd{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:3px solid var(--fg);padding-bottom:10px}
+h1{font:italic 800 4.2rem/.85 var(--nf);text-transform:uppercase;margin:0;letter-spacing:-.01em}
+h1 span{display:block;font:600 1rem var(--f-body);font-style:normal;letter-spacing:.3em;color:var(--muted);margin-top:8px;text-transform:none}
+.stamp{white-space:nowrap;font:700 1.15rem/1.2 var(--nf);text-transform:uppercase;letter-spacing:.06em;text-align:right;color:var(--muted)}
+.stamp b{display:block;color:var(--fg);font-size:1.9rem;font-style:italic;font-weight:800}
+.meta{color:var(--muted);font-size:.82rem;line-height:1.5}
+.meta b{color:var(--fg);font-weight:600}
+.dbar{display:flex;align-items:center;gap:6px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:4px 0}
+.strip{position:relative;flex:1;min-width:0;display:flex;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.strip::-webkit-scrollbar{display:none}
+.strip::before,.strip::after{content:'';flex:0 0 calc(300% / 7)}  /* 頭尾各留 3 格空位：第一天／最後一天也能置中 */
+.dc{flex:0 0 calc(100% / 7);scroll-snap-align:center;background:none;border:0;border-radius:6px;color:#8a929c;font:inherit;padding:8px 0 7px;cursor:pointer;text-align:center;line-height:1.15}
+.dc:hover{background:#151b21}
+.dc span{display:block;font:500 .95rem var(--f-body)}
+.dc b{display:block;font:700 1.45rem var(--f-body);margin-top:2px}
+.dc.on{color:var(--blue)}
+.arw{flex:none;width:32px;height:44px;background:none;border:0;color:var(--muted);font:700 1.5rem/1 var(--f-body);cursor:pointer;border-radius:6px}
+.arw:hover:not(:disabled){background:#151b21;color:var(--fg)}
+.arw:disabled{opacity:.25;cursor:default}
+.dx{flex:none;display:flex;gap:6px;align-items:center;padding-left:8px;border-left:1px solid var(--line)}
+.dx button,.dx select{background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:3px;font:600 .85rem var(--f-disp);letter-spacing:.04em;padding:5px 10px;cursor:pointer;min-height:32px}
+.dx select{max-width:200px;padding-right:4px}
+.dx button#latest{background:var(--gold);color:var(--gold-ink);border-color:var(--gold)}
+.dx button#latest:disabled{background:var(--panel);color:var(--muted);border-color:var(--line);opacity:.5;cursor:default}
+button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.gl{display:flex;flex-direction:column;gap:10px}
+.gm{background:var(--panel);border:1px solid var(--line);border-radius:12px;min-width:0;overflow:hidden}
+.gm.open{border-color:#3a4654}
+.gh{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(90px,auto) auto minmax(0,1fr);align-items:center;gap:0 16px;padding:18px 20px 8px;cursor:pointer;user-select:none}
+.gh:hover{background:#161d24}
+.tm{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;text-align:center}
+.tm .lg{width:64px;height:64px;object-fit:contain}
+.tm .nk{font:500 1.15rem/1.2 var(--f-body);color:var(--fg);max-width:100%;overflow-wrap:anywhere}
+.tm .rc{font:500 1.05rem/1.2 var(--f-body);color:var(--muted);font-variant-numeric:tabular-nums}
+.sc{font:700 3.4rem/1 var(--nf);font-variant-numeric:tabular-nums;color:var(--fg);text-align:center;min-width:2ch}
+.sc.lose{color:#7c858f}
+.mid{text-align:center;font:700 1.2rem/1.25 var(--f-body);letter-spacing:.03em;white-space:nowrap}
+.mid .fl{display:flex;align-items:center;justify-content:center;gap:6px}
+.mid .tri{font-size:.8rem;width:1em;display:inline-block}
+.mid .tri.off{visibility:hidden}
+.mid .ot{font-weight:700}
+.mid .tbd{color:var(--muted);font-weight:500}
+.bh{text-align:center;color:var(--muted);font:500 .74rem var(--f-body);padding:0 0 10px;letter-spacing:.04em}
+.bxw{border-top:1px solid var(--line);background:#10151a;padding:6px 20px 16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.bt{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:12px 0 8px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.bt .tn{font:600 1.35rem var(--f-body);color:#7c858f;border-left:3px solid var(--line);padding-left:10px}
+.bt .ts{font:700 2.4rem/1 var(--nf);color:#7c858f;font-variant-numeric:tabular-nums}
+.bt.win .tn,.bt.win .ts{color:var(--fg)}
+.bt.win .tn{border-left-color:var(--blue)}
+.tbox{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;table-layout:fixed;width:100%;min-width:880px;font-variant-numeric:tabular-nums}  /* 固定欄寬：兩隊的表欄位對齊 */
+th{color:var(--muted);font:600 .78rem var(--f-body);letter-spacing:.08em;padding:6px 4px;text-align:center;white-space:nowrap;width:48px}
+th:nth-child(4),th:nth-child(5),th:nth-child(6){width:64px}
+th.l{text-align:left;width:auto;padding-left:0}
+td{padding:7px 4px;text-align:center;white-space:nowrap;font:500 .98rem var(--f-body);color:var(--fg)}
+tbody tr.pl:nth-child(even) td{background:#0d1217}
+td.l{text-align:left;position:sticky;left:0;background:#10151a;overflow:hidden;text-overflow:ellipsis;padding-left:0}
+tbody tr.pl:nth-child(even) td.l{background:#0d1217}
+tr.tot td{border-top:1px solid var(--line);font-weight:700;padding-top:10px}
+tr.tot td.l{font:700 .8rem var(--f-body);letter-spacing:.08em}
+tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
+.pos{color:var(--g-a)}.neg{color:var(--g-f)}
+.nob{color:var(--muted);padding:14px 0;font-size:.85rem}
+.empty{color:var(--muted);padding:30px 0;text-align:center}
+.note{color:var(--muted);font-size:.8rem;line-height:1.6;border-top:1px solid var(--line);padding-top:10px}
+@media (max-width:640px){
+  .gwroot{font-size:13px}
+  h1{font-size:2.6rem}
+  .stamp{font-size:.9rem}.stamp b{font-size:1.1rem}
+  .gww{gap:10px}
+  .dbar{flex-wrap:wrap}
+  .arw{width:26px}
+  .dc{flex-basis:20%}
+  .strip::before,.strip::after{flex-basis:40%}
+  .dc span{font-size:.8rem}.dc b{font-size:1.15rem}
+  .dx{flex:1 1 100%;border-left:0;padding:4px 0 0;justify-content:flex-end}
+  .gh{grid-template-columns:minmax(0,1fr) auto minmax(56px,auto) auto minmax(0,1fr);gap:0 6px;padding:14px 8px 6px}
+  .tm .lg{width:44px;height:44px}
+  .tm .nk{font-size:.82rem}.tm .rc{font-size:.8rem}
+  .sc{font-size:2.3rem}
+  .mid{font-size:.85rem}
+  .bxw{padding:4px 10px 12px}
+  .bt .tn{font-size:1.05rem}.bt .ts{font-size:1.8rem}
+}
+.msg{color:var(--muted);padding:40px 16px;text-align:center}"""
+
+BODY = """<div class="gwroot"><div class="msg" id="msg">載入中…</div>
+<div class="gww" id="gww" hidden>
+<div class="hd"><h1>Schedule<span>賽程</span></h1><div class="stamp" id="stamp"></div></div>
+<div class="meta" id="meta"></div>
+<div class="dbar"><button type="button" class="arw" id="sl" aria-label="往前翻">‹</button><div class="strip" id="strip" role="group" aria-label="選擇日期"></div><button type="button" class="arw" id="sr" aria-label="往後翻">›</button>
+<div class="dx"><select id="dsel" aria-label="跳到日期"></select><button type="button" id="latest">回到最近</button></div></div>
+<div class="gl" id="gl"></div>
+<div class="note" id="note"></div>
+</div></div>"""
+
+JS = r"""<script>(()=>{
+const host=document.getElementById('gamesHost'),tpl=document.getElementById('gamesTpl');if(!host||!tpl)return;
+const root=host.attachShadow({mode:'open'});root.append(tpl.content.cloneNode(true));
+let D=null,loading=null,date=null,openId=null,want=null,built=false,pend=false;
+const boxes={},ERR={err:true};   // 月份 → 'loading'｜{doc}｜ERR
+const COLS=__COLS__;
+const $=s=>root.querySelector(s),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const CDN='https://cdn.nba.com/';
+const logo=a=>'<img class="lg" alt="" loading="lazy" src="'+CDN+'logos/nba/'+D.teams[a].id+'/global/D/logo.svg" onerror="this.style.visibility=\'hidden\'">';
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],WD=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const dp=d=>{const x=new Date(d+'T00:00:00Z');return {m:MON[x.getUTCMonth()]+' '+x.getUTCDate(),w:WD[x.getUTCDay()]}};
+const sgn=v=>v>0?'+'+v:String(v);
+const pct=s=>{const [m,a]=s.split('-').map(Number);return a?Math.round(100*m/a)+'%':'—'};
+function hash(){return '#games'+(date&&D&&!(date===D.latest&&!openId)?'/'+date+(openId?'/'+openId:''):'')}
+function sync(){if(/^#games/.test(location.hash))history.replaceState(null,'',hash());}
+function boxHtml(g){
+  const b=boxes[date.slice(0,7)];
+  if(!b||b==='loading')return '<div class="bxw"><div class="nob">載入 box score…</div></div>';
+  if(b.err)return '<div class="bxw"><div class="nob">box score 載入失敗，收起再點一次重試。</div></div>';
+  const x=b.doc.games[g.id];
+  if(!x)return '<div class="bxw"><div class="nob">這場沒有 box score 資料（逐人數據還沒抓到）。</div></div>';
+  const side=k=>{
+    const a=g[k],t=x.team[k],ps=x[k],cell=(c,o)=>c[1]==='pm'?'<td class="'+(o.pm>0?'pos':o.pm<0?'neg':'')+'">'+sgn(o.pm)+'</td>':'<td>'+o[c[1]]+'</td>';
+    const rows=ps.map(p=>'<tr class="pl"><td class="l">'+esc(p.n)+'</td>'+COLS.map(c=>cell(c,p)).join('')+'</tr>').join('');
+    const tot='<tr class="tot"><td class="l">TEAM TOTALS</td>'+COLS.map(c=>c[1]==='min'||c[1]==='pm'?'<td>—</td>':'<td>'+t[c[1]]+'</td>').join('')+'</tr>'
+      +'<tr class="pct"><td class="l"></td>'+COLS.map(c=>'<td>'+(c[1]==='fg'?pct(t.fg)+'<br>FG':c[1]==='tp'?pct(t.tp)+'<br>3P':c[1]==='ft'?pct(t.ft)+'<br>FT':'')+'</td>').join('')+'</tr>';
+    return '<div><div class="bt'+(g.winner===a?' win':'')+'"><span class="tn">'+esc(D.teams[a].name)+'</span><span class="ts">'+g.score[k]+'</span></div><div class="tbox"><table><thead><tr><th class="l">PLAYERS</th>'+COLS.map(c=>'<th>'+esc(c[0])+'</th>').join('')+'</tr></thead><tbody>'+rows+tot+'</tbody></table></div></div>';
+  };
+  return '<div class="bxw">'+side('away')+side('home')+'</div>';
+}
+function card(g){
+  const fin=g.status==='final',w=fin?(g.winner===g.home?'home':'away'):'',op=openId===g.id;
+  const tm=k=>'<div class="tm">'+logo(g[k])+'<div class="nk">'+esc(D.teams[g[k]].nick)+'</div><div class="rc">'+esc(g.rec?g.rec[k]:'')+'</div></div>';
+  const sc=k=>'<div class="sc'+(fin&&w!==k?' lose':'')+'">'+(fin?g.score[k]:'')+'</div>';
+  const mid=fin?'<div class="mid"><div class="fl"><span class="tri'+(w==='away'?'':' off')+'">◀</span>FINAL<span class="tri'+(w==='home'?'':' off')+'">▶</span></div>'+(g.ot?'<div class="ot">'+g.ot+'OT</div>':'')+'</div>'
+    :'<div class="mid"><span class="tbd">'+esc(g.time||'—')+'</span></div>';
+  return '<div class="gm'+(op?' open':'')+'" data-id="'+g.id+'"><div class="gh" role="button" tabindex="0" aria-expanded="'+op+'">'+tm('away')+sc('away')+mid+sc('home')+tm('home')+'</div>'
+   +(fin?'<div class="bh">'+(op?'收起 box score ▴':'box score ▾')+'</div>':'')+(op&&fin?boxHtml(g):'')+'</div>';
+}
+function build(){
+  built=true;
+  $('#strip').innerHTML=D.dates.map(d=>{const p=dp(d);return '<button type="button" class="dc" data-d="'+d+'" aria-pressed="false"><span>'+p.m+'</span><b>'+p.w+'</b></button>';}).join('');
+  $('#dsel').innerHTML=D.dates.map(d=>'<option value="'+d+'">'+d+'（'+D.games[d].length+' 場）</option>').join('');
+}
+function center(smooth){
+  const s=$('#strip'),c=s.querySelector('.dc.on');if(!c)return;
+  if(!s.clientWidth){pend=true;return;}   // 檢視還藏著（閒置預載）：量不到寬度，等 ResizeObserver
+  const x=c.offsetLeft-(s.clientWidth-c.offsetWidth)/2;
+  s.scrollTo({left:x,behavior:smooth&&Math.abs(x-s.scrollLeft)<s.clientWidth*3?'smooth':'auto'});   // 跳很遠（下拉選日期）就直接到位，不滑過上百格
+}
+function arrows(){const s=$('#strip');$('#sl').disabled=s.scrollLeft<=1;$('#sr').disabled=s.scrollLeft>=s.scrollWidth-s.clientWidth-1;}
+function render(smooth){
+  if(!built)build();
+  const gs=D.games[date]||[],nf=gs.filter(g=>g.status==='final').length,p=dp(date);
+  $('#stamp').innerHTML='<b>'+esc(p.m)+'</b>'+esc(date.slice(0,4))+' '+p.w;
+  $('#meta').innerHTML='<b>'+gs.length+'</b> 場賽事・已完賽 <b>'+nf+'</b> 場'+(nf<gs.length?'・未開打 <b>'+(gs.length-nf)+'</b> 場':'')+'　點一場看 box score。';
+  root.querySelectorAll('.dc').forEach(b=>{const on=b.dataset.d===date;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
+  $('#dsel').value=date;$('#latest').disabled=date===D.latest&&!openId;
+  $('#gl').innerHTML=gs.length?gs.map(card).join(''):'<div class="empty">這天沒有賽事</div>';
+  $('#note').innerHTML='比分與 box score 來自 NBA.com 官方 gamelog；W-L 是該場結束時的戰績（由 gamelog 逐場累計）；已完賽場次的日期以 gamelog 的比賽日（美東）為準，未開打場次取自賽程（沒有開賽時間）。gamelog 沒有先發名單與 DNP，球員依上場分鐘排序。';
+  center(smooth);
+}
+function go(d){date=d;openId=null;render(true);sync();}
+function apply(){
+  const w=want||{};want=null;
+  date=w.d&&D.games[w.d]?w.d:D.latest;
+  const g=w.gid&&(D.games[date]||[]).find(x=>x.id===w.gid&&x.status==='final');
+  openId=g?g.id:null;render(built);if(openId)fetchBox(date);
+}
+function fetchBox(d){
+  const m=d.slice(0,7);
+  if(boxes[m]&&boxes[m]!==ERR)return;
+  boxes[m]='loading';
+  fetch('games-box-'+m+'.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(doc=>({doc}),()=>ERR).then(v=>{boxes[m]=v;if(openId&&date.slice(0,7)===m){const y=scrollY;render(false);scrollTo(0,y);}});
+}
+function toggle(id){
+  openId=openId===id?null:id;render(false);sync();
+  if(openId)fetchBox(date);
+}
+$('#gl').addEventListener('click',e=>{const h=e.target.closest('.gh,.bh');if(!h)return;const m=h.closest('.gm'),g=(D.games[date]||[]).find(x=>x.id===m.dataset.id);if(g&&g.status==='final')toggle(g.id);});
+$('#gl').addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const h=e.target.closest('.gh');if(!h)return;e.preventDefault();const id=h.parentElement.dataset.id;h.click();root.querySelector('.gm[data-id="'+id+'"] .gh')?.focus();});
+$('#strip').addEventListener('click',e=>{const b=e.target.closest('.dc');if(b&&b.dataset.d!==date)go(b.dataset.d);});
+$('#strip').addEventListener('scroll',arrows,{passive:true});
+$('#sl').addEventListener('click',()=>{const s=$('#strip');s.scrollBy({left:-s.clientWidth*.85,behavior:'smooth'});});
+$('#sr').addEventListener('click',()=>{const s=$('#strip');s.scrollBy({left:s.clientWidth*.85,behavior:'smooth'});});
+$('#latest').addEventListener('click',()=>go(D.latest));
+$('#dsel').addEventListener('change',e=>go(e.target.value));
+new ResizeObserver(()=>{if(pend&&$('#strip').clientWidth){pend=false;center(false);}arrows();}).observe($('#strip'));
+function ensure(){
+  if(!loading)loading=fetch('games-data.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{
+    D=d;$('#msg').hidden=true;$('#gww').hidden=false;apply();
+  }).catch(()=>{loading=null;$('#msg').textContent='賽程載入失敗，重新整理再試一次。';});
+  return loading;
+}
+window.PureGames={ensure,hash,open(d,gid){want={d,gid};if(D)apply();}};
+})()</script>""".replace('__COLS__', json.dumps(BOX_COLS))
+
+
+def embed():
+    """名單頁用：回傳 (宿主＋template 的 HTML, 腳本)。宿主放在 .wrap 前面，腳本放在眉頭腳本之前。"""
+    tpl = '<template id="gamesTpl"><style>' + STYLE + '</style>' + BODY + '</template>'
+    return '<div id="gamesHost"></div>' + tpl, JS

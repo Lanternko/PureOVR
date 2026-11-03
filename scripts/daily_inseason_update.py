@@ -49,6 +49,7 @@ E222_EVAL = ROOT / 'reports/E222-recent-boost-diagnostic/e222_eval.py'   # 預�
 E222_RESULT = E222_EVAL.parent / 'result.json'
 TEAM_RATINGS = ROOT / 'scripts/team_ratings_daily.py'      # E-208 第二階段：傷病名單＋球隊評分
 TEAMS_PAGE = ROOT / 'scripts/build_teams_page.py'
+GAMES_DATA = ROOT / 'scripts/build_games_data.py'
 CREATE_NO_WINDOW = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
 
 TIMEOUTS = {'games': 900, 'matchups': 1800, 'inseason': 3600, 'tracking': 600, 'gravity': 300, 'possessions': 300, 'stints': 1800, 'c4': 3600, 'viewer': 600, 'history': 3600, 'prereg': 900, 'ratings': 300, 'git': 180}
@@ -297,6 +298,17 @@ def step_team_ratings(out_dir: Path, live_dir: Path | None, recompute: bool = Tr
         return None
 
 
+def step_games_data(out_dir: Path) -> dict[str, Path]:
+    """賽程檢視的資料（build_games_data.py）→ out_dir 下的 games-data.json＋games-box-YYYY-MM.json。回傳 {檔名: 路徑}；
+    失敗只記警告、回傳 {}，不擋原發布（頁面的檢視 fetch 不到會顯示載入失敗）。"""
+    try:
+        r = checked([py_exe(), '-I', '-X', 'utf8', str(GAMES_DATA), str(out_dir)], ROOT, TIMEOUTS['viewer'])
+        return {n: out_dir / n for n in (ln.split('\t')[0] for ln in (r.stdout or '').splitlines()) if n}
+    except Exception as e:
+        log.warning('賽程資料略過（不影響其他頁面）：%s', str(e)[-400:])
+        return {}
+
+
 def teams_message(cutoff: str) -> str:
     return f'teams 球隊評分 數據至 {cutoff}\n\n{CO_AUTHOR}\n'
 
@@ -314,8 +326,8 @@ def publish_teams_only(state: dict, args) -> None:
         if html is None:
             return
         try:
-            sha = publish_html(ROOT, {'teams.html': html, 'teams-data.json': html.with_name('teams-data.json')}, teams_message(cutoff),
-                               remote=args.remote, branch=args.branch)
+            pages = {'teams.html': html, 'teams-data.json': html.with_name('teams-data.json'), **step_games_data(work)}
+            sha = publish_html(ROOT, pages, teams_message(cutoff), remote=args.remote, branch=args.branch)
             log.info('球隊評分頁已發布，gh-pages commit=%s', sha or '（內容未變）')
         except Exception as e:
             log.warning('球隊評分頁發布失敗（不影響其他頁面）：%s', str(e)[-400:])
@@ -539,6 +551,7 @@ def _run(args) -> int:
         card_html = step_card_viewer(work)
         cutoff = meta['dataCutoff']
         teams_html = step_team_ratings(work, work)      # 用剛算好的 ranking.csv；失敗回 None，不擋其他頁
+        games_files = step_games_data(work)             # 賽程檢視的資料；失敗回 {}，不擋其他頁
 
         if args.dry_run:
             log.info('dry-run：不 push、不寫 state、不複製到 live/。輸出夾 %s（保留）', work)
@@ -551,6 +564,7 @@ def _run(args) -> int:
         if teams_html is not None:
             pages['teams.html'] = final / teams_html.name
             pages['teams-data.json'] = final / 'teams-data.json'
+        pages.update({n: final / n for n in games_files})
         sha = publish_html(ROOT, pages, commit_message(shown, cutoff),
                            remote=args.remote, branch=args.branch)
         state.pop('letter', None)
@@ -581,6 +595,7 @@ def _run_shell(args) -> int:
         html = step_viewer(work)
         card_html = step_card_viewer(work)
         teams_html = step_team_ratings(work, None, recompute=False)
+        games_files = step_games_data(work)
         if args.dry_run:
             log.info('dry-run（shell）：不 push、不寫 state。輸出夾 %s（保留）', work)
             work = None
@@ -593,6 +608,9 @@ def _run_shell(args) -> int:
             shutil.copyfile(teams_html.with_name('teams-data.json'), final / 'teams-data.json')
             pages['teams.html'] = final / teams_html.name
             pages['teams-data.json'] = final / 'teams-data.json'
+        for n, src in games_files.items():
+            shutil.copyfile(src, final / n)
+            pages[n] = final / n
         shown = state.get('displayVersion', '')
         sha = publish_html(ROOT, pages, shell_commit_message(shown, cutoff), remote=args.remote, branch=args.branch)
         if sha:

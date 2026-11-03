@@ -1,6 +1,7 @@
-"""名單頁眉頭（使用者 2026-11-02「重新設計眉頭，參考 arammeta」）：黏頂毛玻璃一列＝PUREOVR 字標｜球員・球隊・戰力排行分頁｜篩選・設定・搜尋。
+"""名單頁眉頭（使用者 2026-11-02「重新設計眉頭，參考 arammeta」）：黏頂毛玻璃一列＝PUREOVR 字標｜球員・球隊・戰力排行・賽程分頁｜篩選・設定・搜尋。
 2026-11-02「直接合併單頁」：2026-27 名單頁內嵌戰力排行檢視（rank_view.py），三個分頁共用同一個眉頭；用 body[data-view] 切檢視、
-history.pushState＋popstate 管網址（#rank、#rank/LAL）、View Transition 讓底線滑過去；2025-26 卡片頁沒有排行檢視，戰力排行連到 index.html#rank。
+history.pushState＋popstate 管網址（#rank、#rank/LAL、#games、#games/2026-11-02[/GAME_ID]）、View Transition 讓底線滑過去；
+2025-26 卡片頁沒有排行與賽程檢視，兩個分頁連到 index.html#rank、index.html#games。
 原本的控制項（#posSeg、#teamPick、#modeSeg、#q、賽季切換、更新說明）在頁尾腳本裡原封搬進眉頭，事件與 render 不用改；
 舊的 .top 標題列與 .ctrl 控制列只剩空殼，直接隱藏。add_season_nav 之後呼叫。"""
 import re
@@ -56,11 +57,11 @@ body{margin:0}  /* 名單頁原本留瀏覽器預設 8px，眉頭在球員／戰
 .mind{position:absolute;bottom:0;left:var(--ix,0);width:var(--iw,0);height:3px;border-radius:3px 3px 0 0;background:var(--gold);
   box-shadow:0 0 8px color-mix(in srgb,var(--gold) 50%,transparent);pointer-events:none}
 html{scrollbar-gutter:stable}  /* 排行檢視比名單短，捲軸有無不同會讓眉頭橫向位移 */
-body[data-view="rank"] .wrap{display:none}
-body:not([data-view="rank"]) #rankHost{display:none}
-body[data-view="rank"] #mFilter,body[data-view="rank"] .msearch{display:none}  /* 篩選、搜尋只對球員檢視有意義 */
-body[data-view="rank"] .mtabs #teamPick.on summary{color:var(--mfg);background:none}
-.mtabs #teamPick[open] summary,body[data-view="rank"] .mtabs #teamPick[open].on summary{color:var(--gold-ink);background:var(--gold)}  /* 點開選隊：黃色高亮 */
+body[data-view="rank"] .wrap,body[data-view="games"] .wrap{display:none}
+body:not([data-view="rank"]) #rankHost,body:not([data-view="games"]) #gamesHost{display:none}
+body[data-view="rank"] #mFilter,body[data-view="rank"] .msearch,body[data-view="games"] #mFilter,body[data-view="games"] .msearch{display:none}  /* 篩選、搜尋只對球員檢視有意義 */
+body[data-view="rank"] .mtabs #teamPick.on summary,body[data-view="games"] .mtabs #teamPick.on summary{color:var(--mfg);background:none}
+.mtabs #teamPick[open] summary,body[data-view="rank"] .mtabs #teamPick[open].on summary,body[data-view="games"] .mtabs #teamPick[open].on summary{color:var(--gold-ink);background:var(--gold)}  /* 點開選隊：黃色高亮 */
 .mind{view-transition-name:tab-ind}  /* 只給底線命名；.wrap 整頁快照太大 */
 .mast.vt-running .mind{transition:none!important}  /* 切檢視時由 View Transition 負責滑動，不再疊 CSS 過渡 */
 ::view-transition-group(tab-ind){animation-duration:.22s;animation-timing-function:cubic-bezier(.2,.7,.2,1)}
@@ -134,39 +135,52 @@ const season=$('.snav .seg');if(season)$('#mSeason').append(season);
 const mode=$('#modeSeg');if(mode)$('#mMode').append(mode);
 const pn=$('.snav .pnote');if(pn)$('#mNotes').append(pn);else $('#mNotes').closest('.mrow').remove();
 const q=$('#q');if(q){$('.msearch .sbox').append(q);q.placeholder='搜尋球員或球隊';}
-const pl=$('#mPlayers'),tr=$('#mTeams'),PR=window.PureRank,T0=document.title,sy={},reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
-const parseHash=()=>{const m=/^#rank(?:[/]([A-Za-z]{2,4}))?$/.exec(location.hash);return m?{rank:true,abbr:m[1]?m[1].toUpperCase():null}:{rank:false}};
-let view=PR&&parseHash().rank?'rank':'players';
+const pl=$('#mPlayers'),tr=$('#mTeams'),gm=$('#mGames'),PR=window.PureRank,PG=window.PureGames,T0=document.title,sy={},reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const TITLE={rank:'戰力排行 · PureOVR',games:'賽程 · PureOVR'};
+const parseHash=()=>{
+  let m=/^#rank(?:[/]([A-Za-z]{2,4}))?$/.exec(location.hash);if(m)return{v:'rank',arg:m[1]?m[1].toUpperCase():null};
+  m=/^#games(?:[/](\d{4}-\d{2}-\d{2})(?:[/](\d{10}))?)?$/.exec(location.hash);if(m)return{v:'games',arg:m[1]||null,gid:m[2]||null};
+  return{v:'players'};
+};
+const avail=v=>v==='rank'?PR:v==='games'?PG:true;
+let view=(v=>avail(v)?v:'players')(parseHash().v);
 const sync=()=>{
-  const on=tp&&tp.classList.contains('on'),rk=view==='rank';pl.setAttribute('aria-selected',String(!on&&!rk));tr.setAttribute('aria-selected',String(rk));
-  const t=rk?tr:on?tp.querySelector('summary'):pl,a=tabs.getBoundingClientRect(),r=t.getBoundingClientRect();
+  const on=tp&&tp.classList.contains('on');pl.setAttribute('aria-selected',String(!on&&view==='players'));tr.setAttribute('aria-selected',String(view==='rank'));gm.setAttribute('aria-selected',String(view==='games'));
+  const t=view==='rank'?tr:view==='games'?gm:on?tp.querySelector('summary'):pl,a=tabs.getBoundingClientRect(),r=t.getBoundingClientRect();
   ind.style.setProperty('--ix',(r.left-a.left)+'px');ind.style.setProperty('--iw',r.width+'px');mast.style.setProperty('--mh',mast.offsetHeight+'px');
   const b=pos&&pos.querySelector('[aria-pressed="true"]');fb.classList.toggle('dot',!!b&&b!==pos.firstElementChild);
 };
-pl.onclick=()=>{const b=$('#teamGrid [data-t="ALL"]');if(b&&tp&&tp.classList.contains('on'))b.click();if(PR)go('players',true);};
-function show(v,abbr){
-  if(v==='rank'){if(abbr!==undefined)PR.open(abbr);PR.ensure();}
+pl.onclick=()=>{const b=$('#teamGrid [data-t="ALL"]');if(b&&tp&&tp.classList.contains('on'))b.click();if(PR||PG)go('players',true);};
+/* h：要帶進檢視的網址參數（rank：{arg}；games：{arg:日期,gid}）；undefined＝維持檢視目前的狀態 */
+function show(v,h){
+  if(v==='rank'){if(h)PR.open(h.arg);PR.ensure();}
+  if(v==='games'){if(h)PG.open(h.arg,h.gid);PG.ensure();}
   if(v===view)return;
-  sy[view]=scrollY;view=v;document.body.dataset.view=v;document.title=v==='rank'?'戰力排行 · PureOVR':T0;sync();scrollTo(0,sy[v]||0);
+  sy[view]=scrollY;view=v;document.body.dataset.view=v;document.title=TITLE[v]||T0;sync();scrollTo(0,sy[v]||0);
 }
-function go(v,push,abbr){
-  if(push&&v!==view)history.pushState(null,'',v==='rank'?'#rank':location.pathname+location.search);
-  if(v===view||!document.startViewTransition||reduce)return show(v,abbr);
+function go(v,push,h){
+  if(push&&v!==view)history.pushState(null,'',v==='rank'?'#rank':v==='games'?PG.hash():location.pathname+location.search);
+  if(v===view||!document.startViewTransition||reduce)return show(v,h);
   mast.classList.add('vt-running');
-  const t=document.startViewTransition(()=>show(v,abbr));
+  const t=document.startViewTransition(()=>show(v,h));
   t.ready.catch(()=>{});t.finished.catch(()=>{}).finally(()=>mast.classList.remove('vt-running'));
 }
-if(PR){
-  tr.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button)return;e.preventDefault();go('rank',true,null);});
-  /* 排行檢視下點「球隊」：先黃色高亮並展開選隊，選完才跳到球隊名單（使用者 2026-11-03） */
+if(PR||PG){
+  const tabClick=(el,v,h)=>el.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey||e.button)return;e.preventDefault();go(v,true,h);});
+  if(PR)tabClick(tr,'rank',{arg:null});
+  if(PG)tabClick(gm,'games');
+  /* 排行／賽程檢視下點「球隊」：先黃色高亮並展開選隊，選完才跳到球隊名單（使用者 2026-11-03） */
   const tg=$('#teamGrid');
-  if(tg)tg.addEventListener('click',e=>{if(view==='rank'&&e.target.closest('button[data-t]')){sy.players=0;go('players',true);}});
-  /* 已選過球隊：從排行／每日對戰點「球隊」先回到上次的球隊名單，再點一次才展開選隊切換（使用者 2026-11-03） */
+  if(tg)tg.addEventListener('click',e=>{if(view!=='players'&&e.target.closest('button[data-t]')){sy.players=0;go('players',true);}});
+  /* 已選過球隊：從排行／賽程點「球隊」先回到上次的球隊名單，再點一次才展開選隊切換（使用者 2026-11-03） */
   const ts=tp&&tp.querySelector('summary');
   if(ts)ts.addEventListener('click',e=>{if(view!=='players'&&tp.classList.contains('on')){e.preventDefault();tp.open=false;go('players',true);}});
-  addEventListener('popstate',()=>{const h=parseHash();go(h.rank?'rank':'players',false,h.rank?h.abbr:undefined);});
-  document.body.dataset.view=view;if(view==='rank')document.title='戰力排行 · PureOVR';
-  const h0=parseHash();if(h0.rank){PR.open(h0.abbr);PR.ensure();}else(window.requestIdleCallback||setTimeout)(()=>PR.ensure());
+  addEventListener('popstate',()=>{const h=parseHash(),v=avail(h.v)?h.v:'players';go(v,false,h);});
+  document.body.dataset.view=view;if(TITLE[view])document.title=TITLE[view];
+  const h0=parseHash();
+  if(h0.v==='rank'&&PR){PR.open(h0.arg);PR.ensure();}
+  else if(h0.v==='games'&&PG){PG.open(h0.arg,h0.gid);PG.ensure();}
+  else(window.requestIdleCallback||setTimeout)(()=>{PR&&PR.ensure();PG&&PG.ensure();});
 }
 const mo=new MutationObserver(sync);
 if(tp)mo.observe(tp,{attributes:true,attributeFilter:['class'],childList:true,subtree:true});
@@ -196,7 +210,8 @@ def header_html(current):
         '<button type="button" class="mtab" id="mPlayers" aria-selected="true">球員</button>'
         '<span class="mtab mtab-pick" id="mPickPh">球隊</span>'
         '<span class="mind" aria-hidden="true"></span>'
-        '<a class="mtab" id="mTeams" href="./#rank">戰力排行</a></nav>'
+        '<a class="mtab" id="mTeams" href="./#rank">戰力排行</a>'
+        '<a class="mtab" id="mGames" href="./#games">賽程</a></nav>'
         '<div class="macts">'
         f'<details class="mpop" id="mFilter"><summary class="micon" aria-label="篩選">{_svg("filter", 15)}</summary>'
         '<div class="mpanel"><div class="mrow"><b>位置</b><div id="mPos"></div></div></div></details>'
@@ -222,10 +237,13 @@ def add_masthead(html_str, current):
     s = s.replace(a, "localStorage.getItem('bbac.mode') === 'grade' ? 'grade' : 'num'; } catch (e) { return 'num'; }")
     assert s.count('<div class="wrap">') == 1, 'wrap not found'
     rank_html, rank_js = '', ''
-    if current == 'inseason':  # 戰力排行檢視只有 2026-27 名單頁有；#rank 直連時在首次繪製前先切好，不閃一下球員檢視
+    if current == 'inseason':  # 戰力排行、賽程檢視只有 2026-27 名單頁有；#rank／#games 直連時在首次繪製前先切好，不閃一下球員檢視
+        import games_view
         import rank_view
         rank_html, rank_js = rank_view.embed()
-        rank_html += "<script>if(/^#rank/.test(location.hash))document.body.dataset.view='rank'</script>"
+        games_html, games_js = games_view.embed()
+        rank_html += games_html + "<script>{const m=/^#(rank|games)/.exec(location.hash);if(m)document.body.dataset.view=m[1]}</script>"
+        rank_js += games_js
     # 刷新時眉頭不跳（使用者 2026-11-03）：--tw 要等表格畫好、字型載完才量得準，首格先套上次存下的值（enrich_roster_viewer 寫入）
     tw0 = "<script>try{const w=localStorage.getItem('bbac.tw:'+location.pathname);if(w)document.documentElement.style.setProperty('--tw',w)}catch(e){}</script>"
     s = s.replace('<div class="wrap">', CSS + tw0 + header_html(current) + '\n' + rank_html + '<div class="wrap">', 1)
