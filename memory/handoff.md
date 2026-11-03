@@ -3,9 +3,10 @@
 只記「目前狀態」，每次收工整份覆寫，不往下追加日期段。每條最多兩行，細節寫進 findings／experiments／rulings 或報告檔，這裡只放 ID 與路徑。UI 小改不進本檔（看 git log）。舊版全文在 `archive/`（最近一份 `handoff-2026-11-01-full.md`）。
 **多個 session 同時改本檔與工作樹**：覆寫前先重讀一次，只改自己負責的條目。
 
-- **更新**：2026-11-03，回報格式拿掉五級文字標籤只留分數＋建議（R-148，併入 R-011，同步 jev-hearthstone）；11-02 E-218 防守更新速度 H1 不過 `reports/defense-update-speed/`
+- **更新**：2026-11-03，賽中 OVR 近期加成 b3h20 上線（R-150，E-221／E-222，d4a43fc，gh-pages 46e288f）；同日回報格式拿掉五級文字標籤（R-148 併入 R-011）
 
 ## 目前基準（線上）
+- **賽中近期加成 b=3、h=20**（R-150，11-03 上線）：本季逐場權重加重近期場次，最後 20% 季淡出、季末不變；`RECENT_BOOST=0` 回舊版。單場評分－上季平均 vs 當場 ΔOVR 相關 0.28→0.43、大場當場上漲 67%→79%（量法 scratch，未進報告）。`live/recent_boost.py`
 - **card／inseason 0.2.12**（R-139，E-203，11-02 上線，gh-pages 7fc64c4）：tovSkill 改看持球時間（0.5·z(−每持球分鐘失誤)＋0.5·z(持球分鐘/36)），其餘不動；每日抓 `possessions.json`；`TOV_POSS=0` 重現 0.2.11。正式卡 `reports/card-0.2.12-tov/`。
 - **card／inseason 0.2.11**（原 0.2.10j，R-137；R-134／R-135，E-200）：加能力值引力 gravity（主畫面 GRV 取代切入位置，每日抓本季引力），`GRAVITY=0` 重現 0.2.10i。`reports/card-0.2.10j/`、`live/gravity_live.py`
 - **網站**：首頁 2026-27、`2025-26.html`（`build_card_viewer.py`、`enrich_roster_viewer.py`、共用 `season_nav.py`）。能力值說明文字在 `season_nav.py` 的 `ATTR_TIPS`，改屬性公式要一起改；新格子提示用 `sn.cell_tip()`。只改 UI 用 `python -I scripts/daily_inseason_update.py --shell` 立刻發布；每日排程 14:30／16:30＋22:30 補對位（registry `basketball-inseason-daily`）。
@@ -13,11 +14,10 @@
 - **新秀開季起點**（R-096，2026-11-01 重解）：0.2.10e～h 換版後 δ 沒重解、起點跑掉（L-109）；已用 `reports/E121-rookie-scale/build_2k_start.py` 重解，42 人 ≤0.05；`test/rookie_start_gate.py`（npm test）擋換版後再跑掉。換版後要重跑該腳本。
 
 ## 進行中
+- **E-222 診斷**（R-149 已被 R-150 推翻，保留作事後檢查）：MDE_p 0.030，每日更新在 30 隊滿 20 場時跑 `reports/E222-recent-boost-diagnostic/e222_eval.py` 一次；errata-1（c→g 改 15·c）未核可。剩餘落差：OVR 結構不看重部分高評分表現（Murray 16.9 分場 +0.2）
 - **聯盟 3PAr 偏差**（11-03）：預註冊 1 來源不明；預註冊 2（E-219）位置池對手 K=0.62 部分原因；預註冊 3（E-220，F-148，R-146）3 分 logit 位移 δ*=0.27／0.10 補齊 3PAr 無副作用，但節奏只補 5–8%，同源不成立。使用者 11-03 裁定 δ 暫不進引擎；節奏偏慢下一步（查回合組成：失誤率、罰球率）未開。`reports/3par-logit-shift/report.md`；E-219 報告尚未稽核
 - **球星重疊遞減 E-217**（11-02）：H1 不通過，OL 單隊多為噪音，要驗證需約 10 倍場數。`reports/star-overlap/report.md`
 - **E-208／E-213 球隊評分**（11-02）：`teams.html` 上線；傷病 ESPN→官方PDF（E-214）；缺陣球員補底卡 E-216。`reports/E208-team-rating/report-missing-profiles.md`
-- **TO 觸球分母已做成 0.2.12c**（R-144，E-207，11-02 上線）：r 分母持球分鐘→觸球次數，池與係數已重擬合。`reports/card-0.2.12c/`
-- **遺忘調陡 W246 已做成 0.2.12b**（F-142、E-204、R-140，11-02）：四季窗口 328→246 格，已上線兩頁。`reports/E204-window-246/report.md`
 - **0.2.10 待辦**（R-114）：獨立 role-audit 沒做（F-116：組合值評 foulDraw／pass 不過，使用者知情上線）；換季跳動對 0.2.9a 沒量；Porter Jr. 20→40；G5。
 - **E-166 β×2 → sim 0.1.3 已上線**（R-120）：罰球防守散布拉開，防守型非中鋒少低估 12 名；未解：S 偏袒長人 +79→+107、F-112 剩 +54 名低估。`reports/sim-0.1.2+E166-ft-defense/`
 - **E-151 年輕側年齡連續**：已預註冊（6820474），每日排程在 2026-27 stints 達 450 場時自動跑 `e151_eval.py` 一次（daily.log 會出現 WARNING「E-151 評估完成」）。不得提前拿卡片去比。
@@ -25,7 +25,6 @@
 ## 等使用者裁定
 - **E-196／R-133 得分產量**（11-01 完成，未上線）：產量取代 creation 樣本外無球組低估 5.2→4.5，但係數全靠下限撐；待選。`reports/card-0.2.10g+E196-production/report.md`
 - **網站品牌名**（11-01）：傾向 Pure.OVR（pureovr.com 可註冊），備選 hoopgrade、ovihoops；未買、社群帳號未查。`reports/site-naming/domains.md`
-- **E-189 → sim 0.1.4 已裁定採用**（R-131，2026-11-01）：γ 已進預設，多 seed 重驗聯盟量差 <1%；中鋒差距假設排除（F-137，F-129 額度 1/3）。F-130 使用者裁定先不動。流程同日改：機制／假設分兩線判（README 問題卡第 3 條）。
 - **0.2.10a 後續**（R-121）：新賽季頁仍是舊 T6，等 0.2.12（以 0.2.10a 為底）一起修；H1 封頂壓前段（SGA 118.8→103.8）另議；E-142／E-153／E-186 用舊 T6 要重核。
 - **R-117 停損**：JW、長人犯規兩條線只做診斷，不提新假設，除非使用者重開額度；全文見 rulings。
 - **JW 偏高 F-125 已修（R-122，2026-11-01）**：正式卡改 **card 0.2.10c**＝0.2.10a 修正後 T6 重擬合＋傳球全位置共用斜率（E-187 KAU）；JW 第 9→12（MIN≥500）、分段殘差 −1.50→−1.22。新賽季頁仍 0.2.10 係數；**0.2.12 若要帶上本修正要改以 0.2.10c 為底**。2026-27 季末用本季 RAPM 做樣本外複查。`reports/card-0.2.10c/report.md`
