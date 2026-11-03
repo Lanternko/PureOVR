@@ -52,7 +52,7 @@ TEAMS_PAGE = ROOT / 'scripts/build_teams_page.py'
 GAMES_DATA = ROOT / 'scripts/build_games_data.py'
 CREATE_NO_WINDOW = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
 
-TIMEOUTS = {'games': 900, 'matchups': 1800, 'inseason': 3600, 'tracking': 600, 'gravity': 300, 'possessions': 300, 'stints': 1800, 'c4': 3600, 'viewer': 600, 'history': 3600, 'prereg': 900, 'ratings': 300, 'git': 180}
+TIMEOUTS = {'games': 900, 'matchups': 1800, 'inseason': 3600, 'tracking': 600, 'gravity': 300, 'possessions': 300, 'stints': 1800, 'c4': 3600, 'viewer': 600, 'history': 3600, 'prereg': 900, 'ratings': 300, 'e229': 900, 'git': 180}
 CO_AUTHOR = 'Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>'
 
 log = logging.getLogger('daily_inseason')
@@ -284,12 +284,21 @@ def step_prereg_e222() -> None:
         log.info('E-222 未評估 exit=%s：%s', r.returncode, last[:300])
 
 
+def step_e229_forward() -> None:
+    """E-229：T 對 M0 的前向預測記錄（reports/E229-transformer-vs-m0-forward/predict_daily.py，緊接 M0 之後）。任何失敗只記警告，不擋發布。"""
+    try:
+        checked([py_exe(), '-I', '-X', 'utf8', str(ROOT / 'reports' / 'E229-transformer-vs-m0-forward' / 'predict_daily.py')], ROOT, TIMEOUTS['e229'])
+    except Exception as e:
+        log.warning('E-229 前向預測略過（不影響發布）：%s', str(e)[-400:])
+
+
 def step_team_ratings(out_dir: Path, live_dir: Path | None, recompute: bool = True) -> Path | None:
     """每日傷病名單＋球隊評分（team_ratings_daily.py）→ teams.html（轉址頁）＋同資料夾 teams-data.json（名單頁排行檢視 fetch 的資料）。回傳 teams.html 路徑；任何失敗只記警告、回傳 None，
     不擋原本頁面的發布。recompute=False（--shell）只用上次算好的 team-ratings.json 重畫頁面。"""
     try:
         if recompute:
             checked([py_exe(), '-I', '-X', 'utf8', str(TEAM_RATINGS), str(live_dir)], ROOT, TIMEOUTS['ratings'])
+            step_e229_forward()
         html = out_dir / 'teams.html'
         checked([py_exe(), '-I', '-X', 'utf8', str(TEAMS_PAGE), str(html)], ROOT, TIMEOUTS['viewer'])
         return html
