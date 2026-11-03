@@ -48,18 +48,38 @@ td.net{font:italic 800 1.7rem/1 var(--nf);letter-spacing:-.01em}
 .inj{color:var(--g-f)}
 tbody tr.row td:not(.rk):not(.net):not(.tm){color:var(--muted)}
 .det td{padding:0;background:#10151a;white-space:normal;text-align:left}
-.dg{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;padding:12px 16px 16px}
-.dg h3{margin:0 0 6px;font:700 .85rem var(--f-disp);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.dg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:14px;padding:14px 16px 18px;align-items:start}
+.dg>div{background:var(--panel);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.dg h3{margin:0;padding:10px 12px;border-bottom:1px solid var(--line);font:700 .95rem var(--f-body);letter-spacing:.02em;color:var(--fg);display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.dg h3 small{font:500 .74rem var(--f-body);color:var(--muted)}
 .dg table{font-size:.88rem}
-.dg td{padding:4px 6px;border-bottom:1px solid #1a2128;white-space:normal;font:500 .9rem var(--f-body);letter-spacing:0}
-.dg td.n{min-width:0;overflow-wrap:anywhere}
-.dg td.n{text-align:left}
+.dg thead th{position:static;background:transparent;font:600 .74rem var(--f-body);letter-spacing:.04em;text-transform:none;color:var(--muted);padding:6px 12px;cursor:default;border-bottom:1px solid var(--line);text-align:right;box-shadow:none}
+.dg thead th.l{text-align:left}
+.dg td{padding:7px 12px;border-bottom:1px solid #1a2128;white-space:normal;font:500 .9rem var(--f-body);letter-spacing:0;vertical-align:middle}
+.dg tbody tr:last-child td{border-bottom:0}
+.dg td.n{min-width:9.5em;overflow-wrap:break-word;text-align:left;font-weight:600}
+.dg td.num{font:700 1rem var(--nf);text-align:right;white-space:nowrap;width:1%}
+.mn{display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.mn i{display:block;width:64px;height:5px;border-radius:3px;background:#1d252d;overflow:hidden}
+.mn i b{display:block;height:100%;background:var(--muted);opacity:.75}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font:700 .74rem var(--f-body);letter-spacing:.02em;white-space:nowrap;border:1px solid transparent}
+.s-out{color:var(--g-f);background:color-mix(in srgb,var(--g-f) 16%,transparent);border-color:color-mix(in srgb,var(--g-f) 40%,transparent)}
+.s-dbt,.s-q{color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent);border-color:color-mix(in srgb,var(--gold) 38%,transparent)}
+.s-q{opacity:.85}
+.s-p{color:var(--g-a);background:color-mix(in srgb,var(--g-a) 14%,transparent);border-color:color-mix(in srgb,var(--g-a) 38%,transparent)}
+.rb b{display:block;color:var(--gold);font:700 .9rem var(--f-body)}
+.rb b.far{color:var(--g-f)}
+.rb small{display:block;color:var(--muted);font:500 .72rem var(--f-body);margin-top:1px}
+.chips{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.chip{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:3px 10px;font:500 .8rem var(--f-body);color:var(--muted);white-space:nowrap}
+.chip b{font:700 1rem var(--nf);margin-left:5px;color:var(--fg)}
+.chip b.pos{color:var(--g-a)}.chip b.neg{color:var(--g-f)}
+.tname{font:italic 800 1.25rem var(--nf);text-transform:uppercase;margin-right:6px}
 .pn{display:flex;align-items:center;gap:9px;min-width:0}
 .av{flex:none;width:34px;height:34px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line);overflow:hidden;display:block}
 .av img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 12%}
 .pn>span:last-child{min-width:0}
 .sum{grid-column:1/-1;color:var(--muted);font-size:.8rem}
-.sum b{color:var(--fg)}
 .cm{color:var(--muted);font-size:.74rem;display:block;white-space:normal;max-width:46ch}
 .cm.rt{color:var(--gold)}
 .note{color:var(--muted);font-size:.8rem;line-height:1.6;border-top:1px solid var(--line);padding-top:10px}
@@ -75,7 +95,11 @@ tbody tr.row td:not(.rk):not(.net):not(.tm){color:var(--muted)}
   td.tm{font-size:1.1rem}
   td.net{font-size:1.5rem}
   .hide-m,thead th .zh{display:none}
+  .dg{padding:10px 10px 14px}
+  .dg td{padding:7px 8px}.dg thead th{padding:6px 8px}
   .dg td:not(:first-child){white-space:nowrap;font-size:.8rem}
+  .dg>div:last-child .av{display:none}
+  .dg td.n{min-width:8em}.pill{padding:2px 7px;font-size:.7rem}.mn i{width:44px}
   .rkw{gap:10px}
   td{padding:5px 4px}
   thead th{padding:7px 4px;font-size:1rem;letter-spacing:.02em}
@@ -116,7 +140,10 @@ const av=pid=>'<span class="av">'+(pid?'<img alt="" loading="lazy" src="'+CDN+'h
 const f1=v=>(v>=0?'+':'')+v.toFixed(1),f0=v=>v.toFixed(1);
 const cls=v=>v>=0?'pos':'neg';
 const d10=s=>s?String(s).slice(0,10):'';
-const ret=x=>{const out=x.missGames!=null,g=out?'（缺 '+x.missGames+' 場）':'';return x.returnDate?'<br><span class="cm rt">預計回 '+esc(String(x.returnDate).slice(0,10))+g+'</span>':(out?'<br><span class="cm rt">無回歸日，當整季缺陣'+g+'</span>':'')};
+const stc=st=>/^out/i.test(st)?'s-out':/^doubt/i.test(st)?'s-dbt':/^prob/i.test(st)?'s-p':'s-q';
+const retCell=x=>{const out=x.missGames!=null,g=out?'缺 '+x.missGames+' 場':'',t=x.date?' title="資料日期 '+esc(d10(x.date))+'"':'';
+ return x.returnDate?'<div class="rb"'+t+'><b'+(out&&x.missGames>=20?' class="far"':'')+'>'+esc(String(x.returnDate).slice(5,10))+(String(x.returnDate).slice(0,4)!==String(D.generatedAt||'').slice(0,4)?'<span style="font-weight:500;opacity:.7"> '+esc(String(x.returnDate).slice(0,4))+'</span>':'')+' 回歸</b>'+(g?'<small>'+g+'</small>':'')+'</div>'
+  :'<div class="rb"'+t+'><b class="far">整季缺陣</b><small>無回歸日'+(g?'・'+g:'')+'</small></div>'};
 function info(){
   const i=D.injuries||{};
   $('#stamp').innerHTML='<b>'+esc(D.dataCutoff)+'</b>'+esc(D.generatedAt.slice(11,16))+' 更新';
@@ -140,11 +167,16 @@ function rows(){
   return R;
 }
 function detail(o){
-  const t=o.t,v=o.v,back=new Set((t.restored||[]).map(x=>x.pid)),rot=v.rotation.map(r=>'<tr><td class="n"><div class="pn">'+av(r.pid)+'<span>'+esc(r.name)+(back.has(r.pid)?'<span class="cm">傷缺復出：最近 10 場沒出場，自己平均 ≥'+(D.returnMin||15)+' 分</span>':'')+'</span></div></td><td>'+r.min.toFixed(1)+'</td><td>'+(r.ovr==null?'—':Math.round(r.ovr)+(r.ovrSrc?'<span class="cm">'+esc(r.ovrSrc)+'</span>':''))+'</td></tr>').join('');
-  const inj=t.injured.length?t.injured.map(x=>'<tr><td class="n"><div class="pn">'+av(x.playerId)+'<span>'+esc(x.name)+''+(x.injury?'<span class="cm">'+esc(x.injury)+'</span>':'')+'</span></div></td><td class="n">'+esc(x.status)+'</td><td>'+esc(d10(x.date))+ret(x)+'</td></tr>').join(''):'<tr><td class="n" colspan="3">傷病名單沒有這隊的人</td></tr>';
-  return '<div class="dg"><div class="sum"><b>'+esc(t.name)+'</b>　ORtg '+f1(v.ortg)+'・DRtg '+f1(v.drtg)+'・Net '+f1(v.net)+(D.engineKind==='t'?'・對聯盟平均對手每場 ':'・對梯度對手每場 ')+f1(v.margin)+' 分　剩餘賽程 '+v.schedGames+' 場逐場計算'+(v.poolGames?'、'+v.poolGames+' 場以平均勝率補':'')+(view==='today'&&v.lineupStates>1?'　傷兵回歸讓陣容分 '+v.lineupStates+' 種狀態':'')+'</div>'
-   +'<div><h3>'+(view==='today'?'可用輪替':'全員輪替')+'（分鐘／OVR）</h3><table><tbody>'+rot+'</tbody></table></div>'
-   +'<div><h3>傷病名單（狀態／資料日期／預計回歸；Probable 照常上場）</h3><table><tbody>'+inj+'</tbody></table></div></div>';
+  const t=o.t,v=o.v,back=new Set((t.restored||[]).map(x=>x.pid)),
+  rot=v.rotation.map(r=>'<tr><td class="n"><div class="pn">'+av(r.pid)+'<span>'+esc(r.name)+(back.has(r.pid)?'<span class="cm">傷缺復出：最近 10 場沒出場，自己平均 ≥'+(D.returnMin||15)+' 分</span>':'')+'</span></div></td><td class="num"><div class="mn"><i><b style="width:'+Math.min(100,r.min/40*100).toFixed(0)+'%"></b></i>'+r.min.toFixed(1)+'</div></td><td class="num">'+(r.ovr==null?'—':Math.round(r.ovr)+(r.ovrSrc?'<span class="cm">'+esc(r.ovrSrc)+'</span>':''))+'</td></tr>').join(''),
+  inj=t.injured.length?t.injured.map(x=>'<tr><td class="n"><div class="pn">'+av(x.playerId)+'<span>'+esc(x.name)+(x.injury?'<span class="cm">'+esc(x.injury)+'</span>':'')+'</span></div></td><td class="num"><span class="pill '+stc(x.status)+'">'+esc(x.status)+'</span></td><td class="num">'+retCell(x)+'</td></tr>').join(''):'<tr><td class="n" colspan="3">傷病名單沒有這隊的人</td></tr>',
+  chip=(k,val,c)=>'<span class="chip">'+k+'<b'+(c?' class="'+c+'"':'')+'>'+val+'</b></span>';
+  return '<div class="dg"><div class="sum chips"><span class="tname">'+esc(t.name)+'</span>'+chip('ORtg',f1(v.ortg),cls(v.ortg))+chip('DRtg',f1(v.drtg),cls(-v.drtg))+chip('Net',f1(v.net),cls(v.net))
+   +chip(D.engineKind==='t'?'對聯盟平均對手每場':'對梯度對手每場',f1(v.margin)+' 分',cls(v.margin))
+   +chip('剩餘賽程',v.schedGames+' 場'+(v.poolGames?'<span style="font-weight:500;font-size:.75rem;color:var(--muted)">（'+v.poolGames+' 場以平均勝率補）</span>':''))
+   +(view==='today'&&v.lineupStates>1?chip('傷兵回歸陣容狀態',v.lineupStates+' 種'):'')+'</div>'
+   +'<div><h3>'+(view==='today'?'可用輪替':'全員輪替')+'<small>每場分鐘／OVR</small></h3><table><thead><tr><th class="l">球員</th><th>分鐘</th><th>OVR</th></tr></thead><tbody>'+rot+'</tbody></table></div>'
+   +'<div><h3>傷病名單<small>Probable 照常上場</small></h3><table><thead><tr><th class="l">球員</th><th>狀態</th><th>預計回歸</th></tr></thead><tbody>'+inj+'</tbody></table></div></div>';
 }
 function render(){
   const R=rows();
