@@ -23,7 +23,8 @@ def side_features(T):
 def season_onehot(rows):
     s = np.zeros((len(rows) * 2, len(SEASONS)))
     for i, r in enumerate(rows):
-        k = SEASONS.index(r['season']); s[2 * i, k] = 1; s[2 * i + 1, k] = 1
+        k = SEASONS.index(r['season']) if r['season'] in SEASONS else len(SEASONS) - 1   # 前向季（報告用）借用最近訓練季 2024-25 的截距
+        s[2 * i, k] = 1; s[2 * i + 1, k] = 1
     return s
 
 
@@ -53,7 +54,7 @@ def nll(p, k, n):
     return -(k * np.log(p) + (n - k) * np.log(1 - p))[m].sum()
 
 
-def fit_b1(rows_train, folds_train, use_min):
+def fit_b1(rows_train, folds_train, use_min, lam_fixed=None):
     """在 rows_train（folds 1-4）上選 λ（內部以 fold 輪流留出）並以全部 rows_train 重訓。回傳 (預測函式, 選到的 λ)。"""
     means = season_means(rows_train)
     T = tensors(rows_train, use_min, means); X, y = side_features(T)
@@ -78,12 +79,15 @@ def fit_b1(rows_train, folds_train, use_min):
                     lambda w, va: nll(1 / (1 + np.exp(-XL[va] @ w)), np.minimum(tov[va], poss[va]), poss[va]))
     lam_orb, _ = cv(lambda tr, lam: fit_logit(XL[tr], np.minimum(orb[tr], opp[tr]), opp[tr], lam), LAMS_LOG,
                     lambda w, va: nll(1 / (1 + np.exp(-XL[va] @ w)), np.minimum(orb[va], opp[va]), opp[va]))
+    if lam_fixed:   # 凍結的 λ（mde-noise.json）：跳過 CV 結果，直接用
+        lam_pts, lam_tov, lam_orb = lam_fixed['pts'], lam_fixed['tov'], lam_fixed['orb']
     w_pts = fit_ridge(X, rate, poss, lam_pts)
     w_tov = fit_logit(XL, np.minimum(tov, poss), poss, lam_tov)
     w_orb = fit_logit(XL, np.minimum(orb, opp), opp, lam_orb)
 
-    def predict(rows_eval):
-        Te = tensors(rows_eval, use_min, means); Xe, ye = side_features(Te); Se = season_onehot(rows_eval)
+    def predict(rows_eval, extra_means=None):
+        mm = {**means, **(extra_means or {})}
+        Te = tensors(rows_eval, use_min, mm, seasons=sorted({r['season'] for r in rows_eval})); Xe, ye = side_features(Te); Se = season_onehot(rows_eval)
         XLe = np.hstack([Xe, Se])
         sig = lambda z: 1 / (1 + np.exp(-z))
         return Xe @ w_pts, sig(XLe @ w_tov), sig(XLe @ w_orb), ye   # 全部 [2N]：每回合得分偏離、失誤率、進攻籃板率

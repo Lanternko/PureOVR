@@ -37,9 +37,9 @@ def season_means(rows):
     return out
 
 
-def tensors(rows, use_min, means):
+def tensors(rows, use_min, means, seasons=None):
     """回傳 attr[N,10,2F], pos[N,10], side[N,10], y[N,2,6]（pts,poss,tov,orb,rebOpp,mean）。"""
-    P = {s: load_players(s, use_min) for s in SEASONS}
+    P = {s: load_players(s, use_min) for s in (seasons or SEASONS)}
     F = len(FEATS) if use_min else len(ATTRS); N = len(rows)
     attr = np.zeros((N, 10, 2 * F), np.float32); pos = np.zeros((N, 10), np.int64)
     side = np.tile(np.r_[np.zeros(5), np.ones(5)].astype(np.int64), (N, 1))
@@ -86,7 +86,7 @@ def predict(net, T, dev, bs=4096):
     return torch.cat(outs)
 
 
-def run(arm, lr, wd, seed, Tt, Tv, sigma2, dev, max_epochs=60, patience=5, bs=1024):
+def run(arm, lr, wd, seed, Tt, Tv, sigma2, dev, max_epochs=60, patience=5, bs=1024, return_state=False):
     """訓練一次：folds 1-4 訓練、fold 0 驗證、早停（看驗證總損失），回傳 dict 與最佳 epoch 的驗證預測。"""
     torch.manual_seed(seed); np.random.seed(seed)
     F = Tt[0].shape[-1] // 2
@@ -114,6 +114,7 @@ def run(arm, lr, wd, seed, Tt, Tv, sigma2, dev, max_epochs=60, patience=5, bs=10
                 break
     net.load_state_dict(best_state)
     pred = predict(net, Tv, dev)
-    return {'arm': arm, 'lr': lr, 'wd': wd, 'seed': seed, 'valLoss': round(best, 5), 'bestEpoch': best_ep, 'epochs': len(hist),
+    info = {'arm': arm, 'lr': lr, 'wd': wd, 'seed': seed, 'valLoss': round(best, 5), 'bestEpoch': best_ep, 'epochs': len(hist),
             'parts(pts,tov,orb)': [round(v, 5) for v in best_parts], 'params': sum(p.numel() for p in net.parameters()),
-            'seconds': round(time.time() - t0, 1), 'hist': hist}, pred.numpy()
+            'seconds': round(time.time() - t0, 1), 'hist': hist}
+    return (info, pred.numpy(), {k: v.cpu() for k, v in best_state.items()}) if return_state else (info, pred.numpy())
