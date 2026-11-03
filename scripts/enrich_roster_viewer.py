@@ -459,6 +459,27 @@ function toggleG5(b) {
   document.querySelector('.card .g5').hidden = !G5_OPEN;
   if (typeof fitTable === 'function') fitTable();
 }
+// 整條都能點（使用者 2026-11-04）：桌機卡片「▼ 近 N 場比賽」那一整排（含中間空白與右邊「N 場 · 分鐘」）點了都展開；
+// 手機的 ▼ 是角落小按鈕，改成點兩組四格也展開。排除連結、按鈕、表格
+function g5Hit(e) {
+  const c = e.target.closest && e.target.closest('.card');
+  if (!c || e.target.closest('a,button,.g5')) return null;
+  const b = c.querySelector('.g5t');
+  if (!b || b.getAttribute('aria-hidden')) return null;
+  // 手機（使用者 2026-11-04）：得分／籃板／助攻／正負值四格與影響力四格也能點
+  if (innerWidth < 641) return e.target.closest('.rmain,.strong') ? b : null;
+  if (e.target.closest('.strong')) return null;
+  const r = b.getBoundingClientRect(), cr = c.getBoundingClientRect(), h = c.querySelector('.real-h');
+  const hr = h && h.getBoundingClientRect();
+  const inBand = e.clientY >= r.top && e.clientY <= (G5_OPEN ? r.bottom : cr.bottom) && e.clientX >= cr.left && e.clientX <= cr.right;
+  const inH = hr && e.clientX >= hr.left && e.clientX <= hr.right && e.clientY >= hr.top && e.clientY <= hr.bottom;
+  return inBand || inH ? b : null;
+}
+document.addEventListener('click', e => { const b = g5Hit(e); if (b) toggleG5(b); });
+document.addEventListener('mousemove', e => {
+  const c = e.target.closest && e.target.closest('.card');
+  if (c) c.style.cursor = g5Hit(e) ? 'pointer' : '';
+});
 // 貢獻值（使用者 2026-10-30 選 A）：box score＋hustle＋防守對位換算的每 36 分鐘淨影響（M2，R-066；權重擬合 2025-26 RAPM），和 2025-26 整季比；
 // OVR 傾向＝把差值當成 pred 的變動，照正式卡（card 0.2.7c）的錨點與分鐘權重 W(MPG) 換算（只顯示，不改 OVR）
 // 數字寫絕對值，顏色看和自己平均的差（使用者 2026-10-30：同樣 +3，替補是進步、SGA 是退步）：
@@ -475,14 +496,17 @@ function gcCell(v, b, cut, fb, tip) {
   if (v == null) return '<td>—</td>';
   return `<td${tip ? ` title="${tip}"` : fb ? ' title="這場抓不到防守對位資料，只用 box score 算"' : ''}><span class="${b == null ? '' : gcCls(v - b, cut)}">${gcS(v)}</span></td>`;
 }
+// 手寫的個別球員註解（使用者 2026-11-04）：接在 N 場平均評分／上季後面。數字會隨賽程變，改前先對照最新 g5
+const GC_NOTE = {1630162: '*因為本季命中率下降＋失誤上升，所以即使得分很多，OVR仍不變'}; // Anthony Edwards
+const gcExtra = r => REAL_VIEW === 'g5' && GC_NOTE[r.id] ? `　<span class="gcx">${GC_NOTE[r.id]}</span>` : '';
 function gcNote(r, p, n) {
   const c = r.gc;
   if (c.r == null) return '';
   // 說明只寫兩個數字（使用者 2026-10-30：太長）；五色怎麼切、換算 OVR 放 tooltip
-  if (c.b == null) return `<div class="gcn" title="${GC_DEF}">${n} 場平均評分 <b>${gcS(c.r)}</b>　上季 —</div>`;
+  if (c.b == null) return `<div class="gcn" title="${GC_DEF}">${n} 場平均評分 <b>${gcS(c.r)}</b>　上季 —${gcExtra(r)}</div>`;
   const d = c.r - c.b, cls = gcCls(d, GC_CUT5);
   return `<div class="gcn" title="${GC_DEF}。顏色＝和自己 2025-26 平均比，照所有人的起伏五等分">` +
-    `${n} 場平均評分 <b class="${cls}">${gcS(c.r)}</b>　上季 <b>${gcS(c.b)}</b></div>`;
+    `${n} 場平均評分 <b class="${cls}">${gcS(c.r)}</b>　上季 <b>${gcS(c.b)}</b>${gcExtra(r)}</div>`;
 }
 // 近 5 場逐項上色（使用者 2026-11-03）：五色，每項照它在 2025-26 單場分布的百分位（g[20]，Python item_cls；難拿的項目如阻攻 1 次就算高），中間 50% 灰。分項在 g[19]，順序同 Python ITEM_ORDER
 const ITEM_C5 = {'-2': 'c5f', '-1': 'c5d', 0: 'c5c', 1: 'c5b', 2: 'c5a'};
