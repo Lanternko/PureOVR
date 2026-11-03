@@ -1382,6 +1382,9 @@ if(PR){
   /* 排行檢視下點「球隊」：先黃色高亮並展開選隊，選完才跳到球隊名單（使用者 2026-11-03） */
   const tg=$('#teamGrid');
   if(tg)tg.addEventListener('click',e=>{if(view==='rank'&&e.target.closest('button[data-t]')){sy.players=0;go('players',true);}});
+  /* 已選過球隊：從排行／每日對戰點「球隊」先回到上次的球隊名單，再點一次才展開選隊切換（使用者 2026-11-03） */
+  const ts=tp&&tp.querySelector('summary');
+  if(ts)ts.addEventListener('click',e=>{if(view!=='players'&&tp.classList.contains('on')){e.preventDefault();tp.open=false;go('players',true);}});
   addEventListener('popstate',()=>{const h=parseHash();go(h.rank?'rank':'players',false,h.rank?h.abbr:undefined);});
   document.body.dataset.view=view;if(view==='rank')document.title='戰力排行 · PureOVR';
   const h0=parseHash();if(h0.rank){PR.open(h0.abbr);PR.ensure();}else(window.requestIdleCallback||setTimeout)(()=>PR.ensure());
