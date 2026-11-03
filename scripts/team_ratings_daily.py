@@ -50,6 +50,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 E208 = ROOT / 'reports/E208-team-rating'
 sys.path.insert(0, str(E208))
+sys.path.insert(0, str(Path(__file__).resolve().parent))      # -I 不含腳本目錄
 from injury_desc import injury_desc  # noqa: E402
 from minutes_rules import norm  # noqa: E402  (E-208 (c) 的正規化：前 10 人、240 分鐘、上限 48)
 
@@ -144,6 +145,19 @@ def norm_table(items: list, total: float = 240.0) -> list:
         if len(capped) == n:
             break
     return [[items[i][0], round(cap if i in capped else w[i] * scale, 6)] for i in range(n)]
+
+
+def league_rtg(path: Path, default: float = 114.0) -> float:
+    """本季至今聯盟平均每百回合得分（官方 OFFRTG 的基準）；sim 的 ortg／drtg 已去中心，顯示時加回這個。讀不到回預設值。"""
+    try:
+        rs = json.loads(path.read_text(encoding='utf-8'))['data']['resultSets'][0]
+        h = rs['headers']; ix = {k: h.index(k) for k in ('PTS', 'FGA', 'FTA', 'OREB', 'TOV')}
+        pts = pos = 0.0
+        for r in rs['rowSet']:
+            pts += r[ix['PTS']]; pos += r[ix['FGA']] + 0.44 * r[ix['FTA']] - r[ix['OREB']] + r[ix['TOV']]
+        return round(pts / pos * 100, 1) if pos > 500 else default
+    except (OSError, ValueError, KeyError, IndexError, TypeError):
+        return default
 
 
 def own_avg(log) -> float | None:
@@ -770,8 +784,9 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
         rec['restored'] = [{'pid': p, 'name': pname.get(p, str(p)), 'min': c_min[p]} for p in sorted(restored[tid]) if p in c_min]
         rec['nOut'] = len(out_pids[tid])
         out_teams[tid] = rec
+    lg_rtg = league_rtg(ROOT / 'data/season-source-2026-27/team-games.json')
     doc = {'generatedAt': dt.datetime.now().astimezone().isoformat(timespec='seconds'), 'season': SEASON, 'version': meta.get('version'),
-           'dataCutoff': meta.get('dataCutoff'), 'engine': 'Transformer E-227 R2-stats' if used == 't' else 'sim 0.1.4', 'engineKind': used,
+           'dataCutoff': meta.get('dataCutoff'), 'lgOrtg': lg_rtg, 'lgDrtg': lg_rtg, 'engine': 'Transformer E-227 R2-stats' if used == 't' else 'sim 0.1.4', 'engineKind': used,
            'opponent': ({'kind': 'league-pool', 'teams': 29, 'drawsPerTeam': T_DRAWS_PER_OPP, 'avgPoss': round(sim['avgPoss'], 2), 'features': sim['info']} if used == 't' else
                         {'kind': 'gradient-B5', 'teams': 5, 'gamesPerTeam': seeds // 5, 'ladderCard': ladder.get('card'), 'ladderGames': ladder.get('games'),
                          'ladder': [round(x, 2) for x in ladder['ladder']], 'mins': ladder['mins'], 'excluded': sim.get('excluded', [])}),

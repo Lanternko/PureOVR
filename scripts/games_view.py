@@ -16,12 +16,12 @@ STYLE = """@import url("https://fonts.googleapis.com/css2?family=Barlow+Condense
 :host{--nf:"Barlow Condensed","Arial Narrow",Impact,sans-serif;--blue:#4a90e2}
 :host{display:block}
 .gwroot{color:var(--fg);font-family:var(--f-body);font-size:14px}
-.gww{max-width:1360px;margin:0 auto;padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:12px}
+.gww{max-width:1360px;margin:0 auto;padding-block:0 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:12px}
 @media (min-width:641px){.gww{max-width:min(1360px,calc(var(--tw,1328px) + 32px))}}
 .hd{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:3px solid var(--fg);padding-bottom:10px}
 h1{font:italic 800 4.2rem/.85 var(--nf);text-transform:uppercase;margin:0;letter-spacing:-.01em}
 h1 span{display:block;font:600 1rem var(--f-body);font-style:normal;letter-spacing:.3em;color:var(--muted);margin-top:8px;text-transform:none}
-.dbar{display:flex;align-items:center;gap:6px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:4px 0}
+.dbar{display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line);padding:0 0 4px}  /* 日曆貼齊眉頭：眉頭自己有底線，這裡不再加頂線／上邊距 */
 .strip{position:relative;flex:1;min-width:0;display:flex;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
 .strip::-webkit-scrollbar{display:none}
 .strip::before,.strip::after{content:'';flex:0 0 calc(300% / 7)}  /* 頭尾各留 3 格空位：第一天／最後一天也能置中 */
@@ -39,29 +39,33 @@ h1 span{display:block;font:600 1rem var(--f-body);font-style:normal;letter-spaci
 .dx button#latest{background:var(--gold);color:var(--gold-ink);border-color:var(--gold)}
 .dx button#latest:disabled{background:var(--panel);color:var(--muted);border-color:var(--line);opacity:.5;cursor:default}
 button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
-.gl{display:flex;flex-direction:column;gap:10px}
+.gl{display:flex;flex-direction:column;gap:8px}
 .gm{--c1:124,133,145;--c2:124,133,145;position:relative;min-width:0;overflow:hidden;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:#141a20;
   box-shadow:0 8px 24px rgba(0,0,0,.32)}
 .gm.open{border-color:rgba(255,255,255,.28)}
-.gh{background:linear-gradient(103deg,rgba(var(--c1),.9) 0%,rgba(var(--c1),.55) 22%,rgba(var(--c1),.2) 40%,rgba(var(--c1),0) 53%,rgba(var(--c2),0) 53%,rgba(var(--c2),.2) 62%,rgba(var(--c2),.55) 78%,rgba(var(--c2),.9) 100%);display:grid;grid-template-columns:minmax(0,1fr) auto minmax(3rem,auto) auto minmax(0,1fr);align-items:center;gap:0 12px;padding:20px 20px 8px;cursor:pointer;user-select:none}
+.gh{background:radial-gradient(90% 260% at 0% 50%,rgba(var(--c1),.34) 0%,rgba(var(--c1),.14) 30%,rgba(var(--c1),0) 58%),radial-gradient(90% 260% at 100% 50%,rgba(var(--c2),.34) 0%,rgba(var(--c2),.14) 30%,rgba(var(--c2),0) 58%),linear-gradient(180deg,rgba(255,255,255,.11) 0%,rgba(255,255,255,.03) 48%,rgba(255,255,255,.05) 100%),#0a0e14;box-shadow:inset 0 1px 0 rgba(255,255,255,.2);display:grid;grid-template-columns:minmax(0,1fr) auto minmax(3rem,auto) auto minmax(0,1fr);align-items:center;gap:0 12px;padding:12px 20px;cursor:pointer;user-select:none}
 .gh:hover{box-shadow:inset 0 0 0 999px rgba(255,255,255,.06)}
-.tm{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0;text-align:center}
+.tm{display:flex;align-items:center;justify-content:center;gap:10px;min-width:0}  /* 簡稱＋戰績擠在 icon 與比分之間：客隊 icon｜文字｜比分，主隊 比分｜文字｜icon */
+.tm.home{flex-direction:row-reverse}
+.tm .tx{display:flex;flex-direction:column;gap:1px;min-width:0}
+.tm.away .tx{text-align:left}
+.tm.home .tx{text-align:right}
 .tm .lg{width:72px;height:72px;object-fit:contain}
-.tm .nk{font:700 1.6rem/1.1 var(--f-body);letter-spacing:.04em;text-indent:.04em;color:var(--fg)}
-.tm .rc{font:500 1.05rem/1.2 var(--f-body);color:var(--muted);font-variant-numeric:tabular-nums}
-.sc{font:700 4.6rem/1 var(--nf);font-variant-numeric:tabular-nums;color:var(--fg);width:1.6em;text-align:right}  /* 固定三位數寬：兩側等寬，中間的三角才會在兩個比分正中；客隊靠右、主隊靠左，數字都貼向中間 */
+.tm .nk{font:700 1.7rem/1.1 var(--f-body);letter-spacing:.04em;text-indent:.04em;color:var(--fg)}
+.tm .rc{font:500 1.15rem/1.2 var(--f-body);color:#d3dae2;text-shadow:0 1px 2px rgba(0,0,0,.45);font-variant-numeric:tabular-nums}
+.sc{font:700 3.6rem/1 var(--nf);font-variant-numeric:tabular-nums;color:var(--fg);width:1.6em;text-align:right}  /* 固定三位數寬：兩側等寬，中間的三角才會在兩個比分正中；客隊靠右、主隊靠左，數字都貼向中間 */
 .sc.h{text-align:left}
 .sc.lose{color:#7c858f}
 .mid{text-align:center;font:700 1.2rem/1.25 var(--f-body);letter-spacing:.03em;text-indent:.03em;white-space:nowrap}
-.mid .tri{display:inline-block;vertical-align:middle;width:0;height:0;border:11px solid transparent}
-.mid .tri.l{border-left:0;border-right:17px solid var(--fg)}
-.mid .tri.r{border-right:0;border-left:17px solid var(--fg)}
+.mid .tri{display:inline-block;vertical-align:middle;width:0;height:0;border:8px solid transparent}
+.mid .tri.l{border-left:0;border-right:12px solid var(--fg)}
+.mid .tri.r{border-right:0;border-left:12px solid var(--fg)}
 .mid{position:relative}
 .mid .ot{font-weight:700;color:var(--fg)}
-.mid .tri+.ot{position:absolute;left:50%;top:calc(50% + 14px);transform:translateX(-50%);font-size:1rem;line-height:1;letter-spacing:.04em}  /* 延長賽標記：三角形正下方，不佔排版高度，三角才會維持在兩個比分的垂直正中 */
+.mid .tri+.ot{position:absolute;left:50%;top:calc(50% + 11px);transform:translateX(-50%);font-size:.85rem;line-height:1;letter-spacing:.04em}  /* 延長賽標記：三角形正下方，不佔排版高度，三角才會維持在兩個比分的垂直正中 */
 .mid .tbd{color:var(--fg);font-weight:700;font-size:1.5rem;line-height:1.1}
 .mid .tbd+.ot{color:var(--muted);font-weight:500;font-size:.78rem}
-.bh{text-align:center;color:var(--muted);font:500 .74rem var(--f-body);padding:0 0 10px;letter-spacing:.04em}
+.bh{text-align:center;color:var(--muted);font:500 .74rem var(--f-body);padding:0 0 6px;letter-spacing:.04em}
 .bh span{position:relative;display:inline-block}
 .bh i{position:absolute;left:100%;margin-left:.5em;font-style:normal}  /* 箭頭不佔排版寬度，文字本身才會至中 */
 .bxw{border-top:1px solid var(--line);background:#10151a;padding:6px 20px 16px;display:flex;flex-direction:column;gap:14px;min-width:0}
@@ -99,7 +103,8 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
   .dc span{font-size:.8rem}.dc b{font-size:1.15rem}
   .dx{flex:1 1 100%;border-left:0;padding:4px 0 0;justify-content:flex-end}
   .gh{grid-template-columns:minmax(0,1fr) auto minmax(1.9rem,auto) auto minmax(0,1fr);gap:0 2px;padding:14px 8px 6px}
-  .tm .lg{width:46px;height:46px}
+  .tm{gap:5px}
+  .tm .lg{width:36px;height:36px}
   .tm .nk{font-size:1.05rem}.tm .rc{font-size:.8rem}
   .sc{font-size:3rem}
   .mid .tri{border-width:8px}.mid .tri.l{border-right-width:12px}.mid .tri.r{border-left-width:12px}
@@ -168,7 +173,7 @@ function tipHtml(g){
 }
 function card(g){
   const pc=pair(g.away,g.home),fin=g.status==='final',w=fin?(g.winner===g.home?'home':'away'):'',op=openId===g.id;
-  const tm=k=>'<div class="tm">'+logo(g[k])+'<div class="nk">'+esc(g[k])+'</div><div class="rc">'+esc(g.rec?g.rec[k]:'')+'</div></div>';
+  const tm=k=>'<div class="tm '+k+'">'+logo(g[k])+'<div class="tx"><div class="nk">'+esc(g[k])+'</div><div class="rc">'+esc(g.rec?g.rec[k]:'')+'</div></div></div>';
   const sc=k=>'<div class="sc'+(k==='home'?' h':'')+(fin&&w!==k?' lose':'')+'">'+(fin?g.score[k]:'')+'</div>';
   const mid=fin?'<div class="mid"><span class="tri '+(w==='away'?'l':'r')+'"></span>'+(g.ot?'<div class="ot">'+(g.ot>1?g.ot:'')+'OT</div>':'')+'</div>'
     :'<div class="mid">'+tipHtml(g)+'</div>';

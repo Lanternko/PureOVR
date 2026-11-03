@@ -121,8 +121,8 @@ BODY = """<div class="rkroot"><div class="msg" id="msg">載入中…</div>
 <div class="vctl"><div class="seg" id="viewSeg" role="group" aria-label="名單版本"><button type="button" data-v="today" aria-pressed="true">可用</button><button type="button" data-v="c" aria-pressed="false">全員</button></div>
 <span class="hint" id="viewHint"></span></div>
 <div class="tbox"><table id="tbl"><thead><tr>
-<th data-k="rank" class="rk">#</th><th data-k="name" class="l">球隊</th><th data-k="net" aria-sort="descending">Net<span class="zh">淨效率</span></th>
-<th data-k="ortg" class="hide-m">ORtg<span class="zh">進攻</span></th><th data-k="drtg" class="hide-m">DRtg<span class="zh">防守</span></th>
+<th data-k="rank" class="rk">#</th><th data-k="name" class="l">球隊</th><th data-k="net" aria-sort="descending">NetRtg<span class="zh">淨效率</span></th>
+<th data-k="ortg" class="hide-m">OffRtg<span class="zh">進攻</span></th><th data-k="drtg" class="hide-m">DefRtg<span class="zh">防守</span></th>
 <th data-k="wpct">戰績<span class="zh">W-L</span></th><th data-k="pred">預測勝場<span class="zh">全季</span></th><th data-k="nOut">傷兵<span class="zh">不可用</span></th>
 </tr></thead><tbody id="tb"></tbody></table></div>
 <div class="note" id="note"></div>
@@ -138,6 +138,8 @@ const CDN='https://cdn.nba.com/';
 const logo=id=>id?'<img class="lg" alt="" loading="lazy" src="'+CDN+'logos/nba/'+id+'/global/D/logo.svg" onerror="this.style.visibility=\'hidden\'">':'<span class="lg"></span>';
 const av=pid=>'<span class="av">'+(pid?'<img alt="" loading="lazy" src="'+CDN+'headshots/nba/latest/260x190/'+pid+'.png" onerror="this.remove()">':'')+'</span>';
 const f1=v=>(v>=0?'+':'')+v.toFixed(1),f0=v=>v.toFixed(1);
+const TC={ATL:'#E5384B',BOS:'#2EA66B',BKN:'#E6E6E6',CHA:'#1FA3CC',CHI:'#E3294F',CLE:'#C8305A',DAL:'#4A90D9',DEN:'#FEC524',DET:'#E5324B',GSW:'#FFC72C',HOU:'#E5324B',IND:'#FDBB30',LAC:'#E8365A',LAL:'#FDB927',MEM:'#7C9FE0',MIA:'#E5324B',MIL:'#3BAA6E',MIN:'#4F9FE0',NOP:'#D7B26A',NYK:'#F58426',OKC:'#3AA3E0',ORL:'#3A8FDC',PHI:'#3B8BDB',PHX:'#F27A28',POR:'#E5324B',SAC:'#9A7BE0',SAS:'#C4CED4',TOR:'#E5324B',UTA:'#A78BFA',WAS:'#E5324B'};     // 球隊主題色（深底可讀的亮度版）
+const absO=v=>D.lgOrtg==null?f1(v.ortg):f0(v.ortg+D.lgOrtg),absD=v=>D.lgDrtg==null?f1(v.drtg):f0(v.drtg+D.lgDrtg);     // 官方寫法：每百回合得／失分；舊資料沒有聯盟平均時退回「相對聯盟」
 const cls=v=>v>=0?'pos':'neg';
 const d10=s=>s?String(s).slice(0,10):'';
 const stc=st=>/^out/i.test(st)?'s-out':/^doubt/i.test(st)?'s-dbt':/^prob/i.test(st)?'s-p':'s-q';
@@ -154,7 +156,7 @@ function info(){
    +(i.stale&&(!i.fetchedAt||Date.now()-Date.parse(i.fetchedAt)>3*864e5)?'<span class="warn">傷病名單已超過三天沒更新。</span>':'')
    +(D.schedule&&D.schedule.remainingGames?'':'<span class="warn">抓不到賽程，剩餘場次以對全聯盟平均勝率計。</span>');
   $('#viewHint').textContent=view==='today'?'排除傷兵':'全員健康的版本';
-  $('#note').innerHTML=(isT?'評分模型 '+esc(D.engine)+'（2025-26 整季與本季已完賽場次回測都比舊模擬引擎準）':'模擬引擎 '+esc(D.engine))+'；ORtg／DRtg／Net 已扣聯盟平均。'
+  $('#note').innerHTML=(isT?'評分模型 '+esc(D.engine)+'（2025-26 整季與本季已完賽場次回測都比舊模擬引擎準）':'模擬引擎 '+esc(D.engine))+'；OffRtg／DefRtg 為每百回合得分／失分（DefRtg 越低防守越好），NetRtg＝OffRtg−DefRtg。'
    +'<br>分鐘規則：每位現役球員取他自己最近 '+D.lastN+' 場「有出場」的平均分鐘（沒上場的比賽不算，不管當時在哪隊）；候選人是該隊最近 '+D.lastN+' 場出場過的人，加上最近沒出場但自己平均 ≥'+(D.returnMin||15)+' 分鐘的人（視為傷缺復出）；照教練實際用人：每人的起點分鐘就是上述平均分鐘，再乘上「焦灼比賽乘數」（依該隊球員的分鐘名次分 11 槽，乘數＝2024-25、2025-26 兩季焦灼場〔分差 ≤5 或延長賽〕的平均分鐘 ÷ 全部場的平均分鐘，約 1.02–1.11，由資料直接量），再等比放大到合計 240 分鐘；單人上限 36（超出的分鐘依比例分給沒到上限的人，反覆到收斂），不設下限；可上場人數太少（不到 7 人）時上限放寬到 40。名次只用來決定乘數，不直接決定分鐘。「可用」先拿掉 Out／Doubtful／Questionable／Day-To-Day（含停賽），只留 Probable 與沒上名單的人，不做機率加權；「傷兵」欄＝被拿掉的人數。'
    +((D.baseProfiles||[]).length?'<br>上季整季缺陣、今年還沒有排名的人（'+D.baseProfiles.map(x=>esc(x.name)).join('、')+'）：模擬用他最近一張賽季卡的能力值（不做年齡調整），OVR 欄標「24-25 卡」等來源；沒有任何歷史卡的新人仍當聯盟平均球員。':'')
    +'<br>預測勝場＝目前勝場＋剩餘賽程逐場勝率（主場 +'+D.H+' 分、σ='+D.sigma+'）。「可用」版依 ESPN 預計回歸日逐場換陣容：比賽日期早於回歸日就缺陣，之後回來；'
@@ -171,8 +173,7 @@ function detail(o){
   rot=v.rotation.map(r=>'<tr><td class="n"><div class="pn">'+av(r.pid)+'<span>'+esc(r.name)+(back.has(r.pid)?'<span class="cm">傷缺復出：最近 10 場沒出場，自己平均 ≥'+(D.returnMin||15)+' 分</span>':'')+'</span></div></td><td class="num"><div class="mn"><i><b style="width:'+Math.min(100,r.min/40*100).toFixed(0)+'%"></b></i>'+r.min.toFixed(1)+'</div></td><td class="num">'+(r.ovr==null?'—':Math.round(r.ovr)+(r.ovrSrc?'<span class="cm">'+esc(r.ovrSrc)+'</span>':''))+'</td></tr>').join(''),
   inj=t.injured.length?t.injured.map(x=>'<tr><td class="n"><div class="pn">'+av(x.playerId)+'<span>'+esc(x.name)+(x.injury?'<span class="cm">'+esc(x.injury)+'</span>':'')+'</span></div></td><td class="num"><span class="pill '+stc(x.status)+'">'+esc(x.status)+'</span></td><td class="num">'+retCell(x)+'</td></tr>').join(''):'<tr><td class="n" colspan="3">傷病名單沒有這隊的人</td></tr>',
   chip=(k,val,c)=>'<span class="chip">'+k+'<b'+(c?' class="'+c+'"':'')+'>'+val+'</b></span>';
-  return '<div class="dg"><div class="sum chips"><span class="tname">'+esc(t.name)+'</span>'+chip('ORtg',f1(v.ortg),cls(v.ortg))+chip('DRtg',f1(v.drtg),cls(-v.drtg))+chip('Net',f1(v.net),cls(v.net))
-   +chip(D.engineKind==='t'?'對聯盟平均對手每場':'對梯度對手每場',f1(v.margin)+' 分',cls(v.margin))
+  return '<div class="dg"><div class="sum chips"><span class="tname"'+(TC[t.abbr]?' style="color:'+TC[t.abbr]+'"':'')+'>'+esc(t.name)+'</span>'+chip('OffRtg',absO(v),cls(v.ortg))+chip('DefRtg',absD(v),cls(-v.drtg))+chip('NetRtg',f1(v.net),cls(v.net))
    +chip('剩餘賽程',v.schedGames+' 場'+(v.poolGames?'<span style="font-weight:500;font-size:.75rem;color:var(--muted)">（'+v.poolGames+' 場以平均勝率補）</span>':''))
    +(view==='today'&&v.lineupStates>1?chip('傷兵回歸陣容狀態',v.lineupStates+' 種'):'')+'</div>'
    +'<div><h3>'+(view==='today'?'可用輪替':'全員輪替')+'<small>每場分鐘／OVR</small></h3><table><thead><tr><th class="l">球員</th><th>分鐘</th><th>OVR</th></tr></thead><tbody>'+rot+'</tbody></table></div>'
@@ -183,7 +184,7 @@ function render(){
   $('#tb').innerHTML=R.map(o=>{const t=o.t,v=o.v;
     return '<tr class="row'+(open===t.abbr?' open':'')+'" data-a="'+t.abbr+'" tabindex="0"><td class="rk">'+o.rank+'</td><td class="tm l"><div class="tmw">'+logo(t.id)+'<div class="tt">'+esc(t.abbr)+'<small>'+esc(t.name)+'</small></div></div></td>'
      +'<td class="net '+cls(v.net)+'">'+f1(v.net)+'</td>'
-     +'<td class="hide-m">'+f1(v.ortg)+'</td><td class="hide-m">'+f1(v.drtg)+'</td><td>'+t.W+'-'+t.L+'</td><td>'+f0(v.predWins)+'</td><td class="'+(t.nOut?'inj':'')+'">'+(t.nOut||'')+'</td></tr>'
+     +'<td class="hide-m">'+absO(v)+'</td><td class="hide-m">'+absD(v)+'</td><td>'+t.W+'-'+t.L+'</td><td>'+f0(v.predWins)+'</td><td class="'+(t.nOut?'inj':'')+'">'+(t.nOut||'')+'</td></tr>'
      +(open===t.abbr?'<tr class="det"><td colspan="8">'+detail(o)+'</td></tr>':'');}).join('');
   root.querySelectorAll('#viewSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===view)));
   let si=-1;
