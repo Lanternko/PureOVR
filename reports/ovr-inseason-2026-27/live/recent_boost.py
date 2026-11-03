@@ -1,6 +1,6 @@
-"""本季近期加成開關（E-221，R-147；做法同 win_len.py：執行期補丁，不改原檔，預設關閉＝線上行為位元不變）。
+"""本季近期加成開關（E-221，R-147；做法同 win_len.py：執行期補丁，不改原檔，RECENT_BOOST=0 或 RB_B=0 時線上行為與舊版位元相同）。
 
-RECENT_BOOST（環境變數，預設 0＝關閉）：1＝開。RB_B（b，加成幅度）、RB_H（h，指數衰減長度，單位＝球隊場次）。
+RECENT_BOOST（環境變數，預設 1＝開，b=3、h=20；2026-11-03 使用者裁定 R-150 上線；RECENT_BOOST=0 或 RB_B=0 回到舊版）：1＝開。RB_B（b，加成幅度）、RB_H（h，指數衰減長度，單位＝球隊場次）。
 只改本季逐場權重，過去季不動：本季第 i 場（league 場次序號 gi）在聯盟已賽 g 場時的權重 u_i 改成
     u'_i = u_i × (1 + b_eff · exp(−(g − 1 − gi)·(SLOTS/G) / h))
     b_eff = b × clip((G − g)/(0.2·G), 0, 1)          # 最後 20% 季線性淡出，g＝G 時 b_eff＝0.0（季末＝單季卡）
@@ -20,9 +20,9 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-ON = os.environ.get('RECENT_BOOST', '0') == '1'
-B = float(os.environ.get('RB_B', '0'))
-H = float(os.environ.get('RB_H', '10'))
+ON = os.environ.get('RECENT_BOOST', '1') == '1'
+B = float(os.environ.get('RB_B', '3'))
+H = float(os.environ.get('RB_H', '20'))
 G_TOTAL = int(os.environ.get('RB_G', '1230'))
 SLOTS = 82
 _STATE = {'installed': False}
