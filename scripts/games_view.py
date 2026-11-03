@@ -56,7 +56,9 @@ button:focus-visible,select:focus-visible,.gh:focus-visible,.dc:focus-visible{ou
 .mid .tri{display:inline-block;vertical-align:middle;width:0;height:0;border:11px solid transparent}
 .mid .tri.l{border-left:0;border-right:17px solid var(--fg)}
 .mid .tri.r{border-right:0;border-left:17px solid var(--fg)}
-.mid .ot{font-weight:700}
+.mid{position:relative}
+.mid .ot{font-weight:700;color:var(--fg)}
+.mid .tri+.ot{position:absolute;left:50%;top:calc(50% + 14px);transform:translateX(-50%);font-size:1rem;line-height:1;letter-spacing:.04em}  /* 延長賽標記：三角形正下方，不佔排版高度，三角才會維持在兩個比分的垂直正中 */
 .mid .tbd{color:var(--fg);font-weight:700;font-size:1.5rem;line-height:1.1}
 .mid .tbd+.ot{color:var(--muted);font-weight:500;font-size:.78rem}
 .bh{text-align:center;color:var(--muted);font:500 .74rem var(--f-body);padding:0 0 10px;letter-spacing:.04em}
@@ -101,6 +103,7 @@ tr.pct td{color:var(--muted);font-size:.78rem;padding-top:0}
   .tm .nk{font-size:1.05rem}.tm .rc{font-size:.8rem}
   .sc{font-size:3rem}
   .mid .tri{border-width:8px}.mid .tri.l{border-right-width:12px}.mid .tri.r{border-left-width:12px}
+  .mid .tri+.ot{top:calc(50% + 11px);font-size:.8rem}
   .mid{font-size:.85rem}
   .bxw{padding:4px 10px 12px}
   th.l{width:92px}.tbox{scroll-padding-left:92px}table{min-width:666px}
@@ -167,10 +170,10 @@ function card(g){
   const pc=pair(g.away,g.home),fin=g.status==='final',w=fin?(g.winner===g.home?'home':'away'):'',op=openId===g.id;
   const tm=k=>'<div class="tm">'+logo(g[k])+'<div class="nk">'+esc(g[k])+'</div><div class="rc">'+esc(g.rec?g.rec[k]:'')+'</div></div>';
   const sc=k=>'<div class="sc'+(k==='home'?' h':'')+(fin&&w!==k?' lose':'')+'">'+(fin?g.score[k]:'')+'</div>';
-  const mid=fin?'<div class="mid"><span class="tri '+(w==='away'?'l':'r')+'"></span></div>'
+  const mid=fin?'<div class="mid"><span class="tri '+(w==='away'?'l':'r')+'"></span>'+(g.ot?'<div class="ot">'+(g.ot>1?g.ot:'')+'OT</div>':'')+'</div>'
     :'<div class="mid">'+tipHtml(g)+'</div>';
   return '<div class="gm'+(op?' open':'')+'" data-id="'+g.id+'" style="--c1:'+pc[0]+';--c2:'+pc[1]+'"><div class="gh" role="button" tabindex="0" aria-expanded="'+op+'">'+tm('away')+sc('away')+mid+sc('home')+tm('home')+'</div>'
-   +(fin&&g.ot?'<div class="bh"><span>'+(g.ot>1?g.ot:'')+'OT</span></div>':'')+(op&&fin?boxHtml(g):'')+'</div>';
+   +(op&&fin?boxHtml(g):'')+'</div>';
 }
 function build(){
   built=true;

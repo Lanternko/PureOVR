@@ -30,9 +30,9 @@ table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
 thead th{background:var(--bg,#0d1014);color:var(--muted);font:600 .95rem var(--nf);text-transform:uppercase;letter-spacing:.1em;padding:10px 8px;text-align:right;cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
 thead th.l,td.l{text-align:left}
 thead th .zh{display:block;font:500 .68rem var(--f-body);opacity:.75}
-thead th[aria-sort]{color:var(--fg)}
-thead th[aria-sort]::after{content:" ▾";color:var(--fg)}
-thead th[aria-sort="ascending"]::after{content:" ▴"}
+thead th[aria-sort]{color:#fff;font-weight:700;box-shadow:inset 0 0 0 999px rgba(255,255,255,.05)}
+thead th[aria-sort] .zh{color:#fff;font-weight:700;opacity:1}
+td.sorted{box-shadow:inset 0 0 0 999px rgba(255,255,255,.05)}
 td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;font:600 1.15rem var(--nf);letter-spacing:.02em}
 tr.row{cursor:pointer}
 tr.row:hover td{background:#1a2128}
@@ -121,9 +121,9 @@ function info(){
   $('#stamp').innerHTML='<b>'+esc(D.dataCutoff)+'</b>'+esc(D.generatedAt.slice(11,16))+' 更新';
   $('#meta').innerHTML='<ul class="nb"><li>戰力排行是模型模擬比賽（每隊對五支不同強度、位置配置的對手隊共打 '+D.seeds+' 場）得出的數據，目前還在 beta 版本，有不準的地方，僅供參考。</li>'
    +'<li>76 人被低估：模型認為同一隊持球單打手太多，彼此搶球，化學反應不好。</li></ul>'
-   +(i.stale?'<span class="warn">今天抓不到傷病名單，沿用前一份。</span>':'')
+   +(i.stale&&(!i.fetchedAt||Date.now()-Date.parse(i.fetchedAt)>3*864e5)?'<span class="warn">傷病名單已超過三天沒更新。</span>':'')
    +(D.schedule&&D.schedule.remainingGames?'':'<span class="warn">抓不到賽程，剩餘場次以對全聯盟平均勝率計。</span>');
-  $('#viewHint').textContent=view==='today'?'排除 Out／Doubtful／Questionable／Day-To-Day；依回歸日逐場模擬。':'不扣傷兵；陣容全程不變。';
+  $('#viewHint').textContent=view==='today'?'排除傷兵':'全員健康的版本';
   $('#note').innerHTML='模擬引擎 '+esc(D.engine)+'；ORtg／DRtg／Net 已扣聯盟平均。'
    +'<br>分鐘規則：每位現役球員取他自己最近 '+D.lastN+' 場「有出場」的平均分鐘（沒上場的比賽不算，不管當時在哪隊）；候選人是該隊最近 '+D.lastN+' 場出場過的人，加上最近沒出場但自己平均 ≥'+(D.returnMin||15)+' 分鐘的人（視為傷缺復出）；照教練實際用人：每人的起點分鐘就是上述平均分鐘，再乘上「焦灼比賽乘數」（依該隊球員的分鐘名次分 11 槽，乘數＝2024-25、2025-26 兩季焦灼場〔分差 ≤5 或延長賽〕的平均分鐘 ÷ 全部場的平均分鐘，約 1.02–1.11，由資料直接量），再等比放大到合計 240 分鐘；單人上限 36（超出的分鐘依比例分給沒到上限的人，反覆到收斂），不設下限；可上場人數太少（不到 7 人）時上限放寬到 40。名次只用來決定乘數，不直接決定分鐘。「可用」先拿掉 Out／Doubtful／Questionable／Day-To-Day（含停賽），只留 Probable 與沒上名單的人，不做機率加權；「傷兵」欄＝被拿掉的人數。'
    +((D.baseProfiles||[]).length?'<br>上季整季缺陣、今年還沒有排名的人（'+D.baseProfiles.map(x=>esc(x.name)).join('、')+'）：模擬用他最近一張賽季卡的能力值（不做年齡調整），OVR 欄標「24-25 卡」等來源；沒有任何歷史卡的新人仍當聯盟平均球員。':'')
@@ -151,7 +151,9 @@ function render(){
      +'<td class="hide-m">'+f1(v.ortg)+'</td><td class="hide-m">'+f1(v.drtg)+'</td><td>'+t.W+'-'+t.L+'</td><td>'+f0(v.predWins)+'</td><td class="'+(t.nOut?'inj':'')+'">'+(t.nOut||'')+'</td></tr>'
      +(open===t.abbr?'<tr class="det"><td colspan="8">'+detail(o)+'</td></tr>':'');}).join('');
   root.querySelectorAll('#viewSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===view)));
-  root.querySelectorAll('thead th').forEach(h=>{if(h.dataset.k===sk)h.setAttribute('aria-sort',sd<0?'descending':'ascending');else h.removeAttribute('aria-sort');});
+  let si=-1;
+  root.querySelectorAll('thead th').forEach((h,i)=>{if(h.dataset.k===sk){si=i;h.setAttribute('aria-sort',sd<0?'descending':'ascending');}else h.removeAttribute('aria-sort');});
+  root.querySelectorAll('#tb tr.row').forEach(r=>r.children[si]?.classList.add('sorted'));
   info();
 }
 $('#tb').addEventListener('click',e=>{const r=e.target.closest('tr.row');if(!r)return;toggle(r.dataset.a);});
