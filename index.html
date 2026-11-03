@@ -985,7 +985,7 @@ const GC_DEF = '評分 0–10（M6 S 形）：整場貢獻：box score＋防守�
 const gcCls = (d, [a, b]) => d >= b ? 'c5a' : d >= a ? 'c5b' : d > -a ? 'c5c' : d > -b ? 'c5d' : 'c5f';
 function gcCell(v, b, cut, fb, tip) {
   if (v == null) return '<td>—</td>';
-  return `<td${tip ? ` title="${tip}"` : fb ? ' title="這場抓不到防守對位資料，只用 box score 算"' : ''}><span class="${b == null ? '' : gcCls(v - b, cut)}">${gcS(v)}${fb ? '*' : ''}</span></td>`;
+  return `<td${tip ? ` title="${tip}"` : fb ? ' title="這場抓不到防守對位資料，只用 box score 算"' : ''}><span class="${b == null ? '' : gcCls(v - b, cut)}">${gcS(v)}</span></td>`;
 }
 function gcNote(r, p, n) {
   const c = r.gc;
