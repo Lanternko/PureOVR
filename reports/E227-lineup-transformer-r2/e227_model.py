@@ -46,6 +46,8 @@ def season_means(rows):
 
 def rapm_key(r, mode):
     """mode 'val'：驗證列（fold 0）用排除 fold 0 的擬合；'train'：訓練列在 fold k 用排除 {0,k} 的 out-of-fold 擬合。"""
+    if mode == 'test':   # 測試／前向列：用全部 train 場次擬合的版本（key none）
+        return 'none'
     return '0' if mode == 'val' else f"0-{r['fold']}"
 
 
