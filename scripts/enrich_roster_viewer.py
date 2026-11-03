@@ -500,6 +500,9 @@ function gcCell(v, b, cut, fb, tip) {
 const GC_NOTE = {
   1630162: '*因為本季命中率下降＋失誤上升，所以即使得分很多，OVR仍不變', // Anthony Edwards
   1642843: '*由於上季球隊戰績差，加上效率很差，本季的初始OVR很低、爬升較慢', // Cooper Flagg
+  1630163: '*傳球、三分、持球創造都很強，但近距離與中距離出手弱、防守與身體條件偏低，所以OVR被拉低', // LaMelo Ball
+  1642844: '*新秀，起始值依選秀順位偏保守；中距離、三分、造犯規都偏弱，OVR隨比賽慢慢爬升', // Dylan Harper
+  1627783: '*罰球與中距離偏弱、外圍壓迫偏低，拉低OVR（內線得分與籃板仍是強項）', // Pascal Siakam
 };
 const gcExtra = r => REAL_VIEW === 'g5' && GC_NOTE[r.id] ? `　<span class="gcx">${GC_NOTE[r.id]}</span>` : '';
 function gcNote(r, p, n) {
