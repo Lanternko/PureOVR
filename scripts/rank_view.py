@@ -27,23 +27,23 @@ h1 span{display:block;font:600 1rem var(--f-body);font-style:normal;letter-spaci
 button:focus-visible,th:focus-visible,tr.row:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
 .tbox{overflow:auto}
 table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
-thead th{background:var(--bg,#0d1014);color:var(--muted);font:600 .95rem var(--nf);text-transform:uppercase;letter-spacing:.1em;padding:10px 8px;text-align:right;cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
+thead th{background:var(--bg,#0d1014);color:var(--muted);font:700 1.3rem var(--nf);text-transform:uppercase;letter-spacing:.1em;padding:10px 8px;text-align:right;cursor:pointer;user-select:none;white-space:nowrap;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
 thead th.l,td.l{text-align:left}
-thead th .zh{display:block;font:500 .68rem var(--f-body);opacity:.75}
+thead th .zh{display:block;font:500 .85rem var(--f-body);opacity:.8}
 thead th[aria-sort]{color:#fff;font-weight:700;box-shadow:inset 0 0 0 999px rgba(255,255,255,.05)}
 thead th[aria-sort] .zh{color:#fff;font-weight:700;opacity:1}
 td.sorted{box-shadow:inset 0 0 0 999px rgba(255,255,255,.05)}
-td{padding:9px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;font:600 1.15rem var(--nf);letter-spacing:.02em}
+td{padding:5px 8px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;font:600 1.05rem var(--nf);letter-spacing:.02em}
 tr.row{cursor:pointer}
 tr.row:hover td{background:#1a2128}
 tr.row.open td{background:#1d252d}
-td.rk{width:84px;text-align:right;padding-right:14px;font:italic 800 3rem/1 var(--nf);letter-spacing:-.02em}
-td.tm{font:italic 800 1.9rem/1 var(--nf);text-transform:uppercase;letter-spacing:.01em}
+td.rk{width:72px;text-align:right;padding-right:14px;font:italic 800 1.7rem/1 var(--nf);letter-spacing:-.02em}
+td.tm{font:italic 800 1.3rem/1 var(--nf);text-transform:uppercase;letter-spacing:.01em}
 td.tm .tmw{display:flex;align-items:center;gap:9px}
-td.tm .lg{width:40px;height:40px;flex:none;object-fit:contain}
+td.tm .lg{width:32px;height:32px;flex:none;object-fit:contain}
 td.tm .tt{min-width:0}
-td.tm small{display:block;font:500 .74rem var(--f-body);font-style:normal;text-transform:none;color:var(--muted);letter-spacing:.04em;margin-top:3px}
-td.net{font:italic 800 2.3rem/1 var(--nf);letter-spacing:-.01em}
+td.tm small{display:block;font:500 .7rem var(--f-body);font-style:normal;text-transform:none;color:var(--muted);letter-spacing:.04em;margin-top:2px}
+td.net{font:italic 800 1.7rem/1 var(--nf);letter-spacing:-.01em}
 .pos{color:var(--g-a)}.neg{color:var(--g-f)}
 .inj{color:var(--g-f)}
 tbody tr.row td:not(.rk):not(.net):not(.tm){color:var(--muted)}
@@ -71,16 +71,17 @@ tbody tr.row td:not(.rk):not(.net):not(.tm){color:var(--muted)}
   .rkroot{font-size:13px}
   h1{font-size:2.6rem}
   .stamp{font-size:.9rem}.stamp b{font-size:1.1rem}
-  td.rk{width:46px;font-size:2rem;padding-right:8px}
-  td.tm{font-size:1.4rem}
+  td.rk{width:40px;font-size:1.4rem;padding-right:8px}
+  td.tm{font-size:1.1rem}
+  td.net{font-size:1.5rem}
   .hide-m,thead th .zh{display:none}
   .dg td:not(:first-child){white-space:nowrap;font-size:.8rem}
   .rkw{gap:10px}
-  td,thead th{padding:7px 4px}
-  thead th{font-size:.8rem;letter-spacing:.02em}
+  td{padding:5px 4px}
+  thead th{padding:7px 4px;font-size:1rem;letter-spacing:.02em}
   td.tm small{display:none}
   td.tm .tmw{gap:6px}
-  td.tm .lg{width:28px;height:28px}
+  td.tm .lg{width:26px;height:26px}
   .av{width:30px;height:30px}
   .pn{gap:7px}
   td.net{font-size:1.6rem}
