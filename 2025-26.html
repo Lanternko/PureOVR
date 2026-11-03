@@ -444,7 +444,7 @@ body[data-view="rank"] .mtabs #teamPick.on summary,body[data-view="games"] .mtab
   <div class="legend">
     <span>等第：<b class="gA">A</b> ≥82 · <b class="gB">B</b> ≥68 · <b class="gC">C</b> ≥56 · <b class="gD">D</b> ≥44 · <b class="gF">F</b> &lt;44</span>
     <button type="button" class="ovr-t" aria-expanded="false" onclick="const b=this.nextElementSibling,o=b.hidden;b.hidden=!o;this.setAttribute('aria-expanded',o)">OVR：綜合<b>場上能力 ＋ 防守意識 ＋ 上場時間</b>的每場比賽影響力 <i>▼</i></button>
-    <div class="ovr-how" hidden><div><span class="oh-t">1. 場上能力（14 項）</span>整合傳統數據、逐球紀錄與官方追蹤，拆成投籃（三分、中距離、近框、罰球）、進攻（<b>無球引力</b>、造犯規、傳球、自主創造、切入）、球權（籃板、<b>觸球少失誤</b>、壓迫）與對位防守（單防、護框）；頂尖表現可突破 99。</div><div><span class="oh-t">2. 防守意識（DIQ）</span>以跨季加權的<b>防守 RAPM</b>（扣除隊友與對手強弱後的在場失分影響）對比同位置平均，補齊數據抓不到的無球輪轉、站位與協防。</div><div><span class="oh-t">3. 上場時間與用人</span>結合<b>場均分鐘</b>與<b>出賽率</b>（區分正常輪休與被棄用 DNP）。同效率下，能扛越多上場時間的人單場價值越高（邊際遞減）。</div><div><span class="oh-t">4. 合成 OVR 與即時更新</span>將上述三項對齊進階指標 <b>DARKO＋BPM</b> 校準權重，衡量「每場能幫球隊多贏幾分」；球員卡右側另列實際在場影響與單場評分供對照。全站採<b>近三季滑動窗口</b>隨比賽逐場更新，並加重近期表現（新秀以選秀順位為起點）。</div></div>
+    <div class="ovr-how" hidden><div><span class="oh-t">1. 場上能力（14 項）</span>結合傳統數據、逐球紀錄與官方追蹤，不只看帳面產量，也區分<b>自主創造 vs 吃餅</b>、<b>無球牽制（引力）</b>、<b>持球保護</b>與<b>對位主將／護框降命中率</b>，拆成 14 項單項能力（頂尖可破 99）。</div><div><span class="oh-t">2. 防守意識（DIQ）</span>抄截與阻攻只佔防守一小部分。DIQ 計算扣除隊友與對手強弱後，在場能幫球隊<b>少丟幾分</b>（跨季防守 RAPM 比同位置平均），補齊數據抓不到的<b>無球輪轉、站位與協防</b>。</div><div><span class="oh-t">3. 上場時間與用人</span>結合<b>場均分鐘</b>與<b>出賽率</b>（區分正常輪休與被棄用 DNP）。同效率下，<b>能扛越多上場時間，單場價值越高</b>（邊際遞減）。</div><div><span class="oh-t">4. 怎麼合成 OVR</span>將上述三項對齊進階指標（DARKO、BPM）校準權重，衡量<b>每場能幫球隊多贏幾分</b>；球員卡右側另列<b>實際在場影響</b>與<b>單場評分</b>供對照。全站<b>隨比賽逐場更新</b>並反映近期狀態（新秀以選秀順位為起點）。</div></div>
   </div>
 </div>
 <!-- real-stats:begin -->
