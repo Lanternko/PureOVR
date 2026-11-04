@@ -4,10 +4,12 @@ D＝E-104 L 形逐場線性擬合（reports/card-0.2.5+E104-defense-pergame-deca
   本季位置 t = 328 + (場次序號 − 0.5)/1230·82（gameId 末五碼就是序號）；
   窗口 = 最近 328 格 [c, 328 + c]，c = 聯盟已賽場數/1230·82；權重 u = (t − c)/328，u ≤ 0（滑出窗口）的 stint 不算。
 c = 0 時完全等於 def-L-primary.csv（--check 核對）。本季 stints 由 scripts/build_inseason_stints.js 產生。
+2026-11-04 起（R-163）fit／fit_loo 預設改成每個人自己的出賽場次當時間軸（見下面 _personal），上面的聯盟日曆軸留作 fit_calendar（DEF_AXIS=calendar）。
 用法：python -I defense_bonus.py --check | python -I defense_bonus.py <c> <out.csv>"""
-import csv, importlib.util, pickle, sys
+import csv, importlib.util, os, pickle, sys
 from pathlib import Path
 import numpy as np
+import scipy.linalg as SL
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
@@ -118,6 +120,96 @@ def fit_loo(D, c, lam=F.LAM):
     return out
 
 
+fit_calendar, fit_loo_calendar = fit, fit_loo
+
+
+# ==== R-163 個人場次時間軸 ====
+# 每個人只看自己有上場的比賽（沒打的場次、賽季不佔窗口）：他有上場的 stint 權重 u＝(WIN − r − 0.5)/WIN，r＝該場在他自己出賽場次裡
+# 由新到舊的序號；他沒上場的 stint 照聯盟日曆權重（只影響隊友／對手）。每人各解一次。DEF_AXIS=calendar 回聯盟日曆軸（fit_calendar）。
+AXIS = os.environ.get('DEF_AXIS', 'personal')
+_CACHE = {}
+
+
+def _personal(D, c, lam):
+    key = (id(D), c, lam, WIN)
+    if key in _CACHE:
+        return _CACHE[key]
+    t = positions(D)
+    seasons = [s for s in PAST + [SEASON] if s in D.s]
+    wu = {s: np.maximum((t[s] - c) / WIN, 0.0) for s in seasons}
+    K = D.K
+    pen = lam * np.eye(K + 1); pen[K, K] = 0
+    A0 = np.zeros((K + 1, K + 1)); b0 = np.zeros(K + 1)
+    for s in seasons:
+        M, bs = F.weighted_normal(D, s, wu[s])
+        A0 += M.toarray(); b0 += bs
+    A0 += pen
+    g0 = SL.cho_solve(SL.cho_factor(A0, check_finite=False), b0, check_finite=False)   # 每人：A＝A0＋ΔM（只碰他的隊友／對手欄），Cholesky 直接解
+    csc = {s: D.s[s]['X'].tocsc() for s in seasons}
+    csr = {s: D.s[s]['X'].tocsr() for s in seasons}
+    gnum = {s: np.array([int(g) for g in D.s[s]['gid']]) for s in seasons}
+
+    def solve(j, rows, drop_cur):
+        """rows＝{season: 他上場的 stint 列}；drop_cur＝拿掉他本季 stints（基準）。回傳 D／poss／possW。"""
+        games = sorted({(k, g) for k, s in enumerate(seasons) if not (drop_cur and s == SEASON)
+                        for g in gnum[s][rows[s]].tolist()}, reverse=True)
+        rank = {g: i for i, g in enumerate(games)}
+        dM, db = [], []
+        poss = possW = 0.0
+        for k, s in enumerate(seasons):
+            r = rows[s]
+            if not len(r):
+                continue
+            if drop_cur and s == SEASON:
+                u = np.zeros(len(r))
+            else:
+                u = np.maximum((WIN - np.array([rank[(k, g)] for g in gnum[s][r].tolist()]) - 0.5) / WIN, 0.0)
+            w = D.s[s]['w'][r]
+            dw = w * (u - wu[s][r])
+            Xr = csr[s][r]
+            if np.any(dw):
+                dM.append(Xr.T @ Xr.multiply(dw[:, None]))
+                db.append(Xr.T @ (dw * D.s[s]['y'][r]))
+            poss += float(w[u > 0].sum()); possW += float((w * u).sum())   # 每列他只出現一次（O 或 D 側），X²＝1
+        if not games:
+            return None
+        tj = D.P + j
+        if not dM:
+            return {'D': float(g0[tj]), 'poss': poss, 'possW': possW}
+        M = sum(dM).tocsr(); bb = np.asarray(sum(db)).ravel()
+        S = np.unique(M.indices)
+        A = A0.copy()
+        A[np.ix_(S, S)] += M[S][:, S].toarray()
+        x = SL.cho_solve(SL.cho_factor(A, overwrite_a=True, check_finite=False), b0 + bb, check_finite=False)
+        return {'D': float(x[tj]), 'poss': poss, 'possW': possW}
+
+    full, loo = {}, {}
+    for j, p in enumerate(D.players):
+        rows = {s: np.union1d(csc[s][:, j].indices, csc[s][:, D.P + j].indices) for s in seasons}
+        e = solve(j, rows, False)
+        if e is None or e['possW'] <= 0:
+            continue
+        full[p] = e
+        if SEASON in rows and len(rows[SEASON]):
+            e0 = solve(j, rows, True)
+            if e0 is not None and e0['possW'] > 0:
+                loo[p] = e0
+        else:
+            loo[p] = e
+    _CACHE[key] = (full, loo)
+    return full, loo
+
+
+def fit(D, c, lam=F.LAM):
+    """回傳 {playerId: {'D','poss','possW'}}；預設 R-163 個人場次軸，DEF_AXIS=calendar 回聯盟日曆軸。"""
+    return fit_calendar(D, c, lam) if AXIS == 'calendar' else dict(_personal(D, c, lam)[0])
+
+
+def fit_loo(D, c, lam=F.LAM):
+    """ΔOVR 基準（R-112）：每人只拿掉自己本季 stints 重擬合；本季沒出賽的人＝fit 原值（同 fit_loo_calendar 的口徑）。"""
+    return fit_loo_calendar(D, c, lam) if AXIS == 'calendar' else dict(_personal(D, c, lam)[1])
+
+
 def write_csv(out, path):
     with open(path, 'w', encoding='utf-8', newline='') as fh:
         wr = csv.writer(fh)
@@ -127,7 +219,7 @@ def write_csv(out, path):
 
 
 def check():
-    out = fit(load_data(with_current=False), 0.0)
+    out = fit_calendar(load_data(with_current=False), 0.0)
     ref = {int(r['playerId']): r for r in csv.DictReader(open(FROZEN, encoding='utf-8'))}
     assert set(out) == set(ref), (len(out), len(ref))
     dd = max(abs(out[p]['D'] - float(ref[p]['D'])) for p in ref)

@@ -17,13 +17,16 @@ from ovr_pipeline import PR_HI, PR_LO, BONUS_MIN_POSS
 from ovr_common import ATTRS
 
 
+EXCLUDE_T = set()      # 0.2.12d：復出老將補卡的 pid 不進封頂表 T（否則新增的高 pred 會推動所有人的封頂門檻）
+
+
 class PointwisePipeline:
     def __init__(self, pipe, attrs0):
         self.pipe = pipe
         ref = pipe.predict(attrs0)
         self.ref = ref
         self.pr0 = np.array([ref[p]['pr'] for p in pipe.pids])
-        s = np.sort(np.array([ref[p]['pred'] for p in pipe.pids]))[::-1]
+        s = np.sort(np.array([ref[p]['pred'] for p in pipe.pids if p not in EXCLUDE_T]))[::-1]
         self.T = {a: float(s[min(max(int(a), 1), len(s)) - 1]) - 1e-12
                   for a in set(x for x in pipe.allowed if x is not None)}
         chk = self.predict(attrs0)

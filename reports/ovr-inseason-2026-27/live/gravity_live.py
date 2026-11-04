@@ -147,7 +147,7 @@ def _season_feats(data26):
     return acc, usg
 
 
-def live(c, data26, pos_of, rookies=(), cur=True):
+def live(c, data26, pos_of, rookies=(), cur=True, fit_exclude=()):
     """回傳 ({pid: {'gravity', 'raw', 'src', 'frames25', 'frames26'}}, info)。
     pos_of：{pid: 'PG'..'C'}（老將＝先驗卡 pos；新秀先換 SG/SF/C）；rookies：新秀 pid（本季沒上場時用 ROOKIE_G0）。
     cur=False：同一個 c 但不讀本季（＝卡片值／新秀 G0；基準用）。"""
@@ -173,7 +173,7 @@ def live(c, data26, pos_of, rookies=(), cur=True):
         if not f or f[0] <= 0 or u is None or pos_of.get(pid) is None:
             return None
         return [1.0, 36 * f[1] / f[0], f[2] / f[1] if f[1] > 0 else 0.0, float(u)] + [float(pos_of[pid] == q) for q in POS]
-    fit = [(x_of(p), blend[p][0]) for p in sorted(blend) if x_of(p) is not None]
+    fit = [(x_of(p), blend[p][0]) for p in sorted(blend) if x_of(p) is not None and p not in fit_exclude]
     beta, ols = None, {'n': len(fit)}
     if len(fit) >= 30:
         X = np.array([f[0] for f in fit]); y = np.array([f[1] for f in fit])

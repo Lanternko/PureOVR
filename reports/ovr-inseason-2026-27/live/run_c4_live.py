@@ -59,7 +59,7 @@ if E064_MODE != 'G1':
     raise SystemExit('E064_MODE 只接受 G1（off／G0 是舊頁重現用，已淘汰）')
 # 預註冊 §4.1：stamina 最小樣本 1 場（本身的能力值與 w 都用；其餘 15 屬性照 C4 現行）。
 SA.SEASON_MIN_SAMPLE['stamina'] = 1
-VERSION = 'inseason 0.2.12c'  # R-050／R-114：先驗卡 card 0.2.12c；0.2.12c＝tovSkill 的失誤率分母由持球分鐘改觸球次數（R-144，E-207，live/tov_live.py，檔名用 0212c／card-0.2.12c；TOV_TOUCH=0 重現 0.2.12b）；0.2.12b＝四季窗口由 328 格縮成 246 格（R-140，E-204，live/win_len.py；WIN_LEN=328 重現 0.2.12a）；0.2.12a＝gravity 補值依本季分鐘往進攻 EPM 收縮（gravity_live.EPM_ON；GRAVITY_EPM=0 重現 0.2.12）；0.2.12＝tovSkill 改看持球時間（R-139，E-203，live/tov_live.py，檔名用 0212／card-0.2.12-tov）；0.2.11（原標 0.2.10j，R-137 使用者升為 PATCH；檔名沿用 0210j）＝加能力值 gravity（無球外線引力，R-134／R-135，live/gravity_live.py）；0.2.10i＝drive→drive_D、creation→creationJ（R-130／R-132，live/split_dc.py）；0.2.10h＝賽中端 y、v 改用開季當天年齡（R-129，E-193），卡片端不動。 第一個字面值會被 daily_inseason_update.probe_base_version 以正規式讀取，勿改成括號／條件式開頭
+VERSION = 'inseason 0.2.12e'  # R-050／R-114：先驗卡 card 0.2.12c；0.2.12e＝防守 D 改個人場次軸（R-163，defense_bonus.py；DEF_AXIS=calendar 回退）＋復出老將補進用人層（R-164，rv_usage；RV_USAGE=0 回退），兩者都關＝0.2.12d；0.2.12d＝復出老將補卡：2025-26 沒上場的老將（Lillard、Kyrie、Haliburton 等）用 v5 舊季卡進四季窗口，其餘管線不動（live/build_returning_vet_prior.py；RETURNING_VETS=0 重現 0.2.12c）；0.2.12c＝tovSkill 的失誤率分母由持球分鐘改觸球次數（R-144，E-207，live/tov_live.py，檔名用 0212c／card-0.2.12c；TOV_TOUCH=0 重現 0.2.12b）；0.2.12b＝四季窗口由 328 格縮成 246 格（R-140，E-204，live/win_len.py；WIN_LEN=328 重現 0.2.12a）；0.2.12a＝gravity 補值依本季分鐘往進攻 EPM 收縮（gravity_live.EPM_ON；GRAVITY_EPM=0 重現 0.2.12）；0.2.12＝tovSkill 改看持球時間（R-139，E-203，live/tov_live.py，檔名用 0212／card-0.2.12-tov）；0.2.11（原標 0.2.10j，R-137 使用者升為 PATCH；檔名沿用 0210j）＝加能力值 gravity（無球外線引力，R-134／R-135，live/gravity_live.py）；0.2.10i＝drive→drive_D、creation→creationJ（R-130／R-132，live/split_dc.py）；0.2.10h＝賽中端 y、v 改用開季當天年齡（R-129，E-193），卡片端不動。 第一個字面值會被 daily_inseason_update.probe_base_version 以正規式讀取，勿改成括號／條件式開頭
 CARD_VERSION = 'card 0.2.12c'   # 0.2.12c＝觸球分母（W246，reports/card-0.2.12c/；係數／RAPM 在 328 底 reports/card-0.2.12c-w328/）；TOV_TOUCH=0 回 card 0.2.12b／0.2.12。0.2.12b＝同上窗口 246（reports/card-0.2.12b/）；WIN_LEN=328 時回 card 0.2.12
 AGE_START = os.environ.get('AGE_START', '1') != '0'   # 0.2.10h：y、v 用開季當天足歲（data/defense-seventh/2026-27/birthdates.json，live/window11.py）；AGE_START=0 重現 0.2.10g（本季 bio AGE）
 # 0.2.10i（R-130／R-132）：切入／自主拆開。SPLIT_DC=0 重現 0.2.10h（卡 card 0.2.10g；先驗、usage 讀 _retired/；window8／window10／pres_drive 由 split_dc.ON 走舊路徑）
@@ -109,6 +109,14 @@ C_PARAM = 1.0
 ALL_N = 99                      # 視窗＝全部已打場次
 DATA26 = ROOT / 'data/defense-seventh' / TARGET
 PRIOR_CARD = (((HERE / 'prior-2025-26-card0212c.json' if TOV_TOUCH else _RET / 'prior-2025-26-card0212-tov.json') if TOV_POSS else _RET / 'prior-2025-26-card0210j.json' if GRAVITY else _RET / 'prior-2025-26-card0210i.json') if SPLIT_DC else _RET / 'prior-2025-26-card0210d.json') if WIN10 else _RET / 'prior-2025-26-card0210.json'  # 0.2.10j：build_prior_0210j.py（加 gravity＝card-0.2.10j/gravity-attr.csv）  # 0.2.10i：build_prior_0210i.py（drive、creation 換 card-0.2.10i/tail-U.csv）  # build_prior_0210d.py 產出（0.2.10 先驗的 long、creation 換成 card-0.2.12/tail-U.csv；8 項是 0.2.10 的 U 窗口值）； build_prior_027b.py 產出（x0＝card 0.2.7b 產生器未四捨五入值；能力值欄 0.2.7b～0.2.9a 逐位元相同）
+RETURNING_VETS = TOV_TOUCH and os.environ.get('WIN_LEN', '246') != '328' and os.environ.get('RETURNING_VETS', '1') != '0'   # 0.2.12d：復出老將補卡（build_returning_vet_prior.py；2025-26 無先驗卡、近季有 v5 卡的人，窗口跳過缺席季）；RETURNING_VETS=0 重現 0.2.12c
+if VERSION == 'inseason 0.2.12e' and os.environ.get('DEF_AXIS', 'personal') == 'calendar' and os.environ.get('RV_USAGE', 'hi') == '0':
+    VERSION = 'inseason 0.2.12d'
+if not RETURNING_VETS and VERSION == 'inseason 0.2.12d':
+    VERSION = 'inseason 0.2.12c'
+if RETURNING_VETS:
+    PRIOR_CARD = HERE / 'prior-2025-26-card0212c-rv.json'
+    PW.EXCLUDE_T.update(r['playerId'] for r in json.load(open(PRIOR_CARD, encoding='utf-8'))['returningVets'])   # 補卡的人不進 H1 封頂表（T）與引力 OLS，既有球員的分數才不被推動
 CARD_DIR = ROOT / f'reports/{_CV}/cards/K6/primary' if WIN10 else _SC / 'base-KAU-2025-26/c0/cards/K0/primary'   # 屬性迴歸／OVR 管線係數（E-164 S 臂，第一層拿掉 stamina）
 CARD_SUMMARY = CARD_DIR / 'summary.json'
 RAPM_STAR = ROOT / f'reports/{_CV}/rapm-T6.csv'   # align／封頂讀 E-153 K6 的 T6 換進去的 RAPM（與 card 0.2.8 起同口徑）
@@ -446,7 +454,9 @@ def m27_ovr_predict(self, attrs_by_pid):
             align[i] = 0.25 * (self.r[i] - pred0[i])
     lift = bonus + align
     pred = pred0 + bonus + align
-    pred, iters = OP.cap_total_lift(pred, pred0, lift, self.allowed)
+    import pointwise_pipeline as _PWX
+    pool = np.array([p not in _PWX.EXCLUDE_T for p in self.pids]) if _PWX.EXCLUDE_T else None
+    pred, iters = OP.cap_total_lift(pred, pred0, lift, self.allowed, pool)
     p1, p50, p99 = self.anchors
     ovr = np.where(pred <= p50, 40 + 30 * (pred - p1) / (p50 - p1), 70 + 29 * (pred - p50) / (p99 - p50))
     out = {}
@@ -763,6 +773,7 @@ def win8_load():
             if USAGE_WIN:   # 0.2.10g：用人層 L、a（四季窗口，今天與本季 0 場）＋ y、v（當下年齡）
                 WIN8['usage'] = _usage_window(W, W.usage_at(gd, tabs))
                 WIN8['usage_day0'] = _usage_window(W, W.usage_at(0, tabs))
+                WIN8['ageFlags'] = W.age_flags
                 if AGE_START and W.age_start:
                     WIN8['ageStart'] = W.age_summary()   # 0.2.10h：y、v 用開季當天年齡；沒有 DOB 的人退回 bio 年齡
     finally:
@@ -912,6 +923,7 @@ def apply_usage(entries, usage, coef):
             L, a, y, v, d = u['L'], u['a'], u['y'], u['v'], u['d']
             pn = (coef['b0'] + coef['b1_p'] * e['pred'] + coef['b2_L'] * L + coef['b3_a'] * a + coef['b4_y'] * y
                   + coef['b5_v'] * v + coef['b6_yL'] * y * L + coef['b7_vL'] * v * L + coef['b8_ydL'] * y * d * L)
+            pn = e['pred'] + u.get('ramp', 1.0) * (pn - e['pred'])   # 復出老將 RV_USAGE=lo：同新秀 × min(N/10, 1)
         out[pid] = {**e, 'predP': e['pred'], 'pred': pn}
     return out
 
@@ -944,6 +956,41 @@ def live_usage(usage, sd26):
         if t in bad:
             out[pid] = {**u, 'd': bad[t], 'dCard': u['d']}
     return out
+
+
+RV_USAGE = os.environ.get('RV_USAGE', 'hi')   # 復出老將用人層（2026-11-04 使用者）：hi＝個人場次窗口含舊季、lo＝同新秀只看本季、0＝不套（重現 0.2.12d）
+
+
+def rv_usage(usage_now, usage_d0, mpg_hat, sd26):
+    """復出老將（不在 usage 檔，原本 predNew＝p）補進用人層。a＝1、d＝0（b8＝0）、y／v＝開季年齡。
+    hi：MPG＝個人場次軸（R-163）加權，本季場次由新到舊、接舊季 rvGp 場（每場 rvMpg），u＝(WIN−r−0.5)/WIN；基準＝舊季 rvMpg；MPG_hat 同步換成這個值。
+    lo：同新秀，L＝log1p(本季 MPG)、× min(N/10, 1)；基準不套（N＝0）。"""
+    import win_len
+    age = win8_load()['ageFlags']
+    n = 0
+    for c in json.load(open(PRIOR_CARD, encoding='utf-8'))['players']:
+        pid = c['playerId']
+        if c.get('rvMpg') is None or pid in usage_now:
+            continue
+        _, y, v = age(pid)
+        cur = [float(r['MIN']) for r in sorted((sd26['box'].get(pid) or {}).get('rows', []), key=lambda r: r['GAME_DATE'], reverse=True)
+               if float(r['MIN']) > 0]
+        base = {'has': True, 'a': 1.0, 'y': y, 'v': v, 'd': 0.0}
+        if RV_USAGE == 'lo':
+            if cur:
+                usage_now[pid] = {**base, 'L': math.log1p(sum(cur) / len(cur)), 'ramp': min(len(cur) / USAGE_N_RV, 1.0)}
+        else:
+            mins = cur + [c['rvMpg']] * int(c['sample']['gp'])
+            u = [max((win_len.WIN_LEN - r - 0.5) / win_len.WIN_LEN, 0.0) for r in range(len(mins))]
+            m = sum(a * b for a, b in zip(u, mins)) / sum(u)
+            usage_now[pid] = {**base, 'L': math.log1p(m)}
+            usage_d0[pid] = {**base, 'L': math.log1p(c['rvMpg'])}
+            mpg_hat[pid] = m
+        n += 1
+    print(f'復出老將用人層 RV_USAGE={RV_USAGE}：{n} 人', file=sys.stderr)
+
+
+USAGE_N_RV = 10   # 同 run_c4_live_rookie.USAGE_N
 
 
 def e064_convert(entries, mpg_by_pid, anc, r_repl=0.0):
@@ -1029,6 +1076,10 @@ def main():
     for pid, c in prior_cards.items():
         if c['name'] in mpg_card:
             mpg0[pid] = mpg_card[c['name']]
+    if RETURNING_VETS:              # 復出老將：observed.MIN＝0（不進百分位池），MPG0 改用舊季真實 MPG，不然 lastOVR 基準（MPG 窗口 L=1 蓋不到舊季）＝0 分鐘
+        for c in json.load(open(PRIOR_CARD, encoding='utf-8'))['players']:
+            if c.get('rvMpg') is not None:
+                mpg0[c['playerId']] = c['rvMpg']
     mpg_hat = dict(mpg0)            # G0：MPG_hat＝MPG0（不更新）
     # 預註冊 §4.1：MPG_hat = MPG0 + w·(MPG_win − MPG0)；w＝stamina 的 C4 w（f＋(1−f)·n/(n+c·k_eff)）。
     # 沒有 2026-27 視窗紀錄、沒有 stamina 的 w（無先驗卡等）→ 退回 MPG0（backtest_e064.mpg_hat 同款）。
@@ -1063,6 +1114,9 @@ def main():
     # 0.2.10g：res 用今天的窗口用人特徵；ref（lastOVR 基準）與 o1 用本季 0 場（day0）窗口；USAGE_WIN=0 兩者都是凍結值（= 0.2.10f）
     usage_now = usage_features(usage, win8_load()['usage'] if USAGE_WIN else None)
     usage_d0 = usage_features(usage, win8_load()['usage_day0'] if USAGE_WIN else None)
+    if RETURNING_VETS and USAGE_WIN and RV_USAGE != '0':
+        usage_now, usage_d0 = dict(usage_now), dict(usage_d0)
+        rv_usage(usage_now, usage_d0, mpg_hat, sd26)
     res = apply_usage(res, live_usage(usage_now, sd26), ucoef)   # R-098：d 用當下球隊；ref／o1 仍用卡的 d
     ref = apply_usage(ref, usage_d0, ucoef)
     res = e064_convert(res, mpg_hat, anc064, r_repl064)
@@ -1281,7 +1335,7 @@ def main():
                 + (f"MPG_hat＝窗口 MPG（Σu·MIN／Σu·GP，過去 {MPG_L} 季＋本季逐場線性遞減，E-185）；lastOVR 基準＝本季 0 場的窗口 MPG；窗口內沒出賽的 {len(mpg_nodata)} 人退回 MPG0。`ovrPer36` 是同一預測的每 36 分鐘 OVR。" if WIN10 else
                    f"MPG_hat = MPG0 + w·(本季場均分鐘 − MPG0)，w＝stamina 的 C4 w（stamina 最小樣本 1 場）；"
                    f"沒有本季視窗紀錄的 {len(mpg_nodata)} 人（含沒出賽者，不在排名內）退回 MPG0。`ovrPer36` 是同一預測的每 36 分鐘 OVR。"))
-    ATTR_NOTE = (("- inseason 0.2.12c（R-144，E-207）：tovSkill 的失誤率分母由持球分鐘改觸球次數＝0.5·z(−每觸球失誤，窗口加權失誤對窗口加權觸球收縮，k 乘觸球／持球分鐘換算係數)＋0.5·z(持球分鐘/36)；觸球來源同持球分鐘（NBA.com tracking TOUCHES）；池、z、0–99 映射凍結於 live/tov-pool-card0212c.json；卡片全部係數重擬合（card 0.2.12c）。\n" if TOV_TOUCH else "") + (("- inseason 0.2.12（R-139，E-203）：tovSkill 改看持球時間＝0.5·z(−每持球分鐘失誤，窗口加權失誤對窗口加權持球分鐘收縮)＋0.5·z(持球分鐘/36)；持球分鐘＝NBA.com tracking TIME_OF_POSS（過去季 handle-E069 raw、本季 data/defense-seventh/2026-27/possessions.json 每天抓整季），收縮、z、0–99 映射凍結自卡片端（live/tov-pool-card0212.json、live/tov_live.py）；新秀（不在卡片名單）用本季整季值、本季 1000 分鐘內與起點線性混合；卡片全部係數重擬合（card 0.2.12）。\n" if TOV_POSS else "")) + ("- inseason 0.2.10j（R-134／R-135）：加能力值引力（gravity）＝NBA.com 無球外線引力，2025-26 與本季依 FRAMES 加權、套四季窗口季權重；兩季都沒有的人用 OLS（3PA/36、3P%、USG%、位置）補；卡片全部係數重擬合（card 0.2.10j）。\n" if GRAVITY else "") + ("- inseason 0.2.10i（R-130／R-132）：切入（drive）只算帶球切入到 10 呎內的自主兩分（量與效率各半），自主創造（creation）改成自己創造的跳投與低位出手（不含切入上籃、補籃、空切）per36；兩項都是四季滑動窗口，卡片全部係數重擬合（card 0.2.10i）。\n" if SPLIT_DC else "") +
+    ATTR_NOTE = ("- inseason 0.2.12e（R-163／R-164）：防守加成的 RAPM 窗口改用每位球員自己的出賽場次當時間軸（沒打的場次、賽季不佔窗口）；復出老將補進用人層，上場時間用同一套個人場次窗口（本季場次接上最近一季）。\n" if VERSION == "inseason 0.2.12e" else "") + (("- inseason 0.2.12d：2025-26 沒上場的復出老將（Lillard、Kyrie、Haliburton、VanVleet 等）用 v5 舊季卡補進名單，跳過受傷季走四季窗口，沒有舊季卡的人（≥800 分鐘門檻）仍不列；他們不進 H1 封頂／百分位／引力擬合池。\n" if RETURNING_VETS else "") + ("- inseason 0.2.12c（R-144，E-207）：tovSkill 的失誤率分母由持球分鐘改觸球次數＝0.5·z(−每觸球失誤，窗口加權失誤對窗口加權觸球收縮，k 乘觸球／持球分鐘換算係數)＋0.5·z(持球分鐘/36)；觸球來源同持球分鐘（NBA.com tracking TOUCHES）；池、z、0–99 映射凍結於 live/tov-pool-card0212c.json；卡片全部係數重擬合（card 0.2.12c）。\n" if TOV_TOUCH else "") + (("- inseason 0.2.12（R-139，E-203）：tovSkill 改看持球時間＝0.5·z(−每持球分鐘失誤，窗口加權失誤對窗口加權持球分鐘收縮)＋0.5·z(持球分鐘/36)；持球分鐘＝NBA.com tracking TIME_OF_POSS（過去季 handle-E069 raw、本季 data/defense-seventh/2026-27/possessions.json 每天抓整季），收縮、z、0–99 映射凍結自卡片端（live/tov-pool-card0212.json、live/tov_live.py）；新秀（不在卡片名單）用本季整季值、本季 1000 分鐘內與起點線性混合；卡片全部係數重擬合（card 0.2.12）。\n" if TOV_POSS else "")) + ("- inseason 0.2.10j（R-134／R-135）：加能力值引力（gravity）＝NBA.com 無球外線引力，2025-26 與本季依 FRAMES 加權、套四季窗口季權重；兩季都沒有的人用 OLS（3PA/36、3P%、USG%、位置）補；卡片全部係數重擬合（card 0.2.10j）。\n" if GRAVITY else "") + ("- inseason 0.2.10i（R-130／R-132）：切入（drive）只算帶球切入到 10 呎內的自主兩分（量與效率各半），自主創造（creation）改成自己創造的跳投與低位出手（不含切入上籃、補籃、空切）per36；兩項都是四季滑動窗口，卡片全部係數重擬合（card 0.2.10i）。\n" if SPLIT_DC else "") +
                 (f"- inseason 0.2.10g（E-192）：用人層的 L（上場強度）、a（出賽率）也改四季滑動窗口（權重同其他窗口項；y、v 用當下年齡），每天用當下窗口重算，不再凍結在 2025-26；係數同 0.2.10d，r_repl、錨點用新池重取。\n" if USAGE_WIN else "") +
                 (f"- inseason 0.2.10f（E-191b）：3PT 欄（threeValue，顯示用）的對照池改成近三季各自窗口值＋本季窗口值（窗口加權 MIN≥500），ranking／OVR／名次同 0.2.10e。\n" if WIN10 and TV_P1M else "") +
                 (f"- inseason 0.2.10e（E-188，R-124）：只換 OVR 映射（PR90→88、PR95→92，名次不變），屬性、係數同 0.2.10d。\n" if WIN10 else "") +

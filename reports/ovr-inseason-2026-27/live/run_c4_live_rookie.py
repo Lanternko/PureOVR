@@ -30,6 +30,9 @@ TOV_POSS = os.environ.get('TOV_POSS', '1') != '0'   # 0.2.12（R-139）：TOV_PO
 TOV_TOUCH = os.environ.get('TOV_TOUCH', '1') != '0'   # 0.2.12c（R-144，E-207）：TOV_TOUCH=0 重現 0.2.12b（新秀起點讀 _retired/rookie-prior-2026-0212b.json）
 ROOKIE_JSON = HERE / ('_retired/rookie-prior-2026-0210h.json' if os.environ.get('SPLIT_DC', '1') == '0' else
                       ('rookie-prior-2026.json' if TOV_TOUCH else '_retired/rookie-prior-2026-0212b.json') if GRAVITY and TOV_POSS else '_retired/rookie-prior-2026-0211.json' if GRAVITY else '_retired/rookie-prior-2026-0210i.json')  # 換版後重解 δ（L-109）；GRAVITY=0／SPLIT_DC=0 重現舊版用當時的 δ
+PS_START = os.environ.get('PS_START', '1') != '0'   # 0.2.12e（R-162，E-230）：新秀起點加季前賽位移；PS_START=0 讀 _retired/rookie-prior-2026-pre-ps.json（0.2.12d 的起點）
+if not PS_START and ROOKIE_JSON == HERE / 'rookie-prior-2026.json':
+    ROOKIE_JSON = HERE / '_retired/rookie-prior-2026-pre-ps.json'
 if GRAVITY:
     import gravity_live as GV  # noqa: E402
 if TOV_POSS:
@@ -303,7 +306,7 @@ def vet_gravity(c, attrs, prior_cards):
     rk = json.load(open(ROOKIE_JSON, encoding='utf-8'))['players']
     pos = {p: pc.get('pos') for p, pc in prior_cards.items()}
     pos.update({r['playerId']: DPOS[r['pos']] for r in rk if r['playerId'] not in pos})
-    g, info = GV.live(c, NS['ns']['DATA26'], pos, rookies=[r['playerId'] for r in rk if r['playerId'] not in prior_cards])
+    g, info = GV.live(c, NS['ns']['DATA26'], pos, rookies=[r['playerId'] for r in rk if r['playerId'] not in prior_cards], fit_exclude=__import__('pointwise_pipeline').EXCLUDE_T)
     GRAV.clear(); GRAV.update(g)
     GRAV_INFO.clear(); GRAV_INFO.update(info)
     n = 0

@@ -37,10 +37,11 @@ def percentile_rank(x, ref_sorted):
     return 100.0 * below / (n - 1)
 
 
-def cap_total_lift(pred, pred0, lift, allowed):
+def cap_total_lift(pred, pred0, lift, allowed, pool=None):
+    """pool：布林遮罩，只有 True 的人進封頂門檻表 T（0.2.12d 復出老將補卡不推動別人的門檻）；None＝全部。"""
     pred = pred.copy()
     for it in range(100):
-        s = np.sort(pred)[::-1]
+        s = np.sort(pred if pool is None else pred[pool])[::-1]
 
         def T(a):
             return float(s[min(max(int(a), 1), len(s)) - 1]) - 1e-12
