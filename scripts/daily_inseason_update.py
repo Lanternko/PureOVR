@@ -423,9 +423,11 @@ SPA_SECTIONS = ('rank', 'games')
 
 
 def add_spa_pages(pages: dict) -> dict:
-    """把 index.html 的來源檔再登記成 rank/index.html、games/index.html（同一份內容，路徑決定顯示哪個檢視）。"""
+    """把 index.html 的來源檔再登記成 rank/index.html、games/index.html（同一份內容，路徑決定顯示哪個檢視）；
+    連結預覽縮圖 og-image.png（scripts/build_og_image.py 產生，commit 在 assets/）一併發到根目錄。"""
     for s in SPA_SECTIONS:
         pages[f'{s}/index.html'] = pages['index.html']
+    pages['og-image.png'] = ROOT / 'assets' / 'og-image.png'
     return pages
 
 

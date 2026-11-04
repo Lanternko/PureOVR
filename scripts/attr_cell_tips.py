@@ -18,9 +18,9 @@ LIVE = ROOT / 'reports/ovr-inseason-2026-27/live'
 
 # 比率的 PR／名次只比量夠的人（量用同一卡的 per36 或每場數）：(量的鍵, 門檻)
 SPECS = {
-    'mid': ('中距離', 'MID', '8 呎外到三分線內的<b>命中率與出手量</b>',
+    'mid': ('中距離', 'MID', '油漆區外到三分線內的<b>命中率與出手量</b>',
             [('命中率', 'mid_pct', '{:.1%}', False, ('mid_36', 1.0)), ('出手量', 'mid_36', '{:.1f}/36', False, None)]),
-    'short': ('近框', 'INS', '8 呎內的<b>命中率與出手量</b>',
+    'short': ('近框', 'INS', '油漆區內（含籃下，約 15 呎內）的<b>命中率與出手量</b>',
               [('命中率', 'short_pct', '{:.1%}', False, ('short_36', 1.0)), ('出手量', 'short_36', '{:.1f}/36', False, None)]),
     'ft': ('罰球', 'FT', '<b>罰球命中率</b>與罰球量',
            [('命中率', 'ft_pct', '{:.1%}', False, ('fta_36', 1.0)), ('罰球量', 'fta_36', '{:.1f}/36', False, None)]),
@@ -96,9 +96,66 @@ def window_stats(card, games_done=None):
             out[p].update(rim_diff=nd / n, rim_pg=n / gp)
     return out
 
+NEAR_RIM_FT = 5.0     # 低位：距離 < 5 呎（含座標佔位的補籃／灌籃），和 NBA.com Less Than 5 ft 同口徑（Wemby 2026-27 7 場 49/69＝71.0% 對上）
+UNDER_RIM_FT = 2.0    # 籃下：距離 < 2 呎（含座標佔位）
+TAP_DESC = ('tip', 'putback')    # 補籃：pbp descriptor；補籃優先於上籃／灌籃，不重複算
 
-def build(stats, pool):
-    """{pid: {attr: (rows, foot)}}；pool＝名次人群（pid 集合）。"""
+
+def season_near_rim():
+    """本季（只看 2026-27，不含過去三季）近框出手細項，直接讀 pbp：{pid: {'gp', 'short', 'low', 'under', 'layup', 'dunk', 'tap'}}，
+    各項 [出手, 命中]；'short' 同 window8._zone 的近框區（F-157 佔位座標歸近框）。低位／籃下不限區域；上籃／灌籃／補籃依 subType／descriptor，距離不限。"""
+    import json
+    sys.path.insert(0, str(LIVE))
+    import window8 as W8
+    d26 = ROOT / 'data/defense-seventh/2026-27'
+    gp, games = {}, set()
+    for r in W8._rows(d26 / 'player-games.json'):
+        if r['MIN']:
+            gp[int(r['PLAYER_ID'])] = gp.get(int(r['PLAYER_ID']), 0) + 1
+            games.add(r['GAME_ID'])
+    acc = {}
+    for g in sorted(games):
+        f = d26 / 'pbp' / f'{g}.json'
+        if not f.exists():
+            continue
+        for a in json.loads(f.read_text(encoding='utf-8'))['data']['game']['actions']:
+            if a.get('actionType') != '2pt' or a.get('isFieldGoal') != 1 or not a.get('personId'):
+                continue
+            d, x, y = a.get('shotDistance'), a.get('xLegacy'), a.get('yLegacy')
+            ph = x == 0 and y == 0 and d == 0           # 佔位座標（99.5% 是上籃／灌籃／補籃）
+            dist = 0.0 if ph else d
+            made = a.get('shotResult') == 'Made'
+            tap = (a.get('descriptor') or '') in TAP_DESC
+            st = a.get('subType')
+            flags = {'short': W8._zone(a) == 1,
+                     'low': dist is not None and dist < NEAR_RIM_FT,
+                     'under': dist is not None and dist < UNDER_RIM_FT,
+                     'layup': st == 'Layup' and not tap, 'dunk': st == 'DUNK' and not tap, 'tap': tap}
+            v = acc.setdefault(int(a['personId']), {k: [0, 0] for k in flags})
+            for k, on in flags.items():
+                if on:
+                    v[k][0] += 1
+                    v[k][1] += made
+    return {p: dict(v, gp=gp[p]) for p, v in acc.items() if p in gp}
+
+
+NEAR_RIM_ROWS = [('short', '本季近框'), ('low', '　低位（5 呎內）'), ('under', '　籃下（2 呎內）'),
+                 ('layup', '　上籃'), ('dunk', '　灌籃'), ('tap', '　補籃（tip／putback）')]
+NEAR_RIM_FOOT = '本季＝只算 2026-27 已賽場次，不含過去三季；低位同 NBA.com Less Than 5 ft；上籃／灌籃／補籃依出手動作分類，補籃優先、不重複算'
+
+
+def near_rim_rows(s):
+    """s＝season_near_rim() 的單人資料 -> 提示卡列（無 PR／名次）；出手 0 的細項不列。"""
+    rows = []
+    for k, lab in NEAR_RIM_ROWS:
+        a, m = s[k]
+        if a:
+            rows.append((lab, f'{m / a:.0%} · {m}/{a} · {a / s["gp"]:.1f}/場', None, None))
+    return rows
+
+
+def build(stats, pool, season=None):
+    """{pid: {attr: (rows, foot)}}；pool＝名次人群（pid 集合）。season＝season_near_rim() 結果時，INS 提示卡多列本季近框細項。"""
     P = [stats[p] for p in pool if p in stats]
     out = {}
     for attr, (_, _, _, items) in SPECS.items():
@@ -116,6 +173,9 @@ def build(stats, pool):
                 rows.append((lab, fmt.format(s[k]), pr, rk if inpool else None))
                 if vm:
                     foot.append(f'{lab}名次只比{VOL_NOTE[vm[0]]}{" ≥ %g" % vm[1]}{"/場" if vm[0] == "rim_pg" else "/36"} 的人')
+            if attr == 'short' and season and p in season and season[p]['short'][0]:
+                rows += near_rim_rows(season[p])
+                foot = foot + [NEAR_RIM_FOOT]
             out.setdefault(p, {})[attr] = (rows, foot + ([] if inpool else [sn.NO_RANK_FOOT]))
     return out
 

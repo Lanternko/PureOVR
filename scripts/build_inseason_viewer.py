@@ -19,6 +19,7 @@ from season_nav import add_season_nav, apply_common, regroup_attrs  # noqa: E402
 import season_nav as sn  # noqa: E402
 from site_header import add_masthead  # noqa: E402
 import attr_cell_tips as AT  # noqa: E402
+import tracking_cells as TC  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'reports/impact-epm-2026-27'))
 import epm_live  # noqa: E402
 from build_card_viewer import (onball_rows, onball_tip, pres_tip, pres_tips, tov_tip,  # noqa: E402
@@ -190,7 +191,8 @@ def main():
     # TO 提示卡：2026-27 至今的失誤、持球分鐘、每持球分鐘失誤（0.2.12）
     trows, n_tov = sn.tov_rows(SRC26, 'PLAYER_ID', ipool, ROOT / 'data/defense-seventh/2026-27/possessions.json')
     hrows = sn.three_rows(SRC26, 'PLAYER_ID', ipool)   # 3PT 提示卡：本季至今三分命中率、出手量
-    atips = AT.build(AT.window_stats(False, meta['window8']['gamesDone']), ipool)   # MID／INS／FT／DRV／FD／PASS／CRT／REB／RIM 提示卡：四季窗口含本季
+    atips = AT.build(AT.window_stats(False, meta['window8']['gamesDone']), ipool, AT.season_near_rim())   # MID／INS／FT／DRV／FD／PASS／CRT／REB／RIM 提示卡：四季窗口含本季
+    trk = TC.build('2026-27', ipool, 'snapshot')   # 追蹤量格子（E-239 後續）：手動快照，接在 DRV／INS／CRT／PASS／3PT 提示卡後面，不進分數
     orows, ob_note = onball_live(rows, ipool)
     base = BASE.read_text(encoding='utf-8')
     old = json.loads(re.search(r'const DATA=(\{.*?\});\nconst COLS', base, re.S).group(1))
@@ -231,6 +233,7 @@ def main():
         for a, sub in atips.get(int(r['playerId']), {}).items():
             if r.get(a, '') != '':
                 t[a] = AT.tip(a, float(r[a]), sub, '（近三季加權，含本季）')
+        TC.add(t, trk.get(int(r['playerId'])))
         tr = trows.get(int(r['playerId']))
         if tr:
             t['tovSkill'] = tov_tip(float(r['tovSkill']), tr, n_tov, '2026-27 至今', r['playerId'] in pool)
@@ -260,7 +263,7 @@ def main():
     dcol = ("(v => v >= 4 ? 'var(--g-a)' : v >= 1 ? 'var(--g-b)' : v > -1 ? 'var(--muted)'"
             " : v > -4 ? 'var(--g-d)' : 'var(--g-f)')(p.dovr)")
     s = base
-    s = s.replace('<title>OVR 名單檢視</title>', '<title>新賽季 OVR 名單</title>', 1)
+    s = s.replace('<title>OVR 名單檢視</title>', '<title>球員能力值 · TrueOVR</title>', 1)
     s = s.replace('<h1>2025-26 <span>OVR</span> 名單</h1>', '<h1>2026-27 <span>OVR</span> 名單</h1>', 1)
     s = re.sub(r'<div class="src">.*?</div>',
                f'<div class="src">OVR：賽中 C4（{meta["version"]}），開季起點 {meta["priorCard"]}{"（用人回歸＋當季 RAPM 目標）" if "predNew" in rows[0] else ""}；數據截至 {meta["dataCutoff"]}；'

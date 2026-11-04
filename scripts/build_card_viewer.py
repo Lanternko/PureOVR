@@ -24,6 +24,7 @@ from season_nav import add_season_nav, apply_common, regroup_attrs  # noqa: E402
 import season_nav as sn  # noqa: E402
 from site_header import add_masthead  # noqa: E402
 import attr_cell_tips as AT  # noqa: E402
+import tracking_cells as TC  # noqa: E402
 
 ROOT = er.ROOT
 BASE = ROOT / 'reports/ovr-v58-card-2025-26/roster-viewer.html'
@@ -122,6 +123,7 @@ def main(out=None):
     hrows = sn.three_rows(er.SRC, 'PLAYER_NAME', pool)   # 3PT 提示卡：2025-26 三分命中率、出手量
     pid_of = {row[h['PLAYER_NAME']]: int(row[h['PLAYER_ID']]) for row in rs['rowSet']}
     atips = AT.build(AT.window_stats(True), {pid_of[n] for n in pool if n in pid_of})   # MID／INS／FT／DRV／FD／PASS／CRT／REB／RIM 提示卡：2025-26 季末近三季窗口（WIN_LEN 246）
+    trk = TC.build('2025-26', {pid_of[n] for n in pool if n in pid_of})   # 追蹤量格子（E-239 後續）：接在 DRV／INS／CRT／PASS／3PT 提示卡後面，不進分數
     oc_ = list(csv.DictReader(ONBALL.open(encoding='utf-8')))
     orows = onball_rows({r['name']: (float(r['C3']), float(r['B']), float(r['T'])) for r in oc_ if '' not in (r['C3'], r['B'], r['T'])}, pool)
     # DIQ 顯示負分：card 0.2.10i 的 defenseBonus（同 0.2.7b） 用 def-L-primary，posMeanD 從同一批人算（max(0, ·) 逐人核對）
@@ -145,15 +147,15 @@ def main(out=None):
         data_rows.append([int(r['rank']), num('ovr'), r['name'], r['pos'], team, ht, round(num('MIN') / gp, 1) if gp else 0.0, gp,
                           num('predictedPer36'), dcen[r['name']], three, *[num(a) for a in cols[11:24]],
                           num('presDisplay'), num('pressure'), num('foulDisc'),
-                          {**({'pressure': pres_tip(num('presDisplay'), num('pressure'), ptips[r['name']], n_pres, inpool=r['name'] in pool)} if r['name'] in ptips else {}),
+                          TC.add({**({'pressure': pres_tip(num('presDisplay'), num('pressure'), ptips[r['name']], n_pres, inpool=r['name'] in pool)} if r['name'] in ptips else {}),
                            **({'threeValue': sn.three_tip(three, hrows[r['name']], '2025-26', r['name'] in pool)} if r['name'] in hrows else {}),
                            **{a: AT.tip(a, num(a), sub, '（近三季加權）') for a, sub in atips.get(pid_of.get(r['name']), {}).items()},
                            **({'tovSkill': tov_tip(num('tovSkill'), trows[r['name']], n_tov, inpool=r['name'] in pool)} if r['name'] in trows else {}),
                            **({'onBall': onball_tip(num('onBall'), orows[r['name']], inpool=r['name'] in pool)} if r['name'] in orows else {}),
-                           'gravity': sn.gravity_tip(num('gravity'), gr[r['name']][0], 'ols' if gr[r['name']][1] else 'api', g_pool, r['name'] in pool, '（2025-26）')},
+                           'gravity': sn.gravity_tip(num('gravity'), gr[r['name']][0], 'ols' if gr[r['name']][1] else 'api', g_pool, r['name'] in pool, '（2025-26）')}, trk.get(pid_of.get(r['name']))),
                           *od[r['name']], num('gravity')])
     s = base
-    s = s.replace('<title>OVR 名單檢視</title>', '<title>2025-26 OVR 名單</title>', 1)
+    s = s.replace('<title>OVR 名單檢視</title>', '<title>球員能力值 · TrueOVR · 2026</title>', 1)
     s = re.sub(r'<div class="src">.*?</div>',
                f'<div class="src">OVR：正式卡 card 0.2.12b（2025-26 整季；OVR 為每場，含上場時間，相對替補水準；FD 以量為主；PRES＝逼失誤扣犯規；OVR 能力估計納入教練用人證據，DNP 與輪休分開，用人回歸（上場強度、出賽率看近三季窗口）對齊當季 RAPM；分鐘權重遞減；能力值對 2022-23～2025-26 四季比較；切入只算帶球切入的自主兩分、自主創造看自主跳投與低位；GRV＝引力：沒拿球時防守人也不敢離開他的程度（NBA.com 無球外線引力，沒有資料的人用三分出手、命中率、用球率與位置推估）；防守加成不打折、近期加權；OVR 評分標準為 DARKO 加 BPM；年輕人沒有爛隊折扣；傳球看量也看率；3PT、RIM、PRES 頂端不封在 99；OVR 不看身高體重；OVR 尺頂端另以 PR90、PR95 定位）；3PT 顯示 threeValue；{len(rows)} 人</div>',
                s, count=1, flags=re.S)

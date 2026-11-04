@@ -15,6 +15,15 @@ GAUGE = '<rect x=".5" y=".5" width="63" height="63" rx="14" fill="#0b0e12" strok
 FAVICON = ('<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,'
            + ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
               + GAUGE + '</svg>').replace('"', "'").replace('#', '%23').replace('<', '%3C').replace('>', '%3E') + '">')
+# 連結預覽（Discord／Threads／LINE 等）：縮圖 1200×630 由 scripts/build_og_image.py 產生，發布到網站根目錄
+OG_TAGS = ('<meta property="og:type" content="website"><meta property="og:site_name" content="TrueOVR">'
+           '<meta property="og:title" content="球員能力值 · TrueOVR">'
+           '<meta property="og:description" content="NBA 球員評分、球隊戰力排行與賽程勝率">'
+           '<meta property="og:url" content="https://trueovr.com/">'
+           '<meta property="og:image" content="https://trueovr.com/og-image.png">'
+           '<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">'
+           '<meta name="twitter:card" content="summary_large_image">'
+           '<meta name="twitter:image" content="https://trueovr.com/og-image.png">')
 LOGO = '<svg class="logo" viewBox="0 0 64 64" aria-hidden="true">' + GAUGE + '</svg>'
 CSS = """<style>
 .top{position:relative;z-index:5}
@@ -264,7 +273,7 @@ def add_season_nav(html_str, current):
     s, n = re.subn(r'<h1>(.*?)</h1>', lambda m: f'<div class="brand">{LOGO}<h1>{m.group(1)}</h1></div>', s, count=1)
     assert n == 1, 'h1 not found'
     assert s.count('<meta charset="utf-8">') == 1
-    s = s.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n' + FAVICON, 1)
+    s = s.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n' + FAVICON + OG_TAGS, 1)
     # 能力值顯示四捨五入成整數（使用者 2026-10-30）；等第仍用原值算，OVR、得分、DIQ 等其他數字保留小數
     for a, b in [('>${v}</td>`; }', '>${Math.round(v)}</td>`; }'), ('${grade(v)} ${v}</i>', '${grade(v)} ${Math.round(v)}</i>'),
                  ('` title="${v}"`', '` title="${Math.round(v)}"`')]:
@@ -313,8 +322,8 @@ ATTR_TIPS = {
             [('組成', '單防 ＋ 護框 ＋ 壓迫 ＋ 防守意識'), ('單位', '每 36 分鐘淨分（0＝平均）')], False),
     'threeValue': ('三分', 'Three-Point', '三分球的<b>命中率與出手量</b>',
                    [('出手量', '三分出手 / 36'), ('命中率', '三分命中率')], ''),
-    'mid': ('中距離', 'Mid-Range', '8 呎以外的<b>投籃命中率與數量</b>', [], ''),
-    'short': ('近框', 'Inside Scoring', '8 呎以內的<b>命中率與自主得分</b>',
+    'mid': ('中距離', 'Mid-Range', '油漆區外到三分線內的<b>投籃命中率與數量</b>', [], ''),
+    'short': ('近框', 'Inside Scoring', '油漆區內（含籃下）的<b>命中率與自主得分</b>',
               [('自主創造', '100% 計入'), ('被餵球（吃餅）', '打折計入')], ''),
     'ft': ('罰球', 'Free Throw', '<b>罰球命中率</b>與數量', [], ''),
     'drive': ('切入', 'Drive', '<b>帶球切入</b>到 10 呎內的自主兩分（量與效率各半）', [], ''),
@@ -344,7 +353,7 @@ ATTR_TIPS = {
 # - 預設放元素下方，放不下改上方；左右夾在視窗內 8px。捲動就收起。
 # - 觸控（使用者 2026-11-01）：表頭點一下只排序，長按（450ms）才顯示說明；格子同樣只有長按才顯示（2026-11-02 使用者：點一下不該馬上跳）；長按一直顯示，點別處才收，捲動時跟著元素。
 TIP_CSS = """<style>
-.atip{position:fixed;z-index:60;left:0;top:0;width:min(290px,calc(100vw - 16px));padding:11px 12px 10px;background:#101114;border:1px solid rgba(255,255,255,.08);border-radius:10px;box-shadow:0 12px 28px rgba(0,0,0,.5),0 0 0 1px rgba(0,0,0,.4);color:#c2c7ce;font:400 12px/1.5 var(--f-body);text-align:left;pointer-events:none;opacity:0;transform:translateY(-3px);transition:opacity .14s cubic-bezier(.16,1,.3,1),transform .14s cubic-bezier(.16,1,.3,1)}
+.atip{position:fixed;z-index:60;left:0;top:0;width:min(330px,calc(100vw - 16px));padding:11px 12px 10px;background:#101114;border:1px solid rgba(255,255,255,.08);border-radius:10px;box-shadow:0 12px 28px rgba(0,0,0,.5),0 0 0 1px rgba(0,0,0,.4);color:#c2c7ce;font:400 12px/1.5 var(--f-body);text-align:left;pointer-events:none;opacity:0;transform:translateY(-3px);transition:opacity .14s cubic-bezier(.16,1,.3,1),transform .14s cubic-bezier(.16,1,.3,1)}
 .atip.on{opacity:1;transform:none}
 .atip::before{content:"";position:absolute;left:var(--ax,50%);margin-left:-6px;border:6px solid transparent}
 .atip.below::before{bottom:100%;border-bottom-color:#101114}
@@ -358,7 +367,7 @@ TIP_CSS = """<style>
 .atip .r{display:grid;grid-template-columns:auto 1fr;align-items:baseline;gap:4px 12px;border-top:1px solid rgba(255,255,255,.06);margin-top:9px;padding-top:8px;font-variant-numeric:tabular-nums}
 .atip .r.r3{grid-template-columns:auto 1fr auto}
 .atip .r span{color:#8b919a}
-.atip .r b{color:#e8eaed;font-weight:600;text-align:right}
+.atip .r b{color:#e8eaed;font-weight:600;text-align:right;white-space:nowrap}
 .atip .r em{color:#7a808a;font:normal 10.5px var(--f-body);text-align:right}
 .atip .rk{color:#f5d780;font-style:normal;font-weight:700}
 .atip .f{color:#6b7280;font-size:10.5px;line-height:1.5;border-top:1px solid rgba(255,255,255,.05);margin-top:8px;padding-top:7px}
@@ -614,12 +623,12 @@ COMMON_REPLACEMENTS = [
     ('    <span>點欄位標題排序，再點一次反向</span>\n    <span>點任一列看球員卡</span>\n', ''),
     ('    <span>OVR 同分多半是 2K27 名次封頂造成的</span>',
      '    <button type="button" class="ovr-t" aria-expanded="false" onclick="const b=this.nextElementSibling,o=b.hidden;b.hidden=!o;this.setAttribute(\'aria-expanded\',o)">'
-     'OVR：由<b>傳統數據 ＋ 防守影響力 ＋ 上場時間</b>算出每場比賽影響力 <i>▼</i></button>\n'
+     'OVR：綜合<b>場上能力 ＋ 防守意識 ＋ 上場時間</b>的每場比賽影響力 <i>▼</i></button>\n'
      '    <div class="ovr-how" hidden>'
-     '<div><span class="oh-t">1. 傳統與對位數據（13 項能力）</span>結合傳統 Box Score（得分、籃板、助攻、抄阻、失誤）、逐球紀錄（<b>自己創造</b> vs 被餵球、切入）與官方對位追蹤（外線干擾三分、對位主將球權、籃下護框降命中率、干擾傳球），換算成 0–99 的單項能力。</div>'
-     '<div><span class="oh-t">2. 防守影響力（DIQ 防守意識）</span>用多年加權的<b>防守 RAPM</b>（在場正負值扣除隊友與對手強弱）比同位置平均高多少，補上傳統數據抓不到的無球輪轉、站位與協防。</div>'
-     '<div><span class="oh-t">3. 上場時間與教練用人</span>結合<b>場均分鐘</b>與<b>出賽率</b>（區分輪休與被冷凍 DNP）。同效率下，能扛越多上場時間的人單場價值越高（邊際遞減）。</div>'
-     '<div><span class="oh-t">4. 怎麼合成 OVR（與 EPM 的關係）</span>不直接拿單一進階數據當 OVR，而是把上述三塊合成、權重對齊進階指標 <b>DARKO＋BPM</b>，衡量「每場能幫球隊多贏幾分」。球員卡右側的 <b>RAPM／EPM</b> 是獨立列出來對照的實際場上影響力；2027 頁以 2026 卡為底（新秀看順位），隨本季表現逐場更新。</div>'
+     '<div><span class="oh-t">1. 場上能力（14 項）</span>結合傳統數據、逐球紀錄與官方追蹤，不只看帳面產量，也區分<b>自主創造 vs 吃餅</b>、<b>無球牽制（引力）</b>、<b>持球保護</b>與<b>對位主將／護框降命中率</b>，拆成 14 項單項能力（頂尖可破 99）。</div>'
+     '<div><span class="oh-t">2. 防守意識（DIQ）</span>抄截與阻攻只佔防守一小部分。DIQ 計算扣除隊友與對手強弱後，在場能幫球隊<b>少丟幾分</b>（跨季防守 RAPM 比同位置平均），補齊數據抓不到的<b>無球輪轉、站位與協防</b>。</div>'
+     '<div><span class="oh-t">3. 上場時間與用人</span>結合<b>場均分鐘</b>與<b>出賽率</b>（區分正常輪休與被棄用 DNP）。同效率下，<b>能扛越多上場時間，單場價值越高</b>（邊際遞減）。</div>'
+     '<div><span class="oh-t">4. 怎麼合成 OVR</span>將上述三項對齊進階指標（DARKO、BPM）校準權重，衡量<b>每場能幫球隊多贏幾分</b>；球員卡右側另列<b>實際在場影響</b>與<b>單場評分</b>供對照。全站<b>隨比賽逐場更新</b>並反映近期狀態（新秀以選秀順位為起點）。</div>'
      '</div>'),
 ] + [
     # 上場篩選拿掉（手機太擠，門檻也還是整季總分鐘），換成球隊篩選：仿 arammeta 的彈出格子（使用者 2026-10-29）
@@ -653,6 +662,7 @@ function fitTable() {
   if (gOpen) g.hidden = true;
   const tt = t.getBoundingClientRect().top;
   const above = innerWidth <= 640 ? tt - document.getElementById('card').getBoundingClientRect().top : tt + scrollY;
+  if (gOpen) g.hidden = false;
   const h = Math.max(innerWidth <= 640 ? 240 : 300, innerHeight - above - 12);
   t.style.maxHeight = Math.round(h) + 'px';
   tboxEdges();
@@ -662,7 +672,6 @@ function tboxEdges() {
   const t = document.querySelector('.tbox');
   t.classList.toggle('scrolled', t.scrollTop > 0);
   t.classList.toggle('below', t.scrollTop + t.clientHeight < t.scrollHeight - 2);
-  if (gOpen) g.hidden = false;
 }
 document.querySelector('.tbox').addEventListener('scroll', tboxEdges, { passive: true });
 // 手機：同一次滑動把表格捲到頂／底時不接著帶動整頁（iOS 會接著捲）；放開後「下一次」滑動若一開始就在頂／底，才讓整頁捲（使用者 2026-11-02）

@@ -82,8 +82,10 @@ tbody tr.row td:not(.rk):not(.net):not(.tm){color:var(--muted)}
 .sum{grid-column:1/-1;color:var(--muted);font-size:.8rem}
 .cm{color:var(--muted);font-size:.74rem;display:block;white-space:normal;max-width:46ch}
 .cm.rt{color:var(--gold)}
-.note{color:var(--muted);font-size:.8rem;line-height:1.6;border-top:1px solid var(--line);padding-top:10px}
-.meta .nb{margin:0;padding-left:1.2em;color:var(--fg)}
+.note{color:var(--muted);font-size:.8rem;line-height:1.7;border-top:1px solid var(--line);padding-top:10px}
+.note b,.meta b{color:var(--fg);font-weight:600}
+.note em,.meta em{color:var(--gold);font-style:normal;font-weight:600}
+.meta .nb{margin:0;padding-left:1.2em;color:var(--muted)}
 .meta .warn{display:block}
 @media (max-width:900px){.hide-m{display:none}}
 @media (max-width:760px){.dg{grid-template-columns:minmax(0,1fr)}.cm{max-width:none}}
@@ -150,17 +152,18 @@ function info(){
   const i=D.injuries||{};
   $('#stamp').innerHTML='<b>'+esc(D.dataCutoff)+'</b>'+esc(D.generatedAt.slice(11,16))+' 更新';
   const isT=D.engineKind==='t';
-  $('#meta').innerHTML='<ul class="nb"><li>'+(isT?'戰力排行由陣容模型（Transformer，用過去五季每段上場陣容的得失分訓練）估計：依分鐘抽出每隊的五人陣容，對其他 29 隊各抽 '+D.opponent.drawsPerTeam+' 組陣容對打，平均得出。'
-     :'戰力排行是模型模擬比賽（每隊對五支不同強度、位置配置的對手隊共打 '+D.seeds+' 場）得出的數據。')+'目前還在 beta 版本，有不準的地方，僅供參考。</li>'
-   +(isT?'':'<li>76 人被低估：模型認為同一隊持球單打手太多，彼此搶球，化學反應不好。</li>')+'</ul>'
+  $('#meta').innerHTML='<ul class="nb"><li>'+(isT?'由<b>過去五季上場陣容得失分</b>訓練的<b>陣容模型（Transformer）</b>估計：依輪替分鐘抽出<b>五人陣容</b>，對<b>其他 29 隊各 '+D.opponent.drawsPerTeam+' 組陣容</b>對戰平均得出。'
+     :'由模型<b>模擬比賽</b>（每隊對五支不同強度與位置配置的對手隊共打 <b>'+D.seeds+' 場</b>）得出。')+'<em>目前還在 beta 版本</em>，僅供參考。</li>'
+   +(isT?'':'<li><b>76 人被低估</b>：模型認為同隊持球單打手太多、彼此搶球，化學反應不佳。</li>')+'</ul>'
    +(i.stale&&(!i.fetchedAt||Date.now()-Date.parse(i.fetchedAt)>3*864e5)?'<span class="warn">傷病名單已超過三天沒更新。</span>':'')
    +(D.schedule&&D.schedule.remainingGames?'':'<span class="warn">抓不到賽程，剩餘場次以對全聯盟平均勝率計。</span>');
   $('#viewHint').textContent=view==='today'?'排除傷兵':'全員健康的版本';
-  $('#note').innerHTML=(isT?'評分模型 '+esc(D.engine)+'（2025-26 整季與本季已完賽場次回測都比舊模擬引擎準）':'模擬引擎 '+esc(D.engine))+'；OffRtg／DefRtg 為每百回合得分／失分（DefRtg 越低防守越好），NetRtg＝OffRtg−DefRtg。'
-   +'<br>分鐘規則：每位現役球員取他自己最近 '+D.lastN+' 場「有出場」的平均分鐘（沒上場的比賽不算，不管當時在哪隊）；候選人是該隊最近 '+D.lastN+' 場出場過的人，加上最近沒出場但自己平均 ≥'+(D.returnMin||15)+' 分鐘的人（視為傷缺復出）；照教練實際用人：每人的起點分鐘就是上述平均分鐘，再乘上「焦灼比賽乘數」（依該隊球員的分鐘名次分 11 槽，乘數＝2024-25、2025-26 兩季焦灼場〔分差 ≤5 或延長賽〕的平均分鐘 ÷ 全部場的平均分鐘，約 1.02–1.11，由資料直接量），再等比放大到合計 240 分鐘；單人上限 36（超出的分鐘依比例分給沒到上限的人，反覆到收斂），不設下限；可上場人數太少（不到 7 人）時上限放寬到 40。名次只用來決定乘數，不直接決定分鐘。「可用」先拿掉 Out／Doubtful／Questionable／Day-To-Day（含停賽），只留 Probable 與沒上名單的人，不做機率加權；「傷兵」欄＝被拿掉的人數。'
-   +((D.baseProfiles||[]).length?'<br>上季整季缺陣、今年還沒有排名的人（'+D.baseProfiles.map(x=>esc(x.name)).join('、')+'）：模擬用他最近一張賽季卡的能力值（不做年齡調整），OVR 欄標「24-25 卡」等來源；沒有任何歷史卡的新人仍當聯盟平均球員。':'')
-   +'<br>預測勝場＝目前勝場＋剩餘賽程逐場勝率（主場 +'+D.H+' 分、σ='+D.sigma+'）。「可用」版依 ESPN 預計回歸日逐場換陣容：比賽日期早於回歸日就缺陣，之後回來；'
-   +((D.injuries&&D.injuries.outNoReturnDate)?'<span class="warn">目前有 '+D.injuries.outNoReturnDate+' 位缺陣者沒有回歸日（官方 PDF 備援不提供），當整季缺陣。</span>':'沒有回歸日的缺陣者當整季缺陣。')+'「全員」版不扣人、陣容全程不變。主表的 Net 是今天的陣容。';
+  $('#note').innerHTML='<em>效率指標</em>：<b>OffRtg／DefRtg</b> 為每百回合得分／失分（<b>DefRtg 越低防守越好</b>），<b>NetRtg＝OffRtg−DefRtg</b>。主表顯示<b>今天的陣容</b>。'
+   +'<br><em>上場時間</em>：取球員<b>近 '+D.lastN+' 場有出賽的平均分鐘</b>，依<b>焦灼比賽</b>（分差 5 分內或延長賽）主力縮輪替的比例調整並<b>湊滿 240 分鐘</b>，<b>單人上限 36 分鐘</b>（未滿 7 人時放寬至 40）。近期未出賽但<b>場均滿 '+(D.returnMin||15)+' 分鐘</b>者視為傷癒復出，照常排入輪替。'
+   +'<br><em>可用／全員</em>：<b>「可用」</b>排除 <b>Out、Doubtful、Questionable、Day-To-Day 與停賽</b>球員（<b>Probable 照常上場</b>），「傷兵」欄為排除人數；<b>「全員」</b>假設全隊健康。'
+   +((D.baseProfiles||[]).length?'<br><em>過往賽季卡</em>：<b>上季整季缺陣、本季尚無排名</b>的球員（'+D.baseProfiles.map(x=>esc(x.name)).join('、')+'），OVR 欄暫標<b>最近一張賽季卡</b>。':'')
+   +'<br><em>預測勝場</em>：<b>目前勝場＋剩餘賽程逐場勝率</b>（計入主客場與對手強弱）。<b>「可用」版依 ESPN 預計回歸日逐場更換陣容</b>，回歸日前缺陣、之後歸隊；'
+   +((D.injuries&&D.injuries.outNoReturnDate)?'<span class="warn">目前有 '+D.injuries.outNoReturnDate+' 位缺陣者沒有回歸日（官方 PDF 備援不提供），視為整季缺陣。</span>':'<b>無回歸日者視為整季缺陣</b>。')+'「全員」版全程以健康陣容計算。';
 }
 function rows(){
   const R=T.map(t=>({t,v:t[view]})).sort((a,b)=>b.v.net-a.v.net).map((o,i)=>({...o,rank:i+1}));
