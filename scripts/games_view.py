@@ -149,7 +149,13 @@ const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','De
 const dp=d=>{const x=new Date(d+'T00:00:00Z');return {m:MON[x.getUTCMonth()]+' '+x.getUTCDate(),w:WD[x.getUTCDay()]}};
 const sgn=v=>v>0?'+'+v:String(v);
 const pct=s=>{const [m,a]=s.split('-').map(Number);return a?Math.round(100*m/a)+'%':'—'};
-function hash(){return '/games/'+(date&&D&&!(date===D.latest&&!openId)?date+'/'+(openId?openId+'/':''):'')}
+// 「今天」＝開賽時間（UTC+8）落在今天或更早的最後一個比賽日；美東晚上的場次在台灣是隔天早上。沒有開賽時間的日期當作美東日＋1 天開打
+function today(){
+  const k=t=>new Date(t+8*36e5).toISOString().slice(0,10),now=k(Date.now());
+  const day=d=>{const ts=(D.games[d]||[]).map(g=>g.tip).filter(Boolean).map(t=>new Date(t).getTime());return ts.length?k(Math.min(...ts)):k(new Date(d+'T00:00:00Z').getTime()+16*36e5)};
+  let r=D.dates[0]||D.latest;for(const d of D.dates){if(day(d)<=now)r=d;else break;}return r;
+}
+function hash(){return '/games/'+(date&&D&&!(date===today()&&!openId)?date+'/'+(openId?openId+'/':''):'')}
 function sync(){if(/^\/games\//.test(location.pathname))history.replaceState(null,'',hash());}
 function boxHtml(g){
   const b=boxes[date.slice(0,7)];
@@ -195,7 +201,7 @@ function render(smooth){
   if(!built)build();
   const gs=D.games[date]||[];
   root.querySelectorAll('.dc').forEach(b=>{const on=b.dataset.d===date;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on));});
-  $('#latest').disabled=date===D.latest;
+  $('#latest').disabled=date===today();
   $('#gl').innerHTML=gs.length?gs.map(card).join(''):'<div class="empty">這天沒有賽事</div>';
   $('#note').innerHTML='比分與 box score 來自 NBA.com 官方 gamelog；W-L 是該場結束時的戰績（由 gamelog 逐場累計）；已完賽場次的日期以 gamelog 的比賽日（美東）為準，未開打場次取自賽程，開賽時間以 UTC+8 顯示。gamelog 沒有先發名單與 DNP，球員依上場分鐘排序。';
   center(smooth);
@@ -203,7 +209,7 @@ function render(smooth){
 function go(d){date=d;openId=null;render(true);sync();}
 function apply(){
   const w=want||{};want=null;
-  date=w.d&&D.games[w.d]?w.d:D.latest;
+  date=w.d&&D.games[w.d]?w.d:today();
   const g=w.gid&&(D.games[date]||[]).find(x=>x.id===w.gid&&x.status==='final');
   openId=g?g.id:null;render(built);if(openId)fetchBox(date);
 }
@@ -223,7 +229,7 @@ $('#strip').addEventListener('click',e=>{const b=e.target.closest('.dc');if(b&&b
 $('#strip').addEventListener('scroll',arrows,{passive:true});
 $('#sl').addEventListener('click',()=>{const s=$('#strip');s.scrollBy({left:-s.clientWidth*.85,behavior:'smooth'});});
 $('#sr').addEventListener('click',()=>{const s=$('#strip');s.scrollBy({left:s.clientWidth*.85,behavior:'smooth'});});
-$('#latest').addEventListener('click',()=>go(D.latest));
+$('#latest').addEventListener('click',()=>go(today()));
 new ResizeObserver(()=>{if(pend&&$('#strip').clientWidth){pend=false;center(false);}arrows();}).observe($('#strip'));
 function ensure(){
   if(!loading)loading=fetch('/games-data.json',{cache:'no-cache'}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(d=>{
