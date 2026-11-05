@@ -59,12 +59,78 @@ def season_box(today_et):
     return acc
 
 
+# E-246：21 欄追蹤統計混本季（規則同 box：w=min/(min+500)，本季值不設 200 分鐘門檻）。
+# BLEND_DEFAULT＝線上預設混哪幾類；空＝現行 T0（全用 2025-26）。採用後改成 TRACK_CLASSES。
+TRACK_CLASSES = ('hustle', 'rimthree', 'matchup', 'adv')
+BLEND_DEFAULT = ()
+TRACK_DIR = os.path.join(ROOT, 'data', 'defense-seventh', '2026-27', 'tracking')   # 每日整季累計（截至前一晚）
+MATCHUP_DIR = os.path.join(ROOT, 'data', 'matchup-source', '2026-27')             # 每日逐場 boxscorematchupsv3
+
+
+def _rows(path):
+    d = json.load(open(path, encoding='utf-8'))
+    d = d.get('data', d)
+    s = d['resultSets'][0] if isinstance(d['resultSets'], list) else d['resultSets']
+    return [dict(zip(s['headers'], r)) for r in s['rowSet']]
+
+
+def season_tracking(today_et, cur, classes, snap_dir=None):
+    """本季 21 欄原值 {pid: {col: v}}（只算 classes 內的類別）。cur＝season_box(today_et)。
+    snap_dir：含 hustle/rim/three/advanced.json 的夾（回測＝DateTo 前一天快照；線上＝TRACK_DIR）。matchup 一律逐場加總 GAME_DATE < today_et。"""
+    snap_dir = snap_dir or TRACK_DIR
+    out = {}
+    mn = lambda p: cur[p]['MIN'] if p in cur else 0.0
+    def put(p, **kv):
+        out.setdefault(p, {}).update({k: v for k, v in kv.items() if v is not None})
+    if 'hustle' in classes and os.path.exists(os.path.join(snap_dir, 'hustle.json')):
+        for r in _rows(os.path.join(snap_dir, 'hustle.json')):
+            p = str(r['PLAYER_ID']); m = mn(p)
+            if m > 0:
+                f = 36 / m
+                put(p, deflections36=r['DEFLECTIONS'] * f, cont2pt36=r['CONTESTED_SHOTS_2PT'] * f, cont3pt36=r['CONTESTED_SHOTS_3PT'] * f,
+                    charges36=r['CHARGES_DRAWN'] * f, looseO36=r['OFF_LOOSE_BALLS_RECOVERED'] * f, looseD36=r['DEF_LOOSE_BALLS_RECOVERED'] * f,
+                    boxoutO36=r['OFF_BOXOUTS'] * f, boxoutD36=r['DEF_BOXOUTS'] * f, screenAst36=r['SCREEN_ASSISTS'] * f)
+    if 'rimthree' in classes:
+        for kind, pct, ns, fga, cd, cf in (('rim', 'LT_06_PCT', 'NS_LT_06_PCT', 'FGA_LT_06', 'rimDiff', 'rimFGA36'),
+                                           ('three', 'FG3_PCT', 'NS_FG3_PCT', 'FG3A', 'threeDiff', 'threeFGA36')):
+            fp = os.path.join(snap_dir, f'{kind}.json')
+            if not os.path.exists(fp):
+                continue
+            for r in _rows(fp):
+                p = str(r['CLOSE_DEF_PERSON_ID']); m = mn(p)
+                if m > 0 and (r[fga] or 0) > 0 and r[pct] is not None and r[ns] is not None:
+                    put(p, **{cd: r[pct] - r[ns], cf: r[fga] * 36 / m})
+    if 'matchup' in classes:
+        d = json.load(open(os.path.join(SD, 'player-games.json'), encoding='utf-8'))['data']['resultSets']
+        t = d[0] if isinstance(d, list) else d
+        gi, di = t['headers'].index('GAME_ID'), t['headers'].index('GAME_DATE')
+        gdate = {r[gi]: str(r[di]) for r in t['rowSet']}
+        acc = {}
+        for fn in os.listdir(MATCHUP_DIR):
+            gid = fn[:-5]
+            if not fn.endswith('.json') or gid not in gdate or gdate[gid] >= today_et:
+                continue
+            for r in json.load(open(os.path.join(MATCHUP_DIR, fn), encoding='utf-8'))['matchups']:
+                a = acc.setdefault(str(r['def']), [0.0, 0.0, 0.0, 0.0])
+                a[0] += r['playerPoints'] or 0; a[1] += r['partialPossessions'] or 0
+                a[2] += r['matchupFieldGoalsMade'] or 0; a[3] += r['matchupFieldGoalsAttempted'] or 0
+        for p, a in acc.items():
+            if mn(p) > 0 and a[1] > 0 and a[3] > 0:
+                put(p, oppPtsPerPoss=a[0] / a[1], oppFGpct=a[2] / a[3])
+    if 'adv' in classes and os.path.exists(os.path.join(snap_dir, 'advanced.json')):
+        for r in _rows(os.path.join(snap_dir, 'advanced.json')):
+            p = str(r['PLAYER_ID'])
+            if mn(p) > 0:
+                put(p, usg=r['USG_PCT'], astPct=r['AST_PCT'], ts=r['TS_PCT'], orebPct=r['OREB_PCT'], drebPct=r['DREB_PCT'], tovPct=r['TM_TOV_PCT'])
+    return out
+
+
 def nn(name):
     import unicodedata
     return ''.join(c for c in unicodedata.normalize('NFKD', name or '') if not unicodedata.combining(c)).lower().replace('.', '').replace("'", '').replace('-', ' ').strip()
 
 
-def build(today_et, ldir=None, names=None):
+def build(today_et, ldir=None, names=None, blend=None, snap_dir=None):
     """回傳 (B, tab, info)：B[pid]=(vals[F], mask[F])，tab[pid]={heightInches,pass,creation}（供位置規則）。"""
     ldir = ldir or live_dir()
     live = {r['playerId']: r for r in read_csv(os.path.join(ldir, 'ranking.csv'))}
@@ -105,6 +171,18 @@ def build(today_et, ldir=None, names=None):
             for c, k in zip(BOX, ('STL', 'BLK', 'PF', 'OREB', 'DREB')):
                 cv = a[k] * 36.0 / mc; pv = S[p].get(c)
                 mixed[p][c] = w * cv + (1 - w) * (mean_box[c] if pv is None else pv)
+    blend = tuple(BLEND_DEFAULT if blend is None else blend)
+    n_track = 0
+    if blend:                                         # E-246：21 欄同規則混本季
+        mean_st = {c: float(np.mean([d[c] for d in prior.values() if d.get(c) is not None])) for c in STATS}
+        for p, vals in season_tracking(today_et, cur, blend, snap_dir).items():
+            mc = cur[p]['MIN'] if p in cur else 0.0
+            if mc <= 0 or p not in mixed:
+                continue
+            w = mc / (mc + K_PRIOR_MIN); n_track += 1
+            for c, cv in vals.items():
+                pv = S[p].get(c)
+                mixed[p][c] = w * cv + (1 - w) * (mean_st[c] if pv is None else pv)
     smu, ssd = {}, {}
     for c in STATS:
         v = [mixed[p][c] for p in prior if c in mixed[p]]
@@ -124,14 +202,15 @@ def build(today_et, ldir=None, names=None):
         if p in A:
             tab[p] = {'heightInches': A[p].get('heightInches'), 'pass': A[p].get('pass'), 'creation': A[p].get('creation')}
     info = dict(liveDir=os.path.basename(ldir), nLive=len(live), nCardOnly=sum(1 for s in abil_src.values() if s == 'card'),
-                nStatsPrior=len(prior), nCurPlayers=len(cur), nBlendedBox=sum(1 for p in cur if p in mixed), K=K_PRIOR_MIN, todayEt=today_et)
+                nStatsPrior=len(prior), nCurPlayers=len(cur), nBlendedBox=sum(1 for p in cur if p in mixed), K=K_PRIOR_MIN, todayEt=today_et,
+                blendTrack=list(blend), nBlendedTrack=n_track)
     return B, tab, info
 
 
-def make_ctx(today_et, ldir=None, names=None):
+def make_ctx(today_et, ldir=None, names=None, blend=None, snap_dir=None):
     """E-228 的 Ctx（E-227 R2-stats 五個 seed、prior 2025-26 的每場回合數），特徵表換成 live 混合表。"""
     C = Ctx('E227-R2-stats', '2025-26')
-    B, tab, info = build(today_et, ldir, names)
+    B, tab, info = build(today_et, ldir, names, blend, snap_dir)
     C.B = B; C.tab = tab
     hs = [d['heightInches'] for d in tab.values() if d.get('heightInches') is not None]
     C.med_h = float(np.median(hs))

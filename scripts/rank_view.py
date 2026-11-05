@@ -344,15 +344,23 @@ const PC_GROUPS=[['進攻',[['threeValue','3PT','三分'],['mid','MID','中距�
  ['防守',[['onBall','PER D','單防'],['help','RIM','護框']]]];
 const PC_SIL='<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="78" r="42" fill="#fff"/><path d="M20 260c0-62 32-100 80-100s80 38 80 100z" fill="#fff"/></svg>';
 let PC_BY=null,PC_PCT=null;
+const PC_KN=[[50,70],[90,88],[95,92],[99,97]];
+function pcDisp(v){if(v<70)return v;if(v>99)return v-2;const q=(v-70)*49/29+50;   // season_nav.display_scale
+  for(let i=1;i<PC_KN.length;i++){const[a,b]=PC_KN[i-1],[c,d]=PC_KN[i];if(q<=c)return b+(q-a)*(d-b)/(c-a);}return 97;}
 function pcIndex(){
   if(PC_BY)return PC_BY;
   PC_BY={id:new Map(),name:new Map()};
   let PP=[],RR={};
   try{PP=P;RR=REAL;}catch(e){}           // 名單頁頂層 const；不在名單頁就沒有卡
   for(const p of PP){const r=RR[p.name];if(r&&r.id)PC_BY.id.set(String(r.id),p);PC_BY.name.set(p.name,p);}
-  // OFF／DEF：模型進攻／防守分量在全聯盟名單裡的百分位（0–99），和能力值同一把尺好讀
-  const pct=k=>{const v=PP.map(p=>p[k]).filter(x=>x!=null).sort((a,b)=>a-b),n=v.length;
-    return x=>{if(x==null||n<2)return null;let lo=0,hi=n;while(lo<hi){const m=(lo+hi)>>1;if(v[m]<x)lo=m+1;else hi=m;}return Math.round(lo/(n-1)*99);}};
+  // OFF／DEF：和能力值同一套轉換（照引力 PctMapper＋R-168 尾巴）：池＝MPG≥20、本季≥5 場；池內百分位 → attr()（PR1→40、PR50→70、PR99→99）；
+  // PR≥99 以上：一個標準差＝(PR99 值−PR90 值)/1.044（常態 z99−z90），每多 1 個標準差 +10 分、不設上限；最後套網站顯示尺（方案 B，R-138）。
+  const pool=PP.filter(p=>(p.min||0)>=20&&(p.gp||0)>=5),PL=pool.length>=50?pool:PP;
+  const pct=k=>{const v=PL.map(p=>p[k]).filter(x=>x!=null).sort((a,b)=>a-b),n=v.length;
+    const pr=x=>{let lo=0,hi=n;while(lo<hi){const m=(lo+hi)>>1;if(v[m]<x)lo=m+1;else hi=m;}let h=lo;while(h<n&&v[h]===x)h++;return 100*(lo+.5*(h-lo))/n;};
+    const at=q=>Math.max(40,Math.min(99,q<50?40+(q-1)*30/49:70+(q-50)*29/49));
+    const r90=v.find(x=>pr(x)>=90),r99=v.find(x=>pr(x)>=99),S=(r99-r90)/1.044;
+    return x=>{if(x==null||n<2)return null;const q=pr(x);return Math.round(pcDisp(q>=99&&S>0?99+10*(x-r99)/S:at(q)));};};
   PC_PCT={off:pct('off'),def:pct('def')};
   return PC_BY;
 }
@@ -377,7 +385,7 @@ function pcHTML(p,pid,ovr){
   const front='<div class="card mist face c-'+col+' t'+tn+(pid?'':' noimg')+'"><div class="bg"></div><div class="fx"></div>'
    +'<div class="portrait">'+PC_SIL+img+'</div><div class="ovr"><b'+(O>=100?' style="font-size:94px"':'')+'>'+O+'</b></div><div class="fade"></div>'
    +'<div class="plate"><div class="name" style="font-size:'+pcFit(NAME,30,268)+'px">'+esc(NAME)+'</div><div class="zh">'+sub+'</div></div>'
-   +'<div class="stats m-row">'+one('OFF',off,'core','進攻影響力：全聯盟百分位')+one('DEF',def,'core','防守影響力：全聯盟百分位')
+   +'<div class="stats m-row">'+one('OFF',off,'core','進攻：每 36 分鐘淨分換成能力值尺（PR50＝70、PR99＝97，頂尖不封頂）')+one('DEF',def,'core','防守：每 36 分鐘淨分換成能力值尺（PR50＝70、PR99＝97，頂尖不封頂）')
    +'<div class="stk">'+top.map(a=>one(a.s,a.v,'free',a.zh)).join('')+'</div></div><div class="fx2"></div></div>';
   const topK=new Set(top.map(a=>a.k));let i=0;
   const grp=g=>'<div class="gh">'+g[0]+'</div>'+g[1].map(()=>{const a=all[i++];return '<div class="ab'+(topK.has(a.k)?' top':'')+'" style="--w:'+Math.max(0,Math.min(100,a.v||0))+'%"><span class="l">'+a.zh+'<i>'+a.s+'</i></span><b>'+dv(a.v)+'</b><s></s></div>'}).join('');
