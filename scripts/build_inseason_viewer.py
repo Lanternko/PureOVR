@@ -19,6 +19,7 @@ from season_nav import add_season_nav, apply_common, regroup_attrs  # noqa: E402
 import season_nav as sn  # noqa: E402
 from site_header import add_masthead  # noqa: E402
 import attr_cell_tips as AT  # noqa: E402
+import blend_display as BD  # noqa: E402
 import tracking_cells as TC  # noqa: E402
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'reports/impact-epm-2026-27'))
 import epm_live  # noqa: E402
@@ -191,7 +192,9 @@ def main():
     # TO 提示卡：2026-27 至今的失誤、持球分鐘、每持球分鐘失誤（0.2.12）
     trows, n_tov = sn.tov_rows(SRC26, 'PLAYER_ID', ipool, ROOT / 'data/defense-seventh/2026-27/possessions.json')
     hrows = sn.three_rows(SRC26, 'PLAYER_ID', ipool)   # 3PT 提示卡：本季至今三分命中率、出手量
-    atips = AT.build(AT.window_stats(False, meta['window8']['gamesDone']), ipool, AT.season_near_rim())   # MID／INS／FT／DRV／FD／PASS／CRT／REB／RIM 提示卡：四季窗口含本季
+    wstat = AT.window_stats(False, meta['window8']['gamesDone'])
+    bdisp = BD.build(wstat, False)   # 3PT／FT 顯示欄量準混合（R-168）：只改顯示，OVR／名次不動
+    atips = AT.build(wstat, ipool, AT.season_near_rim())   # MID／INS／FT／DRV／FD／PASS／CRT／REB／RIM 提示卡：四季窗口含本季
     trk = TC.build('2026-27', ipool, 'snapshot')   # 追蹤量格子（E-239 後續）：手動快照，接在 DRV／INS／CRT／PASS／3PT 提示卡後面，不進分數
     orows, ob_note = onball_live(rows, ipool)
     base = BASE.read_text(encoding='utf-8')
@@ -245,6 +248,12 @@ def main():
             t['gravity'] = sn.gravity_tip(float(r['gravity']), gv['raw'], gv['src'], g_pool, r['playerId'] in pool, GRAV_NOTE.get(gv['src'], ''))
         return t
     rows = sn.display_rows(rows)   # 能力值顯示尺（2026-11-02 方案 B）：off/def、名次人群已用原值算完
+    for r in rows:   # R-168：有窗口資料的人 3PT／FT 換量準混合（已含顯示尺）；新秀沒資料維持原值
+        b = bdisp.get(int(r['playerId']), {})
+        if 'ft' in b:
+            r['ft'] = repr(round(sn.display_scale(b['ft']), 1))
+        if 'threeValue' in b:
+            r['threeValue'] = repr(round(sn.display_scale(b['threeValue']), 1))
     for r in rows:
         num = lambda k: float(r[k])
         # E-116 新秀先驗列沒有 threeValue／presDisplay／foulDisc（無上季卡）：3PT 退回 long、PRES 退回 pressure、犯規紀律留空

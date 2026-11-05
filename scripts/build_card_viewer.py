@@ -24,6 +24,7 @@ from season_nav import add_season_nav, apply_common, regroup_attrs  # noqa: E402
 import season_nav as sn  # noqa: E402
 from site_header import add_masthead  # noqa: E402
 import attr_cell_tips as AT  # noqa: E402
+import blend_display as BD  # noqa: E402
 import tracking_cells as TC  # noqa: E402
 
 ROOT = er.ROOT
@@ -122,7 +123,8 @@ def main(out=None):
     trows, n_tov = sn.tov_rows(er.SRC, 'PLAYER_NAME', pool, ROOT / 'reports/handle-E069/raw/2025-26/Possessions-FULL.json')
     hrows = sn.three_rows(er.SRC, 'PLAYER_NAME', pool)   # 3PT 提示卡：2025-26 三分命中率、出手量
     pid_of = {row[h['PLAYER_NAME']]: int(row[h['PLAYER_ID']]) for row in rs['rowSet']}
-    atips = AT.build(AT.window_stats(True), {pid_of[n] for n in pool if n in pid_of})   # MID／INS／FT／DRV／FD／PASS／CRT／REB／RIM 提示卡：2025-26 季末近三季窗口（WIN_LEN 246）
+    wstat = AT.window_stats(True)
+    atips = AT.build(wstat, {pid_of[n] for n in pool if n in pid_of})   # MID／INS／FT／DRV／FD／PASS／CRT／REB／RIM 提示卡：2025-26 季末近三季窗口（WIN_LEN 246）
     trk = TC.build('2025-26', {pid_of[n] for n in pool if n in pid_of})   # 追蹤量格子（E-239 後續）：接在 DRV／INS／CRT／PASS／3PT 提示卡後面，不進分數
     oc_ = list(csv.DictReader(ONBALL.open(encoding='utf-8')))
     orows = onball_rows({r['name']: (float(r['C3']), float(r['B']), float(r['T'])) for r in oc_ if '' not in (r['C3'], r['B'], r['T'])}, pool)
@@ -130,6 +132,11 @@ def main(out=None):
     dcen = sn.defense_centered(rows, 'name', [(ROOT / 'reports/card-0.2.12b/def-L-primary.csv', None)])   # 0.2.12b：窗口 246 重擬合的 D（E-204；card 0.2.12 用 card-0.2.5+E104 的 def-L-primary.csv）
     assert dcen, 'DIQ 負分：def-L-primary 算回來的 defenseBonus 對不上 card 0.2.10i'
     rows = sn.display_rows(rows)   # 能力值顯示尺（2026-11-02 方案 B）：off/def、名次人群已用原值算完
+    # 3PT、FT 顯示欄改量＋準混合（R-168，使用者 2026-11-05）：只換頁面數字，ranking.csv／OVR／名次／模擬不動；off/def 已用原值算完。
+    # 沒有窗口資料的人（新秀）維持原值：3PT 走下面 tv／long，FT 用 ranking.csv 的 ft。
+    bdisp = BD.build(wstat, True)
+    rows = [dict(r, ft=repr(round(sn.display_scale(bdisp[pid_of[r['name']]]['ft']), 1)))
+            if pid_of.get(r['name']) in bdisp and 'ft' in bdisp[pid_of[r['name']]] else r for r in rows]
     data_rows, missing, no_tv = [], [], []
     for r in rows:
         num = lambda k: float(r[k])
@@ -139,7 +146,10 @@ def main(out=None):
         else:
             missing.append(r['name'])
             team, ht, gp = last_team.get(r['name'], ''), 0, gp_src.get(r['name'], 0)
-        if r['name'] in tv:
+        bd3 = bdisp.get(pid_of.get(r['name']), {}).get('threeValue')
+        if bd3 is not None:
+            three = round(sn.display_scale(bd3), 1)
+        elif r['name'] in tv:
             three = round(sn.display_scale(tv[r['name']]), 1)
         else:
             no_tv.append(r['name'])

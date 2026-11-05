@@ -286,7 +286,8 @@ def add_season_nav(html_str, current):
 # 能力值顯示尺（使用者 2026-11-02「三分球 98 以上的人太多了」→「所有能力值一起改」→「用方案 B」）：百分位型能力值原本
 # PR50～99 線性對到 70～99（attr()），PR97.3 就有 98。頁面顯示改成 PR50→70、PR90→88、PR95→92、PR99→97，
 # 99 以上的尾巴整段 −2（接在 97），PR<50 不動。只改顯示：ranking.csv、OVR、模擬用值不變；off/def 要在換尺前算。
-# mid／short／ft／help／long 不是百分位尺（≥90 只有 1～4%），不換。
+# mid／short／help／long 不是百分位尺（≥90 只有 1～4%），不換。ft 2026-11-05（R-168）起也是百分位型（只看命中率，blend_display.py），
+# 但在 display_rows 之後才由 build_*_viewer 覆蓋，自己呼叫 display_scale，不在 RESCALE_ATTRS。
 RESCALE_ATTRS = ('threeValue', 'drive', 'foulDraw', 'gravity', 'pass', 'tovSkill', 'creation', 'rebound',
                  'physique', 'stamina', 'onBall', 'pressure', 'presDisplay')
 _SCALE_KNOTS = ((50, 70), (90, 88), (95, 92), (99, 97))
@@ -320,12 +321,13 @@ ATTR_TIPS = {
             [('組成', '75% 進攻能力值 ＋ 25% 進攻影響力'), ('單位', '每 36 分鐘淨分（0＝平均）')], False),
     'def': ('防守', 'Defense', '每 36 分鐘比聯盟平均<b>少丟幾分</b>',
             [('組成', '單防 ＋ 護框 ＋ 壓迫 ＋ 防守意識'), ('單位', '每 36 分鐘淨分（0＝平均）')], False),
-    'threeValue': ('三分', 'Three-Point', '三分球的<b>命中率與出手量</b>',
-                   [('出手量', '三分出手 / 36'), ('命中率', '三分命中率')], ''),
+    'threeValue': ('三分', 'Three-Point', '<b>60%</b> 三分出手量 ＋ <b>40%</b> 三分命中率',
+                   [('出手量 60%', '三分出手 / 36'), ('命中率 40%', '三分命中率')], ''),
     'mid': ('中距離', 'Mid-Range', '油漆區外到三分線內的<b>投籃命中率與數量</b>', [], ''),
     'short': ('近框', 'Inside Scoring', '油漆區內（含籃下）的<b>命中率與自主得分</b>',
               [('自主創造', '100% 計入'), ('被餵球（吃餅）', '打折計入')], ''),
-    'ft': ('罰球', 'Free Throw', '<b>罰球命中率</b>與數量', [], ''),
+    'ft': ('罰球', 'Free Throw', '<b>罰球命中率</b>（罰球沒有防守，只看準度；量已在造犯規）',
+           [('命中率', '罰球命中率')], ''),
     'drive': ('切入', 'Drive', '<b>帶球切入</b>到 10 呎內的自主兩分（量與效率各半）', [], ''),
     'foulDraw': ('製造犯規', 'Foul Drawing', '<b>75%</b> 罰球量 ＋ <b>25%</b> 罰球率',
                  [('罰球量 75%', '罰球數 / 36'), ('罰球率 25%', '罰球數 ÷ 投籃出手')], ''),
@@ -553,7 +555,7 @@ def three_rows(src, key, pool):
 
 def three_tip(v, sub, season, inpool=True):
     foot = [f'命中率名次只比每 36 分鐘出手 ≥ {THREE_MIN_3PA36:g} 的人'] + ([] if inpool else [NO_RANK_FOOT])
-    return cell_tip('三分', '3PT', round(v), sub, d='三分球的<b>命中率與出手量</b>', foot=foot)
+    return cell_tip('三分', '3PT', round(v), sub, d='<b>60%</b> 三分出手量 ＋ <b>40%</b> 三分命中率', foot=foot)
 
 
 def apply_cell_tips(s):

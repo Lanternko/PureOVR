@@ -22,7 +22,7 @@ SPECS = {
             [('命中率', 'mid_pct', '{:.1%}', False, ('mid_36', 1.0)), ('出手量', 'mid_36', '{:.1f}/36', False, None)]),
     'short': ('近框', 'INS', '油漆區內（含籃下，約 15 呎內）的<b>命中率與出手量</b>',
               [('命中率', 'short_pct', '{:.1%}', False, ('short_36', 1.0)), ('出手量', 'short_36', '{:.1f}/36', False, None)]),
-    'ft': ('罰球', 'FT', '<b>罰球命中率</b>與罰球量',
+    'ft': ('罰球', 'FT', '<b>罰球命中率</b>（罰球沒有防守，只看準度；量已在造犯規）',
            [('命中率', 'ft_pct', '{:.1%}', False, ('fta_36', 1.0)), ('罰球量', 'fta_36', '{:.1f}/36', False, None)]),
     'drive': ('切入', 'DRV', '<b>帶球切入</b>到 10 呎內的自主兩分，量與效率各半',
               [('切入量', 'drive_36', '{:.1f}/36', False, None), ('每次得分', 'drive_eff', '{:.2f} 分', False, ('drive_36', 0.5))]),
@@ -70,7 +70,14 @@ def window_stats(card, games_done=None):
          'ft_pct': r('ft'), 'fta_36': r('vol'), 'fta_rate': r('foulDraw'), 'fga_36': per36(s8['foulDraw'][1]),
          'drive_36': 36 * r('driveVol'), 'drive_eff': r('driveEff'), 'ast_36': r('astvol'), 'ast_rate': r('pass'),
          'reb_rate': r('rebound'), 'reb_36': per36(s8['rebound'][0]),
-         'crj_36': 36 * _div(*s10['crJ']), 'crj_share': _div(s10['crJ'][0], s10['cr'][0])}
+         'crj_36': 36 * _div(*s10['crJ']), 'crj_share': _div(s10['crJ'][0], s10['cr'][0]),
+         # R-168 混合顯示值原料（blend_display.py）：罰球窗口 FTM／FTA／分鐘、三分窗口難度調整分子／加權 3PA／加權 MIN
+         'ft_m': s8['ft'][0], 'ft_a': s8['ft'][1], 'min_w': mn36 * 36}
+    if card:
+        tp = W.tv_raw(G, W.T10[S], S, G)
+    else:
+        tp = W.tv_raw(g, tabs)
+    m.update(tp_n=tp[0], tp_a=tp[1], tp_min=tp[2])
     out = {}
     for p, i in D.pidx.items():
         if mn36[i] > 0:
