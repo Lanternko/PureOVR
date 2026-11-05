@@ -345,7 +345,7 @@ class MinutesReturn(unittest.TestCase):
         self.assertIn('id="viewSeg"', html)
         self.assertNotIn('class="ctrl"', html)                  # site_header 的 CSS 有 .wrap>.ctrl{display:none}，切換列放那個 class 會整列被藏起來（桌面手機都看不到）
         self.assertIn('預計回', js)
-        self.assertIn('無回歸日，當整季缺陣', js)
+        self.assertIn('無回歸日者視為整季缺陣', js)
 
 
 class Header(unittest.TestCase):

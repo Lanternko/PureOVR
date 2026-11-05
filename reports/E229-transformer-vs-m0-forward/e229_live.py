@@ -4,7 +4,7 @@
           z 分數的 mu／sd 用 live ranking 全體（E-227 訓練時就是「季內表」z 分數）。
   統計：K=500 預先固定（不調）。w_cur = min_cur/(min_cur+500)，min_cur = 2026-27 賽季至昨日（美東日期 < today）累計分鐘。
         box 五欄（stl36 blk36 pf36 oreb36 dreb36）：值 = w_cur*本季每36 + (1-w_cur)*2025-26 每36；2025-26 沒值（<200 分鐘）者，以聯盟均值代 2025-26（等於向均值收縮）；
-        本季沒出賽者 = 只用 2025-26。hustle／rimthree／matchup／adv 四類：每日不抓 → 只用 2025-26 值，沒有就缺值（mask 0）。
+        本季沒出賽者 = 只用 2025-26。hustle／rimthree／matchup／adv 四類：R-169（E-246）起同規則混本季（見 season_tracking）；BLEND_DEFAULT=() 時只用 2025-26，沒有就缺值（mask 0）。
         統計 z 分數的 mu／sd 取 2025-26 表中有值球員的（混合後）值。
   身高（位置規則）與 pass／creation 同能力值來源；缺身高用 live 身高中位數。"""
 import csv, json, os, sys
@@ -60,9 +60,9 @@ def season_box(today_et):
 
 
 # E-246：21 欄追蹤統計混本季（規則同 box：w=min/(min+500)，本季值不設 200 分鐘門檻）。
-# BLEND_DEFAULT＝線上預設混哪幾類；空＝現行 T0（全用 2025-26）。採用後改成 TRACK_CLASSES。
+# BLEND_DEFAULT＝線上預設混哪幾類；空＝舊 T0（全用 2025-26）。2026-11-05 使用者採用 T1（E-246）→ 四類全混。
 TRACK_CLASSES = ('hustle', 'rimthree', 'matchup', 'adv')
-BLEND_DEFAULT = ()
+BLEND_DEFAULT = TRACK_CLASSES
 TRACK_DIR = os.path.join(ROOT, 'data', 'defense-seventh', '2026-27', 'tracking')   # 每日整季累計（截至前一晚）
 MATCHUP_DIR = os.path.join(ROOT, 'data', 'matchup-source', '2026-27')             # 每日逐場 boxscorematchupsv3
 

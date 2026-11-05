@@ -125,7 +125,7 @@ class Synthetic(unittest.TestCase):
              team_line(LAL, '0022600003', '2026-11-04', 'LAL vs. BOS', 2, 290), team_line(BOS, '0022600003', '2026-11-04', 'BOS @ LAL', 1, 290)], [])
         ot = {g['id']: g.get('ot') for gs in sk['games'].values() for g in gs}
         self.assertEqual(ot, {'0022600001': None, '0022600002': 1, '0022600003': 2})
-        self.assertIn("g.ot>1?g.ot:'')+'OT</span>", games_view.JS)    # 前端把 ot 顯示成「OT／2OT」（沒延長賽就不出現這一列）
+        self.assertIn("g.ot>1?g.ot:'')+'OT</div>", games_view.JS)    # 前端把 ot 顯示成「OT／2OT」（沒延長賽就不出現這一列）
 
     def test_short_name(self):
         for full, want in (('Jalen Walker', 'J. Walker'), ('Gary Trent Jr.', 'G. Trent Jr.'), ('Jaren Jackson III', 'J. Jackson III'),

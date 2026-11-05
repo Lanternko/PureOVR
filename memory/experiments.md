@@ -2365,6 +2365,6 @@
 - 問題：球隊評分 Transformer（e229_live）的 21 欄追蹤統計（hustle 9、rimthree 4、matchup 2、adv 6）一直只用 2025-26；照 box 同規則（w=min/(min+500)）混本季，本季每場勝負預測是否不比現行差？（使用者 11-05：官網 hustle 每天更新，不能不用）
 - 做法：預註冊 `reports/E246-t-tracking-blend/preregistration.md`（commit 68603bc 凍結）；三臂 T0／T1（21 欄全混）／T1h（只混 hustle）；回測用 DateTo＝前一天的官網快照、matchup 用逐場 boxscorematchupsv3 加總；E-229b 同 107 場、同陣容、同種子。
 - 結果：Brier T0 0.1966、T1 0.1939、T1h 0.1966；ΔBrier(T1−T0) −0.0027 [−0.0066, +0.0013]，過非劣性門檻；T1h 無差 → 改善來自 rimthree／matchup／adv。同日 30 隊淨值對實際分差相關 0.656→0.733（樣本內）；POR 21→19、MEM 16→16。
-- 結論：4/5 建議採用 T1（把 `BLEND_DEFAULT` 改成 `TRACK_CLASSES`），待使用者裁定；報告 `reports/E246-t-tracking-blend/report.md`。
-- 狀態：完成（2026-11-05），未稽核。
+- 結論：4/5 建議採用 T1；報告 `reports/E246-t-tracking-blend/report.md`。
+- 狀態：完成（2026-11-05），未稽核；2026-11-05 使用者採用 T1（R-169），線上 `BLEND_DEFAULT = TRACK_CLASSES`。
 - 相關：E-229、E-229b、E-227、F-160、R-160
