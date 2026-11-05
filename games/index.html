@@ -1850,7 +1850,7 @@ const retCell=x=>{const out=x.missGames!=null,g=out?'缺 '+x.missGames+' 場':''
   :'<div class="rb"'+t+'><b class="far">整季缺陣</b><small>無回歸日'+(g?'・'+g:'')+'</small></div>'};
 function info(){
   const i=D.injuries||{};
-  $('#stamp').innerHTML='<b title="資料截至這天已打完的比賽">'+esc(D.dataCutoff)+'</b>資料至・'+esc(D.generatedAt.slice(5,10))+' '+esc(D.generatedAt.slice(11,16))+' 更新';
+  $('#stamp').innerHTML='<b title="資料截至 '+esc(D.dataCutoff)+' 已打完的比賽">'+esc(D.generatedAt.slice(0,10))+'</b>'+esc(D.generatedAt.slice(11,16))+' 更新';
   const isT=D.engineKind==='t';
   $('#meta').innerHTML='<ul class="nb"><li>'+(isT?'由<b>過去五季上場陣容得失分</b>訓練的<b>陣容模型（Transformer）</b>估計：依輪替分鐘抽出<b>五人陣容</b>，對<b>其他 29 隊各 '+D.opponent.drawsPerTeam+' 組陣容</b>對戰平均得出。'
      :'由模型<b>模擬比賽</b>（每隊對五支不同強度與位置配置的對手隊共打 <b>'+D.seeds+' 場</b>）得出。')+'<em>目前還在 beta 版本</em>，僅供參考。</li>'
