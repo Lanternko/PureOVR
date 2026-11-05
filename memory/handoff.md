@@ -3,7 +3,7 @@
 只記「目前狀態」，每次收工整份覆寫，不往下追加日期段。每條最多兩行，細節寫進 findings／experiments／rulings 或報告檔，這裡只放 ID 與路徑。UI 小改不進本檔（看 git log）。舊版全文在 `archive/`（最近一份 `handoff-2026-11-05-full.md`，含 11-05 前所有條目原文）。
 **多個 session 同時改本檔與工作樹**：覆寫前先重讀一次，只改自己負責的條目。
 
-- **更新**：2026-11-05 3PT／FT 顯示欄換量準混合（R-168，未 commit）；球員卡加追蹤量格子並發布（R-166）；11-04 E-239 追蹤全套、inseason 0.2.12e（R-161～R-165）；11-03 球隊評分換 Transformer（R-160）、近期加成 b3h20（R-150）。
+- **更新**：2026-11-05 球隊評分 T 的 21 欄追蹤統計改本季混合（R-169、E-246）；3PT／FT 顯示欄換量準混合（R-168，未 commit）；球員卡加追蹤量格子並發布（R-166）；11-04 E-239 追蹤全套、inseason 0.2.12e（R-161～R-165）；11-03 球隊評分換 Transformer（R-160）、近期加成 b3h20（R-150）。
 
 ## 目前基準（線上）
 - **inseason 0.2.12e**（11-04，已 commit）：復出老將補卡（R-161）＋新秀起點加季前賽位移（R-162）＋防守 D 個人場次軸（R-163）＋復出老將補進用人層 hi（R-164）。未修：復出老將 gravity＝70 佔位（L-127）。回退 `DEF_AXIS=calendar`、`RV_USAGE=0`、`RETURNING_VETS=0`、`PS_START=0`。
@@ -11,6 +11,7 @@
 - **追蹤量格子**（R-166，11-05）：DRV／INS／CRT／PASS／3PT 提示卡加量類追蹤列，不進分數。`scripts/tracking_cells.py`；2026-27 資料是手動快照，重抓 `node scripts/fetch_tracking_cells.mjs <季> data/tracking-cells/<季>` 後重建頁面。
 - **賽中近期加成 b=3、h=20**（R-150）；**card／inseason 0.2.12**（R-139，tovSkill 看持球時間）；**0.2.11**（R-137，引力 gravity）。回退旗標 `RECENT_BOOST=0`、`TOV_POSS=0`、`GRAVITY=0`。
 - **網站**：trueovr.com；首頁 2026-27、`2025-26.html`；排行／賽程用乾淨路徑 `/rank/`、`/games/`。只改 UI 用 `python -I scripts/daily_inseason_update.py --shell` 立刻發布；每日排程 14:30／16:30＋22:30（registry `basketball-inseason-daily`）。能力值說明在 `season_nav.py` 的 `ATTR_TIPS`；新格子提示用 `sn.cell_tip()`。
+- **球隊評分 T 追蹤統計本季混合**（R-169，11-05）：hustle／rimthree／matchup／adv 21 欄照 box 規則 w=min/(min+500) 混本季；`e229_live.BLEND_DEFAULT`，設 `()` 回退。回測 Brier −0.0027（區間跨 0，非劣）。`reports/E246-t-tracking-blend/report.md`
 - **模擬 sim 0.1.3**（R-120）；防守 `nba-defense-v3`（R-010）；賽中 OVR C4（E-033）。
 
 ## 進行中（未稽核，待派 role-audit）
@@ -19,6 +20,7 @@
 - **E-241 三分量率混合比例掃描（舊表格 TF）**（11-05，2/5 不採用）：570 筆球員表直接訓 Transformer 嚴重過擬合（R² 0–0.06）；已由 E-242 陣容 Transformer 取代（F-162）。`reports/E241-three-point-blend-sweep/report.md`
 - **E-244 罰球 ft 量率比例**（11-05，2/5 不採用）：同 E-242 框架換 `ft` 欄，w* 對現行 `ft` 增益 +0.0029 未過門檻、測試場次沒更準，`ft` 維持不動（F-164）。`reports/E244-ft-lineup-tf-blend/report.md`
 - **E-242 陣容 Transformer 三分量率比例量測**（11-05，4/5 停下交使用者裁定；11-05 裁定 `long` 維持不改，R-167）：改用五季 111,499 個 stints 訓練 `LineupNet`，消除過擬合並量出平滑倒 U 曲線——下季進攻 RAPM 最佳在 **w＝0.5–0.6**（0.2328 vs `long` 0.2265，與 ridge 一致），測試場次對戰得分 MSE 最佳在 **w＝0.8**（比純率 −4.92），自學權重 `WL` 收斂至 **w＝0.34±0.025**。因三季 867 人次 CI 跨零，待使用者裁定：三分要不要改採 w＝0.5–0.6，以及下一步要不要用同套 LineupNet 框架測罰球（F-163）。`reports/E242-lineup-tf-three-blend/report.md`
+- **E-246**：完成未稽核。後續想法（未開）：量類進攻追蹤（持球／接球三分、擋拆、handoff，2024-25 起定義一致）當新欄重訓 T，需新預註冊。
 - **E-238 無球追蹤**：補不進 OVR（H3 不過），只當個案顯示。F-158
 - **E-230 新秀起點 SL／PS**：訊號小，PS 位移已套用（R-162）。待使用者決定要不要逐項起點實驗。
 - **陣容 Transformer**：R-160 球隊評分已換 T，舊引擎備援。E-234／E-236／E-237 能力值→OVR Transformer 皆不勝 ridge，名單在 `reports/E234-…`、`E235-…`、`E237-…` 待人工檢查。
