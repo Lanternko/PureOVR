@@ -15,6 +15,7 @@
 - **模擬 sim 0.1.3**（R-120）；防守 `nba-defense-v3`（R-010）；賽中 OVR C4（E-033）。
 
 ## 進行中（未稽核，待派 role-audit）
+- **E-253 戰力排行混入本季實際表現**（11-07，3/5 完成未稽核）：T 殘差÷(場數+k) 加回預測；2025-26 Brier −0.017 五臂全過，2026-27 107 場採用臂 K5 +0.0016 不過、K10～K40 −0.002 跨零。待使用者：採用 K10／K20 或等更多場前向（F-172）。`reports/E253-actual-results-blend/report.md`
 - **E-239 追蹤全套**（3/5）：單一特徵無穩健訊號；量類 42 個可當格子（已做）。待使用者：另開預註冊測定義一致子集（2024-25 起）進 OVR／Transformer；要不要每日抓追蹤（補 registry／audit）。`reports/E239-tracking-full/report.md`、F-160
 - **E-240 三分量與率拆法**（11-05，3/5 不採用）：量＋率分開放對下季進攻 RAPM R² +0.014，未過預註冊門檻（F-161）。使用者指定一次測一項；待決定下一項（建議罰球，其次中距、切入），框架可直接換項。`reports/E240-three-point-volume-rate/report.md`
 - **E-241 三分量率混合比例掃描（舊表格 TF）**（11-05，2/5 不採用）：570 筆球員表直接訓 Transformer 嚴重過擬合（R² 0–0.06）；已由 E-242 陣容 Transformer 取代（F-162）。`reports/E241-three-point-blend-sweep/report.md`
