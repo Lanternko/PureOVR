@@ -52,6 +52,7 @@ E208 = ROOT / 'reports/E208-team-rating'
 sys.path.insert(0, str(E208))
 sys.path.insert(0, str(Path(__file__).resolve().parent))      # -I 不含腳本目錄
 from injury_desc import injury_desc  # noqa: E402
+import actual_blend  # noqa: E402  (R-171 本季實際表現殘差)
 from minutes_rules import norm  # noqa: E402  (E-208 (c) 的正規化：前 10 人、240 分鐘、上限 48)
 
 SEASON = '2026-27'
@@ -748,12 +749,24 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
         o = sim['res'][(tid, ver)]
         return {'margin': o['msum'] / o['n'], 'ortg': 100 * o['pf'] / o['pof'], 'drtg': 100 * o['pa'] / o['poa']}
     st = {v: {t: stat(t, v if v == 'c' else state_ver[t][frozenset(out_pids[t])]) for t in tids} for v in ('c', 'today')}
+    # R-171（E-253 K10）：加回本季實際表現殘差（實際 − T 賽前預期，÷(場數+10)）；ACTUAL_BLEND=0 回退
+    resid = {}
+    if used == 't' and actual_blend.enabled():
+        try:
+            resid = actual_blend.residuals(today, log=log)
+        except Exception as e:      # 補算失敗不擋發布，照純 T
+            log.warning('本季實際表現殘差失敗，排行不混實際：%s', str(e)[-400:])
+    zero = {'offShr': 0.0, 'defShr': 0.0, 'netShr': 0.0, 'n': 0}
+    for v in ('c', 'today'):
+        for t in tids:
+            r = resid.get(t, zero)
+            st[v][t]['ortg'] += r['offShr']; st[v][t]['drtg'] += r['defShr']; st[v][t]['margin'] += r['netShr']
     mo = sum(st['c'][t]['ortg'] for t in tids) / 30; md = sum(st['c'][t]['drtg'] for t in tids) / 30    # 兩版共用「近況」版的聯盟平均
     mrg = {k: o['msum'] / o['n'] for k, o in sim['res'].items()}
 
     def margin_dated(t, d):
         """今日陣容版逐場陣容：t 隊在日期 d（None＝全部回歸後）的對梯度對手分差。"""
-        return mrg[(t, final_ver[t] if d is None else state_ver[t][lineup_out(outs_of[t], d, today)])]
+        return mrg[(t, final_ver[t] if d is None else state_ver[t][lineup_out(outs_of[t], d, today)])] + resid.get(t, zero)['netShr']
     n_noret = 0
     out_teams = {}
     for tid in tids:
@@ -783,6 +796,10 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
         c_min = dict(rosters[tid]['c'])
         rec['restored'] = [{'pid': p, 'name': pname.get(p, str(p)), 'min': c_min[p]} for p in sorted(restored[tid]) if p in c_min]
         rec['nOut'] = len(out_pids[tid])
+        r = resid.get(tid)
+        rec['actual'] = None if r is None else {'n': r['n'], 'k': actual_blend.K, 'off': r['off'], 'def': r['def_'], 'net': r['net'],
+                                                'offShr': r['offShr'], 'defShr': r['defShr'], 'netShr': r['netShr'],
+                                                'tOnlyNet': rec['today']['net'] - r['netShr']}
         out_teams[tid] = rec
     lg_rtg = league_rtg(ROOT / 'data/season-source-2026-27/team-games.json')
     doc = {'generatedAt': dt.datetime.now().astimezone().isoformat(timespec='seconds'), 'season': SEASON, 'version': meta.get('version'),
@@ -793,6 +810,7 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
            'seeds': 29 * T_DRAWS_PER_OPP if used == 't' else seeds, 'H': H, 'sigma': SIGMA, 'lastN': LAST_N,
            'gamesPlayed': len(lg), 'injuries': {**{k: inj.get(k) for k in ('fetchedAt', 'source', 'espnTimestamp', 'reportTime', 'pdfUrl', 'stale', 'unmatched')}, 'outNoReturnDate': n_noret},
            'today': today, 'returnMin': RETURN_MIN,
+           'actualBlend': {'on': bool(resid), 'k': actual_blend.K, 'rule': 'R-171 / E-253 K10', 'games': sum(r['n'] for r in resid.values()) // 2},
            'schedule': {'fetchedAt': sch.get('fetchedAt'), 'source': sch.get('source'), 'remainingGames': len(remaining)},
            'missingProfiles': sim['missing'],
            'baseProfiles': [{'pid': p, 'name': pname.get(p, str(p)), 'team': next((tri.get(j['team']) or teams[j['team']]['abbr'] for j in jobs if p in {q for q, _ in j['roster']}), ''), 'src': v['src'], 'ovr': v['ovr']}
