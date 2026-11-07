@@ -16,6 +16,7 @@
 
 ## 進行中（未稽核，待派 role-audit）
 - **R-171 戰力排行混入本季實際表現**（11-07，E-253 K10）：殘差 ÷(場數+10) 加回 T 評分，`scripts/actual_blend.py`、回退 `ACTUAL_BLEND=0`；已發布（POR 14→9）。**R-172**：殘差改每天對今天的 T 重算（`today-margins.json`，避免和本季 OVR 更新重複計入，L-129）。K10 是看過前向才選，每隊滿 20 場用凍結 K10 前向複查一次（F-172）。
+- **E-254 出手結構補 T 殘差**（11-07）：不採用（1/5），四臂都沒變好；POR 進攻超預期主要是擋拆／切入兩分命中偏高，會回落。`reports/E254-shot-diet/`。
 - **E-239 追蹤全套**（3/5）：單一特徵無穩健訊號；量類 42 個可當格子（已做）。待使用者：另開預註冊測定義一致子集（2024-25 起）進 OVR／Transformer；要不要每日抓追蹤（補 registry／audit）。`reports/E239-tracking-full/report.md`、F-160
 - **E-240 三分量與率拆法**（11-05，3/5 不採用）：量＋率分開放對下季進攻 RAPM R² +0.014，未過預註冊門檻（F-161）。使用者指定一次測一項；待決定下一項（建議罰球，其次中距、切入），框架可直接換項。`reports/E240-three-point-volume-rate/report.md`
 - **E-241 三分量率混合比例掃描（舊表格 TF）**（11-05，2/5 不採用）：570 筆球員表直接訓 Transformer 嚴重過擬合（R² 0–0.06）；已由 E-242 陣容 Transformer 取代（F-162）。`reports/E241-three-point-blend-sweep/report.md`
