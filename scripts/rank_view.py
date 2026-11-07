@@ -281,7 +281,7 @@ function info(){
   $('#stamp').innerHTML='<b title="資料截至 '+esc(D.dataCutoff)+' 已打完的比賽">'+esc(D.generatedAt.slice(0,10))+'</b>'+esc(D.generatedAt.slice(11,16))+' 更新';
   const isT=D.engineKind==='t';
   $('#meta').innerHTML='<ul class="nb"><li>'+(isT?'由<b>過去五季上場陣容得失分</b>訓練的<b>陣容模型（Transformer）</b>估計：依輪替分鐘抽出<b>五人陣容</b>，對<b>其他 29 隊各 '+D.opponent.drawsPerTeam+' 組陣容</b>對戰平均得出。'
-     :'由模型<b>模擬比賽</b>（每隊對五支不同強度與位置配置的對手隊共打 <b>'+D.seeds+' 場</b>）得出。')+(isT&&D.actualBlend&&D.actualBlend.on?'再加上<b>本季實際戰果</b>：每隊每場「實際得失分 − 賽前預期」累積後除以<b>（已打場數＋'+D.actualBlend.k+'）</b>加回，打越多場實際表現佔越重。':'')+'<em>目前還在 beta 版本</em>，僅供參考。</li>'
+     :'由模型<b>模擬比賽</b>（每隊對五支不同強度與位置配置的對手隊共打 <b>'+D.seeds+' 場</b>）得出。')+(isT&&D.actualBlend&&D.actualBlend.on?'再加上<b>本季實際戰果</b>：每隊已打的每場「實際得失分 − 用今天陣容強度重算的預期」累積後除以<b>（已打場數＋'+D.actualBlend.k+'）</b>加回，打越多場實際表現佔越重。':'')+'<em>目前還在 beta 版本</em>，僅供參考。</li>'
    +(isT?'':'<li><b>76 人被低估</b>：模型認為同隊持球單打手太多、彼此搶球，化學反應不佳。</li>')+'</ul>'
    +(i.stale&&(!i.fetchedAt||Date.now()-Date.parse(i.fetchedAt)>3*864e5)?'<span class="warn">傷病名單已超過三天沒更新。</span>':'')
    +(D.schedule&&D.schedule.remainingGames?'':'<span class="warn">抓不到賽程，剩餘場次以對全聯盟平均勝率計。</span>');

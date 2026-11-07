@@ -1,4 +1,7 @@
-"""戰力排行混入本季實際表現（R-171，E-253 K10）：每隊「實際 − T 賽前預期」的累積殘差 ÷ (場數 + K)，加回評分。
+"""戰力排行混入本季實際表現（R-171，E-253 K10）：每隊「實際 − T 預期」的累積殘差 ÷ (場數 + K)，加回評分。
+
+- 線上預設（R-172，2026-11-07 起）：預期一律用「今天的 T」重算所有已完賽場次（today_margins）。OVR 是含本季的滑動窗口，
+  對凍結的賽前預期算殘差會讓本季表現被 OVR 與殘差重複計入（L-129）。下面的賽前快取版保留作對照（residuals(live_dir=None)）。
 
 - 賽前預期：每場已完賽比賽用「比賽日前最新的 live 資料夾」＋「該場實際上場名單、比賽日前的平均分鐘」做 T 預測（同 E-246／E-229b pred_t：
   5 seed、N=2000、rng [229, gid]），算一次就存進 `pregame-margins.json`，之後不再重算（之後的資料不會回頭改舊預測）。
@@ -49,8 +52,9 @@ def played_games():
     return {k: v for k, v in games.items() if 'home' in v and 'away' in v and v.get('pts_home') is not None}
 
 
-def _rotations(games: dict):
-    """同 E-246 prep.py：該場實際上場的人、比賽日前自己的平均分鐘（沒有就用 live 的 MPGhat），走 rotation() 的焦灼分鐘表。"""
+def _rotations(games: dict, folder: str | None = None):
+    """同 E-246 prep.py：該場實際上場的人、比賽日前自己的平均分鐘（沒有就用 live 的 MPGhat），走 rotation() 的焦灼分鐘表。
+    folder＝None：用比賽日前最新的 live 夾（舊的賽前版）；給定：MPGhat 後備與 OVR 排序都用該夾（今天的 T 版）。"""
     sys.path.insert(0, str(ROOT / 'scripts'))
     import team_ratings_daily as M
     rows = [r for r in _tab('player-games.json') if r['MIN'] and r['MIN'] > 0]
@@ -69,7 +73,7 @@ def _rotations(games: dict):
             cache[f] = ({int(x['playerId']): float(x['MPGhat']) for x in R}, {int(x['playerId']): float(x['ovr']) for x in R})
         return cache[f]
     for g in games.values():
-        d = g['date']; c = [f for f in fl if f < d]; g['folder'] = c[-1] if c else fl[0]
+        d = g['date']; c = [f for f in fl if f < d]; g['folder'] = folder or (c[-1] if c else fl[0])
         mpg, ovr = rk(g['folder'])
         for side in ('home', 'away'):
             base = []
@@ -122,9 +126,56 @@ def update_cache(log=None) -> dict:
     return doc
 
 
-def residuals(today: str, doc: dict | None = None, log=None) -> dict:
-    """{tid: dict(n, off, def, net, offShr, defShr, netShr)}；Shr＝÷(n+K)。只用比賽日 < today 的場次。"""
-    doc = doc or update_cache(log)
+TODAY_CACHE = SRC / 'today-margins.json'
+
+
+def today_margins(today: str, live_dir, log=None) -> dict:
+    """R-172：用「今天的 T」（今天的 live 夾 OVR／特徵、今天的追蹤混合）重算所有比賽日 < today 的已完賽場次預期。
+    名單＝該場實際上場的人＋比賽日前自己的平均分鐘（陣容是當天的事實），球員強度一律用今天的。
+    同一天同一個 live 夾只算一次（存 today-margins.json，只補缺的場次）。回傳格式同 pregame 快取。"""
+    live_dir = Path(live_dir); key = dict(today=today, folder=live_dir.name)
+    doc = json.loads(TODAY_CACHE.read_text(encoding='utf-8')) if TODAY_CACHE.exists() else {}
+    if {k: doc.get(k) for k in key} != key:
+        doc = dict(note='R-172 今天的 T 對已完賽場次的預期（主場視角）', **key, games={})
+    have = doc['games']
+    todo = {k: v for k, v in played_games().items() if v['date'] < today and k not in have}
+    if not todo:
+        return doc
+    import numpy as np
+    import torch
+    sys.path.insert(0, str(E229))
+    import e229_live
+    from e227_model import predict
+    torch.set_num_threads(4)
+    _rotations(todo, folder=live_dir.name)
+    names = {p: 1 for g in todo.values() for s in ('home', 'away') for p, _ in g['rot_' + s]}
+    C, _ = e229_live.make_ctx(today, str(live_dir), names)
+    pos = torch.tensor(list(range(5)) * 2).unsqueeze(0); side = torch.tensor([0] * 5 + [1] * 5).unsqueeze(0)
+    sc = C.avg_poss / 100
+    for g in sorted(todo.values(), key=lambda x: x['gid']):
+        Rh, lh, rh = C.prep(g['rot_home']); Ra, la, ra = C.prep(g['rot_away'])
+        rng = np.random.default_rng([229, int(g['gid'])])
+        A, B = C.draw(Rh, lh, rh, rng, DRAWS), C.draw(Ra, la, ra, rng, DRAWS)
+        X = torch.from_numpy(np.concatenate([np.concatenate([A, B], 1), np.concatenate([B, A], 1)], 0))
+        T = [X, pos.expand(2 * DRAWS, -1), side.expand(2 * DRAWS, -1)]
+        pf = pa = 0.0
+        for m in C.nets:
+            o = predict(m, T, C.dev, bs=8192)[:, :, 0].numpy()
+            pf += 100.0 * 0.5 * (o[:DRAWS, 0].mean() + o[DRAWS:, 1].mean()) / len(C.nets)
+            pa += 100.0 * 0.5 * (o[:DRAWS, 1].mean() + o[DRAWS:, 0].mean()) / len(C.nets)
+        have[g['gid']] = dict(date=g['date'], home=g['home'], away=g['away'], pfHome=float(pf * sc), paHome=float(pa * sc), mT=float((pf - pa) * sc))
+    if log:
+        log.info('今天的 T（%s，%s）重算已完賽場次：%d 場', today, live_dir.name, len(todo))
+    TODAY_CACHE.write_text(json.dumps(doc, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
+    return doc
+
+
+def residuals(today: str, doc: dict | None = None, log=None, live_dir=None) -> dict:
+    """{tid: dict(n, off, def, net, offShr, defShr, netShr)}；Shr＝÷(n+K)。只用比賽日 < today 的場次。
+    live_dir 給定（線上預設，R-172）：對「今天的 T」算殘差，避免本季表現同時被 OVR 更新與殘差重複計入；
+    沒給：對凍結的賽前預期（舊 R-171 定義，留作對照）。"""
+    if doc is None:
+        doc = today_margins(today, live_dir, log) if live_dir is not None else update_cache(log)
     G = played_games(); acc = collections.defaultdict(lambda: [0, 0.0, 0.0])
     use = [(g, doc['games'][gid]) for gid, g in G.items() if gid in doc['games'] and g['date'] < today]
     # T 輸出的單隊得分是相對值（只有差值有意義）：用已完賽場次的平均得分補常數 b，攻守殘差各自置中，淨值不受影響
@@ -144,5 +195,5 @@ if __name__ == '__main__':
     import logging
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
     lg = logging.getLogger('actual_blend')
-    R = residuals(sys.argv[1] if len(sys.argv) > 1 else dt.date.today().isoformat(), log=lg)
+    R = residuals(sys.argv[1] if len(sys.argv) > 1 else dt.date.today().isoformat(), log=lg, live_dir=sys.argv[2] if len(sys.argv) > 2 else None)
     print(json.dumps({t: {k: round(v, 2) for k, v in r.items()} for t, r in sorted(R.items(), key=lambda x: -x[1]['netShr'])}, indent=0))

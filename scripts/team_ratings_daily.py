@@ -753,7 +753,7 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
     resid = {}
     if used == 't' and actual_blend.enabled():
         try:
-            resid = actual_blend.residuals(today, log=log)
+            resid = actual_blend.residuals(today, log=log, live_dir=live_dir)
         except Exception as e:      # 補算失敗不擋發布，照純 T
             log.warning('本季實際表現殘差失敗，排行不混實際：%s', str(e)[-400:])
     zero = {'offShr': 0.0, 'defShr': 0.0, 'netShr': 0.0, 'n': 0}
@@ -810,7 +810,7 @@ def compute(live_dir: Path, seeds: int = SEEDS, workers: int = 8, fetch: bool = 
            'seeds': 29 * T_DRAWS_PER_OPP if used == 't' else seeds, 'H': H, 'sigma': SIGMA, 'lastN': LAST_N,
            'gamesPlayed': len(lg), 'injuries': {**{k: inj.get(k) for k in ('fetchedAt', 'source', 'espnTimestamp', 'reportTime', 'pdfUrl', 'stale', 'unmatched')}, 'outNoReturnDate': n_noret},
            'today': today, 'returnMin': RETURN_MIN,
-           'actualBlend': {'on': bool(resid), 'k': actual_blend.K, 'rule': 'R-171 / E-253 K10', 'games': sum(r['n'] for r in resid.values()) // 2},
+           'actualBlend': {'on': bool(resid), 'k': actual_blend.K, 'rule': 'R-171 / E-253 K10；R-172 對今天的 T', 'games': sum(r['n'] for r in resid.values()) // 2},
            'schedule': {'fetchedAt': sch.get('fetchedAt'), 'source': sch.get('source'), 'remainingGames': len(remaining)},
            'missingProfiles': sim['missing'],
            'baseProfiles': [{'pid': p, 'name': pname.get(p, str(p)), 'team': next((tri.get(j['team']) or teams[j['team']]['abbr'] for j in jobs if p in {q for q, _ in j['roster']}), ''), 'src': v['src'], 'ovr': v['ovr']}
